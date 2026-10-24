@@ -413,7 +413,12 @@ def test_gradio_bindings_only_hydrate_graph_and_share_human_reset_lane(monkeypat
             assert fn.concurrency_limit == 1
             if name != "reset_session_browser_bound":
                 assert flow_id in event["outputs"]
-    assert len(by_name["begin_human_submission_with_session"]) == 4
-    assert all(len(event["outputs"]) == 2 for _, event in by_name["begin_human_submission_with_session"])
+    assert len(by_name["begin_exact_text_submission_with_session"]) == 2
+    assert len(by_name["begin_exact_audio_submission_with_session"]) == 2
+    assert all(
+        len(event["outputs"]) == 2
+        for name in ("begin_exact_text_submission_with_session", "begin_exact_audio_submission_with_session")
+        for _, event in by_name[name]
+    )
     for _, event in by_name["poll_proactive_turn"]:
         assert browser_id not in event["outputs"]

@@ -210,6 +210,7 @@ _STARTED_ADMISSION_LEASE_SECONDS = 600.0
 _ADMISSION_TERMINAL_STATUSES = frozenset({
     "delivered", "aborted", "error", "unknown", "empty_input", "empty_audio",
     "no_transcript", "no_turn_result", "transcription_only", "invalid",
+    "exact_input_rejected", "exact_input_aborted_after_cognition",
 })
 
 
@@ -1008,59 +1009,92 @@ class RuntimeManager:
         if source not in {"browser", "direct_no_browser_admission", "legacy"}:
             raise ValueError("unsupported admission source")
         token = secrets.token_hex(16) if self._admission_enabled() and source != "legacy" else ""
-        with self._human_gate_lock:
-            self._human_waiters += 1
-            self._scheduler_trace.update(
-                {
-                    "human_waiters": self._human_waiters,
-                    "last_decision": "human_admitted",
-                    "human_priority_active": True,
-                }
-            )
-            if token:
-                row, saved = self._admission_event_under_gate(
-                    "arrival", submission_id=token, source=source,
-                    status="registered", autonomous_tick_index=None, active_db_path=None,
+        waiter_registered = False
+        stage = "arrival"
+        try:
+            with self._human_gate_lock:
+                self._human_waiters += 1
+                waiter_registered = True
+                self._scheduler_trace.update(
+                    {
+                        "human_waiters": self._human_waiters,
+                        "last_decision": "human_admitted",
+                        "human_priority_active": True,
+                    }
                 )
-                self._admission_records[token] = {
-                    "arrival_sequence": row["sequence"],
-                    "arrival_row": row,
-                    "session_id": self._session_id,
-                    "reset_generation": self._reset_generation,
-                    "source": source,
-                    "journal_ok": saved,
-                    "registered_at": time.monotonic(),
-                    "last_progress_at": time.monotonic(),
-                    "snapshot_pending": True,
-                    "started": False,
-                    "finished": False,
-                    "waiter_released": False,
-                }
-        self.mark_activity()
-        if token:
-            # Arrival is already ordered under the gate. This later Brain-lock
-            # sample is deliberately NOT described as the physical click.
-            with self._lock:
-                state = self._admission_state(self._brain) if self._brain is not None else {
-                    "active_db_path": None, "autonomous_tick_index": None,
-                }
-                with self._human_gate_lock:
-                    _row, saved = self._admission_event_under_gate(
-                        "admission_snapshot", submission_id=token,
-                        status="ready" if self._active_db_phase == "ready" else "unavailable",
-                        **state,
+                if token:
+                    row, saved = self._admission_event_under_gate(
+                        "arrival", submission_id=token, source=source,
+                        status="registered", autonomous_tick_index=None, active_db_path=None,
                     )
-                    record = self._admission_records.get(token)
-                    if record is None:
+                    self._admission_records[token] = {
+                        "arrival_sequence": row["sequence"],
+                        "arrival_row": row,
+                        "session_id": self._session_id,
+                        "reset_generation": self._reset_generation,
+                        "source": source,
+                        "journal_ok": saved,
+                        "registered_at": time.monotonic(),
+                        "last_progress_at": time.monotonic(),
+                        "snapshot_pending": True,
+                        "started": False,
+                        "finished": False,
+                        "waiter_released": False,
+                    }
+            self.mark_activity()
+            if token:
+                stage = "snapshot"
+                # Arrival is already ordered under the gate. This later Brain-lock
+                # sample is deliberately NOT described as the physical click.
+                with self._lock:
+                    state = self._admission_state(self._brain) if self._brain is not None else {
+                        "active_db_path": None, "autonomous_tick_index": None,
+                    }
+                    with self._human_gate_lock:
+                        _row, saved = self._admission_event_under_gate(
+                            "admission_snapshot", submission_id=token,
+                            status="ready" if self._active_db_phase == "ready" else "unavailable",
+                            **state,
+                        )
+                        record = self._admission_records.get(token)
+                        if record is None:
+                            self._admission_audit_invalid = True
+                            raise RuntimeError("turn_admission_expired_before_snapshot")
+                        record["admission_state"] = state
+                        record["snapshot_row"] = _row
+                        record["journal_ok"] = bool(record["journal_ok"] and saved)
+                        record["snapshot_pending"] = False
+                        if state.get("independent_worker_active"):
+                            self._admission_audit_invalid = True
+            return started, token
+        except BaseException:
+            if waiter_registered:
+                with self._human_gate_lock:
+                    record = self._admission_records.pop(token, None) if token else None
+                    # The token has not been returned to a caller, and a pending
+                    # snapshot cannot expire; this method still owns its waiter.
+                    if record is None or not record["waiter_released"]:
+                        self._human_waiters = max(0, self._human_waiters - 1)
+                    if record is not None:
+                        record["waiter_released"] = True
+                    if token:
                         self._admission_audit_invalid = True
-                        raise RuntimeError("turn_admission_expired_before_snapshot")
-                    record["admission_state"] = state
-                    record["snapshot_row"] = _row
-                    record["journal_ok"] = bool(record["journal_ok"] and saved)
-                    record["snapshot_pending"] = False
-                    if state.get("independent_worker_active"):
-                        self._admission_audit_invalid = True
-        return started, token
+                        if record is not None:
+                            try:
+                                self._admission_event_under_gate(
+                                    "terminal", submission_id=token,
+                                    status="admission_registration_failed", stage=stage,
+                                    active_db_path=None, autonomous_tick_index=None,
+                                )
+                            except BaseException:
+                                # Preserve the original failure; the audit is invalid.
+                                pass
+                    self._scheduler_trace.update({
+                        "human_waiters": self._human_waiters,
+                        "last_decision": "human_registration_failed",
+                        "human_priority_active": self._human_waiters > 0,
+                    })
+            raise
 
     def admission_session_id(self, token):
         with self._human_gate_lock:
@@ -3870,6 +3904,97 @@ def begin_human_submission_with_session(value):
     return begin_human_submission(value), RUNTIME._session_id
 
 
+def _exact_input_surface_arm():
+    arm = os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM", "")
+    return arm if arm in {"off", "on"} else ""
+
+
+def _exact_input_capability_root():
+    return os.getenv("URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT", "")
+
+
+_EXACT_ENQUEUE_LOCK = threading.Lock()
+_EXACT_PENDING_ADMISSION = None
+
+
+def _release_exact_enqueue_claim(claim):
+    global _EXACT_PENDING_ADMISSION
+    with _EXACT_ENQUEUE_LOCK:
+        pending = _EXACT_PENDING_ADMISSION
+        if pending is not None and pending["claim"] is claim:
+            _EXACT_PENDING_ADMISSION = None
+
+
+def begin_exact_text_submission_with_session(value, request: gr.Request | None = None):
+    """Claim the one-use research input before admission, memory, or UI yield."""
+    global _EXACT_PENDING_ADMISSION
+    arm = _exact_input_surface_arm()
+    if not arm:
+        return begin_human_submission_with_session(value)
+    session_key = getattr(request, "session_hash", None)
+    if not isinstance(session_key, str) or not session_key:
+        return 0.0, {
+            "session_id": getattr(RUNTIME, "_session_id", ""),
+            "exact_input_rejected": "browser_session_unavailable",
+        }
+    from uruha_source_event_exact_input_capability_p4 import (
+        ExactInputCapabilityError, abandon_unreserved_exact_input_claim,
+        claim_exact_input_permit, close_exact_input_claim,
+    )
+
+    with _EXACT_ENQUEUE_LOCK:
+        pending = _EXACT_PENDING_ADMISSION
+        if (pending is not None and pending["runtime"] is RUNTIME
+                and pending["session_key"] == session_key):
+            if abandon_unreserved_exact_input_claim(pending["claim"]):
+                # The first queued callback has not reserved its State yet.
+                # Cancel its admission before a second queue-free result can
+                # overwrite that State and strand a human waiter.
+                _EXACT_PENDING_ADMISSION = None
+                if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                    RUNTIME.finish_human_turn(
+                        admission_token=pending["token"],
+                        terminal_status="exact_input_rejected",
+                    )
+                else:
+                    RUNTIME.finish_human_turn()
+            return 0.0, {
+                "session_id": getattr(RUNTIME, "_session_id", ""),
+                "exact_input_rejected": "claim_already_in_progress",
+            }
+        if pending is not None and pending["runtime"] is not RUNTIME:
+            _EXACT_PENDING_ADMISSION = None
+        try:
+            claim = claim_exact_input_permit(_exact_input_capability_root(), value, arm)
+        except ExactInputCapabilityError as exc:
+            return 0.0, {
+                "session_id": getattr(RUNTIME, "_session_id", ""),
+                "exact_input_rejected": exc.reason,
+            }
+        try:
+            started, meta = begin_human_submission_with_session(value)
+        except BaseException:
+            close_exact_input_claim(claim)
+            raise
+        if not isinstance(meta, dict):
+            meta = {"session_id": str(meta or "")}
+        _EXACT_PENDING_ADMISSION = {
+            "runtime": RUNTIME, "claim": claim,
+            "token": str(meta.get("admission_token") or ""),
+            "session_key": session_key,
+        }
+        return started, {**meta, "exact_input_claim": claim}
+
+
+def begin_exact_audio_submission_with_session(_value):
+    if _exact_input_surface_arm():
+        return 0.0, {
+            "session_id": getattr(RUNTIME, "_session_id", ""),
+            "exact_input_rejected": "audio_unavailable_for_exact_text_probe",
+        }
+    return begin_human_submission_with_session(_value)
+
+
 def _browser_submission_meta(value):
     if isinstance(value, dict):
         return str(value.get("session_id") or ""), str(value.get("admission_token") or "")
@@ -4011,7 +4136,24 @@ def _run_turn(
     frontend_enqueue_started=0.0,
     handler_started=0.0,
     admission_token="",
+    exact_input_claim=None,
 ):
+    arm = _exact_input_surface_arm()
+    if arm:
+        from uruha_source_event_exact_input_capability_p4 import (
+            ExactInputCapabilityError, validate_exact_input_claim,
+        )
+
+        if input_mode != "text":
+            raise ExactInputCapabilityError("input_mode_not_text", pre_turn_safe=True)
+        try:
+            validate_exact_input_claim(
+                exact_input_claim, _exact_input_capability_root(), user_text, arm,
+            )
+        except ExactInputCapabilityError as exc:
+            raise ExactInputCapabilityError(exc.reason, pre_turn_safe=True) from exc
+        if not isinstance(user_text, str) or user_text != user_text.strip():
+            raise RuntimeError("exact_input_changed_by_web_strip")
     user_text = (user_text or "").strip()
     if not user_text:
         return None
@@ -4050,18 +4192,25 @@ def _run_turn(
         checkpoint = ledger.checkpoint() if ledger is not None else None
         turn_debug = brain.run_turn_debug
         try:
-            with ledger.item_scope(compute_item_id, "product_web") if ledger is not None else nullcontext():
-                if "input_context" in inspect.signature(turn_debug).parameters:
-                    turn = turn_debug(
-                        user_text,
-                        input_context={
-                            "input_mode": str(input_mode or "text"),
-                            "acoustic_summary": acoustic_summary,
-                        },
-                    )
-                else:
-                    # Compatibility for narrow test doubles and older runtime adapters.
-                    turn = turn_debug(user_text)
+            if arm:
+                from uruha_source_event_exact_input_capability_p4 import scoped_exact_input_claim
+
+                exact_scope = scoped_exact_input_claim(exact_input_claim)
+            else:
+                exact_scope = nullcontext()
+            with exact_scope:
+                with ledger.item_scope(compute_item_id, "product_web") if ledger is not None else nullcontext():
+                    if "input_context" in inspect.signature(turn_debug).parameters:
+                        turn = turn_debug(
+                            user_text,
+                            input_context={
+                                "input_mode": str(input_mode or "text"),
+                                "acoustic_summary": acoustic_summary,
+                            },
+                        )
+                    else:
+                        # Compatibility for narrow test doubles and older runtime adapters.
+                        turn = turn_debug(user_text)
         except Exception as exc:
             if admission_active:
                 try:
@@ -4394,6 +4543,9 @@ def _append_conversation_log(input_mode, result):
 
 
 def poll_proactive_turn(history, auto_tts):
+    if _exact_input_surface_arm():
+        # This one-turn diagnostic has no authority for autonomous visible speech.
+        return (gr.skip(),) * 7
     human_pending = getattr(RUNTIME, "human_turn_pending", lambda: False)
     if RUNTIME._brain is None or human_pending():
         return (gr.skip(),) * 7
@@ -4512,8 +4664,47 @@ def _cleanup_input_audio(audio_path):
         print(Fore.YELLOW + f"⚠️ [Web] Failed to remove input audio: {audio_path} ({exc})")
 
 
-def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started, admission_token=""):
+def _exact_input_text_rejection(history, reason, *, pre_turn_safe=True):
+    safe_reason = reason if reason in {
+        "missing_permit", "input_not_approved", "permit_mismatch", "permit_already_spent",
+        "invalid_capability_root", "current_run_unavailable", "audio_unavailable_for_exact_text_probe",
+        "claim_mismatch", "invalid_input", "input_mode_not_text",
+        "same_turn_claim_already_reserved", "private_path_unavailable",
+        "permit_does_not_authorize_input", "claim_already_in_progress",
+        "browser_session_unavailable", "unknown",
+    } else "unknown"
+    if pre_turn_safe:
+        note = f"本次隔離測試不接受此輸入（{safe_reason}）；未送入角色或記憶。"
+    else:
+        note = (
+            f"本次隔離測試在認知入口後中止（{safe_reason}）；可能已有內部讀寫，"
+            "未產生本輪可見角色回覆，需核對隔離紀錄。"
+        )
+    return (
+        history, history, "", None, gr.update(value={}), gr.update(value={}),
+        _empty_flow_html(note), _empty_html("State Diff", note),
+        gr.update(value={}), note, gr.skip(), gr.skip(), gr.skip(),
+    )
+
+
+def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started,
+                      admission_token="", exact_input_claim=None):
     handler_started = time.perf_counter()
+    arm = _exact_input_surface_arm()
+    if arm:
+        from uruha_source_event_exact_input_capability_p4 import (
+            ExactInputCapabilityError, validate_exact_input_claim,
+        )
+
+        try:
+            validate_exact_input_claim(
+                exact_input_claim, _exact_input_capability_root(), message, arm,
+            )
+        except ExactInputCapabilityError as exc:
+            yield _exact_input_text_rejection(history, exc.reason)
+            return "exact_input_rejected"
+        if not isinstance(message, str) or message != message.strip():
+            raise RuntimeError("exact_input_changed_by_web_strip")
     user_text = (message or "").strip()
     if not user_text:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
@@ -4524,14 +4715,31 @@ def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started, admi
     yield pending_history, pending_history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
 
     admission_kwargs = {"admission_token": admission_token} if admission_token else {}
-    result = _run_turn(
-        user_text,
-        auto_tts,
-        input_mode="text",
-        frontend_enqueue_started=frontend_enqueue_started,
-        handler_started=handler_started,
-        **admission_kwargs,
-    )
+    try:
+        result = _run_turn(
+            user_text,
+            auto_tts,
+            input_mode="text",
+            frontend_enqueue_started=frontend_enqueue_started,
+            handler_started=handler_started,
+            exact_input_claim=exact_input_claim,
+            **admission_kwargs,
+        )
+    except Exception as exc:
+        if not arm:
+            raise
+        from uruha_source_event_exact_input_capability_p4 import ExactInputCapabilityError
+
+        if not isinstance(exc, ExactInputCapabilityError):
+            raise
+        pre_turn_safe = getattr(exc, "pre_turn_safe", False)
+        yield _exact_input_text_rejection(
+            history, exc.reason, pre_turn_safe=pre_turn_safe,
+        )
+        return (
+            "exact_input_rejected" if pre_turn_safe
+            else "exact_input_aborted_after_cognition"
+        )
     if result is None:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
         return
@@ -4574,35 +4782,86 @@ def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started, admi
     yield streamed_history, streamed_history, "", result["audio_path"], debug_payload, client_cognition, result["flow_html"], result["state_html"], client_memory, _status_markdown(), client_record, annotation_context, annotation_status
 
 
-def submit_text(message, history, auto_tts, frontend_enqueue_started=0.0, admission_token=""):
+def submit_text(message, history, auto_tts, frontend_enqueue_started=0.0,
+                admission_token="", exact_input_claim=None):
+    arm = _exact_input_surface_arm()
+    if arm:
+        from uruha_source_event_exact_input_capability_p4 import (
+            ExactInputCapabilityError, claim_exact_input_permit,
+            reserve_exact_input_claim,
+        )
+
+        try:
+            if exact_input_claim is None:
+                exact_input_claim = claim_exact_input_permit(
+                    _exact_input_capability_root(), message, arm,
+                )
+            if not isinstance(message, str) or message != message.strip():
+                raise ExactInputCapabilityError("claim_mismatch")
+            reserve_exact_input_claim(
+                exact_input_claim, _exact_input_capability_root(), message, arm,
+            )
+        except ExactInputCapabilityError as exc:
+            from uruha_source_event_exact_input_capability_p4 import (
+                abandon_unreserved_exact_input_claim,
+            )
+
+            owns_aborted_admission = abandon_unreserved_exact_input_claim(exact_input_claim)
+            if owns_aborted_admission and (frontend_enqueue_started or admission_token):
+                if getattr(RUNTIME, "_admission_enabled", lambda: False)():
+                    RUNTIME.finish_human_turn(
+                        admission_token=admission_token, terminal_status="exact_input_rejected",
+                    )
+                else:
+                    RUNTIME.finish_human_turn()
+            if owns_aborted_admission:
+                _release_exact_enqueue_claim(exact_input_claim)
+            yield _exact_input_text_rejection(history, exc.reason)
+            return
     frontend_enqueue_started = float(frontend_enqueue_started or 0.0)
     admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
-    if frontend_enqueue_started <= 0.0:
-        if admission_active:
-            frontend_enqueue_started, admission_token = RUNTIME.begin_human_turn_with_token(
-                source="direct_no_browser_admission",
-            )
-        else:
-            frontend_enqueue_started = RUNTIME.begin_human_turn()
+    try:
+        if frontend_enqueue_started <= 0.0:
+            if admission_active:
+                frontend_enqueue_started, admission_token = RUNTIME.begin_human_turn_with_token(
+                    source="direct_no_browser_admission",
+                )
+            else:
+                frontend_enqueue_started = RUNTIME.begin_human_turn()
+    except BaseException:
+        if exact_input_claim is not None:
+            from uruha_source_event_exact_input_capability_p4 import close_exact_input_claim
+
+            close_exact_input_claim(exact_input_claim)
+            _release_exact_enqueue_claim(exact_input_claim)
+        raise
     terminal_status = "empty_input" if not (message or "").strip() else "aborted"
     try:
-        yield from _submit_text_impl(
+        outcome = yield from _submit_text_impl(
             message,
             history,
             auto_tts,
             frontend_enqueue_started,
             admission_token=admission_token,
+            exact_input_claim=exact_input_claim,
         )
         if terminal_status != "empty_input":
-            terminal_status = "delivered"
+            terminal_status = outcome or "delivered"
     except Exception:
         terminal_status = "error"
         raise
     finally:
-        if admission_active:
-            RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
-        else:
-            RUNTIME.finish_human_turn()
+        try:
+            if admission_active:
+                RUNTIME.finish_human_turn(admission_token=admission_token, terminal_status=terminal_status)
+            else:
+                RUNTIME.finish_human_turn()
+        finally:
+            if exact_input_claim is not None:
+                from uruha_source_event_exact_input_capability_p4 import close_exact_input_claim
+
+                close_exact_input_claim(exact_input_claim)
+                _release_exact_enqueue_claim(exact_input_claim)
 
 
 def _with_browser_graph_receipt(stream, expected_session_id):
@@ -4623,9 +4882,22 @@ def submit_text_browser_bound(
     message, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
 ):
     session_id, token = _browser_submission_meta(expected_session_id)
+    if isinstance(expected_session_id, dict) and expected_session_id.get("exact_input_rejected"):
+        yield (*_exact_input_text_rejection(history, expected_session_id["exact_input_rejected"]), gr.skip())
+        return
+    exact_claim = (
+        expected_session_id.get("exact_input_claim")
+        if isinstance(expected_session_id, dict) else None
+    )
+    exact_kwargs = (
+        {"exact_input_claim": exact_claim}
+        if _exact_input_surface_arm() or exact_claim is not None else {}
+    )
     stream = (
-        submit_text(message, history, auto_tts, frontend_enqueue_started, admission_token=token)
-        if token else submit_text(message, history, auto_tts, frontend_enqueue_started)
+        submit_text(message, history, auto_tts, frontend_enqueue_started,
+                    admission_token=token, **exact_kwargs)
+        if token else submit_text(message, history, auto_tts, frontend_enqueue_started,
+                                  **exact_kwargs)
     )
     yield from _with_browser_graph_receipt(
         stream,
@@ -4633,8 +4905,21 @@ def submit_text_browser_bound(
     )
 
 
+def _exact_input_audio_rejection(history):
+    note = "本次隔離測試只接受已授權的文字輸入；未轉錄、未送入角色或記憶。"
+    return (
+        history, history, "", None, gr.update(value={}), gr.update(value={}),
+        _empty_flow_html(note), _empty_html("State Diff", note),
+        gr.update(value={}), note, gr.skip(), gr.skip(), gr.skip(),
+        gr.update(value=None),
+    )
+
+
 def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started, admission_token=""):
     handler_started = time.perf_counter()
+    if _exact_input_surface_arm():
+        yield _exact_input_audio_rejection(history)
+        return "audio_unavailable_for_exact_text_probe"
     if not audio_path:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip(), gr.skip()
         return "empty_audio"
@@ -4707,6 +4992,9 @@ def _submit_audio_impl(audio_path, history, auto_tts, frontend_enqueue_started, 
 
 
 def submit_audio(audio_path, history, auto_tts, frontend_enqueue_started=0.0, admission_token=""):
+    if _exact_input_surface_arm():
+        yield _exact_input_audio_rejection(history)
+        return
     frontend_enqueue_started = float(frontend_enqueue_started or 0.0)
     admission_active = bool(getattr(RUNTIME, "_admission_enabled", lambda: False)())
     if frontend_enqueue_started <= 0.0:
@@ -4739,6 +5027,9 @@ def submit_audio_browser_bound(
     audio_path, history, auto_tts, frontend_enqueue_started=0.0, expected_session_id="",
 ):
     session_id, token = _browser_submission_meta(expected_session_id)
+    if isinstance(expected_session_id, dict) and expected_session_id.get("exact_input_rejected"):
+        yield (*_exact_input_audio_rejection(history), gr.skip())
+        return
     stream = (
         submit_audio(audio_path, history, auto_tts, frontend_enqueue_started, admission_token=token)
         if token else submit_audio(audio_path, history, auto_tts, frontend_enqueue_started)
@@ -4757,6 +5048,9 @@ def handle_audio_stop(
     frontend_enqueue_started=0.0,
     admission_token="",
 ):
+    if _exact_input_surface_arm():
+        yield _exact_input_audio_rejection(history)
+        return
     if not audio_path:
         if frontend_enqueue_started:
             if getattr(RUNTIME, "_admission_enabled", lambda: False)():
@@ -4796,6 +5090,9 @@ def handle_audio_stop_browser_bound(
     frontend_enqueue_started=0.0, expected_session_id="",
 ):
     session_id, token = _browser_submission_meta(expected_session_id)
+    if isinstance(expected_session_id, dict) and expected_session_id.get("exact_input_rejected"):
+        yield (*_exact_input_audio_rejection(history), gr.skip())
+        return
     admission_kwargs = {"admission_token": token} if token else {}
     yield from _with_browser_graph_receipt(
         handle_audio_stop(
@@ -4807,6 +5104,8 @@ def handle_audio_stop_browser_bound(
 
 
 def transcribe_audio_only(audio_path):
+    if _exact_input_surface_arm():
+        return ""
     if not audio_path:
         return ""
     return RUNTIME.get_ears().transcribe_audio_file(audio_path)
@@ -5399,7 +5698,7 @@ def build_demo():
         )
 
         text_in.submit(
-            fn=begin_human_submission_with_session,
+            fn=begin_exact_text_submission_with_session,
             inputs=[text_in],
             outputs=[text_enqueue_started_state, text_enqueue_session_state],
             queue=False,
@@ -5414,7 +5713,7 @@ def build_demo():
         )
 
         send_btn.click(
-            fn=begin_human_submission_with_session,
+            fn=begin_exact_text_submission_with_session,
             inputs=[text_in],
             outputs=[text_enqueue_started_state, text_enqueue_session_state],
             queue=False,
@@ -5436,7 +5735,7 @@ def build_demo():
         )
 
         send_audio_btn.click(
-            fn=begin_human_submission_with_session,
+            fn=begin_exact_audio_submission_with_session,
             inputs=[audio_in],
             outputs=[audio_enqueue_started_state, audio_enqueue_session_state],
             queue=False,
@@ -5451,7 +5750,7 @@ def build_demo():
         )
 
         audio_in.stop_recording(
-            fn=begin_human_submission_with_session,
+            fn=begin_exact_audio_submission_with_session,
             inputs=[audio_in],
             outputs=[audio_enqueue_started_state, audio_enqueue_session_state],
             queue=False,

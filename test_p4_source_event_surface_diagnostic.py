@@ -38,6 +38,10 @@ DATA = HERE / "datasets/p4_source_event_surface_diagnostic_probe_2026-10-24.json
 FREEZE = HERE / "research/p4_source_event_surface_diagnostic_source_freeze_2026-10-24.sha256"
 BASELINE_HEAD = "52f852fa46afaa749b71ffd533c937a8e512514d"
 SCHEMA = "p4_source_event_surface_preimplementation_snapshot_v1"
+_HISTORICAL_PRODUCT_FILES = frozenset({
+    "uruha_brain_mac.py",
+    "p4_direct_reply_act_m29_priority_detached_control.py",
+})
 
 
 def _canonical(value: object) -> bytes:
@@ -50,7 +54,7 @@ def _sha(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
-def _frozen_data() -> dict:
+def _freeze_entries() -> dict[str, str]:
     expected = {}
     for line in FREEZE.read_text(encoding="utf-8").splitlines():
         digest, separator, relative = line.partition("  ")
@@ -59,9 +63,16 @@ def _frozen_data() -> dict:
         expected[relative] = digest
     if len(expected) != 10:
         raise RuntimeError("source_manifest_not_ten_entries")
+    return expected
+
+
+def _frozen_data(*, allow_historical_product_drift: bool = False) -> dict:
+    expected = _freeze_entries()
     for relative, digest in expected.items():
         path = (HERE / relative).resolve(strict=True)
         if not path.is_relative_to(HERE) or _sha(path.read_bytes()) != digest:
+            if allow_historical_product_drift and relative in _HISTORICAL_PRODUCT_FILES:
+                continue
             raise RuntimeError(f"source_manifest_mismatch:{relative}")
     data = json.loads(DATA.read_text(encoding="utf-8"))
     if data.get("schema") != "p4_source_event_surface_diagnostic_probe_v1":
@@ -264,9 +275,24 @@ def _two_surface_copies(raw_boundary: dict) -> tuple[dict, dict, str]:
     return off, on, _sha(original_bytes)
 
 
+def test_historical_nondiagnostic_source_contract_remains_frozen():
+    data = _frozen_data(allow_historical_product_drift=True)
+    assert data["schema"] == "p4_source_event_surface_diagnostic_probe_v1"
+    assert len(data["fixed_compact_plans"]) == 3
+
+
 def test_source_only_snapshot_rebuild_and_immutable_surface_copies(monkeypatch):
     import openai
 
+    # Preserve all 8/8 frozen plan/dataset/review/dependencies even after the
+    # two intended product files change. Only the old-code rebuild is skipped.
+    _frozen_data(allow_historical_product_drift=True)
+    expected = _freeze_entries()
+    if any(
+        _sha((HERE / relative).read_bytes()) != expected[relative]
+        for relative in _HISTORICAL_PRODUCT_FILES
+    ):
+        pytest.skip("historical preimplementation product code changed; see ce24a2d freeze")
     monkeypatch.setattr(openai, "OpenAI", lambda **_kwargs: (_ for _ in ()).throw(
         AssertionError("real_provider_client_forbidden")
     ))

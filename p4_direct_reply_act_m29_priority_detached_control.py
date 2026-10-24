@@ -40,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     arm_parser.add_argument("--compact-json-schema", action="store_true")
     arm_parser.add_argument("--source-event-core-utility", action="store_true")
     arm_parser.add_argument("--source-event-candidate-prompt", action="store_true")
+    arm_parser.add_argument("--source-event-surface-arm", choices=("off", "on"))
     arm_args, forwarded = arm_parser.parse_known_args(sys.argv[1:] if argv is None else argv)
     try:
         selected_port = base_launcher.validate_port(arm_args.product_port)
@@ -53,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
     scope_parser = argparse.ArgumentParser(add_help=False)
     scope_parser.add_argument("action", nargs="?")
     scope_parser.add_argument("--mode", choices=("product", "inert"), default="product")
+    scope_parser.add_argument("--prepared-runtime-root")
     request, _ = scope_parser.parse_known_args(forwarded)
     product_start = request.action == "start" and request.mode == "product"
     if arm_args.direct_act_arm == "treatment" and not product_start:
@@ -72,6 +74,13 @@ def main(argv: list[str] | None = None) -> int:
         and arm_args.compact_json_schema and arm_args.source_event_core_utility
     ):
         arm_parser.error("source-event candidate prompt requires control product start with compact schema and source-event utility")
+    if arm_args.source_event_surface_arm and not (
+        product_start and arm_args.direct_act_arm == "control"
+        and arm_args.compact_json_schema and arm_args.source_event_core_utility
+        and not arm_args.source_event_candidate_prompt
+        and request.prepared_runtime_root
+    ):
+        arm_parser.error("source-event surface diagnostic requires prepared control product start, compact schema, utility, and f8 prompt off")
     original_env = launchd._isolated_env
     original_preflight = product_launcher.preflight_preference_fallback
     original_port = prior.base_controller.PORT
@@ -99,6 +108,9 @@ def main(argv: list[str] | None = None) -> int:
                 env["URUHA_P4_SOURCE_EVENT_CORE_UTILITY"] = "1"
             if arm_args.source_event_candidate_prompt and port is not None:
                 env["URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT"] = "1"
+            if arm_args.source_event_surface_arm and port is not None:
+                env["URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM"] = arm_args.source_event_surface_arm
+                env["URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT"] = str(layout["runtime_root"])
         return env
 
     # The base controller consistently uses PORT for prepared receipts,
@@ -128,6 +140,9 @@ def main(argv: list[str] | None = None) -> int:
                     env = {**env, "URUHA_P4_SOURCE_EVENT_CORE_UTILITY": "1"}
                 if arm_args.source_event_candidate_prompt:
                     env = {**env, "URUHA_P4_SOURCE_EVENT_CANDIDATE_PROMPT": "1"}
+                if arm_args.source_event_surface_arm:
+                    env = {**env, "URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM": arm_args.source_event_surface_arm}
+                    env = {**env, "URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT": str(layout["runtime_root"])}
                 return summary, env, layout, created, profile
 
             product_launcher.preflight_preference_fallback = same_arm_preflight

@@ -92,6 +92,7 @@ from rightbrain_language_quality import (
 init(autoreset=True)
 load_dotenv()
 _P4_SOURCE_EVENT_CORE_HANDOFF = ContextVar("p4_source_event_core_handoff", default=None)
+_P4_SOURCE_EVENT_SURFACE_SLOT = ContextVar("p4_source_event_surface_slot", default=None)
 
 
 def _reconcile_source_event_core_utility_p4(logic):
@@ -15896,6 +15897,24 @@ You are Ichinose Uruha.
         max_chars = logic_data.get("constraints", {}).get("max_chars", 28)
         intent = logic_data.get("intent", "chat")
 
+        # The opt-in diagnostic slot exists only during this one speak call.
+        # It is never copied into logic/history; only the final reply is kept.
+        source_event_slot_p4 = _P4_SOURCE_EVENT_SURFACE_SLOT.get()
+        if source_event_slot_p4 is not None and not structured_surface and not self.model_blend_enabled and self.persona_policy_provider is None:
+            from uruha_source_event_surface_diagnostic_p4 import (
+                SourceEventSlot, realize_source_event_p4,
+            )
+
+            if (
+                isinstance(source_event_slot_p4, SourceEventSlot)
+                and source_event_slot_p4.input_sha256 == hashlib.sha256(user_input.encode("utf-8")).hexdigest()
+            ):
+                source_event_reply_p4 = realize_source_event_p4(source_event_slot_p4)
+                if source_event_reply_p4 is not None:
+                    self._remember_turn(summary, source_event_reply_p4, intent)
+                    publish_model_trace(source_event_reply_p4)
+                    return source_event_reply_p4
+
         if structured_surface:
             runtime_trace = {
                 "schema": "uruha_persona_surface_runtime_v1",
@@ -17326,6 +17345,11 @@ class UruhaBrainV4_Mac:
             "literal_topic_surface_m29",
             "direct_reply_act_planner_handoff_p4",
             "source_event_core_utility_p4",
+            "source_event_certificate_p4",
+            "source_event_ephemeral_slot_p4",
+            "source_event_surface_p4",
+            "source_event_final_visible_audit_p4",
+            "source_event_post_emit_audit_p4",
             "semantic_authorization_m31",
             "semantic_authorized_surface_m31",
             "semantic_commit_repair_m32",
@@ -20542,10 +20566,15 @@ class UruhaBrainV4_Mac:
                 else 0.98
             ),
         )
-        return {
+        tick_result = {
             "route_info": route_info,
             "logic": logic,
         }
+        if os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM") in {"off", "on"}:
+            # The raw-free handoff is transient on the tick result, not logic.
+            # emit_response_if_ready consumes it before episode/trace writing.
+            tick_result["_source_event_surface_handoff_p4"] = deepcopy(direct_reply_act_candidate_p4)
+        return tick_result
 
     def _write_typed_reflection_if_enabled(self, user_input, reply, logic):
         if not urr.typed_reflection_runtime_enabled():
@@ -20557,16 +20586,70 @@ class UruhaBrainV4_Mac:
 
     def emit_response_if_ready(self, event, tick_result):
         user_input = event["user_input"]
+        source_event_arm_p4 = os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM", "")
+        if source_event_arm_p4 in {"off", "on"}:
+            from uruha_source_event_exact_input_capability_p4 import require_exact_input_claim
+
+            require_exact_input_claim(
+                os.getenv("URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT", ""),
+                user_input,
+                source_event_arm_p4,
+            )
         mems = event["memory_data"]
         psyche_before = event["psyche_before"]
         logic = tick_result["logic"]
         route_info = tick_result["route_info"]
+        source_event_slot_p4 = None
+        source_event_admission_p4 = None
+        if source_event_arm_p4 in {"off", "on"}:
+            from uruha_source_event_surface_diagnostic_p4 import admit_source_event_slot_p4
+
+            source_event_handoff_p4 = tick_result.pop("_source_event_surface_handoff_p4", None)
+            source_event_slot_p4, source_event_admission_p4 = admit_source_event_slot_p4(
+                user_input, source_event_handoff_p4, logic
+            )
+            if (
+                getattr(self.right_brain, "model_blend_enabled", False)
+                or getattr(self.right_brain, "persona_policy_provider", None) is not None
+            ):
+                source_event_slot_p4 = None
+                source_event_admission_p4.update(
+                    status="not_authorized", reason="nondeterministic_right_brain_surface"
+                )
+            source_event_admission_p4["arm"] = source_event_arm_p4
+            self._push_blackboard(
+                "observe", "source_event_certificate_p4", source_event_admission_p4,
+                salience=0.98 if source_event_slot_p4 else 0.7,
+            )
+            self._push_blackboard(
+                "plan", "source_event_ephemeral_slot_p4",
+                {**source_event_admission_p4, "raw_span_transported_only_in_same_turn_context": bool(source_event_slot_p4)},
+                salience=0.98 if source_event_slot_p4 else 0.7,
+            )
 
         self.psyche.adjust(logic.get("mood_impact", 0), logic.get("trust_impact", 0))
         psyche_after = self.psyche.get_state()
         self.runtime.last_psyche_after = psyche_after
 
-        reply = self.right_brain.speak(user_input, logic, mems, psyche_after)
+        source_event_token_p4 = _P4_SOURCE_EVENT_SURFACE_SLOT.set(
+            source_event_slot_p4 if source_event_arm_p4 == "on" else None
+        )
+        try:
+            reply = self.right_brain.speak(user_input, logic, mems, psyche_after)
+        finally:
+            _P4_SOURCE_EVENT_SURFACE_SLOT.reset(source_event_token_p4)
+        if source_event_arm_p4 in {"off", "on"}:
+            from uruha_source_event_surface_diagnostic_p4 import realize_source_event_p4
+
+            proposed = realize_source_event_p4(source_event_slot_p4) if source_event_slot_p4 else None
+            source_event_surface_p4 = {
+                **source_event_admission_p4,
+                "status": "applied_before_downstream_guards"
+                if source_event_arm_p4 == "on" and proposed is not None and reply == proposed
+                else "not_applied_or_changed_before_guards",
+                "pre_guard_reply_sha256": hashlib.sha256(str(reply).encode("utf-8")).hexdigest(),
+            }
+            self._push_blackboard("surface", "source_event_surface_p4", source_event_surface_p4, salience=0.98)
         self.runtime.last_speech_plan = deepcopy(logic.get("human_speech_plan") or {})
         if self.runtime.last_speech_plan:
             self._push_blackboard("surface", "human_speech_plan", self.runtime.last_speech_plan, salience=0.9)
@@ -20801,6 +20884,35 @@ class UruhaBrainV4_Mac:
         logic["self_monitor"] = self_monitor
         post_check = self._attach_reply_post_check(logic, user_input, reply, mems)
         _reconcile_source_event_core_utility_p4(logic)
+        if source_event_arm_p4 in {"off", "on"}:
+            from uruha_source_event_surface_diagnostic_p4 import audit_final_source_event_p4
+
+            source_event_final_p4 = audit_final_source_event_p4(
+                user_input, source_event_slot_p4, reply
+            )
+            source_event_final_p4["arm"] = source_event_arm_p4
+            source_event_final_p4["treatment_applied_before_guards"] = (
+                source_event_surface_p4["status"] == "applied_before_downstream_guards"
+            )
+            right_brain_history_p4 = getattr(self.right_brain, "history", None)
+            source_event_final_p4["right_brain_history_matches_visible"] = (
+                isinstance(right_brain_history_p4, list)
+                and bool(right_brain_history_p4)
+                and right_brain_history_p4[-1].get("role") == "assistant"
+                and right_brain_history_p4[-1].get("content") == reply
+            )
+            if (
+                source_event_final_p4["status"] == "matched"
+                and not source_event_final_p4["right_brain_history_matches_visible"]
+            ):
+                source_event_final_p4.update(
+                    status="mismatch", reason="right_brain_history_visible_reply_diverged"
+                )
+            logic["source_event_surface_diagnostic_p4"] = source_event_final_p4
+            self._push_blackboard(
+                "verify", "source_event_final_visible_audit_p4", source_event_final_p4,
+                salience=1.0 if source_event_final_p4["status"] != "matched" else 0.99,
+            )
         self.runtime.last_reply = reply
         self.runtime.last_selected_plan = self._plan_trace_summary(logic)
         self.runtime.touch_interaction(when=time.time(), reset_drives=True)
@@ -21784,12 +21896,90 @@ class UruhaBrainV4_Mac:
         self._runtime_stop_event = threading.Event()
 
     def run_turn_debug(self, user_input, input_context=None):
+        source_event_arm_p4 = os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM", "")
+        exact_claim_receipt_p4 = None
+        if source_event_arm_p4 in {"off", "on"}:
+            from uruha_source_event_exact_input_capability_p4 import (
+                ExactInputCapabilityError, public_claim_receipt, require_exact_input_claim,
+            )
+
+            if input_context and input_context.get("input_mode", "text") != "text":
+                raise ExactInputCapabilityError("input_mode_not_text")
+            exact_claim_p4 = require_exact_input_claim(
+                os.getenv("URUHA_P4_EXACT_INPUT_CAPABILITY_ROOT", ""),
+                user_input,
+                source_event_arm_p4,
+            )
+            exact_claim_receipt_p4 = public_claim_receipt(exact_claim_p4)
         turn_started = time.perf_counter()
         event = self.ingest_event(user_input, input_context=input_context)
+        if exact_claim_receipt_p4 is not None:
+            self._push_blackboard(
+                "observe", "source_event_exact_input_capability_p4",
+                exact_claim_receipt_p4, salience=1.0,
+            )
         ingest_finished = time.perf_counter()
         tick_result = self.cognitive_tick(event)
         cognition_finished = time.perf_counter()
+        source_event_handoff_p4 = (
+            deepcopy(tick_result.get("_source_event_surface_handoff_p4"))
+            if os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM") in {"off", "on"}
+            else None
+        )
         result = self.emit_response_if_ready(event, tick_result)
+        if os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM") in {"off", "on"}:
+            from uruha_source_event_surface_diagnostic_p4 import (
+                admit_source_event_slot_p4, audit_final_source_event_p4,
+            )
+
+            post_emit_slot_p4, _ = admit_source_event_slot_p4(
+                user_input, source_event_handoff_p4, result.get("logic")
+            )
+            post_emit_audit_p4 = audit_final_source_event_p4(
+                user_input, post_emit_slot_p4, result.get("reply")
+            )
+            post_emit_audit_p4["audit_stage"] = "after_emit_overlays_before_runtime_return"
+            post_emit_audit_p4["arm"] = os.getenv("URUHA_P4_SOURCE_EVENT_SURFACE_DIAGNOSTIC_ARM")
+            prewrite_audit_p4 = result["logic"].get("source_event_surface_diagnostic_p4") or {}
+            post_emit_audit_p4["prewrite_audit_status"] = prewrite_audit_p4.get("status")
+            post_emit_audit_p4["treatment_applied_before_guards"] = bool(
+                prewrite_audit_p4.get("treatment_applied_before_guards")
+            )
+            post_emit_audit_p4["matches_prewrite_reply"] = (
+                result.get("reply") == self.runtime.last_reply
+            )
+            right_brain_history_p4 = getattr(self.right_brain, "history", None)
+            post_emit_audit_p4["right_brain_history_matches_visible"] = (
+                isinstance(right_brain_history_p4, list)
+                and bool(right_brain_history_p4)
+                and right_brain_history_p4[-1].get("role") == "assistant"
+                and right_brain_history_p4[-1].get("content") == result.get("reply")
+            )
+            if post_emit_audit_p4["status"] == "matched" and not post_emit_audit_p4["matches_prewrite_reply"]:
+                post_emit_audit_p4.update(
+                    status="mismatch", reason="post_emit_overlay_changed_prewrite_reply"
+                )
+            if (
+                post_emit_audit_p4["status"] == "matched"
+                and not post_emit_audit_p4["right_brain_history_matches_visible"]
+            ):
+                post_emit_audit_p4.update(
+                    status="mismatch", reason="post_emit_history_visible_reply_diverged"
+                )
+            if (
+                post_emit_audit_p4["status"] == "matched"
+                and post_emit_audit_p4["arm"] == "on"
+                and not post_emit_audit_p4["treatment_applied_before_guards"]
+            ):
+                post_emit_audit_p4.update(
+                    status="mismatch", reason="treatment_not_exercised"
+                )
+            result["logic"]["source_event_surface_diagnostic_p4"] = post_emit_audit_p4
+            result["runtime_trace"]["source_event_surface_diagnostic_p4"] = deepcopy(post_emit_audit_p4)
+            self._push_blackboard(
+                "verify", "source_event_post_emit_audit_p4", post_emit_audit_p4,
+                salience=1.0 if post_emit_audit_p4["status"] != "matched" else 0.99,
+            )
         emit_finished = time.perf_counter()
         latency = {
             "schema": "uruha_runtime_latency_m19",

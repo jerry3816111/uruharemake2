@@ -193,6 +193,69 @@ def test_browser_arrival_is_opaque_ordered_and_journal_is_private_raw_free(priva
     assert all(row["status"] == "empty_input" for row in final_rows[-2:])
 
 
+@pytest.mark.parametrize("failure_point", ("arrival", "state", "snapshot"))
+def test_failed_admission_registration_releases_its_waiter(
+    private_admission, monkeypatch, failure_point,
+):
+    manager, brain, _root, _memory_db, _session_db, journal = private_admission
+    original_event = manager._admission_event_under_gate
+
+    if failure_point == "state":
+        def fail_state(_brain):
+            raise RuntimeError("forced_registration_failure")
+
+        monkeypatch.setattr(manager, "_admission_state", fail_state)
+    else:
+        failing_event = "arrival" if failure_point == "arrival" else "admission_snapshot"
+
+        def fail_event(event, **fields):
+            if event == failing_event:
+                raise RuntimeError("forced_registration_failure")
+            return original_event(event, **fields)
+
+        monkeypatch.setattr(manager, "_admission_event_under_gate", fail_event)
+
+    with pytest.raises(RuntimeError, match="forced_registration_failure"):
+        manager.begin_human_turn_with_token(source="browser")
+    assert manager._human_waiters == 0
+    assert manager._admission_records == {}
+    assert manager._admission_audit_invalid is True
+    assert manager.scheduler_trace()["human_priority_active"] is False
+    assert brain.generation_calls == 0
+    if failure_point == "arrival":
+        assert not journal.exists()
+    else:
+        rows = _events(journal)
+        assert [row["event"] for row in rows] == ["arrival", "terminal"]
+        assert rows[-1]["status"] == "admission_registration_failed"
+        assert rows[-1]["stage"] == "snapshot"
+
+
+def test_exact_input_pre_turn_rejection_does_not_poison_admission_journal(private_admission):
+    manager, brain, _root, _memory_db, _session_db, journal = private_admission
+    _, token = manager.begin_human_turn_with_token(source="browser")
+    manager.finish_human_turn(
+        admission_token=token, terminal_status="exact_input_rejected",
+    )
+    rows = _events(journal)
+    assert rows[-1]["event"] == "terminal"
+    assert rows[-1]["status"] == "exact_input_rejected"
+    assert manager._admission_audit_invalid is False
+    assert brain.generation_calls == 0
+
+
+def test_exact_input_post_cognition_abort_is_distinct_terminal_status(private_admission):
+    manager, brain, _root, _memory_db, _session_db, journal = private_admission
+    _, token = manager.begin_human_turn_with_token(source="browser")
+    _run_admitted(manager, token)
+    manager.finish_human_turn(
+        admission_token=token, terminal_status="exact_input_aborted_after_cognition",
+    )
+    assert _events(journal)[-1]["status"] == "exact_input_aborted_after_cognition"
+    assert manager._admission_audit_invalid is False
+    assert brain.generation_calls == 1
+
+
 def test_waiting_human_prevents_new_background_and_records_generation_bounds(private_admission):
     manager, brain, _root, _memory_db, _session_db, journal = private_admission
     _, token = manager.begin_human_turn_with_token(source="browser")
