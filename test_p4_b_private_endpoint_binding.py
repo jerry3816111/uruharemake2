@@ -33,9 +33,18 @@ def _fixture(tmp_path, monkeypatch):
     receipt_path = root / "p4_b_private_endpoint_launch_receipt.json"
     issued = time.time() - 1
     fields = {
-        "schema": "p4_b_private_endpoint_launch_receipt_v1",
+        "schema": "p4_b_private_endpoint_launch_receipt_v2",
         "issuer": "p4_b_private_controller", "run_id": run_id,
         "private_root": str(root), "models_path": str(root / "models"),
+        "shared_models": str(tmp_path / "shared/models"),
+        "runtime_root": str(tmp_path / "runtime"),
+        "launch_env_sha256": "1" * 64,
+        "entrypoint_sha256": "2" * 64,
+        "bootstrap_sha256": "3" * 64,
+        "binding_source_sha256": "4" * 64,
+        "web_source_sha256": "6" * 64,
+        "ledger_source_sha256": "7" * 64,
+        "expected_final_argv_sha256": "5" * 64,
         "base_url": f"http://127.0.0.1:{port}/v1",
         "daemon_pid": 101, "runner_pid": 102,
         "daemon_port": port, "runner_port": 55132,

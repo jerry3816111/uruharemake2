@@ -9,6 +9,7 @@ model invocation, or Safari operation is performed by this controller.
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 import hashlib
 import http.client
 import json
@@ -45,6 +46,16 @@ ONNX_FILES = frozenset({
 PORT = 7894
 CALIBRATION_CODE = 'print("python-calibrated",flush=True);import time;time.sleep(4)'
 ENTRYPOINT = ROOT / "uruha_web_ui_product_p4_preference_fallback.py"
+B_DESCRIPTOR_NAME = "p4_b_private_endpoint_descriptor.json"
+B_MODEL_CLAIM_NAME = "p4_b_private_model_root.claim.json"
+B_COMMITTED_SOURCES = (
+    "p4_preference_fallback_detached_control.py",
+    "uruha_web_ui_product_p4_preference_fallback.py",
+    "uruha_p4_b_private_child_bootstrap.py",
+    "uruha_p4_b_private_endpoint_binding.py",
+    "uruha_web_ui.py",
+    "uruha_compute_ledger.py",
+)
 ISOLATION_KEYS = (
     "HOME", "TMPDIR", "URUHA_MEMORY_DB_PATH", "URUHA_WEB_SESSION_DB_PATH",
     "URUHA_WEB_LOG_JSONL_PATH", "URUHA_WEB_LOG_TXT_PATH",
@@ -209,6 +220,129 @@ def _prepared_root(requested: str) -> Path:
 def _sha256(path: Path) -> str:
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _b_committed_source_snapshot() -> dict[str, str]:
+    """B starts only from committed critical sources, never a mutable WIP tree.
+
+    This is a cooperative local source boundary, not a code-signing authority.
+    The child separately compares current source hashes to its launch receipt.
+    """
+    snapshot = {}
+    for name in B_COMMITTED_SOURCES:
+        path = ROOT / name
+        try:
+            info = path.lstat()
+            if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
+                raise ControllerError("p4_b_source_not_owned_regular_file")
+            live = path.read_bytes()
+            committed = subprocess.run(
+                ["/usr/bin/git", "-C", str(ROOT), "show", f"HEAD:{name}"],
+                capture_output=True, check=False, timeout=5,
+            )
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise ControllerError("p4_b_committed_source_unavailable") from exc
+        if committed.returncode != 0 or live != committed.stdout:
+            raise ControllerError("p4_b_source_not_committed_or_drifted")
+        snapshot[name] = hashlib.sha256(live).hexdigest()
+    return snapshot
+
+
+def _b_descriptor(path_arg: str, *, run_id: str):
+    """Load an explicit 0600 model-root descriptor, with no Web import."""
+    from uruha_p4_b_private_endpoint_binding import (
+        PrivateEndpointBinding, PrivateEndpointBindingError,
+        _exact_private_directory,
+    )
+
+    path = Path(path_arg)
+    if path.name != B_DESCRIPTOR_NAME or not path.is_absolute():
+        raise ControllerError("p4_b_descriptor_path_invalid")
+    private_root = path.parent
+    try:
+        _exact_private_directory(private_root)
+        info = path.lstat()
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                or info.st_nlink != 1 or stat.S_IMODE(info.st_mode) != 0o600):
+            raise ControllerError("p4_b_descriptor_not_private")
+        descriptor = json.loads(path.read_bytes())
+    except (OSError, ValueError, PrivateEndpointBindingError) as exc:
+        raise ControllerError("p4_b_descriptor_unavailable_or_invalid") from exc
+    if not isinstance(descriptor, dict) or set(descriptor) != {
+        "schema", "private_root", "shared_models", "daemon_pid", "runner_pid",
+        "daemon_port", "runner_port", "daemon_process_start", "runner_process_start",
+        "daemon_binary", "runner_binary",
+    } or descriptor["schema"] != "p4_b_private_endpoint_descriptor_v1":
+        raise ControllerError("p4_b_descriptor_shape_invalid")
+    if descriptor["private_root"] != str(private_root):
+        raise ControllerError("p4_b_descriptor_root_mismatch")
+    if any(type(descriptor[key]) is not int for key in (
+        "daemon_pid", "runner_pid", "daemon_port", "runner_port",
+    )) or any(type(descriptor[key]) is not str for key in (
+        "shared_models", "daemon_process_start", "runner_process_start",
+        "daemon_binary", "runner_binary",
+    )):
+        raise ControllerError("p4_b_descriptor_value_type_invalid")
+    binding = PrivateEndpointBinding(
+        run_id=run_id, private_root=private_root,
+        shared_models=Path(descriptor["shared_models"]),
+        receipt_path=private_root / "p4_b_private_endpoint_launch_receipt.json",
+        receipt_sha256="0" * 64,
+        base_url=f"http://127.0.0.1:{descriptor['daemon_port']}/v1",
+        daemon_pid=descriptor["daemon_pid"], runner_pid=descriptor["runner_pid"],
+        daemon_port=descriptor["daemon_port"], runner_port=descriptor["runner_port"],
+        daemon_process_start=descriptor["daemon_process_start"],
+        runner_process_start=descriptor["runner_process_start"],
+        daemon_binary=Path(descriptor["daemon_binary"]),
+        runner_binary=Path(descriptor["runner_binary"]),
+    )
+    return binding
+
+
+def _b_claim_model_root(binding) -> None:
+    # A rejected/failed run must not silently reuse its model root. This
+    # exclusive marker is issued before static preflight or a Web import.
+    try:
+        _private_json(binding.private_root / B_MODEL_CLAIM_NAME, {
+            "schema": "p4_b_private_model_root_claim_v1", "run_id": binding.run_id,
+            "private_root": str(binding.private_root), "uid": os.getuid(),
+            "claimed_at_unix": time.time(),
+        })
+    except FileExistsError as exc:
+        raise ControllerError("p4_b_model_root_already_claimed") from exc
+
+
+def _b_static_preflight(root: Path, layout: dict, python: str,
+                        base_env: dict, binding) -> tuple[str, dict, Path, dict]:
+    """No product entry/Web import, model HTTP request, or provider call."""
+    from uruha_p4_b_private_endpoint_binding import (
+        canonical_b_env_digest, preflight_private_endpoint_identity,
+    )
+
+    _validate_prepared_cache(root)
+    _validate_reuse_tree(root)
+    snapshot = _b_committed_source_snapshot()
+    resolved = str(base.resolve_python(python, base_env))
+    env = launchd._isolated_env(layout, port=PORT)
+    env.update({
+        "URUHA_P4_B_PRIVATE_CHILD": "1",
+        "URUHA_P4_B_RUN_ID": binding.run_id,
+        "URUHA_P4_B_MODEL_ROOT": str(binding.private_root),
+        "URUHA_P4_B_RECEIPT": str(binding.receipt_path),
+        "URUHA_WEB_COMPUTE_LEDGER": "1",
+        "URUHA_P4_COMPACT_JSON_SCHEMA": "1",
+        "OLLAMA_NO_CLOUD": "1",
+    })
+    if any(key.upper() in {"HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"}
+           for key in env):
+        raise ControllerError("p4_b_proxy_environment_forbidden")
+    try:
+        canonical_b_env_digest(env)
+        preflight_private_endpoint_identity(binding)
+    except Exception as exc:
+        raise ControllerError(f"p4_b_private_identity_preflight_failed:{type(exc).__name__}") from exc
+    profile = sandbox.write_sandbox_profile(root)
+    return resolved, env, profile, snapshot
 
 
 def _cache_walk_error(error: OSError) -> None:
@@ -574,9 +708,21 @@ def _cleanup_failed_start(
 
 
 def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = None,
-          prepared_runtime_root: str | None = None, seconds: int = 60) -> dict:
+          prepared_runtime_root: str | None = None, seconds: int = 60,
+          p4_b_private: bool = False,
+          p4_b_private_descriptor: str | None = None) -> dict:
     if mode not in ("product", "inert"):
         raise ControllerError("invalid_mode")
+    if type(p4_b_private) is not bool:
+        raise ControllerError("p4_b_private_opt_in_invalid")
+    if p4_b_private:
+        if (mode != "product" or prepared_runtime_root is None
+                or reuse_runtime_root is not None):
+            raise ControllerError("p4_b_requires_fresh_prepared_product_root")
+        if type(p4_b_private_descriptor) is not str or not p4_b_private_descriptor:
+            raise ControllerError("p4_b_private_descriptor_required")
+    elif p4_b_private_descriptor is not None:
+        raise ControllerError("p4_b_descriptor_without_explicit_opt_in")
     if prepared_runtime_root is not None and (
         mode != "product" or reuse_runtime_root is not None
     ):
@@ -633,21 +779,30 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
         raise ControllerError("run_id_collision")
     base_env = launchd._isolated_env(layout, port=None)
     if mode == "product":
-        import p4_preference_fallback_safe_isolated_product_launcher as launcher
+        if p4_b_private:
+            binding = _b_descriptor(p4_b_private_descriptor, run_id=run_id)
+            _b_claim_model_root(binding)
+            resolved, env, profile, source_snapshot = _b_static_preflight(
+                root, layout, python, base_env, binding,
+            )
+        else:
+            import p4_preference_fallback_safe_isolated_product_launcher as launcher
 
-        summary, launcher_env, _, _, profile = launcher.preflight_preference_fallback(
-            python_arg=python, runtime_root_arg=str(root), reuse_runtime=True,
-            port=PORT, prewarm=False, environ=base_env,
-        )
-        env = {key: value for key, value in launcher_env.items()
-               if key in set(launchd._isolated_env(layout, port=PORT))}
-        resolved = str(summary["python"])
-        if resolved != str(base.resolve_python(python, env)):
-            raise ControllerError("preflight_python_changed")
-        if launcher.ENTRYPOINT != ENTRYPOINT:
-            raise ControllerError("product_entrypoint_changed")
-        if prepared_runtime_root is not None:
-            _validate_prepared_cache(root)
+            binding = None
+            source_snapshot = None
+            summary, launcher_env, _, _, profile = launcher.preflight_preference_fallback(
+                python_arg=python, runtime_root_arg=str(root), reuse_runtime=True,
+                port=PORT, prewarm=False, environ=base_env,
+            )
+            env = {key: value for key, value in launcher_env.items()
+                   if key in set(launchd._isolated_env(layout, port=PORT))}
+            resolved = str(summary["python"])
+            if resolved != str(base.resolve_python(python, env)):
+                raise ControllerError("preflight_python_changed")
+            if launcher.ENTRYPOINT != ENTRYPOINT:
+                raise ControllerError("product_entrypoint_changed")
+            if prepared_runtime_root is not None:
+                _validate_prepared_cache(root)
     else:
         profile = sandbox.write_sandbox_profile(root)
         env = launchd._isolated_env(layout, port=PORT)
@@ -657,8 +812,9 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
     _private_bytes(frozen, profile.read_bytes())
     if mode == "product":
         calibration = _calibrate_python_command(resolved, env, frozen)
-        final_command = f"{calibration['python_ps_executable']} {launcher.ENTRYPOINT}"
-        command = sandbox.sandbox_command(frozen, [resolved, str(launcher.ENTRYPOINT)])
+        product_entrypoint = ENTRYPOINT if p4_b_private else launcher.ENTRYPOINT
+        final_command = f"{calibration['python_ps_executable']} {product_entrypoint}"
+        command = sandbox.sandbox_command(frozen, [resolved, str(product_entrypoint)])
     else:
         calibration = None
         final_command = None
@@ -666,11 +822,38 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
     _require_vacant()
     stdout_path = root / _name(run_id, "stdout.log")
     stderr_path = root / _name(run_id, "stderr.log")
+    if p4_b_private:
+        from uruha_p4_b_private_endpoint_binding import (
+            canonical_b_env_digest, issue_private_child_receipt,
+            preflight_private_endpoint_identity,
+        )
+
+        if _b_committed_source_snapshot() != source_snapshot:
+            raise ControllerError("p4_b_source_changed_before_child_start")
+        try:
+            binding = issue_private_child_receipt(
+                binding=binding, runtime_root=root, environ=env,
+                entrypoint=ENTRYPOINT,
+                expected_final_argv=[calibration["python_ps_executable"], str(ENTRYPOINT)],
+            )
+            preflight_private_endpoint_identity(binding)
+            b_env_sha256 = canonical_b_env_digest(env)
+        except Exception as exc:
+            raise ControllerError(f"p4_b_private_receipt_or_identity_failed:{type(exc).__name__}") from exc
+        if _b_committed_source_snapshot() != source_snapshot:
+            raise ControllerError("p4_b_source_changed_before_child_start")
+        if _sha256(binding.receipt_path) != binding.receipt_sha256:
+            raise ControllerError("p4_b_private_receipt_changed_before_child_start")
     with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
         os.chmod(stdout_path, 0o600)
         os.chmod(stderr_path, 0o600)
         if prepared_runtime_root is not None:
             _validate_prepared_cache(root)
+        if p4_b_private:
+            if (_b_committed_source_snapshot() != source_snapshot
+                    or _sha256(binding.receipt_path) != binding.receipt_sha256
+                    or canonical_b_env_digest(env) != b_env_sha256):
+                raise ControllerError("p4_b_child_launch_binding_drift")
         process = subprocess.Popen(
             command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
             stdout=stdout, stderr=stderr, close_fds=True,
@@ -711,10 +894,23 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
             "calibration": calibration, "env_keys": sorted(env),
             "isolation": {key: env[key] for key in ISOLATION_KEYS},
             "preflight_import_scope": (
+                "none_b_static" if p4_b_private else
                 launchd.PREFLIGHT_IMPORT_SCOPE if mode == "product" else "none"
             ),
             "started_at_unix": time.time(), "auto_restart": False,
         }
+        if p4_b_private:
+            metadata["p4_b_private_launch"] = {
+                "schema": "p4_b_private_product_child_launch_v1",
+                "run_id": run_id, "private_root": str(binding.private_root),
+                "receipt_sha256": binding.receipt_sha256,
+                "environment_sha256": b_env_sha256,
+                "source_sha256": source_snapshot,
+                "daemon_pid": binding.daemon_pid, "runner_pid": binding.runner_pid,
+                "daemon_port": binding.daemon_port, "runner_port": binding.runner_port,
+                "expected_final_argv": [calibration["python_ps_executable"], str(ENTRYPOINT)],
+                "child_pid": process.pid,
+            }
         _private_json(root / _name(run_id, "json"), metadata)
         _atomic_current(root, run_id)
     except BaseException as exc:
@@ -748,7 +944,93 @@ def _ready_identity(root: Path, metadata: dict) -> dict | None:
         or not isinstance(data.get("final_identity"), dict)
     ):
         raise ControllerError("ready_record_mismatch")
+    launch = metadata.get("p4_b_private_launch")
+    if launch is None:
+        if data.get("p4_b_private_ready") is not None:
+            raise ControllerError("unexpected_p4_b_ready_record")
+    else:
+        ready = data.get("p4_b_private_ready")
+        if (not isinstance(ready, dict)
+                or ready.get("run_id") != metadata["run_id"]
+                or ready.get("child_pid") != metadata["pid"]
+                or ready.get("receipt_sha256") != launch.get("receipt_sha256")
+                or ready.get("expected_final_argv") != launch.get("expected_final_argv")
+                or ready.get("final_identity") != data["final_identity"]):
+            raise ControllerError("p4_b_ready_record_mismatch")
     return data["final_identity"]
+
+
+def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> dict | None:
+    """Tie HTTP-ready child PID/argv to the same private launch artifact.
+
+    This is still only cooperative zero-provider identity, not B Send approval.
+    """
+    launch = metadata.get("p4_b_private_launch")
+    if launch is None:
+        return None
+    if (not isinstance(launch, dict)
+            or launch.get("schema") != "p4_b_private_product_child_launch_v1"
+            or launch.get("run_id") != metadata["run_id"]
+            or launch.get("child_pid") != metadata["pid"]
+            or launch.get("expected_final_argv") != [
+                metadata["calibration"]["python_ps_executable"], str(ENTRYPOINT),
+            ]
+            or final_identity.get("command") != metadata.get("final_command")):
+        raise ControllerError("p4_b_ready_launch_identity_mismatch")
+    if _b_committed_source_snapshot() != launch.get("source_sha256"):
+        raise ControllerError("p4_b_ready_source_drift")
+    from uruha_p4_b_private_endpoint_binding import (
+        PrivateEndpointBindingError, _receipt, _valid_receipt_time,
+        preflight_private_endpoint_identity, private_child_source_digests,
+    )
+
+    descriptor = Path(launch["private_root"]) / B_DESCRIPTOR_NAME
+    try:
+        binding = _b_descriptor(str(descriptor), run_id=metadata["run_id"])
+        binding = replace(binding, receipt_sha256=launch["receipt_sha256"])
+        receipt = _receipt(binding)
+        _valid_receipt_time(receipt)
+        expected_receipt_identity = {
+            "schema": "p4_b_private_endpoint_launch_receipt_v2",
+            "issuer": "p4_b_private_controller",
+            "run_id": binding.run_id,
+            "private_root": str(binding.private_root),
+            "models_path": str(binding.private_root / "models"),
+            "ollama_models": str(binding.private_root / "models"),
+            "ollama_no_cloud": "1",
+            "shared_models": str(binding.shared_models),
+            "base_url": binding.base_url,
+            "daemon_pid": binding.daemon_pid,
+            "runner_pid": binding.runner_pid,
+            "daemon_port": binding.daemon_port,
+            "runner_port": binding.runner_port,
+            "daemon_process_start": binding.daemon_process_start,
+            "runner_process_start": binding.runner_process_start,
+            "daemon_binary": str(binding.daemon_binary),
+            "runner_binary": str(binding.runner_binary),
+            **private_child_source_digests(ENTRYPOINT),
+        }
+        if (any(receipt.get(key) != value
+                for key, value in expected_receipt_identity.items())
+                or receipt.get("runtime_root") != str(root)
+                or receipt.get("launch_env_sha256") != launch["environment_sha256"]
+                or binding.daemon_pid != launch["daemon_pid"]
+                or binding.runner_pid != launch["runner_pid"]
+                or binding.daemon_port != launch["daemon_port"]
+                or binding.runner_port != launch["runner_port"]):
+            raise ControllerError("p4_b_ready_receipt_identity_mismatch")
+        preflight_private_endpoint_identity(binding)
+    except (OSError, KeyError, PrivateEndpointBindingError) as exc:
+        raise ControllerError("p4_b_ready_private_identity_unavailable") from exc
+    return {
+        "schema": "p4_b_private_product_child_ready_v1",
+        "run_id": metadata["run_id"], "child_pid": metadata["pid"],
+        "receipt_sha256": launch["receipt_sha256"],
+        "expected_final_argv": launch["expected_final_argv"],
+        "final_identity": final_identity,
+        "same_private_endpoint_at_ready": True,
+        "b_send_authorized": False,
+    }
 
 
 def status(requested: str) -> dict:
@@ -799,15 +1081,19 @@ def verify_ready(requested: str) -> dict:
         or not _listener_owned_by_pid(metadata["pid"])
     ):
         raise ControllerError("product_http_ready_not_attributable")
+    b_ready = _b_ready_launch_record(root, metadata, after)
     if recorded is None:
-        _private_json(root / _name(metadata["run_id"], "ready.json"), {
+        record = {
             "schema": SCHEMA, "runtime_root": str(root),
             "run_id": metadata["run_id"], "pid": metadata["pid"],
             "start_identity": metadata["start_identity"],
             "final_identity": after, "http_status": code,
             "listener_same_pid_before_after": True,
             "verified_at_unix": time.time(),
-        })
+        }
+        if b_ready is not None:
+            record["p4_b_private_ready"] = b_ready
+        _private_json(root / _name(metadata["run_id"], "ready.json"), record)
     return {
         "ok": True, "ready": True, "http_ready_verified": True,
         "runtime_root": str(root), "run_id": metadata["run_id"],
@@ -904,15 +1190,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--reuse-runtime-root")
     parser.add_argument("--prepared-runtime-root")
     parser.add_argument("--seconds", type=int, default=60)
+    parser.add_argument("--p4-b-private", action="store_true")
+    parser.add_argument("--p4-b-private-descriptor")
     args = parser.parse_args(argv)
     try:
+        if args.action != "start" and (
+            args.p4_b_private or args.p4_b_private_descriptor is not None
+        ):
+            raise ControllerError("p4_b_private_options_start_only")
         if args.action == "prepare":
             result = prepare()
         elif args.action == "start":
             result = start(mode=args.mode, python=args.python,
                            reuse_runtime_root=args.reuse_runtime_root,
                            prepared_runtime_root=args.prepared_runtime_root,
-                           seconds=args.seconds)
+                           seconds=args.seconds,
+                           p4_b_private=args.p4_b_private,
+                           p4_b_private_descriptor=args.p4_b_private_descriptor)
         else:
             if not args.runtime_root:
                 raise ControllerError("runtime_root_required")

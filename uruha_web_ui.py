@@ -17,6 +17,16 @@ from html import escape
 from pathlib import Path
 from uuid import uuid4
 
+# The fixed product entry must bootstrap a B child before importing this Web
+# module.  Check at the top, before log directory/RuntimeManager/DB effects,
+# so a malformed B intent cannot silently become the ordinary 11434 product.
+from uruha_p4_b_private_child_bootstrap import get_private_child_boot_state
+
+_P4_B_PRIVATE_BOOT_STATE = get_private_child_boot_state()
+if any(key.upper().startswith("URUHA_P4_B_") for key in os.environ):
+    if _P4_B_PRIVATE_BOOT_STATE is None:
+        raise RuntimeError("p4_b_private_child_boot_missing")
+
 from project_paths import (
     ANNOTATION_DRAFT_QUEUE_JSON_PATH,
     ANNOTATION_DRAFT_QUEUE_MD_PATH,
@@ -764,8 +774,20 @@ def _default_taxonomy_catalog():
 
 class RuntimeManager:
     def __init__(self):
+        if (_P4_B_PRIVATE_BOOT_STATE is not None
+                and get_private_child_boot_state() is not _P4_B_PRIVATE_BOOT_STATE):
+            raise RuntimeError("p4_b_private_child_boot_state_changed")
         self._brain = None
-        self._compute_ledger = ComputeLedger() if WEB_COMPUTE_LEDGER_ENABLED else None
+        if _P4_B_PRIVATE_BOOT_STATE is not None:
+            if not WEB_COMPUTE_LEDGER_ENABLED:
+                raise RuntimeError("p4_b_private_child_ledger_disabled")
+            self._compute_ledger = _P4_B_PRIVATE_BOOT_STATE.compute_ledger
+            if (type(self._compute_ledger) is not ComputeLedger
+                    or self._compute_ledger.p4_b_resource_gate
+                    is not _P4_B_PRIVATE_BOOT_STATE.resource_gate):
+                raise RuntimeError("p4_b_private_child_ledger_mismatch")
+        else:
+            self._compute_ledger = ComputeLedger() if WEB_COMPUTE_LEDGER_ENABLED else None
         self._brain_init_lock = threading.Lock()
         self._brain_prewarm_thread = None
         self._brain_load_trace = {
@@ -853,6 +875,9 @@ class RuntimeManager:
         with self._brain_init_lock:
             if self._brain is not None:
                 return self._brain
+            if (_P4_B_PRIVATE_BOOT_STATE is not None
+                    and get_private_child_boot_state() is not _P4_B_PRIVATE_BOOT_STATE):
+                raise RuntimeError("p4_b_private_child_boot_state_changed")
             self._admission_preflight_before_db_effect(creating_brain=True)
             started = time.perf_counter()
             self._brain_load_trace.update(
@@ -862,11 +887,24 @@ class RuntimeManager:
             self._publish_active_db_receipt()
             print(Fore.CYAN + "🧠 [Web] Loading V2 brain...")
             try:
-                self._brain = (
-                    UruhaBrainV4_Mac(compute_ledger=self._compute_ledger)
-                    if self._compute_ledger is not None
-                    else UruhaBrainV4_Mac()
-                )
+                if _P4_B_PRIVATE_BOOT_STATE is not None:
+                    boot = _P4_B_PRIVATE_BOOT_STATE
+                    if (self._compute_ledger is not boot.compute_ledger
+                            or self._compute_ledger.p4_b_resource_gate
+                            is not boot.resource_gate):
+                        raise RuntimeError("p4_b_private_child_ledger_mismatch")
+                    self._brain = UruhaBrainV4_Mac(
+                        compute_ledger=self._compute_ledger,
+                        p4_b_private_mode=True,
+                        p4_b_private_binding=boot.binding,
+                        p4_b_run_id=boot.run_id,
+                    )
+                else:
+                    self._brain = (
+                        UruhaBrainV4_Mac(compute_ledger=self._compute_ledger)
+                        if self._compute_ledger is not None
+                        else UruhaBrainV4_Mac()
+                    )
             except Exception as exc:
                 self._brain_load_trace.update(
                     {

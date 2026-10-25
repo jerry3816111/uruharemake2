@@ -7,6 +7,7 @@ import contextvars
 import hashlib
 import inspect
 import json
+import os
 import threading
 import time
 from copy import deepcopy
@@ -630,10 +631,33 @@ class _CompletionProxy:
 
     def create(self, *args, **kwargs):
         gate = self._ledger.p4_b_resource_gate
+        # A B child with an accidentally bare ledger must not bypass the
+        # private endpoint check.  Inspect the process boot state even when
+        # this particular proxy has no resource gate.
+        from uruha_p4_b_private_child_bootstrap import (
+            get_private_child_boot_state,
+            revalidate_private_child_before_create,
+        )
+        child_state = get_private_child_boot_state()
+        if child_state is not None or any(
+            key.upper().startswith("URUHA_P4_B_") for key in os.environ
+        ):
+            if (child_state is None
+                    or child_state.compute_ledger is not self._ledger
+                    or gate is not child_state.resource_gate
+                    or gate is None):
+                raise RuntimeError("p4_b_private_child_ledger_mismatch")
+            # P2 has already rewritten the request.  Recheck before gate
+            # admission and the actual SDK call, never after the provider.
+            revalidate_private_child_before_create(child_state)
         if gate is not None:
             if args:
                 gate.deny_other_generation("openai_positional_request")
             gate.admit_openai(_STAGE.get(), kwargs)
+        if child_state is not None:
+            # The future token oracle may itself take time or observe drift.
+            # Recheck again immediately after admission, before SDK create.
+            revalidate_private_child_before_create(child_state)
         started = time.perf_counter()
         response = None
         error = None
