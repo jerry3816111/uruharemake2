@@ -7,6 +7,7 @@ The controller separately attests committed source and final child PID/ready.
 
 from __future__ import annotations
 
+import ctypes
 from dataclasses import dataclass
 import hashlib
 import json
@@ -14,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import stat
+import struct
 import sys
 from typing import Mapping
 
@@ -27,6 +29,7 @@ _RECEIPT_NAME = "p4_b_private_endpoint_launch_receipt.json"
 _ENTRYPOINT = Path(__file__).resolve().with_name(
     "uruha_web_ui_product_p4_preference_fallback.py")
 _RUN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z")
+_MAX_PROCARGS_BYTES = 1 << 20
 
 
 @dataclass(frozen=True)
@@ -100,6 +103,70 @@ def _exact_layout(environ: Mapping[str, str], runtime_root: Path) -> None:
         _strict_private_root(runtime_root / name)
 
 
+def _parse_self_procargs(raw: bytes) -> tuple[str, list[str]]:
+    """Read only exec path and argv; never expose the following environment."""
+    if type(raw) is not bytes or not (8 <= len(raw) <= _MAX_PROCARGS_BYTES):
+        _fail("private_child_os_argv_unavailable")
+    try:
+        argc = struct.unpack_from("=i", raw, 0)[0]
+    except struct.error:
+        _fail("private_child_os_argv_unavailable")
+    if argc != 2:
+        _fail("private_child_os_argv_drift")
+
+    position = struct.calcsize("=i")
+
+    def take_string() -> str:
+        nonlocal position
+        end = raw.find(b"\0", position)
+        if end <= position:
+            _fail("private_child_os_argv_unavailable")
+        try:
+            value = raw[position:end].decode("utf-8", errors="strict")
+        except UnicodeDecodeError:
+            _fail("private_child_os_argv_unavailable")
+        position = end + 1
+        return value
+
+    executable = take_string()
+    while position < len(raw) and raw[position] == 0:
+        position += 1
+    argv = [take_string() for _ in range(argc)]
+    if executable != argv[0]:
+        _fail("private_child_os_argv_drift")
+    return executable, argv
+
+
+def _self_os_argv() -> tuple[str, list[str]]:
+    """Observe this macOS PID's kernel argv without spawning another process."""
+    if sys.platform != "darwin" or ctypes.sizeof(ctypes.c_int) != 4:
+        _fail("private_child_os_argv_unavailable")
+    try:
+        libc = ctypes.CDLL("/usr/lib/libSystem.B.dylib", use_errno=True)
+        sysctl = libc.sysctl
+        sysctl.argtypes = [
+            ctypes.POINTER(ctypes.c_int), ctypes.c_uint, ctypes.c_void_p,
+            ctypes.POINTER(ctypes.c_size_t), ctypes.c_void_p, ctypes.c_size_t,
+        ]
+        sysctl.restype = ctypes.c_int
+        # Local macOS SDK sys/sysctl.h: CTL_KERN=1, KERN_PROCARGS2=49.
+        mib = (ctypes.c_int * 3)(1, 49, os.getpid())
+        size = ctypes.c_size_t(0)
+        if sysctl(mib, 3, None, ctypes.byref(size), None, 0) != 0:
+            _fail("private_child_os_argv_unavailable")
+        capacity = size.value
+        if not (8 <= capacity <= _MAX_PROCARGS_BYTES):
+            _fail("private_child_os_argv_unavailable")
+        buffer = ctypes.create_string_buffer(capacity)
+        if sysctl(mib, 3, buffer, ctypes.byref(size), None, 0) != 0:
+            _fail("private_child_os_argv_unavailable")
+        if not (8 <= size.value <= capacity):
+            _fail("private_child_os_argv_unavailable")
+    except (OSError, AttributeError, TypeError, ValueError, OverflowError):
+        _fail("private_child_os_argv_unavailable")
+    return _parse_self_procargs(buffer.raw[:size.value])
+
+
 def _child_context(
     *, binding: binding_module.PrivateEndpointBinding,
     runtime_root: Path, environ: Mapping[str, str], receipt: dict,
@@ -118,10 +185,18 @@ def _child_context(
     source = binding_module.private_child_source_digests(_ENTRYPOINT)
     if any(receipt.get(key) != value for key, value in source.items()):
         _fail("private_child_source_drift")
-    if len(sys.argv) != 1 or receipt["expected_final_argv_sha256"] != (
-        binding_module._final_argv_digest([sys.executable, sys.argv[0]])
-    ):
+    if len(sys.argv) != 1 or sys.argv[0] != str(_ENTRYPOINT):
         _fail("private_child_argv_drift")
+    os_argv = binding_module._exact_os_final_argv(receipt.get("expected_os_final_argv"))
+    observed_executable, observed_argv = _self_os_argv()
+    if (binding_module._final_argv_digest(os_argv)
+            != receipt.get("expected_final_argv_sha256")
+            or observed_executable != os_argv[0]
+            or observed_argv != os_argv):
+        _fail("private_child_os_argv_drift")
+    if (binding_module._final_argv_digest([sys.executable, sys.argv[0]])
+            != receipt.get("expected_inprocess_python_argv_sha256")):
+        _fail("private_child_inprocess_argv_drift")
 
 
 def _binding_from_receipt(

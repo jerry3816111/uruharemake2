@@ -45,6 +45,8 @@ ONNX_FILES = frozenset({
 })
 PORT = 7894
 CALIBRATION_CODE = 'print("python-calibrated",flush=True);import time;time.sleep(4)'
+CALIBRATION_CODE_B = ('import sys;print("python-calibrated="+sys.executable,flush=True);'
+                      'import time;time.sleep(4)')
 ENTRYPOINT = ROOT / "uruha_web_ui_product_p4_preference_fallback.py"
 B_DESCRIPTOR_NAME = "p4_b_private_endpoint_descriptor.json"
 B_MODEL_CLAIM_NAME = "p4_b_private_model_root.claim.json"
@@ -458,6 +460,8 @@ def _root(requested: str) -> tuple[Path, dict]:
             not isinstance(python_path, str) or not Path(python_path).is_file()
             or not isinstance(calibration, dict)
             or not isinstance(calibration.get("python_ps_executable"), str)
+            or (metadata.get("p4_b_private_launch") is not None
+                and calibration.get("python_sys_executable") != python_path)
             or metadata.get("expected_argv") != sandbox.sandbox_command(
                 root / _name(run_id, "sandbox.sb"), [python_path, str(ENTRYPOINT)]
             )
@@ -578,9 +582,11 @@ def _listener_owned_by_pid(pid: int) -> bool:
     return True
 
 
-def _calibrate_python_command(python: str, env: dict[str, str], profile: Path) -> dict:
+def _calibrate_python_command(python: str, env: dict[str, str], profile: Path,
+                              *, capture_inprocess: bool = False) -> dict:
     """Discover the macOS Framework argv0 using the same sandboxed venv."""
-    command = sandbox.sandbox_command(profile, [python, "-c", CALIBRATION_CODE])
+    code = CALIBRATION_CODE_B if capture_inprocess else CALIBRATION_CODE
+    command = sandbox.sandbox_command(profile, [python, "-c", code])
     process = subprocess.Popen(
         command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
@@ -589,7 +595,19 @@ def _calibrate_python_command(python: str, env: dict[str, str], profile: Path) -
     observed = None
     try:
         readable, _, _ = select.select([process.stdout], [], [], 10)
-        if not readable or process.stdout.readline() != b"python-calibrated\n":
+        marker = process.stdout.readline() if readable else b""
+        inprocess_python = None
+        if capture_inprocess:
+            prefix = b"python-calibrated="
+            if not marker.startswith(prefix) or not marker.endswith(b"\n"):
+                raise ControllerError("python_inprocess_calibration_unavailable")
+            try:
+                inprocess_python = marker[len(prefix):-1].decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise ControllerError("python_inprocess_calibration_invalid") from exc
+            if inprocess_python != python:
+                raise ControllerError("python_inprocess_calibration_drift")
+        elif marker != b"python-calibrated\n":
             raise ControllerError("python_calibration_marker_unavailable")
         for _ in range(10):
             seen = _identity(process.pid)
@@ -597,20 +615,23 @@ def _calibrate_python_command(python: str, env: dict[str, str], profile: Path) -
                 raise ControllerError("python_calibration_exited_before_identity")
             if (
                 seen["uid"] == os.getuid() and seen["pgid"] == process.pid
-                and seen["command"].endswith(f" -c {CALIBRATION_CODE}")
+                and seen["command"].endswith(f" -c {code}")
             ):
                 observed = seen
                 break
             time.sleep(0.1)
         if observed is None:
             raise ControllerError("python_calibration_no_final_command")
-        executable = observed["command"][: -len(f" -c {CALIBRATION_CODE}")]
+        executable = observed["command"][: -len(f" -c {code}")]
         if (
             not executable.startswith("/") or " " in executable
             or not Path(executable).is_file() or not os.access(executable, os.X_OK)
         ):
             raise ControllerError("python_calibration_executable_invalid")
-        return {"python_ps_executable": executable, "identity": observed}
+        result = {"python_ps_executable": executable, "identity": observed}
+        if capture_inprocess:
+            result["python_sys_executable"] = inprocess_python
+        return result
     finally:
         if process.stdout is not None:
             process.stdout.close()
@@ -811,7 +832,9 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
     frozen = root / _name(run_id, "sandbox.sb")
     _private_bytes(frozen, profile.read_bytes())
     if mode == "product":
-        calibration = _calibrate_python_command(resolved, env, frozen)
+        calibration = (_calibrate_python_command(
+            resolved, env, frozen, capture_inprocess=True)
+            if p4_b_private else _calibrate_python_command(resolved, env, frozen))
         product_entrypoint = ENTRYPOINT if p4_b_private else launcher.ENTRYPOINT
         final_command = f"{calibration['python_ps_executable']} {product_entrypoint}"
         command = sandbox.sandbox_command(frozen, [resolved, str(product_entrypoint)])
@@ -835,6 +858,8 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
                 binding=binding, runtime_root=root, environ=env,
                 entrypoint=ENTRYPOINT,
                 expected_final_argv=[calibration["python_ps_executable"], str(ENTRYPOINT)],
+                expected_inprocess_python_argv=[
+                    calibration["python_sys_executable"], str(ENTRYPOINT)],
             )
             preflight_private_endpoint_identity(binding)
             b_env_sha256 = canonical_b_env_digest(env)
@@ -901,7 +926,7 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
         }
         if p4_b_private:
             metadata["p4_b_private_launch"] = {
-                "schema": "p4_b_private_product_child_launch_v1",
+                "schema": "p4_b_private_product_child_launch_v2",
                 "run_id": run_id, "private_root": str(binding.private_root),
                 "receipt_sha256": binding.receipt_sha256,
                 "environment_sha256": b_env_sha256,
@@ -909,6 +934,8 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
                 "daemon_pid": binding.daemon_pid, "runner_pid": binding.runner_pid,
                 "daemon_port": binding.daemon_port, "runner_port": binding.runner_port,
                 "expected_final_argv": [calibration["python_ps_executable"], str(ENTRYPOINT)],
+                "expected_inprocess_python_argv": [
+                    calibration["python_sys_executable"], str(ENTRYPOINT)],
                 "child_pid": process.pid,
             }
         _private_json(root / _name(run_id, "json"), metadata)
@@ -968,19 +995,22 @@ def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> 
     launch = metadata.get("p4_b_private_launch")
     if launch is None:
         return None
+    expected_os = [metadata["calibration"]["python_ps_executable"], str(ENTRYPOINT)]
+    expected_inprocess = [metadata["calibration"].get("python_sys_executable"),
+                          str(ENTRYPOINT)]
     if (not isinstance(launch, dict)
-            or launch.get("schema") != "p4_b_private_product_child_launch_v1"
+            or launch.get("schema") != "p4_b_private_product_child_launch_v2"
             or launch.get("run_id") != metadata["run_id"]
             or launch.get("child_pid") != metadata["pid"]
-            or launch.get("expected_final_argv") != [
-                metadata["calibration"]["python_ps_executable"], str(ENTRYPOINT),
-            ]
+            or launch.get("expected_final_argv") != expected_os
+            or launch.get("expected_inprocess_python_argv") != expected_inprocess
             or final_identity.get("command") != metadata.get("final_command")):
         raise ControllerError("p4_b_ready_launch_identity_mismatch")
     if _b_committed_source_snapshot() != launch.get("source_sha256"):
         raise ControllerError("p4_b_ready_source_drift")
     from uruha_p4_b_private_endpoint_binding import (
-        PrivateEndpointBindingError, _receipt, _valid_receipt_time,
+        PrivateEndpointBindingError, _exact_os_final_argv, _final_argv_digest,
+        _receipt, _valid_receipt_time,
         preflight_private_endpoint_identity, private_child_source_digests,
     )
 
@@ -990,8 +1020,16 @@ def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> 
         binding = replace(binding, receipt_sha256=launch["receipt_sha256"])
         receipt = _receipt(binding)
         _valid_receipt_time(receipt)
+        _exact_os_final_argv(expected_os)
+        if (receipt.get("expected_os_final_argv") != expected_os
+                or receipt.get("expected_final_argv_sha256")
+                != _final_argv_digest(expected_os)
+                or receipt.get("expected_inprocess_python_argv_sha256")
+                != _final_argv_digest(expected_inprocess)
+                or final_identity.get("command") != " ".join(expected_os)):
+            raise ControllerError("p4_b_ready_dual_argv_identity_mismatch")
         expected_receipt_identity = {
-            "schema": "p4_b_private_endpoint_launch_receipt_v2",
+            "schema": "p4_b_private_endpoint_launch_receipt_v3",
             "issuer": "p4_b_private_controller",
             "run_id": binding.run_id,
             "private_root": str(binding.private_root),

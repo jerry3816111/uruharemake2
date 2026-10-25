@@ -4,17 +4,50 @@ from __future__ import annotations
 
 import builtins
 from dataclasses import replace
+import io
 import json
 import os
 from pathlib import Path
 import shutil
 import stat
+import sys
 from unittest.mock import patch
 
 import pytest
 
 import p4_preference_fallback_detached_control as control
 import uruha_p4_b_private_endpoint_binding as private
+
+
+def test_b_calibration_captures_both_identities_from_one_bounded_line(
+    tmp_path, monkeypatch,
+):
+    inprocess = str(Path(sys.executable).resolve(strict=True))
+    os_python = str(Path("/bin/sleep").resolve(strict=True))
+    assert os_python != inprocess
+
+    class Process:
+        pid = 41234
+        stdout = io.BytesIO(f"python-calibrated={inprocess}\n".encode())
+
+        def poll(self):
+            return 0
+
+    seen = []
+    monkeypatch.setattr(control.sandbox, "sandbox_command",
+                        lambda profile, argv: seen.append(argv) or argv)
+    monkeypatch.setattr(control.subprocess, "Popen", lambda *args, **kwargs: Process())
+    monkeypatch.setattr(control.select, "select", lambda *args: ([Process.stdout], [], []))
+    monkeypatch.setattr(control, "_identity", lambda pid: {
+        "uid": os.getuid(), "pgid": pid,
+        "command": f"{os_python} -c {control.CALIBRATION_CODE_B}",
+    })
+    result = control._calibrate_python_command(
+        inprocess, {}, tmp_path / "profile.sb", capture_inprocess=True,
+    )
+    assert result["python_ps_executable"] == os_python
+    assert result["python_sys_executable"] == inprocess
+    assert seen == [[inprocess, "-c", control.CALIBRATION_CODE_B]]
 
 
 def _descriptor(tmp_path: Path) -> Path:
@@ -132,30 +165,39 @@ def test_b_source_failure_refuses_before_web_import_and_popen(tmp_path, monkeypa
 def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeypatch):
     descriptor = _descriptor(tmp_path)
     run_id = "0123456789abcdef"
+    os_python = str(Path("/bin/sleep").resolve(strict=True))
+    inprocess_python = str(Path(sys.executable).resolve(strict=True))
+    assert os_python != inprocess_python
+    os_argv = [os_python, str(control.ENTRYPOINT)]
+    inprocess_argv = [inprocess_python, str(control.ENTRYPOINT)]
     final = {
         "pid": 4242, "uid": os.getuid(), "pgid": 4242,
         "lstart": "Sun Oct 25 01:00:00 2026",
-        "command": f"/bin/sleep {control.ENTRYPOINT}",
+        "command": " ".join(os_argv),
     }
     source = {name: "a" * 64 for name in control.B_COMMITTED_SOURCES}
     values = json.loads(descriptor.read_text(encoding="utf-8"))
     launch = {
-        "schema": "p4_b_private_product_child_launch_v1",
+        "schema": "p4_b_private_product_child_launch_v2",
         "run_id": run_id, "private_root": str(descriptor.parent),
         "child_pid": 4242, "receipt_sha256": "a" * 64,
         "environment_sha256": "b" * 64, "source_sha256": source,
-        "expected_final_argv": ["/bin/sleep", str(control.ENTRYPOINT)],
+        "expected_final_argv": os_argv,
+        "expected_inprocess_python_argv": inprocess_argv,
         "daemon_pid": values["daemon_pid"], "runner_pid": values["runner_pid"],
         "daemon_port": values["daemon_port"], "runner_port": values["runner_port"],
     }
     metadata = {
         "run_id": run_id, "mode": "product", "pid": 4242,
         "start_identity": final, "final_command": final["command"],
-        "calibration": {"python_ps_executable": "/bin/sleep"},
+        "calibration": {
+            "python_ps_executable": os_python,
+            "python_sys_executable": inprocess_python,
+        },
         "p4_b_private_launch": launch,
     }
     receipt = {
-        "schema": "p4_b_private_endpoint_launch_receipt_v2",
+        "schema": "p4_b_private_endpoint_launch_receipt_v3",
         "issuer": "p4_b_private_controller",
         "run_id": run_id, "private_root": str(descriptor.parent),
         "models_path": str(descriptor.parent / "models"),
@@ -164,6 +206,9 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
         "shared_models": values["shared_models"],
         "base_url": "http://127.0.0.1:11455/v1",
         "runtime_root": str(tmp_path), "launch_env_sha256": "b" * 64,
+        "expected_os_final_argv": os_argv,
+        "expected_final_argv_sha256": private._final_argv_digest(os_argv),
+        "expected_inprocess_python_argv_sha256": private._final_argv_digest(inprocess_argv),
         **{key: values[key] for key in (
             "daemon_pid", "runner_pid", "daemon_port", "runner_port",
             "daemon_process_start", "runner_process_start", "daemon_binary", "runner_binary",
@@ -207,11 +252,50 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
         "schema": "p4_b_private_product_child_ready_v1",
         "run_id": run_id, "child_pid": 4242,
         "receipt_sha256": "a" * 64,
-        "expected_final_argv": ["/bin/sleep", str(control.ENTRYPOINT)],
+        "expected_final_argv": os_argv,
         "final_identity": final, "same_private_endpoint_at_ready": True,
         "b_send_authorized": False,
     }
+    with patch.object(control, "_identity", return_value={
+        **final, "command": f"{final['command']} --extra",
+    }):
+        with patch.object(control.os, "killpg") as killpg:
+            with pytest.raises(control.ControllerError,
+                               match="stop_refused_final_identity_changed"):
+                control.stop("ignored")
+            killpg.assert_not_called()
     ready_path.unlink()
+    with patch.object(control, "_identity", return_value={
+        **final, "command": f"{final['command']} --extra",
+    }):
+        with pytest.raises(control.ControllerError):
+            control.verify_ready("ignored")
+    assert not ready_path.exists()
+    receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v2"
+    with pytest.raises(control.ControllerError):
+        control.verify_ready("ignored")
+    assert not ready_path.exists()
+    receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v3"
+    receipt["expected_os_final_argv"] = [
+        str(Path("/bin/echo").resolve(strict=True)), str(control.ENTRYPOINT),
+    ]
+    receipt["expected_final_argv_sha256"] = private._final_argv_digest(
+        receipt["expected_os_final_argv"]
+    )
+    with pytest.raises(control.ControllerError):
+        control.verify_ready("ignored")
+    assert not ready_path.exists()
+    receipt["expected_os_final_argv"] = os_argv
+    receipt["expected_final_argv_sha256"] = private._final_argv_digest(os_argv)
+    receipt["expected_inprocess_python_argv_sha256"] = private._final_argv_digest([
+        str(Path("/bin/echo").resolve(strict=True)), str(control.ENTRYPOINT),
+    ])
+    with pytest.raises(control.ControllerError):
+        control.verify_ready("ignored")
+    assert not ready_path.exists()
+    receipt["expected_inprocess_python_argv_sha256"] = private._final_argv_digest(
+        inprocess_argv
+    )
     changed = {**values, "runner_pid": 32999}
     descriptor.write_text(json.dumps(changed), encoding="utf-8")
     descriptor.chmod(0o600)
@@ -226,7 +310,7 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
     descriptor = _descriptor(tmp_path)
     first = Path(control.prepare()["runtime_root"])
     second = None
-    popen_env = []
+    popen_calls = []
     imported_forbidden = []
     original_import = builtins.__import__
 
@@ -243,10 +327,18 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
         path.chmod(0o600)
         return path
 
-    def issue(*, binding, runtime_root, environ, entrypoint, expected_final_argv):
+    os_python = str(Path("/bin/sleep").resolve(strict=True))
+    inprocess_python = str(Path(sys.executable).resolve(strict=True))
+    assert os_python != inprocess_python
+
+    def issue(*, binding, runtime_root, environ, entrypoint,
+              expected_final_argv, expected_inprocess_python_argv):
         assert runtime_root == first
         assert entrypoint == control.ENTRYPOINT
-        assert expected_final_argv == ["/bin/sleep", str(control.ENTRYPOINT)]
+        assert expected_final_argv == [os_python, str(control.ENTRYPOINT)]
+        assert expected_inprocess_python_argv == [
+            inprocess_python, str(control.ENTRYPOINT),
+        ]
         assert environ["URUHA_P4_B_PRIVATE_CHILD"] == "1"
         assert environ["URUHA_P4_COMPACT_JSON_SCHEMA"] == "1"
         assert environ["URUHA_WEB_COMPUTE_LEDGER"] == "1"
@@ -262,7 +354,7 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
             return None
 
     def fake_popen(*args, **kwargs):
-        popen_env.append(kwargs["env"].copy())
+        popen_calls.append((args[0], kwargs["env"].copy()))
         return FakeProcess()
 
     source = {name: "a" * 64 for name in control.B_COMMITTED_SOURCES}
@@ -270,13 +362,15 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
     monkeypatch.setattr(control, "_validate_prepared_cache", lambda root: None)
     monkeypatch.setattr(control, "_require_vacant", lambda: None)
     monkeypatch.setattr(control.sandbox, "write_sandbox_profile", profile)
-    monkeypatch.setattr(control, "_calibrate_python_command", lambda *args: {
-        "python_ps_executable": "/bin/sleep", "identity": {"synthetic": True},
+    monkeypatch.setattr(control, "_calibrate_python_command", lambda *args, **kwargs: {
+        "python_ps_executable": os_python,
+        "python_sys_executable": inprocess_python,
+        "identity": {"synthetic": True},
     })
     monkeypatch.setattr(control, "_identity", lambda pid: {
         "pid": 4242, "uid": os.getuid(), "pgid": 4242,
         "lstart": "Sun Oct 25 01:00:00 2026",
-        "command": f"/bin/sleep {control.ENTRYPOINT}",
+        "command": f"{os_python} {control.ENTRYPOINT}",
     })
     monkeypatch.setattr(private, "preflight_private_endpoint_identity", lambda binding: None)
     monkeypatch.setattr(private, "issue_private_child_receipt", issue)
@@ -290,8 +384,10 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
             )
         assert imported_forbidden == []
         assert result["ready"] is False
-        assert len(popen_env) == 1
-        env = popen_env[0]
+        assert len(popen_calls) == 1
+        command, env = popen_calls[0]
+        assert inprocess_python in command
+        assert command[-2:] == [inprocess_python, str(control.ENTRYPOINT)]
         assert env["URUHA_P4_B_RUN_ID"] == result["run_id"]
         assert env["URUHA_P4_B_MODEL_ROOT"] == str(descriptor.parent)
         assert env["URUHA_P4_B_RECEIPT"] == str(descriptor.parent / private._RECEIPT_NAME)
@@ -302,6 +398,11 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
         assert env["URUHA_WEB_SESSION_DB_PATH"] == str(first / "session_db")
         _, metadata = control._root(str(first))
         assert metadata["preflight_import_scope"] == "none_b_static"
+        assert metadata["final_command"] == f"{os_python} {control.ENTRYPOINT}"
+        assert metadata["calibration"]["python_sys_executable"] == inprocess_python
+        assert metadata["p4_b_private_launch"]["expected_final_argv"] == [
+            os_python, str(control.ENTRYPOINT),
+        ]
         assert metadata["p4_b_private_launch"]["child_pid"] == 4242
         assert metadata["p4_b_private_launch"]["receipt_sha256"] == (
             control._sha256(descriptor.parent / private._RECEIPT_NAME)

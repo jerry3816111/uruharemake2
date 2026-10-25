@@ -35,6 +35,9 @@ def _child(root: Path, *, controller_issued: bool = False) -> int:
             (runtime / name).mkdir(mode=0o700)
     entry = Path(identity.__file__).resolve().with_name(
         "uruha_web_ui_product_p4_preference_fallback.py")
+    os_python = str(Path("/bin/sleep").resolve(strict=True))
+    inprocess_python = str(Path(sys.executable).resolve(strict=True))
+    assert os_python != inprocess_python
     sys.argv = [str(entry)]
     # This is a child-side fake identity, not a substitute for actual daemon
     # and runner verification in a future real product acceptance.
@@ -68,7 +71,8 @@ def _child(root: Path, *, controller_issued: bool = False) -> int:
         os.environ.update(env)
         identity.issue_private_child_receipt(
             binding=binding, runtime_root=runtime, environ=os.environ,
-            entrypoint=entry, expected_final_argv=[sys.executable, str(entry)],
+            entrypoint=entry, expected_final_argv=[os_python, str(entry)],
+            expected_inprocess_python_argv=[inprocess_python, str(entry)],
         )
 
     def no_socket(*_args, **_kwargs):
@@ -76,10 +80,13 @@ def _child(root: Path, *, controller_issued: bool = False) -> int:
 
     socket.socket.connect = no_socket
     socket.socket.connect_ex = no_socket
+    import uruha_p4_b_private_child_bootstrap as boot
+    # This fake child is a test-file subprocess, not the fixed product entry.
+    # Inject only the OS argv observer; production still queries its own PID.
+    boot._self_os_argv = lambda: (os_python, [os_python, str(entry)])
     import uruha_web_ui_product_p4_preference_fallback as product
     import uruha_web_ui as web
     import uruha_brain_mac as brain
-    import uruha_p4_b_private_child_bootstrap as boot
 
     state = boot.get_private_child_boot_state()
     assert state is not None
@@ -191,6 +198,7 @@ def test_controller_final_env_to_same_fake_child_chain(tmp_path, monkeypatch):
         return path
 
     def fake_popen(_command, **kwargs):
+        assert _command[-2:] == [sys.executable, str(control.ENTRYPOINT)]
         popen_env.append(kwargs["env"].copy())
         process = real_popen(
             [sys.executable, str(Path(__file__).resolve()),
@@ -205,7 +213,7 @@ def test_controller_final_env_to_same_fake_child_chain(tmp_path, monkeypatch):
         return {
             "pid": pid, "uid": os.getuid(), "pgid": pid,
             "lstart": "Sun Oct 25 01:00:00 2026",
-            "command": f"{sys.executable} {control.ENTRYPOINT}",
+            "command": f"{Path('/bin/sleep').resolve(strict=True)} {control.ENTRYPOINT}",
         }
 
     monkeypatch.setattr(control, "_validate_prepared_cache", lambda _root: None)
@@ -214,8 +222,10 @@ def test_controller_final_env_to_same_fake_child_chain(tmp_path, monkeypatch):
         name: "a" * 64 for name in control.B_COMMITTED_SOURCES
     })
     monkeypatch.setattr(control.sandbox, "write_sandbox_profile", profile)
-    monkeypatch.setattr(control, "_calibrate_python_command", lambda *_args: {
-        "python_ps_executable": sys.executable, "identity": {"synthetic": True},
+    monkeypatch.setattr(control, "_calibrate_python_command", lambda *_args, **_kwargs: {
+        "python_ps_executable": str(Path("/bin/sleep").resolve(strict=True)),
+        "python_sys_executable": sys.executable,
+        "identity": {"synthetic": True},
     })
     monkeypatch.setattr(control, "_identity", fake_identity)
     monkeypatch.setattr(control.subprocess, "Popen", fake_popen)
@@ -233,6 +243,11 @@ def test_controller_final_env_to_same_fake_child_chain(tmp_path, monkeypatch):
         observed = json.loads(stdout.strip().splitlines()[-1])
         assert observed["same_ledger"] is True
         assert observed["provider_completions"] == 0
+        _, metadata = control._root(str(prepared))
+        assert metadata["final_command"] == (
+            f"{Path('/bin/sleep').resolve(strict=True)} {control.ENTRYPOINT}"
+        )
+        assert metadata["calibration"]["python_sys_executable"] == sys.executable
         assert popen_env[0]["URUHA_P4_B_RUN_ID"] == launched["run_id"]
         assert popen_env[0]["URUHA_P4_B_RECEIPT"] == str(
             private / "p4_b_private_endpoint_launch_receipt.json")

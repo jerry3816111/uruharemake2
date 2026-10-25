@@ -38,13 +38,14 @@ from uruha_p4_b_resource_gate import P4BResourceGate
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _RUN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z")
 _RECEIPT_NAME = "p4_b_private_endpoint_launch_receipt.json"
-_RECEIPT_SCHEMA = "p4_b_private_endpoint_launch_receipt_v2"
+_RECEIPT_SCHEMA = "p4_b_private_endpoint_launch_receipt_v3"
 _RECEIPT_FIELDS = frozenset({
     "schema", "issuer", "run_id", "private_root", "models_path", "base_url",
     "shared_models", "runtime_root", "launch_env_sha256",
     "entrypoint_sha256", "bootstrap_sha256", "binding_source_sha256",
     "web_source_sha256", "ledger_source_sha256",
-    "expected_final_argv_sha256",
+    "expected_final_argv_sha256", "expected_os_final_argv",
+    "expected_inprocess_python_argv_sha256",
     "daemon_pid", "runner_pid", "daemon_port", "runner_port",
     "daemon_process_start", "runner_process_start", "ollama_models",
     "ollama_no_cloud", "daemon_binary", "runner_binary",
@@ -155,16 +156,33 @@ def private_child_source_digests(entrypoint: Path) -> dict[str, str]:
 
 
 def _final_argv_digest(argv: Sequence[str]) -> str:
-    if (isinstance(argv, (str, bytes)) or len(argv) != 2
+    if (type(argv) not in (list, tuple) or len(argv) != 2
             or any(type(part) is not str or not part for part in argv)):
         _fail("private_child_final_argv_invalid")
     try:
         canonical = [str(Path(part).resolve(strict=True)) for part in argv]
-    except OSError:
+    except (OSError, ValueError):
         _fail("private_child_final_argv_invalid")
     if canonical[1] != str(Path(__file__).resolve().with_name(_ENTRYPOINT_NAME)):
         _fail("private_child_final_argv_invalid")
     return _sha256_json(canonical)
+
+
+def _exact_os_final_argv(argv: object) -> list[str]:
+    """Validate the unambiguous two-path representation of macOS ps' flat command."""
+    if type(argv) is not list or len(argv) != 2 or any(type(part) is not str
+            or not part or not Path(part).is_absolute()
+            or any(character.isspace() for character in part) for part in argv):
+        _fail("private_child_os_argv_invalid")
+    try:
+        if (any(Path(part).resolve(strict=True) != Path(part) for part in argv)
+                or not Path(argv[0]).is_file()
+                or not os.access(argv[0], os.X_OK)
+                or argv[1] != str(Path(__file__).resolve().with_name(_ENTRYPOINT_NAME))):
+            _fail("private_child_os_argv_invalid")
+    except (OSError, ValueError):
+        _fail("private_child_os_argv_invalid")
+    return argv
 
 
 def _exact_private_directory(path: Path) -> None:
@@ -341,6 +359,7 @@ def issue_private_child_receipt(
     *, binding: PrivateEndpointBinding, runtime_root: Path,
     environ: Mapping[str, str], entrypoint: Path,
     expected_final_argv: Sequence[str],
+    expected_inprocess_python_argv: Sequence[str],
 ) -> PrivateEndpointBinding:
     """Controller-only cooperative 0600 launch artifact, not B Send authorization."""
     expected_base = _binding_shape(binding, require_digest=False)
@@ -353,6 +372,14 @@ def issue_private_child_receipt(
             or environ.get("HOME") != str(runtime_root)
             or environ.get("TMPDIR") != str(runtime_root)):
         _fail("private_child_environment_identity_mismatch")
+    if type(expected_final_argv) not in (list, tuple):
+        _fail("private_child_os_argv_invalid")
+    os_argv = _exact_os_final_argv(list(expected_final_argv))
+    if (type(expected_inprocess_python_argv) not in (list, tuple)
+            or len(expected_inprocess_python_argv) != 2
+            or expected_inprocess_python_argv[1] != str(entrypoint)):
+        _fail("private_child_inprocess_argv_invalid")
+    inprocess_digest = _final_argv_digest(expected_inprocess_python_argv)
     now = time.time()
     receipt = {
         "schema": _RECEIPT_SCHEMA, "issuer": "p4_b_private_controller",
@@ -362,7 +389,9 @@ def issue_private_child_receipt(
         "runtime_root": str(runtime_root),
         "launch_env_sha256": canonical_b_env_digest(environ),
         **private_child_source_digests(entrypoint),
-        "expected_final_argv_sha256": _final_argv_digest(expected_final_argv),
+        "expected_final_argv_sha256": _final_argv_digest(os_argv),
+        "expected_os_final_argv": os_argv,
+        "expected_inprocess_python_argv_sha256": inprocess_digest,
         "daemon_pid": binding.daemon_pid, "runner_pid": binding.runner_pid,
         "daemon_port": binding.daemon_port, "runner_port": binding.runner_port,
         "daemon_process_start": binding.daemon_process_start,
@@ -440,8 +469,12 @@ def validate_private_endpoint_binding(
                    for key in ("launch_env_sha256", "entrypoint_sha256",
                                "bootstrap_sha256", "binding_source_sha256",
                                "web_source_sha256", "ledger_source_sha256",
-                               "expected_final_argv_sha256"))):
+                               "expected_final_argv_sha256",
+                               "expected_inprocess_python_argv_sha256"))):
         _fail("receipt_child_binding_invalid")
+    os_argv = _exact_os_final_argv(receipt.get("expected_os_final_argv"))
+    if _final_argv_digest(os_argv) != receipt["expected_final_argv_sha256"]:
+        _fail("receipt_child_os_argv_digest_mismatch")
     expires = _valid_receipt_time(receipt)
     try:
         _inspect_live_identity(binding)

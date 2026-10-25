@@ -4,6 +4,7 @@ import builtins
 import json
 import os
 from pathlib import Path
+import struct
 import sys
 import time
 
@@ -14,6 +15,74 @@ import uruha_p4_b_private_endpoint_binding as identity
 from uruha_p4_b_resource_gate import P4BResourceGate
 
 _REAL_INSPECT = identity._inspect_live_identity
+
+
+def _procargs(*, argc=2, executable=b"/bin/sleep",
+              argv=(b"/bin/sleep", b"/fixed/entry.py"),
+              tail=b"\xffPRIVATE_ENV_MUST_NOT_BE_PARSED=1\0"):
+    return (struct.pack("=i", argc) + executable + b"\0\0\0"
+            + b"".join(part + b"\0" for part in argv) + tail)
+
+
+def test_procargs_parser_only_reads_exact_two_argv_not_environment():
+    assert child._parse_self_procargs(_procargs()) == (
+        "/bin/sleep", ["/bin/sleep", "/fixed/entry.py"])
+
+
+@pytest.mark.parametrize("raw", [
+    "not bytes", b"", b"\0" * 7, b"\0" * ((1 << 20) + 1),
+    _procargs(argc=0), _procargs(argc=3),
+    _procargs(executable=b""), _procargs(executable=b"\xff"),
+    _procargs(argv=(b"", b"/fixed/entry.py")),
+    _procargs(argv=(b"/bin/echo", b"/fixed/entry.py")),
+    _procargs(argv=(b"/bin/sleep", b"\xff")),
+    _procargs(argv=(b"/bin/sleep",)),
+    struct.pack("=i", 2) + b"/bin/sleep",  # no exec NUL terminator
+    struct.pack("=i", 2) + b"/bin/sleep\0\0/bin/sleep\0/entry",  # truncated argv
+])
+def test_procargs_parser_rejects_ambiguous_or_malformed_buffers(raw):
+    with pytest.raises(identity.PrivateEndpointBindingError,
+                       match="private_child_os_argv_"):
+        child._parse_self_procargs(raw)
+
+
+def test_self_os_argv_fails_closed_when_kernel_interface_unavailable(monkeypatch):
+    monkeypatch.setattr(child.sys, "platform", "not-darwin")
+    with pytest.raises(identity.PrivateEndpointBindingError,
+                       match="private_child_os_argv_unavailable"):
+        child._self_os_argv()
+
+
+@pytest.mark.parametrize("failure", [
+    "first_syscall", "oversize", "second_syscall", "returned_oversize",
+])
+def test_self_os_argv_refuses_kernel_errors_and_bad_lengths(monkeypatch, failure):
+    monkeypatch.setattr(child.sys, "platform", "darwin")
+
+    class FakeSysctl:
+        def __init__(self):
+            self.calls = 0
+
+        def __call__(self, _mib, _mib_length, buffer, size_pointer, _new, _new_size):
+            self.calls += 1
+            size = child.ctypes.cast(
+                size_pointer, child.ctypes.POINTER(child.ctypes.c_size_t))
+            if self.calls == 1:
+                size.contents.value = ((1 << 20) + 1 if failure == "oversize" else 64)
+                return -1 if failure == "first_syscall" else 0
+            assert buffer is not None
+            size.contents.value = 65 if failure == "returned_oversize" else 64
+            return -1 if failure == "second_syscall" else 0
+
+    class FakeLibc:
+        sysctl = FakeSysctl()
+
+    fake = FakeLibc()
+    monkeypatch.setattr(child.ctypes, "CDLL", lambda *_args, **_kwargs: fake)
+    with pytest.raises(identity.PrivateEndpointBindingError,
+                       match="private_child_os_argv_unavailable"):
+        child._self_os_argv()
+    assert fake.sysctl.calls == (1 if failure in ("first_syscall", "oversize") else 2)
 
 
 def _fixture(tmp_path, monkeypatch):
@@ -28,8 +97,13 @@ def _fixture(tmp_path, monkeypatch):
         (runtime / name).chmod(0o700)
     entry = Path(identity.__file__).resolve().with_name(
         "uruha_web_ui_product_p4_preference_fallback.py")
+    os_python = str(Path("/bin/sleep").resolve(strict=True))
+    inprocess_python = str(Path(sys.executable).resolve(strict=True))
+    assert os_python != inprocess_python
+    os_argv = [os_python, str(entry)]
     monkeypatch.setattr(child, "_BOOT_STATE", None)
     monkeypatch.setattr(sys, "argv", [str(entry)])
+    monkeypatch.setattr(child, "_self_os_argv", lambda: (os_python, os_argv))
     monkeypatch.setattr(identity, "_inspect_live_identity", lambda _: None)
     binding = identity.PrivateEndpointBinding(
         run_id="b-test-123", private_root=private,
@@ -56,7 +130,8 @@ def _fixture(tmp_path, monkeypatch):
     }
     issued = identity.issue_private_child_receipt(
         binding=binding, runtime_root=runtime, environ=env,
-        entrypoint=entry, expected_final_argv=[sys.executable, str(entry)],
+        entrypoint=entry, expected_final_argv=os_argv,
+        expected_inprocess_python_argv=[inprocess_python, str(entry)],
     )
     return issued, runtime, env
 
@@ -64,6 +139,10 @@ def _fixture(tmp_path, monkeypatch):
 def _rewrite(binding, **updates):
     receipt = json.loads(binding.receipt_path.read_bytes())
     receipt.update(updates)
+    return _write_receipt_data(binding, receipt)
+
+
+def _write_receipt_data(binding, receipt):
     raw = (json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n").encode()
     binding.receipt_path.write_bytes(raw)
     binding.receipt_path.chmod(0o600)
@@ -73,6 +152,15 @@ def _rewrite(binding, **updates):
 def test_valid_bootstrap_is_pre_web_zero_provider_and_reuses_closed_ledger(
         tmp_path, monkeypatch):
     binding, runtime, env = _fixture(tmp_path, monkeypatch)
+    receipt = json.loads(binding.receipt_path.read_bytes())
+    assert receipt["schema"] == "p4_b_private_endpoint_launch_receipt_v3"
+    assert receipt["expected_os_final_argv"][0] != str(Path(sys.executable).resolve())
+    assert receipt["expected_final_argv_sha256"] == identity._final_argv_digest(
+        receipt["expected_os_final_argv"]
+    )
+    assert receipt["expected_inprocess_python_argv_sha256"] == identity._final_argv_digest(
+        [sys.executable, sys.argv[0]]
+    )
     imports = []
     old_import = builtins.__import__
 
@@ -98,7 +186,7 @@ def test_valid_bootstrap_is_pre_web_zero_provider_and_reuses_closed_ledger(
 @pytest.mark.parametrize("mutation", [
     "missing_marker", "marker_zero", "missing_run", "missing_receipt",
     "lowercase_marker", "wrong_root", "env_drift", "proxy_upper",
-    "proxy_mixed", "unknown_b_key", "old_v1", "source_drift",
+    "proxy_mixed", "unknown_b_key", "old_v2", "source_drift",
     "web_source_drift", "ledger_source_drift",
 ])
 def test_bad_intent_or_receipt_refused_before_web_or_provider(
@@ -125,8 +213,12 @@ def test_bad_intent_or_receipt_refused_before_web_or_provider(
         env["Https_Proxy"] = "http://proxy.invalid"
     elif mutation == "unknown_b_key":
         env["URUHA_P4_B_OVERRIDE"] = "untrusted"
-    elif mutation == "old_v1":
-        _rewrite(binding, schema="p4_b_private_endpoint_launch_receipt_v1")
+    elif mutation == "old_v2":
+        receipt = json.loads(binding.receipt_path.read_bytes())
+        receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v2"
+        receipt.pop("expected_os_final_argv")
+        receipt.pop("expected_inprocess_python_argv_sha256")
+        _write_receipt_data(binding, receipt)
     elif mutation == "source_drift":
         _rewrite(binding, entrypoint_sha256="0" * 64)
     elif mutation == "web_source_drift":
@@ -136,6 +228,101 @@ def test_bad_intent_or_receipt_refused_before_web_or_provider(
     with pytest.raises(identity.PrivateEndpointBindingError):
         child.bootstrap_private_child(env)
     assert child._BOOT_STATE is None
+
+
+@pytest.mark.parametrize("mutation", [
+    "os_wrong_executable", "os_argv0_mismatch", "os_appended_argument",
+    "os_unavailable",
+    "inprocess_executable", "inprocess_argv0", "inprocess_extra_argument",
+    "receipt_os_argv", "receipt_os_digest", "receipt_inprocess_digest",
+    "receipt_missing_os_argv", "receipt_missing_inprocess_digest",
+])
+def test_independent_argv_tamper_fails_before_web_or_provider(
+        tmp_path, monkeypatch, mutation):
+    binding, _runtime, env = _fixture(tmp_path, monkeypatch)
+    entry = str(child._ENTRYPOINT)
+    os_python = str(Path("/bin/sleep").resolve(strict=True))
+    other_python = str(Path("/bin/echo").resolve(strict=True))
+    assert os_python != other_python
+    reached_identity = []
+    monkeypatch.setattr(identity, "_inspect_live_identity",
+                        lambda value: reached_identity.append(value))
+    if mutation == "os_wrong_executable":
+        monkeypatch.setattr(child, "_self_os_argv", lambda: (
+            other_python, [other_python, entry]))
+    elif mutation == "os_argv0_mismatch":
+        monkeypatch.setattr(child, "_self_os_argv", lambda: (
+            os_python, [other_python, entry]))
+    elif mutation == "os_appended_argument":
+        monkeypatch.setattr(child, "_self_os_argv", lambda: (
+            os_python, [os_python, entry, "--extra"]))
+    elif mutation == "os_unavailable":
+        def unavailable():
+            raise identity.PrivateEndpointBindingError("private_child_os_argv_unavailable")
+        monkeypatch.setattr(child, "_self_os_argv", unavailable)
+    elif mutation == "inprocess_executable":
+        monkeypatch.setattr(sys, "executable", other_python)
+    elif mutation == "inprocess_argv0":
+        monkeypatch.setattr(sys, "argv", [str(Path(identity.__file__).resolve())])
+    elif mutation == "inprocess_extra_argument":
+        monkeypatch.setattr(sys, "argv", [entry, "--extra"])
+    elif mutation == "receipt_os_argv":
+        changed = [other_python, entry]
+        _rewrite(binding, expected_os_final_argv=changed,
+                 expected_final_argv_sha256=identity._final_argv_digest(changed))
+    elif mutation == "receipt_os_digest":
+        _rewrite(binding, expected_final_argv_sha256="0" * 64)
+    elif mutation == "receipt_inprocess_digest":
+        _rewrite(binding, expected_inprocess_python_argv_sha256=(
+            identity._final_argv_digest([other_python, entry])
+        ))
+    elif mutation == "receipt_missing_os_argv":
+        receipt = json.loads(binding.receipt_path.read_bytes())
+        receipt.pop("expected_os_final_argv")
+        _write_receipt_data(binding, receipt)
+    else:
+        receipt = json.loads(binding.receipt_path.read_bytes())
+        receipt.pop("expected_inprocess_python_argv_sha256")
+        _write_receipt_data(binding, receipt)
+    with pytest.raises(identity.PrivateEndpointBindingError):
+        child.bootstrap_private_child(env)
+    assert child._BOOT_STATE is None
+    assert reached_identity == []
+
+
+@pytest.mark.parametrize("drift", [
+    "os_wrong_executable", "os_appended_argument", "os_unavailable",
+    "inprocess_executable", "inprocess_argv0", "receipt_revoked",
+])
+def test_booted_child_rechecks_both_argv_identities_before_create(
+        tmp_path, monkeypatch, drift):
+    binding, _runtime, env = _fixture(tmp_path, monkeypatch)
+    for key, value in env.items():
+        monkeypatch.setenv(key, value)
+    state = child.bootstrap_private_child()
+    entry = str(child._ENTRYPOINT)
+    if drift == "os_wrong_executable":
+        other_python = str(Path("/bin/echo").resolve(strict=True))
+        monkeypatch.setattr(child, "_self_os_argv", lambda: (
+            other_python, [other_python, entry]))
+    elif drift == "os_appended_argument":
+        os_python = str(Path("/bin/sleep").resolve(strict=True))
+        monkeypatch.setattr(child, "_self_os_argv", lambda: (
+            os_python, [os_python, entry, "--extra"]))
+    elif drift == "os_unavailable":
+        def unavailable():
+            raise identity.PrivateEndpointBindingError("private_child_os_argv_unavailable")
+        monkeypatch.setattr(child, "_self_os_argv", unavailable)
+    elif drift == "inprocess_executable":
+        monkeypatch.setattr(sys, "executable", str(Path("/bin/echo").resolve(strict=True)))
+    elif drift == "inprocess_argv0":
+        monkeypatch.setattr(sys, "argv", [str(Path(identity.__file__).resolve())])
+    else:
+        binding.receipt_path.unlink()
+    with pytest.raises(identity.PrivateEndpointBindingError):
+        child.get_private_child_boot_state()
+    with pytest.raises(identity.PrivateEndpointBindingError):
+        child.revalidate_private_child_before_create(state)
 
 
 def test_wrong_shared_store_path_reaches_real_inspector_and_refuses(tmp_path, monkeypatch):
@@ -204,7 +391,7 @@ def test_original_resource_gate_identity_cannot_be_swapped(tmp_path, monkeypatch
     (900.0, float("nan"), 1000.0, False),
     (10 ** 1000, 10 ** 1001, 1000.0, False),
 ])
-def test_v2_receipt_time_contract(monkeypatch, issued, expires, now, valid):
+def test_v3_receipt_time_contract(monkeypatch, issued, expires, now, valid):
     monkeypatch.setattr(identity.time, "time", lambda: now)
     receipt = {"issued_at_epoch": issued, "expires_at_epoch": expires}
     if valid:
@@ -232,3 +419,39 @@ def test_receipt_expiry_during_live_inspection_refused(tmp_path, monkeypatch):
 def test_no_b_intent_remains_default_without_boot_state(tmp_path, monkeypatch):
     monkeypatch.setattr(child, "_BOOT_STATE", None)
     assert child.bootstrap_private_child({"HOME": str(tmp_path)}) is None
+
+
+def _run_self_os_argv_probe() -> int:
+    """No-service actual-script probe for the frozen sandbox profile."""
+    try:
+        script = str(Path(__file__).resolve(strict=True))
+        os_python, os_argv = child._self_os_argv()
+        if (os_argv != [os_python, script]
+                or str(Path(os_python).resolve(strict=True)) != os_python):
+            raise ValueError("os_argv_shape")
+        inprocess_python = sys.executable
+        if os_python == inprocess_python:
+            raise ValueError("executables_not_distinct")
+        os_digest = identity._final_argv_digest([os_python, str(child._ENTRYPOINT)])
+        inprocess_digest = identity._final_argv_digest([
+            inprocess_python, str(child._ENTRYPOINT),
+        ])
+        if os_digest == inprocess_digest:
+            raise ValueError("digests_not_distinct")
+    except (OSError, ValueError, identity.PrivateEndpointBindingError) as exc:
+        print(json.dumps({"ok": False, "reason": str(exc) if isinstance(exc, ValueError)
+                          else "os_argv_or_digest_unavailable"}))
+        return 1
+    print(json.dumps({
+        "ok": True,
+        "os_argv_sha256": os_digest,
+        "inprocess_argv_sha256": inprocess_digest,
+        "distinct_executables": True,
+    }, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 1:
+        raise SystemExit(2)
+    raise SystemExit(_run_self_os_argv_probe())

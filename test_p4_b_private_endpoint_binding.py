@@ -4,6 +4,7 @@ from dataclasses import replace
 import hashlib
 import json
 from pathlib import Path
+import sys
 import time
 
 import pytest
@@ -32,8 +33,14 @@ def _fixture(tmp_path, monkeypatch):
     port = 11455
     receipt_path = root / "p4_b_private_endpoint_launch_receipt.json"
     issued = time.time() - 1
+    entrypoint = Path(binding_module.__file__).resolve().with_name(
+        "uruha_web_ui_product_p4_preference_fallback.py"
+    )
+    os_argv = [str(Path("/bin/sleep").resolve(strict=True)), str(entrypoint)]
+    inprocess_argv = [str(Path(sys.executable).resolve(strict=True)), str(entrypoint)]
+    assert os_argv[0] != inprocess_argv[0]
     fields = {
-        "schema": "p4_b_private_endpoint_launch_receipt_v2",
+        "schema": "p4_b_private_endpoint_launch_receipt_v3",
         "issuer": "p4_b_private_controller", "run_id": run_id,
         "private_root": str(root), "models_path": str(root / "models"),
         "shared_models": str(tmp_path / "shared/models"),
@@ -44,7 +51,11 @@ def _fixture(tmp_path, monkeypatch):
         "binding_source_sha256": "4" * 64,
         "web_source_sha256": "6" * 64,
         "ledger_source_sha256": "7" * 64,
-        "expected_final_argv_sha256": "5" * 64,
+        "expected_os_final_argv": os_argv,
+        "expected_final_argv_sha256": binding_module._final_argv_digest(os_argv),
+        "expected_inprocess_python_argv_sha256": binding_module._final_argv_digest(
+            inprocess_argv
+        ),
         "base_url": f"http://127.0.0.1:{port}/v1",
         "daemon_pid": 101, "runner_pid": 102,
         "daemon_port": port, "runner_port": 55132,
@@ -77,7 +88,12 @@ def _fixture(tmp_path, monkeypatch):
 
 
 def test_private_binding_validates_without_network_and_gate_remains_closed(tmp_path, monkeypatch):
-    binding, ledger, _fields, calls = _fixture(tmp_path, monkeypatch)
+    binding, ledger, fields, calls = _fixture(tmp_path, monkeypatch)
+    assert fields["schema"] == "p4_b_private_endpoint_launch_receipt_v3"
+    assert set(fields) == binding_module._RECEIPT_FIELDS
+    assert fields["expected_final_argv_sha256"] == binding_module._final_argv_digest(
+        fields["expected_os_final_argv"]
+    )
     target = binding_module.validate_private_endpoint_binding(
         binding, compute_ledger=ledger, run_id=binding.run_id)
     assert target == binding_module.PrivateEndpointTarget(
@@ -87,6 +103,56 @@ def test_private_binding_validates_without_network_and_gate_remains_closed(tmp_p
     assert calls == [binding]
     assert ledger.p4_b_resource_gate.snapshot()["attempted_provider_calls"] == 0
     assert ledger.p4_b_resource_gate._prompt_token_upper_bound is None
+
+
+@pytest.mark.parametrize("mutation", [
+    "old_v2", "missing_os_argv", "missing_inprocess_sha", "extra_field",
+    "os_argv_one_element", "os_argv_extra_argument", "os_argv_relative",
+    "os_argv_symlink", "os_argv_nul", "os_digest_mismatch",
+    "inprocess_digest_not_hex",
+])
+def test_v3_receipt_rejects_missing_ambiguous_or_noncanonical_argv_fields(
+        tmp_path, monkeypatch, mutation):
+    binding, ledger, fields, calls = _fixture(tmp_path, monkeypatch)
+    if mutation == "old_v2":
+        fields["schema"] = "p4_b_private_endpoint_launch_receipt_v2"
+        fields.pop("expected_os_final_argv")
+        fields.pop("expected_inprocess_python_argv_sha256")
+    elif mutation == "missing_os_argv":
+        fields.pop("expected_os_final_argv")
+    elif mutation == "missing_inprocess_sha":
+        fields.pop("expected_inprocess_python_argv_sha256")
+    elif mutation == "extra_field":
+        fields["unexpected_argv_fallback"] = True
+    elif mutation == "os_argv_one_element":
+        fields["expected_os_final_argv"] = fields["expected_os_final_argv"][:1]
+    elif mutation == "os_argv_extra_argument":
+        fields["expected_os_final_argv"] = [*fields["expected_os_final_argv"], "--extra"]
+    elif mutation == "os_argv_relative":
+        fields["expected_os_final_argv"] = ["bin/sleep", fields["expected_os_final_argv"][1]]
+    elif mutation == "os_argv_symlink":
+        alias = tmp_path / "sleep-alias"
+        alias.symlink_to(fields["expected_os_final_argv"][0])
+        fields["expected_os_final_argv"] = [str(alias), fields["expected_os_final_argv"][1]]
+    elif mutation == "os_argv_nul":
+        fields["expected_os_final_argv"] = [
+            fields["expected_os_final_argv"][0] + "\x00", fields["expected_os_final_argv"][1],
+        ]
+    elif mutation == "os_digest_mismatch":
+        fields["expected_final_argv_sha256"] = "0" * 64
+    else:
+        fields["expected_inprocess_python_argv_sha256"] = "not-a-digest"
+    binding = replace(binding, receipt_sha256=_write_receipt(binding.receipt_path, fields))
+    with pytest.raises(binding_module.PrivateEndpointBindingError):
+        binding_module.validate_private_endpoint_binding(
+            binding, compute_ledger=ledger, run_id=binding.run_id)
+    assert calls == []
+
+
+@pytest.mark.parametrize("invalid", [None, 12, "/bin/sleep", ["/bin/sleep\x00", "/tmp/x"]])
+def test_final_argv_digest_rejects_invalid_type_or_nul_as_domain_error(invalid):
+    with pytest.raises(binding_module.PrivateEndpointBindingError):
+        binding_module._final_argv_digest(invalid)
 
 
 @pytest.mark.parametrize("bad_url", [
