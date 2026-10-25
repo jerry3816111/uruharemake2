@@ -104,6 +104,19 @@ class P4BResourceGate:
         with self._lock:
             self._deny("unexpected_generation_backend")
 
+    def record_pre_provider_revalidation_failure(self):
+        """Close a reserved admission that failed identity before SDK create.
+
+        No provider call occurred, so actual usage must remain unknown. This
+        diagnostic terminal is deliberately not a durable Web turn receipt.
+        """
+        with self._lock:
+            if (self._attempted_provider_calls == 1
+                    and self._admitted_prompt_upper_bound is not None
+                    and self._actual_total_tokens is None
+                    and not self._terminal_reason):
+                self._terminal_reason = "pre_provider_revalidation_failed"
+
     def observe_openai_result(self, response, error):
         """Post-call usage audit; it does not retroactively guarantee a hard cap."""
         with self._lock:

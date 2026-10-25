@@ -14,9 +14,10 @@ from types import SimpleNamespace
 import pytest
 
 import uruha_compute_ledger as ucl
+import uruha_compact_planner_p2 as compact
 import uruha_web_ui as web
 from uruha_compact_planner_p2 import _REQUIRED_JSON_SCHEMA_FORMAT
-from uruha_p4_b_resource_gate import P4BResourceGate
+from uruha_p4_b_resource_gate import P4BResourceGate, P4BResourceGateError
 
 
 @pytest.mark.parametrize("intent", [
@@ -112,6 +113,20 @@ def _fake_client(ledger, events):
     return ucl.instrument_openai_client(client, ledger)
 
 
+def _valid_m21_request():
+    return {
+        "model": "qwen2.5:7b",
+        "messages": [
+            {"role": "system", "content": "You are the Left Brain Planner for a dual-brain character system."},
+            {"role": "user", "content": "User Input: isolated fake"},
+        ],
+        "temperature": 0.1,
+        "timeout": 20.0,
+        "max_tokens": 256,
+        "response_format": _REQUIRED_JSON_SCHEMA_FORMAT,
+    }
+
+
 def test_private_identity_rechecked_before_gate_and_fake_provider(monkeypatch):
     boot = importlib.import_module("uruha_p4_b_private_child_bootstrap")
     events = []
@@ -124,20 +139,12 @@ def test_private_identity_rechecked_before_gate_and_fake_provider(monkeypatch):
     monkeypatch.setattr(gate, "admit_openai", lambda stage, request: (
         events.append("gate"), original_admit(stage, request)
     ))
-    request = {
-        "model": "qwen2.5:7b",
-        "messages": [
-            {"role": "system", "content": "You are the Left Brain Planner for a dual-brain character system."},
-            {"role": "user", "content": "User Input: isolated fake"},
-        ],
-        "temperature": 0.1,
-        "timeout": 20.0,
-        "max_tokens": 256,
-        "response_format": _REQUIRED_JSON_SCHEMA_FORMAT,
-    }
     with ledger.stage("leftbrain_general_plan"):
-        _fake_client(ledger, events).chat.completions.create(**request)
+        _fake_client(ledger, events).chat.completions.create(**_valid_m21_request())
     assert events == ["identity", "gate", "identity", "provider"]
+    assert gate.snapshot()["actual_total_tokens"] == 2
+    assert gate.snapshot()["terminal_reason"] == ""
+    assert ledger.snapshot()["call_count"] == 1
 
 
 def test_private_identity_drift_or_bare_ledger_never_reaches_provider(monkeypatch):
@@ -156,6 +163,9 @@ def test_private_identity_drift_or_bare_ledger_never_reaches_provider(monkeypatc
     with pytest.raises(RuntimeError, match="private_identity_drift"):
         _fake_client(ledger, events).chat.completions.create(model="fake")
     assert events == ["identity"]
+    assert gate.snapshot()["attempted_provider_calls"] == 0
+    assert gate.snapshot()["terminal_reason"] == ""
+    assert ledger.snapshot()["call_count"] == 0
     bare = ucl.ComputeLedger()
     monkeypatch.setattr(boot, "get_private_child_boot_state", lambda: None)
     monkeypatch.setenv("URUHA_P4_B_PRIVATE_CHILD", "1")
@@ -189,3 +199,131 @@ def test_gate_replacement_or_drift_during_admission_blocks_fake_provider(monkeyp
     with pytest.raises(RuntimeError, match="receipt_revoked_after_admission"):
         _fake_client(ledger, events).chat.completions.create(model="fake")
     assert events == ["identity", "gate", "identity"]
+
+
+def test_post_admission_identity_failure_is_gate_terminal_without_provider_usage(monkeypatch):
+    boot = importlib.import_module("uruha_p4_b_private_child_bootstrap")
+    events = []
+    gate = P4BResourceGate(prompt_token_upper_bound=lambda _request: 1)
+    ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
+    state = SimpleNamespace(compute_ledger=ledger, resource_gate=gate)
+    monkeypatch.setattr(boot, "get_private_child_boot_state", lambda: state)
+
+    def identity(_state):
+        events.append("identity")
+        if events.count("identity") == 2:
+            raise RuntimeError("synthetic_second_revalidation_failure")
+
+    monkeypatch.setattr(boot, "revalidate_private_child_before_create", identity)
+    client = _fake_client(ledger, events)
+    with ledger.stage("leftbrain_general_plan"):
+        with pytest.raises(RuntimeError, match="synthetic_second_revalidation_failure"):
+            client.chat.completions.create(**_valid_m21_request())
+    assert events == ["identity", "identity"]
+    assert gate.snapshot() == {
+        "schema": "uruha_p4_b_resource_gate_mechanical_v1",
+        "attempted_provider_calls": 1,
+        "denied_attempt_count": 0,
+        "admitted_prompt_upper_bound": 1,
+        "actual_total_tokens": None,
+        "terminal_reason": "pre_provider_revalidation_failed",
+        "contains_raw_prompt_or_reply": False,
+    }
+    assert ledger.snapshot()["call_count"] == 0
+    with ledger.stage("leftbrain_general_plan"):
+        with pytest.raises(P4BResourceGateError, match="pre_provider_revalidation_failed"):
+            client.chat.completions.create(**_valid_m21_request())
+    assert events == ["identity", "identity", "identity"]
+    assert gate.snapshot()["denied_attempt_count"] == 1
+    assert gate.snapshot()["admitted_prompt_upper_bound"] == 1
+    assert gate.snapshot()["actual_total_tokens"] is None
+    assert ledger.snapshot()["call_count"] == 0
+
+
+def test_compact_transformation_reaches_post_admission_abort_without_provider(monkeypatch):
+    boot = importlib.import_module("uruha_p4_b_private_child_bootstrap")
+    monkeypatch.setenv("URUHA_P4_COMPACT_JSON_SCHEMA", "1")
+    events = []
+    gate = P4BResourceGate(prompt_token_upper_bound=lambda _request: 1)
+    ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
+    state = SimpleNamespace(compute_ledger=ledger, resource_gate=gate)
+    monkeypatch.setattr(boot, "get_private_child_boot_state", lambda: state)
+
+    def identity(_state):
+        events.append("identity")
+        if events.count("identity") == 2:
+            raise RuntimeError("synthetic_second_revalidation_failure")
+
+    monkeypatch.setattr(boot, "revalidate_private_child_before_create", identity)
+    original = _valid_m21_request()
+    original["messages"][0]["content"] += "\n[Output JSON schema]old verbose fields"
+    del original["max_tokens"]
+    del original["response_format"]
+    outer = compact._Proxy(_fake_client(ledger, events))
+    audit = {}
+    token = compact._CALL.set(audit)
+    try:
+        with ledger.stage("leftbrain_general_plan"):
+            with pytest.raises(RuntimeError, match="synthetic_second_revalidation_failure"):
+                outer.chat.completions.create(**original)
+    finally:
+        compact._CALL.reset(token)
+    assert audit["attempted"] is True
+    assert audit["completed"] is False
+    assert events == ["identity", "identity"]
+    assert gate.snapshot()["admitted_prompt_upper_bound"] == 1
+    assert gate.snapshot()["terminal_reason"] == "pre_provider_revalidation_failed"
+    assert gate.snapshot()["actual_total_tokens"] is None
+    assert ledger.snapshot()["call_count"] == 0
+
+
+def test_pre_provider_abort_cannot_fabricate_terminal_without_admission():
+    gate = P4BResourceGate(prompt_token_upper_bound=lambda _request: 1)
+    gate.record_pre_provider_revalidation_failure()
+    assert gate.snapshot()["attempted_provider_calls"] == 0
+    assert gate.snapshot()["terminal_reason"] == ""
+
+
+def test_gate_denial_is_not_reclassified_as_post_admission_failure(monkeypatch):
+    boot = importlib.import_module("uruha_p4_b_private_child_bootstrap")
+    events = []
+    gate = P4BResourceGate()
+    ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
+    state = SimpleNamespace(compute_ledger=ledger, resource_gate=gate)
+    monkeypatch.setattr(boot, "get_private_child_boot_state", lambda: state)
+    monkeypatch.setattr(boot, "revalidate_private_child_before_create",
+                        lambda _state: events.append("identity"))
+    with ledger.stage("leftbrain_general_plan"):
+        with pytest.raises(P4BResourceGateError, match="prompt_upper_bound_unavailable"):
+            _fake_client(ledger, events).chat.completions.create(**_valid_m21_request())
+    assert events == ["identity"]
+    assert gate.snapshot()["attempted_provider_calls"] == 0
+    assert gate.snapshot()["terminal_reason"] == "prompt_upper_bound_unavailable"
+    assert ledger.snapshot()["call_count"] == 0
+
+
+def test_provider_failure_keeps_provider_error_and_physical_ledger_call(monkeypatch):
+    boot = importlib.import_module("uruha_p4_b_private_child_bootstrap")
+    events = []
+    gate = P4BResourceGate(prompt_token_upper_bound=lambda _request: 1)
+    ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
+    state = SimpleNamespace(compute_ledger=ledger, resource_gate=gate)
+    monkeypatch.setattr(boot, "get_private_child_boot_state", lambda: state)
+    monkeypatch.setattr(boot, "revalidate_private_child_before_create",
+                        lambda _state: events.append("identity"))
+
+    class FailingCompletion:
+        def create(self, **_kwargs):
+            events.append("provider")
+            raise RuntimeError("synthetic_provider_failure")
+
+    raw = SimpleNamespace(chat=SimpleNamespace(completions=FailingCompletion()))
+    client = ucl.instrument_openai_client(raw, ledger)
+    with ledger.stage("leftbrain_general_plan"):
+        with pytest.raises(RuntimeError, match="synthetic_provider_failure"):
+            client.chat.completions.create(**_valid_m21_request())
+    assert events == ["identity", "identity", "provider"]
+    assert gate.snapshot()["terminal_reason"] == "provider_error_or_missing_usage"
+    assert gate.snapshot()["actual_total_tokens"] is None
+    assert ledger.snapshot()["call_count"] == 1
+    assert ledger.snapshot()["calls"][0]["error_type"] == "RuntimeError"

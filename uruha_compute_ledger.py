@@ -657,7 +657,13 @@ class _CompletionProxy:
         if child_state is not None:
             # The future token oracle may itself take time or observe drift.
             # Recheck again immediately after admission, before SDK create.
-            revalidate_private_child_before_create(child_state)
+            try:
+                revalidate_private_child_before_create(child_state)
+            except Exception:
+                # Admission reserved the sole B attempt, but no SDK call or
+                # provider usage exists. Preserve the identity exception.
+                gate.record_pre_provider_revalidation_failure()
+                raise
         started = time.perf_counter()
         response = None
         error = None
