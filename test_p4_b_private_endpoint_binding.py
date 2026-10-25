@@ -46,7 +46,7 @@ def _fixture(tmp_path, monkeypatch):
     inprocess_argv = [str(Path(sys.executable).resolve(strict=True)), str(entrypoint)]
     assert os_argv[0] != inprocess_argv[0]
     fields = {
-        "schema": "p4_b_private_endpoint_launch_receipt_v4",
+        "schema": "p4_b_private_endpoint_launch_receipt_v5",
         "issuer": "p4_b_private_controller", "run_id": run_id,
         "private_root": str(root), "models_path": str(root / "models"),
         "shared_models": str(tmp_path / "shared/models"),
@@ -68,6 +68,8 @@ def _fixture(tmp_path, monkeypatch):
         "identity_probe_source_sha256": "d" * 64,
         "resource_gate_source_sha256": "e" * 64,
         "child_observer_source_sha256": "f" * 64,
+        "product_source_manifest_sha256": "a" * 64,
+        "product_manifest_module_sha256": "b" * 64,
         "expected_os_final_argv": os_argv,
         "expected_final_argv_sha256": binding_module._final_argv_digest(os_argv),
         "expected_inprocess_python_argv_sha256": binding_module._final_argv_digest(
@@ -115,7 +117,7 @@ def _fixture(tmp_path, monkeypatch):
 
 def test_private_binding_validates_without_network_and_gate_remains_closed(tmp_path, monkeypatch):
     binding, ledger, fields, calls = _fixture(tmp_path, monkeypatch)
-    assert fields["schema"] == "p4_b_private_endpoint_launch_receipt_v4"
+    assert fields["schema"] == "p4_b_private_endpoint_launch_receipt_v5"
     assert set(fields) == binding_module._RECEIPT_FIELDS
     assert fields["expected_final_argv_sha256"] == binding_module._final_argv_digest(
         fields["expected_os_final_argv"]
@@ -132,13 +134,15 @@ def test_private_binding_validates_without_network_and_gate_remains_closed(tmp_p
 
 
 @pytest.mark.parametrize("mutation", [
-    "old_v2", "old_v3", "missing_os_argv", "missing_inprocess_sha", "extra_field",
+    "old_v2", "old_v3", "old_v4", "missing_os_argv", "missing_inprocess_sha", "extra_field",
     "missing_raw", "malformed_raw", "missing_observer_source", "malformed_operator_source",
+    "missing_product_manifest", "malformed_product_manifest", "missing_manifest_module",
+    "malformed_manifest_module",
     "os_argv_one_element", "os_argv_extra_argument", "os_argv_relative",
     "os_argv_symlink", "os_argv_nul", "os_digest_mismatch",
     "inprocess_digest_not_hex",
 ])
-def test_v4_receipt_rejects_missing_ambiguous_or_noncanonical_identity_fields(
+def test_v5_receipt_rejects_missing_ambiguous_or_noncanonical_identity_fields(
         tmp_path, monkeypatch, mutation):
     binding, ledger, fields, calls = _fixture(tmp_path, monkeypatch)
     if mutation == "old_v2":
@@ -147,6 +151,10 @@ def test_v4_receipt_rejects_missing_ambiguous_or_noncanonical_identity_fields(
         fields.pop("expected_inprocess_python_argv_sha256")
     elif mutation == "old_v3":
         fields["schema"] = "p4_b_private_endpoint_launch_receipt_v3"
+    elif mutation == "old_v4":
+        fields["schema"] = "p4_b_private_endpoint_launch_receipt_v4"
+        fields.pop("product_source_manifest_sha256")
+        fields.pop("product_manifest_module_sha256")
     elif mutation == "missing_raw":
         fields.pop("daemon_raw_generation")
     elif mutation == "malformed_raw":
@@ -155,6 +163,14 @@ def test_v4_receipt_rejects_missing_ambiguous_or_noncanonical_identity_fields(
         fields.pop("child_observer_source_sha256")
     elif mutation == "malformed_operator_source":
         fields["operator_source_sha256"] = "not-a-digest"
+    elif mutation == "missing_product_manifest":
+        fields.pop("product_source_manifest_sha256")
+    elif mutation == "malformed_product_manifest":
+        fields["product_source_manifest_sha256"] = "not-a-digest"
+    elif mutation == "missing_manifest_module":
+        fields.pop("product_manifest_module_sha256")
+    elif mutation == "malformed_manifest_module":
+        fields["product_manifest_module_sha256"] = "not-a-digest"
     elif mutation == "missing_os_argv":
         fields.pop("expected_os_final_argv")
     elif mutation == "missing_inprocess_sha":

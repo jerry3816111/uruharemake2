@@ -31,6 +31,7 @@ from p4_b_isolated_ollama_identity_probe import (
     _regular_single_link,
     _sha256_file as _model_sha256_file,
 )
+from p4_b_product_source_manifest import product_source_digests
 import uruha_p4_b_child_local_identity as child_identity
 from uruha_compute_ledger import ComputeLedger
 from uruha_p4_b_resource_gate import P4BResourceGate
@@ -39,7 +40,7 @@ from uruha_p4_b_resource_gate import P4BResourceGate
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _RUN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z")
 _RECEIPT_NAME = "p4_b_private_endpoint_launch_receipt.json"
-_RECEIPT_SCHEMA = "p4_b_private_endpoint_launch_receipt_v4"
+_RECEIPT_SCHEMA = "p4_b_private_endpoint_launch_receipt_v5"
 _RECEIPT_FIELDS = frozenset({
     "schema", "issuer", "run_id", "private_root", "models_path", "base_url",
     "shared_models", "runtime_root", "launch_env_sha256",
@@ -58,6 +59,7 @@ _RECEIPT_FIELDS = frozenset({
     "compact_planner_source_sha256",
     "identity_probe_source_sha256", "resource_gate_source_sha256",
     "child_observer_source_sha256",
+    "product_source_manifest_sha256", "product_manifest_module_sha256",
     "ollama_no_cloud", "daemon_binary", "runner_binary",
     "daemon_binary_sha256", "runner_binary_sha256", "manifest_sha256",
     "gguf_sha256", "template_sha256", "system_sha256",
@@ -161,7 +163,22 @@ def private_child_source_digests(entrypoint: Path) -> dict[str, str]:
     root = Path(__file__).resolve().parent
     if not isinstance(entrypoint, Path) or entrypoint != root / _ENTRYPOINT_NAME:
         _fail("private_child_entrypoint_invalid")
+    try:
+        product_digests = product_source_digests(root)
+    except Exception as exc:
+        raise PrivateEndpointBindingError("private_child_product_source_unavailable") from exc
+    if (type(product_digests) is not dict
+            or set(product_digests) != {
+                "product_source_manifest_sha256",
+                "product_manifest_module_sha256",
+            }
+            or any(type(value) is not str or not _HEX.fullmatch(value)
+                   for value in product_digests.values())
+            or product_digests["product_manifest_module_sha256"] != _sha256_file(
+                root / "p4_b_product_source_manifest.py")):
+        _fail("private_child_product_source_invalid")
     return {
+        **product_digests,
         "entrypoint_sha256": _sha256_file(entrypoint),
         "bootstrap_sha256": _sha256_file(root / _BOOTSTRAP_NAME),
         "binding_source_sha256": _sha256_file(root / Path(__file__).name),
@@ -540,6 +557,8 @@ def validate_private_endpoint_binding(
                                "compact_planner_source_sha256",
                                "identity_probe_source_sha256", "resource_gate_source_sha256",
                                "child_observer_source_sha256",
+                               "product_source_manifest_sha256",
+                               "product_manifest_module_sha256",
                                "expected_final_argv_sha256",
                                "expected_inprocess_python_argv_sha256"))):
         _fail("receipt_child_binding_invalid")

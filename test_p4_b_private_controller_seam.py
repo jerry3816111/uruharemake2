@@ -10,7 +10,9 @@ import os
 from pathlib import Path
 import shutil
 import stat
+import subprocess
 import sys
+import tarfile
 from unittest.mock import patch
 
 import pytest
@@ -109,17 +111,87 @@ def test_static_source_snapshot_rejects_uncommitted_drift(monkeypatch):
     monkeypatch.setattr(control, "B_COMMITTED_SOURCES", (
         "p4_preference_fallback_detached_control.py",
     ))
+    monkeypatch.setattr(control.product_sources, "product_source_paths", lambda root: ())
+    name = "p4_preference_fallback_detached_control.py"
+    fake = io.BytesIO()
+    with tarfile.open(fileobj=fake, mode="w") as stream:
+        member = tarfile.TarInfo(name)
+        member.size = len(b"different committed bytes")
+        stream.addfile(member, io.BytesIO(b"different committed bytes"))
+    monkeypatch.setattr(control, "_b_git_archive_bytes", lambda names: fake.getvalue())
+    with pytest.raises(control.ControllerError, match="not_committed_or_drifted"):
+        control._b_committed_source_snapshot()
 
-    class Result:
-        returncode = 0
-        stdout = b"different committed bytes"
 
-    with patch.object(control.subprocess, "run", return_value=Result()) as run:
-        with pytest.raises(control.ControllerError, match="not_committed_or_drifted"):
-            control._b_committed_source_snapshot()
-        assert run.call_args.args[0][-1] == (
-            "HEAD:p4_preference_fallback_detached_control.py"
-        )
+@pytest.mark.parametrize("invalid", ["missing", "extra", "symlink", "duplicate"])
+def test_static_source_archive_rejects_invalid_members(monkeypatch, invalid):
+    name = "p4_preference_fallback_detached_control.py"
+    source = (control.ROOT / name).read_bytes()
+    monkeypatch.setattr(control, "B_COMMITTED_SOURCES", (name,))
+    monkeypatch.setattr(control.product_sources, "product_source_paths", lambda root: ())
+    fake = io.BytesIO()
+    with tarfile.open(fileobj=fake, mode="w") as stream:
+        if invalid != "missing":
+            member = tarfile.TarInfo(name)
+            member.size = len(source)
+            if invalid == "symlink":
+                member.type = tarfile.SYMTYPE
+                member.linkname = name
+                member.size = 0
+            stream.addfile(member, io.BytesIO(source) if member.isfile() else None)
+            if invalid == "duplicate":
+                stream.addfile(member, io.BytesIO(source))
+        if invalid == "extra":
+            member = tarfile.TarInfo("unexpected.py")
+            member.size = 1
+            stream.addfile(member, io.BytesIO(b"x"))
+    monkeypatch.setattr(control, "_b_git_archive_bytes", lambda names: fake.getvalue())
+    with pytest.raises(control.ControllerError, match="p4_b_"):
+        control._b_committed_source_snapshot()
+
+
+def test_static_source_archive_allows_only_expected_parent_dir(monkeypatch):
+    name = "configs/p4_c_read_only_function_calling_contract_v1.json"
+    source = (control.ROOT / name).read_bytes()
+    monkeypatch.setattr(control, "B_COMMITTED_SOURCES", ())
+    monkeypatch.setattr(control.product_sources, "product_source_paths", lambda root: (name,))
+    fake = io.BytesIO()
+    with tarfile.open(fileobj=fake, mode="w") as stream:
+        directory = tarfile.TarInfo("configs/")
+        directory.type = tarfile.DIRTYPE
+        stream.addfile(directory)
+        member = tarfile.TarInfo(name)
+        member.size = len(source)
+        stream.addfile(member, io.BytesIO(source))
+    monkeypatch.setattr(control, "_b_git_archive_bytes", lambda names: fake.getvalue())
+    assert control._b_committed_source_snapshot() == {
+        name: control.hashlib.sha256(source).hexdigest(),
+    }
+
+
+@pytest.mark.parametrize("failure", ["oversize", "timeout"])
+def test_git_archive_budget_kills_and_reaps_worker(monkeypatch, failure):
+    real_popen = subprocess.Popen
+    processes = []
+    code = (
+        "import sys; sys.stdout.buffer.write(b'x' * (16 * 1024 * 1024 + 1))"
+        if failure == "oversize" else "import time; time.sleep(2)"
+    )
+
+    def fake_popen(_command, **kwargs):
+        process = real_popen([sys.executable, "-c", code], **kwargs)
+        processes.append(process)
+        return process
+
+    monkeypatch.setattr(control.subprocess, "Popen", fake_popen)
+    if failure == "timeout":
+        monkeypatch.setattr(control, "B_ARCHIVE_TIMEOUT_SECONDS", 0.05)
+    with pytest.raises(control.ControllerError, match=(
+        "oversize" if failure == "oversize" else "timeout"
+    )):
+        control._b_git_archive_bytes(("test.py",))
+    assert len(processes) == 1
+    assert processes[0].poll() is not None
 
 
 def test_b_source_lock_covers_zero_turn_identity_and_gate_code():
@@ -298,7 +370,7 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
         "p4_b_private_launch": launch,
     }
     receipt = {
-        "schema": "p4_b_private_endpoint_launch_receipt_v4",
+        "schema": "p4_b_private_endpoint_launch_receipt_v5",
         "issuer": "p4_b_private_controller",
         "run_id": run_id, "private_root": str(descriptor.parent),
         "models_path": str(descriptor.parent / "models"),
@@ -380,6 +452,10 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
         control.verify_ready("ignored")
     assert not ready_path.exists()
     receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v4"
+    with pytest.raises(control.ControllerError):
+        control.verify_ready("ignored")
+    assert not ready_path.exists()
+    receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v5"
     receipt["expected_os_final_argv"] = [
         str(Path("/bin/echo").resolve(strict=True)), str(control.ENTRYPOINT),
     ]

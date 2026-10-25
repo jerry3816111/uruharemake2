@@ -80,6 +80,13 @@ def _child(root: Path, *, controller_issued: bool = False) -> int:
             entrypoint=entry, expected_final_argv=[os_python, str(entry)],
             expected_inprocess_python_argv=[inprocess_python, str(entry)],
         )
+    receipt = json.loads(binding.receipt_path.read_bytes())
+    assert receipt["schema"] == "p4_b_private_endpoint_launch_receipt_v5"
+    source = identity.private_child_source_digests(entry)
+    assert receipt["product_source_manifest_sha256"] == source[
+        "product_source_manifest_sha256"]
+    assert receipt["product_manifest_module_sha256"] == source[
+        "product_manifest_module_sha256"]
 
     def no_socket(*_args, **_kwargs):
         raise AssertionError("real socket forbidden")

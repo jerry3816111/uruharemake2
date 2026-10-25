@@ -159,7 +159,11 @@ def test_valid_bootstrap_is_pre_web_zero_provider_and_reuses_closed_ledger(
         tmp_path, monkeypatch):
     binding, runtime, env = _fixture(tmp_path, monkeypatch)
     receipt = json.loads(binding.receipt_path.read_bytes())
-    assert receipt["schema"] == "p4_b_private_endpoint_launch_receipt_v4"
+    assert receipt["schema"] == "p4_b_private_endpoint_launch_receipt_v5"
+    assert receipt["product_source_manifest_sha256"] == identity.private_child_source_digests(
+        child._ENTRYPOINT)["product_source_manifest_sha256"]
+    assert receipt["product_manifest_module_sha256"] == identity.private_child_source_digests(
+        child._ENTRYPOINT)["product_manifest_module_sha256"]
     assert receipt["expected_os_final_argv"][0] != str(Path(sys.executable).resolve())
     assert receipt["expected_final_argv_sha256"] == identity._final_argv_digest(
         receipt["expected_os_final_argv"]
@@ -192,8 +196,9 @@ def test_valid_bootstrap_is_pre_web_zero_provider_and_reuses_closed_ledger(
 @pytest.mark.parametrize("mutation", [
     "missing_marker", "marker_zero", "missing_run", "missing_receipt",
     "lowercase_marker", "wrong_root", "env_drift", "proxy_upper",
-    "proxy_mixed", "unknown_b_key", "old_v2", "old_v3", "source_drift",
+    "proxy_mixed", "unknown_b_key", "old_v2", "old_v3", "old_v4", "source_drift",
     "web_source_drift", "ledger_source_drift", "controller_source_drift",
+    "product_source_manifest_drift", "product_manifest_module_drift",
     "operator_source_drift", "private_evidence_source_drift",
     "compact_planner_source_drift",
     "launcher_source_drift", "sandbox_source_drift",
@@ -234,12 +239,22 @@ def test_bad_intent_or_receipt_refused_before_web_or_provider(
         _write_receipt_data(binding, receipt)
     elif mutation == "old_v3":
         _rewrite(binding, schema="p4_b_private_endpoint_launch_receipt_v3")
+    elif mutation == "old_v4":
+        receipt = json.loads(binding.receipt_path.read_bytes())
+        receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v4"
+        receipt.pop("product_source_manifest_sha256")
+        receipt.pop("product_manifest_module_sha256")
+        _write_receipt_data(binding, receipt)
     elif mutation == "source_drift":
         _rewrite(binding, entrypoint_sha256="0" * 64)
     elif mutation == "web_source_drift":
         _rewrite(binding, web_source_sha256="0" * 64)
     elif mutation == "ledger_source_drift":
         _rewrite(binding, ledger_source_sha256="0" * 64)
+    elif mutation == "product_source_manifest_drift":
+        _rewrite(binding, product_source_manifest_sha256="0" * 64)
+    elif mutation == "product_manifest_module_drift":
+        _rewrite(binding, product_manifest_module_sha256="0" * 64)
     elif mutation in (
         "controller_source_drift", "operator_source_drift",
         "private_evidence_source_drift", "launcher_source_drift",
@@ -389,6 +404,29 @@ def test_receipt_revoke_or_environment_drift_blocks_precreate(tmp_path, monkeypa
     monkeypatch.setenv("URUHA_WEB_PORT", "7894")
     _rewrite(binding, expires_at_epoch=time.time() - 1)
     with pytest.raises(identity.PrivateEndpointBindingError):
+        child.revalidate_private_child_before_create(state)
+
+
+@pytest.mark.parametrize("key,reason", [
+    ("product_source_manifest_sha256", "private_child_source_drift"),
+    ("product_manifest_module_sha256", "private_child_product_source_invalid"),
+])
+def test_booted_child_rechecks_product_source_before_create(
+        tmp_path, monkeypatch, key, reason):
+    _binding, _runtime, env = _fixture(tmp_path, monkeypatch)
+    for name, value in env.items():
+        monkeypatch.setenv(name, value)
+    state = child.bootstrap_private_child()
+    real_source_digests = identity.product_source_digests
+
+    def changed_source(root):
+        digests = real_source_digests(root)
+        digests[key] = "0" * 64
+        return digests
+
+    monkeypatch.setattr(identity, "product_source_digests", changed_source)
+    with pytest.raises(identity.PrivateEndpointBindingError,
+                       match=reason):
         child.revalidate_private_child_before_create(state)
 
 

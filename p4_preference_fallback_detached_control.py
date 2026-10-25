@@ -12,6 +12,7 @@ import argparse
 from dataclasses import replace
 import hashlib
 import http.client
+import io
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,7 @@ import p4_b_safe_isolated_product_launcher as base
 import p4_b_safe_isolated_product_launcher_v2 as sandbox
 import p4_exec_detached_lifecycle_probe as identity
 import p4_preference_fallback_launchd_control as launchd
+import p4_b_product_source_manifest as product_sources
 
 
 ROOT = Path(__file__).resolve().parent
@@ -68,6 +70,8 @@ B_COMMITTED_SOURCES = (
     "uruha_p4_b_resource_gate.py",
     "uruha_p4_b_child_local_identity.py",
 )
+B_ARCHIVE_MAX_BYTES = 16 * 1024 * 1024
+B_ARCHIVE_TIMEOUT_SECONDS = 15
 ISOLATION_KEYS = (
     "HOME", "TMPDIR", "URUHA_MEMORY_DB_PATH", "URUHA_WEB_SESSION_DB_PATH",
     "URUHA_WEB_LOG_JSONL_PATH", "URUHA_WEB_LOG_TXT_PATH",
@@ -234,29 +238,90 @@ def _sha256(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def _b_git_archive_bytes(names: tuple[str, ...]) -> bytes:
+    """Read bounded committed source without per-file Git processes."""
+    command = ["/usr/bin/git", "-C", str(ROOT), "archive", "--format=tar",
+               "HEAD", "--", *names]
+    try:
+        process = subprocess.Popen(
+            command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+            stdin=subprocess.DEVNULL, close_fds=True,
+        )
+    except OSError as exc:
+        raise ControllerError("p4_b_committed_source_unavailable") from exc
+    chunks = []
+    total = 0
+    deadline = time.monotonic() + B_ARCHIVE_TIMEOUT_SECONDS
+    try:
+        if process.stdout is None:
+            raise ControllerError("p4_b_committed_source_unavailable")
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise ControllerError("p4_b_committed_source_timeout")
+            readable, _, _ = select.select([process.stdout], [], [], remaining)
+            if not readable:
+                raise ControllerError("p4_b_committed_source_timeout")
+            chunk = os.read(process.stdout.fileno(), min(65536, B_ARCHIVE_MAX_BYTES + 1 - total))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            total += len(chunk)
+            if total > B_ARCHIVE_MAX_BYTES:
+                raise ControllerError("p4_b_committed_source_oversize")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0 or process.wait(timeout=remaining) != 0:
+            raise ControllerError("p4_b_committed_source_unavailable")
+        return b"".join(chunks)
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        raise ControllerError("p4_b_committed_source_unavailable") from exc
+    finally:
+        if process.poll() is None:
+            process.kill()
+            process.wait()
+        if process.stdout is not None:
+            process.stdout.close()
+
+
 def _b_committed_source_snapshot() -> dict[str, str]:
     """B starts only from committed critical sources, never a mutable WIP tree.
 
     This is a cooperative local source boundary, not a code-signing authority.
     The child separately compares current source hashes to its launch receipt.
     """
+    try:
+        names = tuple(sorted(set(B_COMMITTED_SOURCES) | set(
+            product_sources.product_source_paths(ROOT))))
+    except (OSError, ValueError, product_sources.ProductSourceManifestError) as exc:
+        raise ControllerError("p4_b_product_source_manifest_invalid") from exc
+    expected_dirs = {str(Path(name).parent) for name in names if "/" in name}
+    archive = _b_git_archive_bytes(names)
     snapshot = {}
-    for name in B_COMMITTED_SOURCES:
-        path = ROOT / name
-        try:
-            info = path.lstat()
-            if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
-                raise ControllerError("p4_b_source_not_owned_regular_file")
-            live = path.read_bytes()
-            committed = subprocess.run(
-                ["/usr/bin/git", "-C", str(ROOT), "show", f"HEAD:{name}"],
-                capture_output=True, check=False, timeout=5,
-            )
-        except (OSError, subprocess.SubprocessError) as exc:
-            raise ControllerError("p4_b_committed_source_unavailable") from exc
-        if committed.returncode != 0 or live != committed.stdout:
-            raise ControllerError("p4_b_source_not_committed_or_drifted")
-        snapshot[name] = hashlib.sha256(live).hexdigest()
+    seen = set()
+    try:
+        with tarfile.open(fileobj=io.BytesIO(archive), mode="r:") as stream:
+            for member in stream:
+                name = member.name
+                if name in seen:
+                    raise ControllerError("p4_b_committed_source_duplicate")
+                seen.add(name)
+                if member.isdir():
+                    if name not in expected_dirs or member.size != 0:
+                        raise ControllerError("p4_b_committed_source_unexpected_member")
+                    continue
+                if not member.isfile() or name not in names:
+                    raise ControllerError("p4_b_committed_source_unexpected_member")
+                source = stream.extractfile(member)
+                committed = source.read() if source is not None else None
+                live = product_sources._regular_bytes(ROOT, name)
+                if committed is None or len(committed) != member.size or live != committed:
+                    raise ControllerError("p4_b_source_not_committed_or_drifted")
+                snapshot[name] = hashlib.sha256(live).hexdigest()
+    except (OSError, ValueError, tarfile.TarError,
+            product_sources.ProductSourceManifestError) as exc:
+        raise ControllerError("p4_b_committed_source_unavailable") from exc
+    if set(snapshot) != set(names) or seen != set(names) | expected_dirs:
+        raise ControllerError("p4_b_committed_source_incomplete")
     return snapshot
 
 
@@ -1156,7 +1221,7 @@ def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> 
                 or final_identity.get("command") != " ".join(expected_os)):
             raise ControllerError("p4_b_ready_dual_argv_identity_mismatch")
         expected_receipt_identity = {
-            "schema": "p4_b_private_endpoint_launch_receipt_v4",
+            "schema": "p4_b_private_endpoint_launch_receipt_v5",
             "issuer": "p4_b_private_controller",
             "run_id": binding.run_id,
             "private_root": str(binding.private_root),
