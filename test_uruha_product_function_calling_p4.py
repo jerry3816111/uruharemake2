@@ -4,6 +4,8 @@ from pathlib import Path
 import threading
 from types import SimpleNamespace
 
+import pytest
+
 import uruha_product_function_calling_p4 as product
 import uruha_read_only_function_calling_p4 as core
 
@@ -80,6 +82,96 @@ def _isolated_environment(monkeypatch):
     monkeypatch.setenv("URUHA_WEB_SESSION_DB_PATH", "/tmp/isolate/session")
     monkeypatch.setenv("URUHA_WEB_LOG_JSONL_PATH", "/tmp/isolate/log.jsonl")
     monkeypatch.setenv("URUHA_WEB_LOG_TXT_PATH", "/tmp/isolate/log.txt")
+
+
+def _clear_b_intent(monkeypatch):
+    for name in list(product.os.environ):
+        if name.upper().startswith("URUHA_P4_B_"):
+            monkeypatch.delenv(name)
+
+
+@pytest.mark.parametrize("b_intent", [
+    {"URUHA_P4_B_PRIVATE_CHILD": "1", "URUHA_P4_B_RUN_ID": "fake-run"},
+    {"URUHA_P4_B_RUN_ID": "missing-other-markers"},
+    {"URUHA_P4_B_PRIVATE_CHILD": "0"},
+    {"uruha_p4_b_private_child": "1"},
+])
+@pytest.mark.parametrize("provide_directly", [False, True])
+def test_b_explicit_status_fails_before_any_tool_effect(
+    monkeypatch, b_intent, provide_directly,
+):
+    _clear_b_intent(monkeypatch)
+    for name, value in b_intent.items():
+        monkeypatch.setenv(name, value)
+    runtime = FakeRuntime()
+    base = FakeBase(runtime)
+    original_calls = []
+    factory_calls = []
+    provider = FakeProvider()
+
+    def forbidden(*_args, **_kwargs):
+        pytest.fail("B status must stop before provider, reader, or core turn")
+
+    def make_provider():
+        factory_calls.append("factory")
+        return provider
+
+    monkeypatch.setattr(product, "_PROVIDER_FACTORY", make_provider)
+    monkeypatch.setattr(product, "read_product_runtime_status", forbidden)
+    monkeypatch.setattr(core, "run_function_call_turn", forbidden)
+    monkeypatch.setattr(core.request, "urlopen", forbidden)
+    with pytest.raises(RuntimeError, match="^p4_b_tool_route_unavailable$"):
+        product.run_product_turn_p4_c(
+            base,
+            lambda *args, **kwargs: original_calls.append((args, kwargs)),
+            EXPLICIT,
+            False,
+            provider=provider if provide_directly else None,
+        )
+    assert original_calls == []
+    assert runtime.activity_count == 0
+    assert factory_calls == []
+    assert provider.invocations == []
+
+
+def test_b_ordinary_chat_still_delegates_with_admission_values(monkeypatch):
+    _clear_b_intent(monkeypatch)
+    monkeypatch.setenv("URUHA_P4_B_PRIVATE_CHILD", "0")
+    runtime = FakeRuntime()
+    base = FakeBase(runtime)
+    claim = object()
+    calls = []
+    monkeypatch.setattr(
+        product, "_PROVIDER_FACTORY",
+        lambda: pytest.fail("ordinary B chat must not build tool provider"),
+    )
+
+    def original(*args, **kwargs):
+        calls.append((args, kwargs))
+        return {"source": "existing_chat"}
+
+    result = product.run_product_turn_p4_c(
+        base,
+        original,
+        "今日は疲れた。少しだけ聞いて。",
+        False,
+        admission_token="fake-admission-token",
+        exact_input_claim=claim,
+    )
+    assert result == {"source": "existing_chat"}
+    assert calls == [(
+        ("今日は疲れた。少しだけ聞いて。", False),
+        {
+            "input_mode": "text",
+            "acoustic_summary": None,
+            "frontend_enqueue_started": 0.0,
+            "handler_started": 0.0,
+            "admission_token": "fake-admission-token",
+            "exact_input_claim": claim,
+        },
+    )]
+    assert calls[0][1]["exact_input_claim"] is claim
+    assert runtime.activity_count == 0
 
 
 def test_live_status_reader_never_initializes_brain_or_returns_paths(monkeypatch):

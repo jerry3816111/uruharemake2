@@ -232,6 +232,10 @@ def run_product_turn_p4_c(
         # Until it has its own admission lifecycle, never report a journaled
         # browser turn as delivered without a cognition-start/end pair.
         raise RuntimeError("tool_route_admission_unavailable")
+    if any(name.upper().startswith("URUHA_P4_B_") for name in os.environ):
+        # B's private model/ledger gate does not wrap this P4-C tool provider.
+        # Reject even malformed B intent before constructing a shared provider.
+        raise RuntimeError("p4_b_tool_route_unavailable")
     base_module.RUNTIME.mark_activity()
     started = time.perf_counter()
     function_result = core.run_function_call_turn(
