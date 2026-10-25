@@ -33,6 +33,12 @@ bound, actual 20-second delivery, and A/human ratings remain separate gates.
 The independently reviewed design/patch GO is scoped to this source/fake
 change, not product readiness.
 
-Next: review the exact scoped diff, commit/push PR #435 and verify exact head;
-only then rerun one read-only committed HEAD source snapshot. If it fails,
-retain the failure. Do not retry the failed real-Ollama probe or send B.
+## Committed-source closure
+
+Scoped commit `d877632e6a102c64778ae6c3133a91a4b13174ed` was pushed to
+open PR #435; its remote head matched exactly. A single subsequent read-only
+`_b_committed_source_snapshot()` on that HEAD returned **239/239 files** in
+`0.940652s`; `uruha_brain_mac.py` SHA-256 was
+`33ec41352801ec4ebbd40fc09e71034fe0c8c44a4108ec579cfc64996dbde8f1`.
+This cached source-snapshot timing is not product latency. The test remains
+source/fake-only, and no B Send or real-Ollama retry was performed.
