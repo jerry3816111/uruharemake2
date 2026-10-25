@@ -92,7 +92,17 @@ from rightbrain_language_quality import (
 # ⚙️ Mac 雙腦系統初始化
 # ===========================
 init(autoreset=True)
-load_dotenv()
+
+
+def _load_runtime_dotenv():
+    """B child must not add ambient config after its pre-Web env binding."""
+    if any(key.upper().startswith("URUHA_P4_B_") for key in os.environ):
+        return False
+    load_dotenv()
+    return True
+
+
+_load_runtime_dotenv()
 _P4_SOURCE_EVENT_CORE_HANDOFF = ContextVar("p4_source_event_core_handoff", default=None)
 _P4_SOURCE_EVENT_SURFACE_SLOT = ContextVar("p4_source_event_surface_slot", default=None)
 
