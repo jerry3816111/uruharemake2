@@ -57,6 +57,16 @@ B_COMMITTED_SOURCES = (
     "uruha_p4_b_private_endpoint_binding.py",
     "uruha_web_ui.py",
     "uruha_compute_ledger.py",
+    "p4_b_private_zero_turn_operator.py",
+    "p4_stateful_private_evidence.py",
+    "uruha_compact_planner_p2.py",
+    "p4_b_safe_isolated_product_launcher.py",
+    "p4_b_safe_isolated_product_launcher_v2.py",
+    "p4_exec_detached_lifecycle_probe.py",
+    "p4_preference_fallback_launchd_control.py",
+    "p4_b_isolated_ollama_identity_probe.py",
+    "uruha_p4_b_resource_gate.py",
+    "uruha_p4_b_child_local_identity.py",
 )
 ISOLATION_KEYS = (
     "HOME", "TMPDIR", "URUHA_MEMORY_DB_PATH", "URUHA_WEB_SESSION_DB_PATH",
@@ -274,7 +284,9 @@ def _b_descriptor(path_arg: str, *, run_id: str):
         "schema", "private_root", "shared_models", "daemon_pid", "runner_pid",
         "daemon_port", "runner_port", "daemon_process_start", "runner_process_start",
         "daemon_binary", "runner_binary",
-    } or descriptor["schema"] != "p4_b_private_endpoint_descriptor_v1":
+        "daemon_raw_generation", "runner_raw_generation",
+        "daemon_argv_sha256", "runner_argv_sha256", "operator_source_sha256",
+    } or descriptor["schema"] != "p4_b_private_endpoint_descriptor_v2":
         raise ControllerError("p4_b_descriptor_shape_invalid")
     if descriptor["private_root"] != str(private_root):
         raise ControllerError("p4_b_descriptor_root_mismatch")
@@ -282,9 +294,27 @@ def _b_descriptor(path_arg: str, *, run_id: str):
         "daemon_pid", "runner_pid", "daemon_port", "runner_port",
     )) or any(type(descriptor[key]) is not str for key in (
         "shared_models", "daemon_process_start", "runner_process_start",
-        "daemon_binary", "runner_binary",
+        "daemon_binary", "runner_binary", "daemon_argv_sha256",
+        "runner_argv_sha256", "operator_source_sha256",
     )):
         raise ControllerError("p4_b_descriptor_value_type_invalid")
+    for field, pid in (("daemon_raw_generation", descriptor["daemon_pid"]),
+                       ("runner_raw_generation", descriptor["runner_pid"])):
+        value = descriptor[field]
+        if (type(value) is not list or len(value) != 4
+                or any(type(part) is not int for part in value)
+                or value[0] != pid or value[1] <= 0 or value[2] <= 0
+                or not (0 <= value[3] < 1_000_000)):
+            raise ControllerError("p4_b_descriptor_raw_generation_invalid")
+    if descriptor["runner_raw_generation"][1] != descriptor["daemon_pid"]:
+        raise ControllerError("p4_b_descriptor_runner_parent_invalid")
+    if any(not re.fullmatch(r"[0-9a-f]{64}", descriptor[key]) for key in (
+        "daemon_argv_sha256", "runner_argv_sha256", "operator_source_sha256",
+    )):
+        raise ControllerError("p4_b_descriptor_digest_invalid")
+    if (_b_committed_source_snapshot()["p4_b_private_zero_turn_operator.py"]
+            != descriptor["operator_source_sha256"]):
+        raise ControllerError("p4_b_descriptor_operator_source_drift")
     binding = PrivateEndpointBinding(
         run_id=run_id, private_root=private_root,
         shared_models=Path(descriptor["shared_models"]),
@@ -295,10 +325,105 @@ def _b_descriptor(path_arg: str, *, run_id: str):
         daemon_port=descriptor["daemon_port"], runner_port=descriptor["runner_port"],
         daemon_process_start=descriptor["daemon_process_start"],
         runner_process_start=descriptor["runner_process_start"],
+        daemon_raw_generation=tuple(descriptor["daemon_raw_generation"]),
+        runner_raw_generation=tuple(descriptor["runner_raw_generation"]),
+        daemon_argv_sha256=descriptor["daemon_argv_sha256"],
+        runner_argv_sha256=descriptor["runner_argv_sha256"],
+        operator_source_sha256=descriptor["operator_source_sha256"],
         daemon_binary=Path(descriptor["daemon_binary"]),
         runner_binary=Path(descriptor["runner_binary"]),
     )
     return binding
+
+
+def _b_ps_start(pid: int) -> str:
+    """External audit witness; this seconds-level value is not raw generation."""
+    try:
+        result = subprocess.run(
+            ["/bin/ps", "-p", str(pid), "-o", "lstart="],
+            capture_output=True, text=True, timeout=3, check=True,
+        )
+        value = result.stdout.strip()
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ControllerError("p4_b_ps_generation_unavailable") from exc
+    if not re.fullmatch(r"[A-Za-z]{3} [A-Za-z]{3} +\d{1,2} \d\d:\d\d:\d\d \d{4}", value):
+        raise ControllerError("p4_b_ps_generation_unavailable")
+    return value
+
+
+def _b_ps_daemon_environment(pid: int, expected_models: str) -> None:
+    """Retain the operator's external environment witness without logging it."""
+    if any(character.isspace() for character in expected_models):
+        raise ControllerError("p4_b_daemon_environment_ambiguous")
+    try:
+        result = subprocess.run(
+            ["/bin/ps", "-wwE", "-p", str(pid), "-o", "command="],
+            capture_output=True, text=True, timeout=3, check=True,
+        )
+        command = result.stdout.strip()
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise ControllerError("p4_b_daemon_environment_unavailable") from exc
+    if (re.findall(r"(?:^|\s)OLLAMA_MODELS=(\S+)", command) != [expected_models]
+            or re.findall(r"(?:^|\s)OLLAMA_NO_CLOUD=(\S+)", command) != ["1"]):
+        raise ControllerError("p4_b_daemon_environment_drift")
+
+
+def _b_controller_witness(binding) -> None:
+    """Compare descriptor identity with fresh raw, ps, listener and argv witnesses.
+
+    This runs outside the sandbox; the child independently uses the B-only OS
+    observer without ps. No full argv or environment enters logs or receipts.
+    """
+    import p4_b_isolated_ollama_identity_probe as model_identity
+    import uruha_p4_b_child_local_identity as child_identity
+
+    try:
+        before = (child_identity.raw_generation(binding.daemon_pid),
+                  child_identity.raw_generation(binding.runner_pid))
+        if before != (binding.daemon_raw_generation, binding.runner_raw_generation):
+            raise ControllerError("p4_b_controller_raw_generation_drift")
+        if (_b_ps_start(binding.daemon_pid) != binding.daemon_process_start
+                or _b_ps_start(binding.runner_pid) != binding.runner_process_start):
+            raise ControllerError("p4_b_controller_ps_generation_drift")
+        _b_ps_daemon_environment(binding.daemon_pid,
+                                 str(binding.private_root / "models"))
+        daemon_ps = model_identity._process(binding.daemon_pid)
+        runner_ps = model_identity._process(binding.runner_pid)
+        model_identity._process_identity(
+            daemon_pid=binding.daemon_pid, runner_pid=binding.runner_pid,
+            daemon_port=binding.daemon_port, runner_port=binding.runner_port,
+            daemon_binary=binding.daemon_binary, runner_binary=binding.runner_binary,
+            model_blob=binding.private_root / "models" / "blobs"
+                       / f"sha256-{model_identity.GGUF_SHA256}",
+            expected=model_identity.FROZEN_MODEL,
+        )
+        daemon = child_identity.observe_process(binding.daemon_pid, {
+            "OLLAMA_MODELS": str(binding.private_root / "models"),
+            "OLLAMA_NO_CLOUD": "1",
+        })
+        runner = child_identity.observe_process(binding.runner_pid)
+        if (daemon_ps != (daemon.ppid, list(daemon.argv))
+                or runner_ps != (runner.ppid, list(runner.argv))
+                or (daemon.pid, daemon.ppid, daemon.start_sec, daemon.start_usec)
+                   != binding.daemon_raw_generation
+                or (runner.pid, runner.ppid, runner.start_sec, runner.start_usec)
+                   != binding.runner_raw_generation
+                or runner.ppid != daemon.pid
+                or daemon.env_exact != {"OLLAMA_MODELS": True, "OLLAMA_NO_CLOUD": True}
+                or child_identity.argv_digest(daemon) != binding.daemon_argv_sha256
+                or child_identity.argv_digest(runner) != binding.runner_argv_sha256
+                or not child_identity.owns_loopback_listener(
+                    binding.daemon_pid, binding.daemon_port)
+                or not child_identity.owns_loopback_listener(
+                    binding.runner_pid, binding.runner_port)):
+            raise ControllerError("p4_b_controller_identity_drift")
+        after = (child_identity.raw_generation(binding.daemon_pid),
+                 child_identity.raw_generation(binding.runner_pid))
+        if after != before:
+            raise ControllerError("p4_b_controller_raw_generation_drift")
+    except (OSError, ValueError, child_identity.ProbeError,
+            model_identity.ProbeError) as exc:
+        raise ControllerError("p4_b_controller_identity_unavailable") from exc
 
 
 def _b_claim_model_root(binding) -> None:
@@ -340,6 +465,7 @@ def _b_static_preflight(root: Path, layout: dict, python: str,
         raise ControllerError("p4_b_proxy_environment_forbidden")
     try:
         canonical_b_env_digest(env)
+        _b_controller_witness(binding)
         preflight_private_endpoint_identity(binding)
     except Exception as exc:
         raise ControllerError(f"p4_b_private_identity_preflight_failed:{type(exc).__name__}") from exc
@@ -854,6 +980,7 @@ def start(*, mode: str, python: str | None, reuse_runtime_root: str | None = Non
         if _b_committed_source_snapshot() != source_snapshot:
             raise ControllerError("p4_b_source_changed_before_child_start")
         try:
+            _b_controller_witness(binding)
             binding = issue_private_child_receipt(
                 binding=binding, runtime_root=root, environ=env,
                 entrypoint=ENTRYPOINT,
@@ -1029,7 +1156,7 @@ def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> 
                 or final_identity.get("command") != " ".join(expected_os)):
             raise ControllerError("p4_b_ready_dual_argv_identity_mismatch")
         expected_receipt_identity = {
-            "schema": "p4_b_private_endpoint_launch_receipt_v3",
+            "schema": "p4_b_private_endpoint_launch_receipt_v4",
             "issuer": "p4_b_private_controller",
             "run_id": binding.run_id,
             "private_root": str(binding.private_root),
@@ -1044,6 +1171,11 @@ def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> 
             "runner_port": binding.runner_port,
             "daemon_process_start": binding.daemon_process_start,
             "runner_process_start": binding.runner_process_start,
+            "daemon_raw_generation": list(binding.daemon_raw_generation),
+            "runner_raw_generation": list(binding.runner_raw_generation),
+            "daemon_argv_sha256": binding.daemon_argv_sha256,
+            "runner_argv_sha256": binding.runner_argv_sha256,
+            "operator_source_sha256": binding.operator_source_sha256,
             "daemon_binary": str(binding.daemon_binary),
             "runner_binary": str(binding.runner_binary),
             **private_child_source_digests(ENTRYPOINT),
@@ -1057,6 +1189,7 @@ def _b_ready_launch_record(root: Path, metadata: dict, final_identity: dict) -> 
                 or binding.daemon_port != launch["daemon_port"]
                 or binding.runner_port != launch["runner_port"]):
             raise ControllerError("p4_b_ready_receipt_identity_mismatch")
+        _b_controller_witness(binding)
         preflight_private_endpoint_identity(binding)
     except (OSError, KeyError, PrivateEndpointBindingError) as exc:
         raise ControllerError("p4_b_ready_private_identity_unavailable") from exc

@@ -203,6 +203,11 @@ def _binding_from_receipt(
     *, root: Path, path: Path, receipt: dict, digest: str,
 ) -> binding_module.PrivateEndpointBinding:
     try:
+        for key in ("daemon_raw_generation", "runner_raw_generation"):
+            value = receipt[key]
+            if (type(value) is not list or len(value) != 4
+                    or any(type(part) is not int for part in value)):
+                _fail("private_child_receipt_raw_generation_invalid")
         binding = binding_module.PrivateEndpointBinding(
             run_id=receipt["run_id"], private_root=root,
             shared_models=Path(receipt["shared_models"]),
@@ -212,6 +217,11 @@ def _binding_from_receipt(
             daemon_port=receipt["daemon_port"], runner_port=receipt["runner_port"],
             daemon_process_start=receipt["daemon_process_start"],
             runner_process_start=receipt["runner_process_start"],
+            daemon_raw_generation=tuple(receipt["daemon_raw_generation"]),
+            runner_raw_generation=tuple(receipt["runner_raw_generation"]),
+            daemon_argv_sha256=receipt["daemon_argv_sha256"],
+            runner_argv_sha256=receipt["runner_argv_sha256"],
+            operator_source_sha256=receipt["operator_source_sha256"],
             daemon_binary=Path(receipt["daemon_binary"]),
             runner_binary=Path(receipt["runner_binary"]),
         )

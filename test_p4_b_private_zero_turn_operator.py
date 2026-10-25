@@ -13,6 +13,16 @@ import pytest
 import p4_b_private_zero_turn_operator as operator
 
 
+def _descriptor_identity() -> dict:
+    return {
+        "daemon_raw_generation": (400, 399, 1729818123, 111111),
+        "runner_raw_generation": (401, 400, 1729818124, 222222),
+        "daemon_argv_sha256": "b" * 64,
+        "runner_argv_sha256": "c" * 64,
+        "operator_source_sha256": "a" * 64,
+    }
+
+
 def test_cli_without_explicit_execute_never_calls_runtime(monkeypatch, capsys):
     monkeypatch.setattr(operator, "run_once", lambda: pytest.fail("runtime must remain inert"))
     assert operator.main([]) == 2
@@ -26,6 +36,7 @@ def test_prepared_cache_and_warm_use_child_python_without_mutating_home(tmp_path
     original_home = os.environ.get("HOME")
     original_tmpdir = os.environ.get("TMPDIR")
     calls = []
+    monkeypatch.setattr(operator, "_committed_stateful_source_sha", lambda: "e" * 64)
     monkeypatch.setattr(operator.control, "prepare", lambda: {"runtime_root": str(root)})
 
     def fake_run(command, **kwargs):
@@ -52,6 +63,7 @@ def test_warm_failure_does_not_start_daemon_or_mutate_parent_environment(tmp_pat
     root = tmp_path / "prepared"
     monkeypatch.setattr(operator.control, "prepare", lambda: {"runtime_root": str(root)})
     calls = []
+    monkeypatch.setattr(operator, "_committed_stateful_source_sha", lambda: "e" * 64)
 
     def fake_run(command, **kwargs):
         calls.append(command[2])
@@ -70,12 +82,41 @@ def test_warm_failure_does_not_start_daemon_or_mutate_parent_environment(tmp_pat
 def test_warm_failure_still_reports_created_one_use_root(tmp_path, monkeypatch):
     root = tmp_path / "prepared"
     observed = []
+    monkeypatch.setattr(operator, "_committed_stateful_source_sha", lambda: "e" * 64)
     monkeypatch.setattr(operator.control, "prepare", lambda: {"runtime_root": str(root)})
     monkeypatch.setattr(operator.subprocess, "run", lambda command, **kwargs: SimpleNamespace(
         returncode=2, stdout="", stderr="ignored private error"))
     with pytest.raises(operator.OperatorError, match="private_onnx_cache_failed"):
         operator._prepare_product_root(observed.append)
     assert observed == [root]
+
+
+def test_stateful_source_drift_before_cache_prevents_root_and_subprocess(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(operator, "_committed_stateful_source_sha", lambda: "f" * 64)
+    monkeypatch.setattr(operator.control, "prepare", lambda: calls.append("root"))
+    monkeypatch.setattr(operator.subprocess, "run", lambda *args, **kwargs: calls.append("subprocess"))
+    with pytest.raises(operator.OperatorError, match="stateful_evidence_source_drift_before_cache"):
+        operator._prepare_product_root(expected_evidence_sha256="e" * 64)
+    assert calls == []
+
+
+def test_stateful_source_drift_between_cache_and_warm_prevents_warm_and_daemon(tmp_path, monkeypatch):
+    root = tmp_path / "prepared"
+    checks = iter(["e" * 64, "e" * 64, "e" * 64, "f" * 64])
+    calls = []
+    monkeypatch.setattr(operator, "_committed_stateful_source_sha", lambda: next(checks))
+    monkeypatch.setattr(operator.control, "prepare", lambda: {"runtime_root": str(root)})
+    def fake_run(command, **kwargs):
+        calls.append(command[2])
+        return SimpleNamespace(returncode=0, stdout=json.dumps({
+            "sha256": operator.control.ONNX_ARCHIVE_SHA256,
+        }))
+    monkeypatch.setattr(operator.subprocess, "run", fake_run)
+    monkeypatch.setattr(operator, "_launch_daemon", lambda _: pytest.fail("daemon started"))
+    with pytest.raises(operator.OperatorError, match="stateful_evidence_source_drift_before_warm"):
+        operator._prepare_product_root(expected_evidence_sha256="e" * 64)
+    assert calls == ["cache"]
 
 
 @pytest.mark.parametrize("via_alias", [False, True])
@@ -125,25 +166,34 @@ def test_clone_only_six_explicit_files_with_distinct_inodes(tmp_path, monkeypatc
         assert private.stat().st_nlink == 1
         assert private.stat().st_mode & 0o777 == 0o600
     descriptor = operator._write_descriptor(root, 401, 51234, 400,
-                                            "daemon-start", "runner-start")
+                                            "daemon-start", "runner-start",
+                                            **_descriptor_identity())
     assert json.loads(descriptor.read_text())["private_root"] == str(root)
     assert operator._daemon_environment(root)["OLLAMA_MODELS"] == str(root / "models")
+    monkeypatch.setattr(operator.control, "_b_committed_source_snapshot", lambda: {
+        "p4_b_private_zero_turn_operator.py": "a" * 64,
+    })
     parsed = operator.control._b_descriptor(str(descriptor), run_id="0123456789abcdef")
     assert parsed.private_root == root
+    assert parsed.runner_raw_generation == _descriptor_identity()["runner_raw_generation"]
 
 
 def test_descriptor_is_exact_single_link_0600_and_exclusive(tmp_path):
     root = tmp_path / "private"
     root.mkdir(mode=0o700)
-    path = operator._write_descriptor(root, 401, 51234, 400, "daemon-start", "runner-start")
+    path = operator._write_descriptor(root, 401, 51234, 400, "daemon-start", "runner-start",
+                                      **_descriptor_identity())
     data = json.loads(path.read_text())
     assert set(data) == operator.DESCRIPTOR_FIELDS
+    assert data["schema"] == "p4_b_private_endpoint_descriptor_v2"
+    assert data["runner_raw_generation"] == [401, 400, 1729818124, 222222]
     assert data["daemon_port"] == operator.DAEMON_PORT
     assert data["runner_port"] == 51234
     assert path.stat().st_mode & 0o777 == 0o600
     assert path.stat().st_nlink == 1
     with pytest.raises(FileExistsError):
-        operator._write_descriptor(root, 401, 51234, 400, "daemon-start", "runner-start")
+        operator._write_descriptor(root, 401, 51234, 400, "daemon-start", "runner-start",
+                                   **_descriptor_identity())
 
 
 def test_daemon_readiness_uses_one_version_http_without_retry(monkeypatch):
@@ -169,6 +219,34 @@ def test_daemon_wrong_version_is_terminal_no_retry(monkeypatch):
     assert len(calls) == 1
 
 
+def test_external_ps_generation_remains_available_after_child_ps_removal(monkeypatch):
+    expected = "Sun Oct 25 01:02:03 2026"
+    monkeypatch.setattr(operator.subprocess, "run", lambda argv, **kwargs: SimpleNamespace(
+        returncode=0, stdout=expected + "\n"))
+    assert operator._generation(400) == expected
+
+
+def test_first_raw_identity_rejects_same_second_replacement_before_digest(monkeypatch):
+    original = (401, 400, 1729818124, 111111)
+    changed = (401, 400, 1729818124, 222222)
+    snapshot = operator.child_identity.ProcessSnapshot(
+        *changed, str(operator.RUNNER_BINARY), (str(operator.RUNNER_BINARY), "--offline"), {},
+    )
+    monkeypatch.setattr(operator, "_same_process", lambda *args, **kwargs: True)
+    monkeypatch.setattr(operator, "_process_argv", lambda pid: (
+        400, [str(operator.RUNNER_BINARY), "--offline"]))
+    monkeypatch.setattr(operator, "_listener_pids", lambda port: frozenset({401}))
+    monkeypatch.setattr(operator.child_identity, "observe_process", lambda *args, **kwargs: snapshot)
+    monkeypatch.setattr(operator.child_identity, "raw_generation", lambda pid: changed)
+    monkeypatch.setattr(operator.child_identity, "owns_loopback_listener", lambda *args: True)
+    with pytest.raises(operator.OperatorError, match="private_process_raw_identity_drift"):
+        operator._capture_raw_identity(
+            401, original, "Sun Oct 25 01:02:04 2026",
+            operator.RUNNER_BINARY, 55132, daemon=False, parent=400,
+            expected_argv=snapshot.argv,
+        )
+
+
 def test_render_only_nonempty_reply_captures_exact_runner_then_refuses(monkeypatch):
     calls = []
     monkeypatch.setattr(operator.probe, "_http_json", lambda *args: {
@@ -178,28 +256,33 @@ def test_render_only_nonempty_reply_captures_exact_runner_then_refuses(monkeypat
         "_debug_info": {"rendered_template": f"User Input: {operator.probe.FIXTURE}"},
     })
     monkeypatch.setattr(operator, "_owned_runner_snapshots", lambda *args: (
-        [(401, 51234, "daemon", "runner", (str(operator.RUNNER_BINARY), "--offline"))], False))
+        [(401, 51234, "daemon", "runner", (str(operator.RUNNER_BINARY), "--offline"),
+          (401, 400, 1729818124, 222222))], False))
     monkeypatch.setattr(operator, "_listener_pids", lambda port: frozenset({401}))
     counts = {}
     with pytest.raises(operator.OperatorError, match="render_only_not_zero_completion"):
         operator._load_runner_and_identify(
             400, Path("/tmp/private"), counts,
-            lambda pid, port, generation, argv: calls.append((pid, port, generation, argv)))
+            lambda pid, port, generation, argv, raw: calls.append((pid, port, generation, argv, raw)))
     assert counts["operator_diagnostic_http_count"] == 1
-    assert calls == [(401, 51234, "runner", (str(operator.RUNNER_BINARY), "--offline"))]
+    assert calls == [(401, 51234, "runner", (str(operator.RUNNER_BINARY), "--offline"),
+                      (401, 400, 1729818124, 222222))]
 
 
 def test_cleanup_refuses_pid_generation_drift_before_any_signal(monkeypatch):
     signals = []
+    monkeypatch.setattr(operator, "_first_raw_generation", lambda pid: (401, 400, 1729818124, 222222))
     monkeypatch.setattr(operator, "_generation", lambda pid: "replacement")
     monkeypatch.setattr(operator.os, "kill", lambda pid, sig: signals.append((pid, sig)))
     assert operator._stop_exact(401, "original", operator.RUNNER_BINARY,
-                                daemon=False, expected_parent=400) == "identity_drift_no_signal"
+                                daemon=False, expected_parent=400,
+                                expected_raw=(401, 400, 1729818124, 222222)) == "identity_drift_no_signal"
     assert signals == []
 
 
 def test_cleanup_refuses_argv_drift_even_with_same_pid_generation(monkeypatch):
     signals = []
+    monkeypatch.setattr(operator, "_first_raw_generation", lambda pid: (401, 400, 1729818124, 222222))
     monkeypatch.setattr(operator, "_generation", lambda pid: "same-generation")
     monkeypatch.setattr(operator, "_process_argv", lambda pid: (
         400, [str(operator.RUNNER_BINARY), "--offline", "--model", "wrong.gguf"]))
@@ -208,6 +291,7 @@ def test_cleanup_refuses_argv_drift_even_with_same_pid_generation(monkeypatch):
         401, "same-generation", operator.RUNNER_BINARY, daemon=False,
         expected_parent=400,
         expected_argv=(str(operator.RUNNER_BINARY), "--offline", "--model", "expected.gguf"),
+        expected_raw=(401, 400, 1729818124, 222222),
     )
     assert result == "identity_drift_no_signal"
     assert signals == []
@@ -216,12 +300,48 @@ def test_cleanup_refuses_argv_drift_even_with_same_pid_generation(monkeypatch):
 def test_cleanup_signals_only_exact_captured_pid(monkeypatch):
     calls = []
     generations = iter(["original", None])
+    monkeypatch.setattr(operator, "_first_raw_generation", lambda pid: (401, 400, 1729818124, 222222))
+    monkeypatch.setattr(operator, "_pid_absent", lambda pid: True)
     monkeypatch.setattr(operator, "_generation", lambda pid: next(generations))
     monkeypatch.setattr(operator, "_same_process", lambda *args, **kwargs: True)
     monkeypatch.setattr(operator.os, "kill", lambda pid, sig: calls.append((pid, sig)))
     assert operator._stop_exact(401, "original", operator.RUNNER_BINARY,
-                                daemon=False, expected_parent=400) == "terminated"
+                                daemon=False, expected_parent=400,
+                                expected_raw=(401, 400, 1729818124, 222222)) == "terminated"
     assert calls == [(401, operator.signal.SIGTERM)]
+
+
+def test_cleanup_same_second_raw_replacement_and_uncaptured_runner_never_signal(monkeypatch):
+    signals = []
+    monkeypatch.setattr(operator, "_first_raw_generation", lambda pid: (
+        401, 400, 1729818124, 222222))
+    monkeypatch.setattr(operator, "_pid_absent", lambda pid: False)
+    monkeypatch.setattr(operator, "_generation", lambda pid: "Sun Oct 25 01:02:04 2026")
+    monkeypatch.setattr(operator.os, "kill", lambda pid, sig: signals.append((pid, sig)))
+    assert operator._stop_exact(
+        401, "Sun Oct 25 01:02:04 2026", operator.RUNNER_BINARY,
+        daemon=False, expected_parent=400,
+        expected_raw=(401, 400, 1729818124, 111111),
+    ) == "raw_generation_drift_no_signal"
+    assert operator._stop_exact(
+        401, "Sun Oct 25 01:02:04 2026", operator.RUNNER_BINARY,
+        daemon=False, expected_parent=400,
+    ) == "raw_generation_not_captured_no_signal"
+    assert signals == []
+
+
+def test_cleanup_ps_observer_failure_does_not_claim_exit_or_signal(monkeypatch):
+    calls = []
+    raw = (401, 400, 1729818124, 111111)
+    monkeypatch.setattr(operator, "_first_raw_generation", lambda pid: raw)
+    monkeypatch.setattr(operator, "_generation", lambda pid: None)
+    monkeypatch.setattr(operator, "_pid_absent", lambda pid: False)
+    monkeypatch.setattr(operator.os, "kill", lambda pid, sig: calls.append((pid, sig)))
+    assert operator._stop_exact(
+        401, "Sun Oct 25 01:02:04 2026", operator.RUNNER_BINARY,
+        daemon=False, expected_raw=raw,
+    ) == "ps_generation_unavailable_no_signal"
+    assert calls == []
 
 
 @pytest.mark.parametrize("pids, expected", [([], "private_runner_not_ready"),
@@ -234,7 +354,8 @@ def test_runner_discovery_rejects_missing_or_multiple_daemon_children(monkeypatc
         "_debug_info": {"rendered_template": f"User Input: {operator.probe.FIXTURE}"},
     })
     monkeypatch.setattr(operator, "_owned_runner_snapshots", lambda *args: (
-        [(pid, 51234 + index, "daemon", "runner", ("runner",))
+        [(pid, 51234 + index, "daemon", "runner", ("runner",),
+          (pid, 400, 1729818124, 222222))
          for index, pid in enumerate(pids)], False))
     monotonic = iter([0, 0, 11] if not pids else [0, 0])
     monkeypatch.setattr(operator.time, "monotonic", lambda: next(monotonic))
@@ -286,7 +407,7 @@ def _fake_run_env(monkeypatch, tmp_path, *, ready_error=False, disk_overrun=Fals
         "shared_listener_pids": [1529], "shared_process_generations": {1529: "shared"},
         "free_bytes_before": free,
     })
-    monkeypatch.setattr(operator, "_prepare_product_root", lambda callback: (
+    monkeypatch.setattr(operator, "_prepare_product_root", lambda callback, **kwargs: (
         callback(product), events.append("warm"), product)[2])
     monkeypatch.setattr(operator, "_clone_private_model", lambda callback: (
         callback(private), events.append("clone"), (private, 4_683_073_952))[2])
@@ -297,6 +418,13 @@ def _fake_run_env(monkeypatch, tmp_path, *, ready_error=False, disk_overrun=Fals
         monkeypatch.setattr(operator, "_available_bytes", lambda: free)
     monkeypatch.setattr(operator, "_listener_pids", lambda port: frozenset({1529}) if port == 11434 else frozenset())
     monkeypatch.setattr(operator, "_launch_daemon", lambda root: events.append("daemon") or daemon)
+    monkeypatch.setattr(operator, "_committed_operator_source_sha", lambda: "a" * 64)
+    monkeypatch.setattr(operator, "_committed_stateful_source_sha", lambda: "e" * 64)
+    monkeypatch.setattr(operator.child_identity, "raw_generation", lambda pid: {
+        400: (400, 399, 1729818123, 111111),
+        401: (401, 400, 1729818124, 222222),
+    }[pid])
+    monkeypatch.setattr(operator, "_capture_raw_identity", lambda *args, **kwargs: "b" * 64)
     monkeypatch.setattr(operator, "_generation", lambda pid: {400: "daemon", 401: "runner", 1529: "shared"}.get(pid))
     monkeypatch.setattr(operator, "_same_process", lambda *args, **kwargs: True)
     monkeypatch.setattr(operator, "_wait_daemon", lambda pid, state: state.__setitem__(
@@ -304,7 +432,8 @@ def _fake_run_env(monkeypatch, tmp_path, *, ready_error=False, disk_overrun=Fals
 
     def fake_runner(pid, private_root, state, callback):
         state["operator_diagnostic_http_count"] += 1
-        callback(401, 51234, "runner", (str(operator.RUNNER_BINARY), "--offline"))
+        callback(401, 51234, "runner", (str(operator.RUNNER_BINARY), "--offline"),
+                 (401, 400, 1729818124, 222222))
         return 401, 51234, "daemon", "runner", (str(operator.RUNNER_BINARY), "--offline")
 
     monkeypatch.setattr(operator, "_load_runner_and_identify", fake_runner)
@@ -321,7 +450,7 @@ def _fake_run_env(monkeypatch, tmp_path, *, ready_error=False, disk_overrun=Fals
         return {"diagnostic_http_calls": 5, "generated_completions": 0}
 
     monkeypatch.setattr(operator.probe, "probe", fake_probe)
-    monkeypatch.setattr(operator, "_write_descriptor", lambda *args: events.append("descriptor") or
+    monkeypatch.setattr(operator, "_write_descriptor", lambda *args, **kwargs: events.append("descriptor") or
                         private / "descriptor")
     monkeypatch.setattr(operator, "_sha256", lambda path: "0" * 64)
     monkeypatch.setattr(operator, "_sample_pid", lambda pid: None)
@@ -407,7 +536,8 @@ def test_render_only_failure_after_runner_capture_exactly_cleans_both(monkeypatc
 
     def fail_after_capture(pid, private_root, state, callback):
         state["operator_diagnostic_http_count"] += 1
-        callback(401, 51234, "runner", (str(operator.RUNNER_BINARY), "--offline"))
+        callback(401, 51234, "runner", (str(operator.RUNNER_BINARY), "--offline"),
+                 (401, 400, 1729818124, 222222))
         raise operator.OperatorError("render_only_not_zero_completion")
 
     monkeypatch.setattr(operator, "_load_runner_and_identify", fail_after_capture)

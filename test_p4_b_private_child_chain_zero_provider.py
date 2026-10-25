@@ -50,6 +50,12 @@ def _child(root: Path, *, controller_issued: bool = False) -> int:
         daemon_pid=101, runner_pid=102, daemon_port=11455, runner_port=55132,
         daemon_process_start="Sun Oct 25 01:02:03 2026",
         runner_process_start="Sun Oct 25 01:02:04 2026",
+        daemon_raw_generation=(101, 1, 1792890123, 123456),
+        runner_raw_generation=(102, 101, 1792890124, 654321),
+        daemon_argv_sha256="a" * 64,
+        runner_argv_sha256="b" * 64,
+        operator_source_sha256=identity.private_child_source_digests(entry)[
+            "operator_source_sha256"],
         daemon_binary=private / "ollama", runner_binary=private / "runner",
     )
     env = {
@@ -174,14 +180,23 @@ def test_controller_final_env_to_same_fake_child_chain(tmp_path, monkeypatch):
 
     private = (tmp_path / "controller-private-model").resolve()
     private.mkdir(mode=0o700)
+    entry = Path(identity.__file__).resolve().with_name(
+        "uruha_web_ui_product_p4_preference_fallback.py")
+    operator_sha = identity.private_child_source_digests(entry)[
+        "operator_source_sha256"]
     descriptor = private / control.B_DESCRIPTOR_NAME
     descriptor.write_text(json.dumps({
-        "schema": "p4_b_private_endpoint_descriptor_v1",
+        "schema": "p4_b_private_endpoint_descriptor_v2",
         "private_root": str(private), "shared_models": str((tmp_path / "shared").resolve()),
         "daemon_pid": 101, "runner_pid": 102,
         "daemon_port": 11455, "runner_port": 55132,
         "daemon_process_start": "Sun Oct 25 01:02:03 2026",
         "runner_process_start": "Sun Oct 25 01:02:04 2026",
+        "daemon_raw_generation": [101, 1, 1792890123, 123456],
+        "runner_raw_generation": [102, 101, 1792890124, 654321],
+        "daemon_argv_sha256": "a" * 64,
+        "runner_argv_sha256": "b" * 64,
+        "operator_source_sha256": operator_sha,
         "daemon_binary": str(private / "ollama"),
         "runner_binary": str(private / "runner"),
     }))
@@ -219,8 +234,10 @@ def test_controller_final_env_to_same_fake_child_chain(tmp_path, monkeypatch):
     monkeypatch.setattr(control, "_validate_prepared_cache", lambda _root: None)
     monkeypatch.setattr(control, "_require_vacant", lambda: None)
     monkeypatch.setattr(control, "_b_committed_source_snapshot", lambda: {
-        name: "a" * 64 for name in control.B_COMMITTED_SOURCES
+        name: (operator_sha if name == "p4_b_private_zero_turn_operator.py"
+               else "a" * 64) for name in control.B_COMMITTED_SOURCES
     })
+    monkeypatch.setattr(control, "_b_controller_witness", lambda _binding: None)
     monkeypatch.setattr(control.sandbox, "write_sandbox_profile", profile)
     monkeypatch.setattr(control, "_calibrate_python_command", lambda *_args, **_kwargs: {
         "python_ps_executable": str(Path("/bin/sleep").resolve(strict=True)),

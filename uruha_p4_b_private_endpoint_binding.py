@@ -15,7 +15,6 @@ import os
 from pathlib import Path
 import re
 import stat
-import subprocess
 import time
 from typing import Mapping, Sequence
 
@@ -29,8 +28,10 @@ from p4_b_isolated_ollama_identity_probe import (
     TEMPLATE_SHA256,
     ProbeError,
     _model_store,
-    _process_identity,
+    _regular_single_link,
+    _sha256_file as _model_sha256_file,
 )
+import uruha_p4_b_child_local_identity as child_identity
 from uruha_compute_ledger import ComputeLedger
 from uruha_p4_b_resource_gate import P4BResourceGate
 
@@ -38,16 +39,25 @@ from uruha_p4_b_resource_gate import P4BResourceGate
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _RUN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z")
 _RECEIPT_NAME = "p4_b_private_endpoint_launch_receipt.json"
-_RECEIPT_SCHEMA = "p4_b_private_endpoint_launch_receipt_v3"
+_RECEIPT_SCHEMA = "p4_b_private_endpoint_launch_receipt_v4"
 _RECEIPT_FIELDS = frozenset({
     "schema", "issuer", "run_id", "private_root", "models_path", "base_url",
     "shared_models", "runtime_root", "launch_env_sha256",
     "entrypoint_sha256", "bootstrap_sha256", "binding_source_sha256",
+    "controller_source_sha256",
     "web_source_sha256", "ledger_source_sha256",
     "expected_final_argv_sha256", "expected_os_final_argv",
     "expected_inprocess_python_argv_sha256",
     "daemon_pid", "runner_pid", "daemon_port", "runner_port",
     "daemon_process_start", "runner_process_start", "ollama_models",
+    "daemon_raw_generation", "runner_raw_generation",
+    "daemon_argv_sha256", "runner_argv_sha256", "operator_source_sha256",
+    "launcher_source_sha256", "sandbox_source_sha256",
+    "lifecycle_source_sha256", "launchd_source_sha256",
+    "private_evidence_source_sha256",
+    "compact_planner_source_sha256",
+    "identity_probe_source_sha256", "resource_gate_source_sha256",
+    "child_observer_source_sha256",
     "ollama_no_cloud", "daemon_binary", "runner_binary",
     "daemon_binary_sha256", "runner_binary_sha256", "manifest_sha256",
     "gguf_sha256", "template_sha256", "system_sha256",
@@ -83,6 +93,11 @@ class PrivateEndpointBinding:
     runner_port: int
     daemon_process_start: str
     runner_process_start: str
+    daemon_raw_generation: tuple[int, int, int, int]
+    runner_raw_generation: tuple[int, int, int, int]
+    daemon_argv_sha256: str
+    runner_argv_sha256: str
+    operator_source_sha256: str
     daemon_binary: Path
     runner_binary: Path
 
@@ -150,8 +165,22 @@ def private_child_source_digests(entrypoint: Path) -> dict[str, str]:
         "entrypoint_sha256": _sha256_file(entrypoint),
         "bootstrap_sha256": _sha256_file(root / _BOOTSTRAP_NAME),
         "binding_source_sha256": _sha256_file(root / Path(__file__).name),
+        "controller_source_sha256": _sha256_file(
+            root / "p4_preference_fallback_detached_control.py"),
         "web_source_sha256": _sha256_file(root / "uruha_web_ui.py"),
         "ledger_source_sha256": _sha256_file(root / "uruha_compute_ledger.py"),
+        "operator_source_sha256": _sha256_file(root / "p4_b_private_zero_turn_operator.py"),
+        "private_evidence_source_sha256": _sha256_file(
+            root / "p4_stateful_private_evidence.py"),
+        "compact_planner_source_sha256": _sha256_file(
+            root / "uruha_compact_planner_p2.py"),
+        "launcher_source_sha256": _sha256_file(root / "p4_b_safe_isolated_product_launcher.py"),
+        "sandbox_source_sha256": _sha256_file(root / "p4_b_safe_isolated_product_launcher_v2.py"),
+        "lifecycle_source_sha256": _sha256_file(root / "p4_exec_detached_lifecycle_probe.py"),
+        "launchd_source_sha256": _sha256_file(root / "p4_preference_fallback_launchd_control.py"),
+        "identity_probe_source_sha256": _sha256_file(root / "p4_b_isolated_ollama_identity_probe.py"),
+        "resource_gate_source_sha256": _sha256_file(root / "uruha_p4_b_resource_gate.py"),
+        "child_observer_source_sha256": _sha256_file(root / "uruha_p4_b_child_local_identity.py"),
     }
 
 
@@ -219,74 +248,84 @@ def _receipt(binding: PrivateEndpointBinding) -> dict:
     return value
 
 
-def _process_start(pid: int) -> str:
+def _one_arg(args: tuple[str, ...], flag: str) -> str:
+    if args.count(flag) != 1:
+        _fail("private_runner_flag_drift")
+    index = args.index(flag)
+    if index + 1 >= len(args) or args[index + 1].startswith("--"):
+        _fail("private_runner_flag_drift")
+    return args[index + 1]
+
+
+def _same_binary_observation(observed: child_identity.ProcessSnapshot, binary: Path) -> bool:
+    if not observed.argv:
+        return False
     try:
-        result = subprocess.run(
-            ["/bin/ps", "-p", str(pid), "-o", "lstart="],
-            capture_output=True, text=True, timeout=3, check=True,
-        )
-        value = result.stdout.strip()
-    except (OSError, subprocess.SubprocessError):
-        _fail("process_generation_unavailable")
-    if not re.fullmatch(r"[A-Za-z]{3} [A-Za-z]{3} +\d{1,2} \d\d:\d\d:\d\d \d{4}", value):
-        _fail("process_generation_unavailable")
-    return value
+        canonical = binary.resolve(strict=True)
+        return (Path(observed.executable).resolve(strict=True) == canonical
+                and Path(observed.argv[0]).resolve(strict=True) == canonical)
+    except (OSError, ValueError):
+        return False
 
 
-def _daemon_environment(pid: int, expected_models: str) -> None:
-    """Use macOS ps environment observation; ambiguity must refuse.
-
-    A later controller must also attest its own actual child/daemon environment.
-    No environment string is returned or persisted here.
-    """
+def _live_os_identity(binding: PrivateEndpointBinding, model_blob: Path) -> None:
+    daemon = child_identity.observe_process(binding.daemon_pid, {
+        "OLLAMA_MODELS": str(binding.private_root / "models"),
+        "OLLAMA_NO_CLOUD": "1",
+    })
+    runner = child_identity.observe_process(binding.runner_pid)
+    if (tuple((daemon.pid, daemon.ppid, daemon.start_sec, daemon.start_usec))
+            != binding.daemon_raw_generation
+            or tuple((runner.pid, runner.ppid, runner.start_sec, runner.start_usec))
+            != binding.runner_raw_generation
+            or runner.ppid != daemon.pid
+            or child_identity.argv_digest(daemon) != binding.daemon_argv_sha256
+            or child_identity.argv_digest(runner) != binding.runner_argv_sha256
+            or not all(daemon.env_exact.get(key) is True for key in (
+                "OLLAMA_MODELS", "OLLAMA_NO_CLOUD"))
+            or not _same_binary_observation(daemon, binding.daemon_binary)
+            or not _same_binary_observation(runner, binding.runner_binary)
+            or daemon.argv[1:2] != ("serve",)
+            or _one_arg(runner.argv, "--host") != "127.0.0.1"
+            or _one_arg(runner.argv, "--port") != str(binding.runner_port)
+            or _one_arg(runner.argv, "--chat-template") != "chatml"
+            or runner.argv.count("--offline") != 1
+            or runner.argv.count("--no-jinja") != 1
+            or not child_identity.owns_loopback_listener(binding.daemon_pid, binding.daemon_port)
+            or not child_identity.owns_loopback_listener(binding.runner_pid, binding.runner_port)):
+        _fail("private_ollama_identity_drift")
     try:
-        result = subprocess.run(
-            ["/bin/ps", "-wwE", "-p", str(pid), "-o", "command="],
-            capture_output=True, text=True, timeout=3, check=True,
-        )
-    except (OSError, subprocess.SubprocessError):
-        _fail("daemon_environment_unavailable")
-    command = result.stdout.strip()
-    # Private temporary roots containing whitespace cannot be checked reliably
-    # through ps' flat command representation, so they are deliberately refused.
-    if any(char.isspace() for char in expected_models):
-        _fail("daemon_environment_ambiguous")
-    models_values = re.findall(r"(?:^|\s)OLLAMA_MODELS=(\S+)", command)
-    cloud_values = re.findall(r"(?:^|\s)OLLAMA_NO_CLOUD=(\S+)", command)
-    if models_values != [expected_models] or cloud_values != ["1"]:
-        _fail("daemon_environment_drift")
+        if Path(_one_arg(runner.argv, "--model")).resolve(strict=True) != model_blob.resolve(strict=True):
+            _fail("private_ollama_identity_drift")
+        _regular_single_link(binding.daemon_binary, code="daemon_binary_invalid")
+        _regular_single_link(binding.runner_binary, code="runner_binary_invalid")
+        if (_model_sha256_file(binding.daemon_binary) != FROZEN_DAEMON_SHA256
+                or _model_sha256_file(binding.runner_binary) != FROZEN_RUNNER_SHA256):
+            _fail("private_ollama_identity_drift")
+    except (OSError, ProbeError, ValueError):
+        _fail("private_ollama_identity_drift")
 
 
 def _inspect_live_identity(binding: PrivateEndpointBinding) -> None:
-    """Read-only process/file/listener identity; no Ollama HTTP request."""
-    if (_process_start(binding.daemon_pid) != binding.daemon_process_start
-            or _process_start(binding.runner_pid) != binding.runner_process_start):
-        _fail("process_generation_drift")
-    _daemon_environment(binding.daemon_pid, str(binding.private_root / "models"))
+    """B-only child-local process/file/listener check; no provider request."""
+    expected = (binding.daemon_raw_generation, binding.runner_raw_generation)
     try:
+        if (child_identity.raw_generation(binding.daemon_pid),
+                child_identity.raw_generation(binding.runner_pid)) != expected:
+            _fail("process_generation_drift")
         models, before = _model_store(
             binding.private_root, binding.shared_models, FROZEN_MODEL,
         )
-        identity = _process_identity(
-            daemon_pid=binding.daemon_pid,
-            runner_pid=binding.runner_pid,
-            daemon_port=binding.daemon_port,
-            runner_port=binding.runner_port,
-            daemon_binary=binding.daemon_binary,
-            runner_binary=binding.runner_binary,
-            model_blob=models / "blobs" / f"sha256-{GGUF_SHA256}",
-            expected=FROZEN_MODEL,
+        _live_os_identity(
+            binding, models / "blobs" / f"sha256-{GGUF_SHA256}",
         )
         if _model_store(binding.private_root, binding.shared_models, FROZEN_MODEL)[1] != before:
             _fail("private_model_store_changed_during_inspection")
-    except ProbeError:
+        if (child_identity.raw_generation(binding.daemon_pid),
+                child_identity.raw_generation(binding.runner_pid)) != expected:
+            _fail("process_generation_drift")
+    except (child_identity.ProbeError, ProbeError):
         _fail("private_ollama_identity_drift")
-    if (identity.get("daemon_binary_sha256") != FROZEN_DAEMON_SHA256
-            or identity.get("runner_binary_sha256") != FROZEN_RUNNER_SHA256):
-        _fail("private_ollama_identity_drift")
-    if (_process_start(binding.daemon_pid) != binding.daemon_process_start
-            or _process_start(binding.runner_pid) != binding.runner_process_start):
-        _fail("process_generation_drift")
 
 
 def _binding_shape(binding: PrivateEndpointBinding, *, require_digest: bool) -> str:
@@ -321,6 +360,19 @@ def _binding_shape(binding: PrivateEndpointBinding, *, require_digest: bool) -> 
             or type(binding.runner_process_start) is not str
             or not binding.daemon_process_start or not binding.runner_process_start):
         _fail("process_generation_missing")
+    for generation, pid in ((binding.daemon_raw_generation, binding.daemon_pid),
+                            (binding.runner_raw_generation, binding.runner_pid)):
+        if (type(generation) is not tuple or len(generation) != 4
+                or any(type(value) is not int for value in generation)
+                or generation[0] != pid or generation[1] <= 0
+                or generation[2] <= 0 or not (0 <= generation[3] < 1_000_000)):
+            _fail("process_raw_generation_invalid")
+    if binding.runner_raw_generation[1] != binding.daemon_pid:
+        _fail("private_runner_parent_drift")
+    if any(type(value) is not str or not _HEX.fullmatch(value) for value in (
+            binding.daemon_argv_sha256, binding.runner_argv_sha256,
+            binding.operator_source_sha256)):
+        _fail("private_identity_digest_invalid")
     if (binding.shared_models != binding.shared_models.resolve(strict=False)
             or binding.daemon_binary != binding.daemon_binary.resolve(strict=False)
             or binding.runner_binary != binding.runner_binary.resolve(strict=False)):
@@ -381,6 +433,9 @@ def issue_private_child_receipt(
         _fail("private_child_inprocess_argv_invalid")
     inprocess_digest = _final_argv_digest(expected_inprocess_python_argv)
     now = time.time()
+    source_digests = private_child_source_digests(entrypoint)
+    if binding.operator_source_sha256 != source_digests["operator_source_sha256"]:
+        _fail("operator_source_drift_before_receipt")
     receipt = {
         "schema": _RECEIPT_SCHEMA, "issuer": "p4_b_private_controller",
         "run_id": binding.run_id, "private_root": str(binding.private_root),
@@ -388,7 +443,7 @@ def issue_private_child_receipt(
         "shared_models": str(binding.shared_models), "base_url": expected_base,
         "runtime_root": str(runtime_root),
         "launch_env_sha256": canonical_b_env_digest(environ),
-        **private_child_source_digests(entrypoint),
+        **source_digests,
         "expected_final_argv_sha256": _final_argv_digest(os_argv),
         "expected_os_final_argv": os_argv,
         "expected_inprocess_python_argv_sha256": inprocess_digest,
@@ -396,6 +451,10 @@ def issue_private_child_receipt(
         "daemon_port": binding.daemon_port, "runner_port": binding.runner_port,
         "daemon_process_start": binding.daemon_process_start,
         "runner_process_start": binding.runner_process_start,
+        "daemon_raw_generation": list(binding.daemon_raw_generation),
+        "runner_raw_generation": list(binding.runner_raw_generation),
+        "daemon_argv_sha256": binding.daemon_argv_sha256,
+        "runner_argv_sha256": binding.runner_argv_sha256,
         "ollama_models": str(binding.private_root / "models"),
         "ollama_no_cloud": "1", "daemon_binary": str(binding.daemon_binary),
         "runner_binary": str(binding.runner_binary),
@@ -450,6 +509,11 @@ def validate_private_endpoint_binding(
         "daemon_port": binding.daemon_port, "runner_port": binding.runner_port,
         "daemon_process_start": binding.daemon_process_start,
         "runner_process_start": binding.runner_process_start,
+        "daemon_raw_generation": list(binding.daemon_raw_generation),
+        "runner_raw_generation": list(binding.runner_raw_generation),
+        "daemon_argv_sha256": binding.daemon_argv_sha256,
+        "runner_argv_sha256": binding.runner_argv_sha256,
+        "operator_source_sha256": binding.operator_source_sha256,
         "ollama_models": str(binding.private_root / "models"),
         "ollama_no_cloud": "1",
         "daemon_binary": str(binding.daemon_binary),
@@ -468,7 +532,14 @@ def validate_private_endpoint_binding(
             or any(type(receipt.get(key)) is not str or not _HEX.fullmatch(receipt[key])
                    for key in ("launch_env_sha256", "entrypoint_sha256",
                                "bootstrap_sha256", "binding_source_sha256",
+                               "controller_source_sha256",
                                "web_source_sha256", "ledger_source_sha256",
+                               "launcher_source_sha256", "sandbox_source_sha256",
+                               "lifecycle_source_sha256", "launchd_source_sha256",
+                               "private_evidence_source_sha256",
+                               "compact_planner_source_sha256",
+                               "identity_probe_source_sha256", "resource_gate_source_sha256",
+                               "child_observer_source_sha256",
                                "expected_final_argv_sha256",
                                "expected_inprocess_python_argv_sha256"))):
         _fail("receipt_child_binding_invalid")

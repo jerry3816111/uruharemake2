@@ -16,6 +16,8 @@ from unittest.mock import patch
 import pytest
 
 import p4_preference_fallback_detached_control as control
+import p4_b_isolated_ollama_identity_probe as model_identity
+import uruha_p4_b_child_local_identity as child_identity
 import uruha_p4_b_private_endpoint_binding as private
 
 
@@ -55,12 +57,17 @@ def _descriptor(tmp_path: Path) -> Path:
     root.mkdir(mode=0o700)
     path = root / control.B_DESCRIPTOR_NAME
     path.write_text(json.dumps({
-        "schema": "p4_b_private_endpoint_descriptor_v1",
+        "schema": "p4_b_private_endpoint_descriptor_v2",
         "private_root": str(root), "shared_models": str(root / "shared"),
         "daemon_pid": 32001, "runner_pid": 32002,
         "daemon_port": 11455, "runner_port": 55132,
         "daemon_process_start": "Sun Oct 25 01:02:03 2026",
         "runner_process_start": "Sun Oct 25 01:02:04 2026",
+        "daemon_raw_generation": [32001, 31000, 1729818123, 111111],
+        "runner_raw_generation": [32002, 32001, 1729818124, 222222],
+        "daemon_argv_sha256": "b" * 64,
+        "runner_argv_sha256": "c" * 64,
+        "operator_source_sha256": "a" * 64,
         "daemon_binary": str(root / "ollama"),
         "runner_binary": str(root / "runner"),
     }), encoding="utf-8")
@@ -115,6 +122,78 @@ def test_static_source_snapshot_rejects_uncommitted_drift(monkeypatch):
         )
 
 
+def test_b_source_lock_covers_zero_turn_identity_and_gate_code():
+    assert set(control.B_COMMITTED_SOURCES) == {
+        "p4_preference_fallback_detached_control.py",
+        "uruha_web_ui_product_p4_preference_fallback.py",
+        "uruha_p4_b_private_child_bootstrap.py",
+        "uruha_p4_b_private_endpoint_binding.py", "uruha_web_ui.py",
+        "uruha_compute_ledger.py", "p4_b_private_zero_turn_operator.py",
+        "p4_b_safe_isolated_product_launcher.py",
+        "p4_b_safe_isolated_product_launcher_v2.py",
+        "p4_exec_detached_lifecycle_probe.py",
+        "p4_preference_fallback_launchd_control.py",
+        "p4_b_isolated_ollama_identity_probe.py",
+        "uruha_p4_b_resource_gate.py", "uruha_p4_b_child_local_identity.py",
+        "p4_stateful_private_evidence.py", "uruha_compact_planner_p2.py",
+    }
+
+
+def test_controller_witness_binds_initial_raw_tuple_and_rejects_same_second_change(
+    tmp_path, monkeypatch,
+):
+    daemon_raw = (32001, 31000, 1729818123, 111111)
+    runner_raw = (32002, 32001, 1729818124, 222222)
+    daemon_argv = (str(tmp_path / "ollama"), "serve")
+    runner_argv = (str(tmp_path / "runner"), "--offline")
+    daemon = child_identity.ProcessSnapshot(
+        *daemon_raw, str(tmp_path / "ollama"), daemon_argv,
+        {"OLLAMA_MODELS": True, "OLLAMA_NO_CLOUD": True},
+    )
+    runner = child_identity.ProcessSnapshot(
+        *runner_raw, str(tmp_path / "runner"), runner_argv, {},
+    )
+    binding = private.PrivateEndpointBinding(
+        run_id="0123456789abcdef", private_root=tmp_path,
+        shared_models=tmp_path / "shared", receipt_path=tmp_path / "receipt",
+        receipt_sha256="0" * 64, base_url="http://127.0.0.1:11455/v1",
+        daemon_pid=32001, runner_pid=32002, daemon_port=11455, runner_port=55132,
+        daemon_process_start="Sun Oct 25 01:02:03 2026",
+        runner_process_start="Sun Oct 25 01:02:04 2026",
+        daemon_raw_generation=daemon_raw, runner_raw_generation=runner_raw,
+        daemon_argv_sha256=child_identity.argv_digest(daemon),
+        runner_argv_sha256=child_identity.argv_digest(runner),
+        operator_source_sha256="a" * 64,
+        daemon_binary=tmp_path / "ollama", runner_binary=tmp_path / "runner",
+    )
+    monkeypatch.setattr(control, "_b_ps_start", lambda pid: (
+        binding.daemon_process_start if pid == 32001 else binding.runner_process_start))
+    monkeypatch.setattr(control, "_b_ps_daemon_environment", lambda *args: None)
+    monkeypatch.setattr(model_identity, "_process", lambda pid: (
+        daemon_raw[1], list(daemon_argv)) if pid == 32001
+        else (runner_raw[1], list(runner_argv)))
+    monkeypatch.setattr(model_identity, "_process_identity", lambda **kwargs: {
+        "daemon_binary_sha256": "a" * 64, "runner_binary_sha256": "b" * 64,
+    })
+    monkeypatch.setattr(child_identity, "observe_process", lambda pid, *args: (
+        daemon if pid == 32001 else runner))
+    monkeypatch.setattr(child_identity, "owns_loopback_listener", lambda pid, port: True)
+    monkeypatch.setattr(child_identity, "raw_generation", lambda pid: (
+        daemon_raw if pid == 32001 else runner_raw))
+    control._b_controller_witness(binding)
+    reads = {32001: 0, 32002: 0}
+
+    def changed_on_second_observation(pid):
+        reads[pid] += 1
+        if pid == 32002 and reads[pid] == 2:
+            return (32002, 32001, 1729818124, 333333)
+        return daemon_raw if pid == 32001 else runner_raw
+
+    monkeypatch.setattr(child_identity, "raw_generation", changed_on_second_observation)
+    with pytest.raises(control.ControllerError, match="controller_raw_generation_drift"):
+        control._b_controller_witness(binding)
+
+
 def test_bad_descriptor_or_cli_opt_in_is_fixed_error_before_popen(tmp_path, capsys):
     path = _descriptor(tmp_path)
     path.chmod(0o644)
@@ -128,6 +207,28 @@ def test_bad_descriptor_or_cli_opt_in_is_fixed_error_before_popen(tmp_path, caps
     assert json.loads(capsys.readouterr().out)["error"] == (
         "p4_b_requires_fresh_prepared_product_root"
     )
+
+
+@pytest.mark.parametrize("change,reason", [
+    ({"operator_source_sha256": "b" * 64}, "operator_source_drift"),
+    ({"daemon_raw_generation": [32001, 31000, 1729818123, -1]},
+     "raw_generation_invalid"),
+    ({"runner_raw_generation": [32002, 31999, 1729818124, 222222]},
+     "runner_parent_invalid"),
+    ({"daemon_argv_sha256": "wrong"}, "digest_invalid"),
+])
+def test_descriptor_v2_rejects_source_and_raw_field_drift(
+    tmp_path, monkeypatch, change, reason,
+):
+    descriptor = _descriptor(tmp_path)
+    value = json.loads(descriptor.read_text())
+    value.update(change)
+    descriptor.write_text(json.dumps(value), encoding="utf-8")
+    monkeypatch.setattr(control, "_b_committed_source_snapshot", lambda: {
+        "p4_b_private_zero_turn_operator.py": "a" * 64,
+    })
+    with pytest.raises(control.ControllerError, match=reason):
+        control._b_descriptor(str(descriptor), run_id="0123456789abcdef")
 
 
 def test_b_source_failure_refuses_before_web_import_and_popen(tmp_path, monkeypatch):
@@ -157,7 +258,7 @@ def test_b_source_failure_refuses_before_web_import_and_popen(tmp_path, monkeypa
             popen.assert_not_called()
         assert not list(prepared.glob("*stdout.log"))
         assert not list(prepared.glob("*stderr.log"))
-        assert (descriptor.parent / control.B_MODEL_CLAIM_NAME).is_file()
+        assert not (descriptor.parent / control.B_MODEL_CLAIM_NAME).exists()
     finally:
         shutil.rmtree(prepared)
 
@@ -197,7 +298,7 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
         "p4_b_private_launch": launch,
     }
     receipt = {
-        "schema": "p4_b_private_endpoint_launch_receipt_v3",
+        "schema": "p4_b_private_endpoint_launch_receipt_v4",
         "issuer": "p4_b_private_controller",
         "run_id": run_id, "private_root": str(descriptor.parent),
         "models_path": str(descriptor.parent / "models"),
@@ -212,6 +313,8 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
         **{key: values[key] for key in (
             "daemon_pid", "runner_pid", "daemon_port", "runner_port",
             "daemon_process_start", "runner_process_start", "daemon_binary", "runner_binary",
+            "daemon_raw_generation", "runner_raw_generation",
+            "daemon_argv_sha256", "runner_argv_sha256", "operator_source_sha256",
         )},
     }
     monkeypatch.setattr(control, "_root", lambda _: (tmp_path, metadata))
@@ -219,6 +322,7 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
     monkeypatch.setattr(control, "_validated_stage", lambda *args: "final_python")
     monkeypatch.setattr(control, "_listener_owned_by_pid", lambda pid: True)
     monkeypatch.setattr(control, "_b_committed_source_snapshot", lambda: source)
+    monkeypatch.setattr(control, "_b_controller_witness", lambda binding: None)
     monkeypatch.setattr(private, "_receipt", lambda binding: receipt)
     monkeypatch.setattr(private, "_valid_receipt_time", lambda receipt: 9999999999)
     monkeypatch.setattr(private, "private_child_source_digests", lambda entrypoint: {})
@@ -275,7 +379,7 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
     with pytest.raises(control.ControllerError):
         control.verify_ready("ignored")
     assert not ready_path.exists()
-    receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v3"
+    receipt["schema"] = "p4_b_private_endpoint_launch_receipt_v4"
     receipt["expected_os_final_argv"] = [
         str(Path("/bin/echo").resolve(strict=True)), str(control.ENTRYPOINT),
     ]
@@ -299,7 +403,7 @@ def test_b_ready_rejects_descriptor_drift_without_ready_record(tmp_path, monkeyp
     changed = {**values, "runner_pid": 32999}
     descriptor.write_text(json.dumps(changed), encoding="utf-8")
     descriptor.chmod(0o600)
-    with pytest.raises(control.ControllerError, match="receipt_identity_mismatch"):
+    with pytest.raises(control.ControllerError, match="descriptor_raw_generation_invalid"):
         control.verify_ready("ignored")
     assert not ready_path.exists()
 
@@ -359,6 +463,7 @@ def test_b_fake_child_keeps_exact_env_and_never_imports_web_or_shared_preflight(
 
     source = {name: "a" * 64 for name in control.B_COMMITTED_SOURCES}
     monkeypatch.setattr(control, "_b_committed_source_snapshot", lambda: source.copy())
+    monkeypatch.setattr(control, "_b_controller_witness", lambda binding: None)
     monkeypatch.setattr(control, "_validate_prepared_cache", lambda root: None)
     monkeypatch.setattr(control, "_require_vacant", lambda: None)
     monkeypatch.setattr(control.sandbox, "write_sandbox_profile", profile)

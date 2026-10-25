@@ -113,6 +113,12 @@ def _fixture(tmp_path, monkeypatch):
         daemon_pid=101, runner_pid=102, daemon_port=11455, runner_port=55132,
         daemon_process_start="Sat Oct 24 12:00:00 2026",
         runner_process_start="Sat Oct 24 12:00:01 2026",
+        daemon_raw_generation=(101, 1, 1792843200, 123456),
+        runner_raw_generation=(102, 101, 1792843201, 654321),
+        daemon_argv_sha256="a" * 64,
+        runner_argv_sha256="b" * 64,
+        operator_source_sha256=identity.private_child_source_digests(entry)[
+            "operator_source_sha256"],
         daemon_binary=private / "ollama", runner_binary=private / "llama-server",
     )
     env = {
@@ -153,7 +159,7 @@ def test_valid_bootstrap_is_pre_web_zero_provider_and_reuses_closed_ledger(
         tmp_path, monkeypatch):
     binding, runtime, env = _fixture(tmp_path, monkeypatch)
     receipt = json.loads(binding.receipt_path.read_bytes())
-    assert receipt["schema"] == "p4_b_private_endpoint_launch_receipt_v3"
+    assert receipt["schema"] == "p4_b_private_endpoint_launch_receipt_v4"
     assert receipt["expected_os_final_argv"][0] != str(Path(sys.executable).resolve())
     assert receipt["expected_final_argv_sha256"] == identity._final_argv_digest(
         receipt["expected_os_final_argv"]
@@ -186,8 +192,15 @@ def test_valid_bootstrap_is_pre_web_zero_provider_and_reuses_closed_ledger(
 @pytest.mark.parametrize("mutation", [
     "missing_marker", "marker_zero", "missing_run", "missing_receipt",
     "lowercase_marker", "wrong_root", "env_drift", "proxy_upper",
-    "proxy_mixed", "unknown_b_key", "old_v2", "source_drift",
-    "web_source_drift", "ledger_source_drift",
+    "proxy_mixed", "unknown_b_key", "old_v2", "old_v3", "source_drift",
+    "web_source_drift", "ledger_source_drift", "controller_source_drift",
+    "operator_source_drift", "private_evidence_source_drift",
+    "compact_planner_source_drift",
+    "launcher_source_drift", "sandbox_source_drift",
+    "lifecycle_source_drift", "launchd_source_drift",
+    "identity_probe_source_drift",
+    "resource_gate_source_drift", "child_observer_source_drift",
+    "raw_generation_bad_type", "raw_generation_missing",
 ])
 def test_bad_intent_or_receipt_refused_before_web_or_provider(
         tmp_path, monkeypatch, mutation):
@@ -219,12 +232,31 @@ def test_bad_intent_or_receipt_refused_before_web_or_provider(
         receipt.pop("expected_os_final_argv")
         receipt.pop("expected_inprocess_python_argv_sha256")
         _write_receipt_data(binding, receipt)
+    elif mutation == "old_v3":
+        _rewrite(binding, schema="p4_b_private_endpoint_launch_receipt_v3")
     elif mutation == "source_drift":
         _rewrite(binding, entrypoint_sha256="0" * 64)
     elif mutation == "web_source_drift":
         _rewrite(binding, web_source_sha256="0" * 64)
     elif mutation == "ledger_source_drift":
         _rewrite(binding, ledger_source_sha256="0" * 64)
+    elif mutation in (
+        "controller_source_drift", "operator_source_drift",
+        "private_evidence_source_drift", "launcher_source_drift",
+        "compact_planner_source_drift",
+        "sandbox_source_drift", "lifecycle_source_drift",
+        "launchd_source_drift",
+        "identity_probe_source_drift", "resource_gate_source_drift",
+        "child_observer_source_drift",
+    ):
+        key = mutation.removesuffix("_drift") + "_sha256"
+        _rewrite(binding, **{key: "0" * 64})
+    elif mutation == "raw_generation_bad_type":
+        _rewrite(binding, daemon_raw_generation=[101, 1, True, 0])
+    elif mutation == "raw_generation_missing":
+        receipt = json.loads(binding.receipt_path.read_bytes())
+        receipt.pop("runner_raw_generation")
+        _write_receipt_data(binding, receipt)
     with pytest.raises(identity.PrivateEndpointBindingError):
         child.bootstrap_private_child(env)
     assert child._BOOT_STATE is None
@@ -329,20 +361,15 @@ def test_wrong_shared_store_path_reaches_real_inspector_and_refuses(tmp_path, mo
     binding, _runtime, env = _fixture(tmp_path, monkeypatch)
     _rewrite(binding, shared_models=str(tmp_path / "wrong-shared"))
     monkeypatch.setattr(identity, "_inspect_live_identity", _REAL_INSPECT)
-    monkeypatch.setattr(identity, "_process_start", lambda pid: (
-        binding.daemon_process_start if pid == binding.daemon_pid
-        else binding.runner_process_start
+    monkeypatch.setattr(identity.child_identity, "raw_generation", lambda pid: (
+        binding.daemon_raw_generation if pid == binding.daemon_pid
+        else binding.runner_raw_generation
     ))
-    monkeypatch.setattr(identity, "_daemon_environment", lambda *args: None)
     def store(private_root, shared_models, expected):
         if shared_models != binding.shared_models:
             raise identity.ProbeError("shared_model_file_invalid")
         return private_root / "models", {"model": (1, 2, 3)}
     monkeypatch.setattr(identity, "_model_store", store)
-    monkeypatch.setattr(identity, "_process_identity", lambda **kwargs: {
-        "daemon_binary_sha256": identity.FROZEN_DAEMON_SHA256,
-        "runner_binary_sha256": identity.FROZEN_RUNNER_SHA256,
-    })
     with pytest.raises(identity.PrivateEndpointBindingError,
                        match="private_ollama_identity_drift"):
         child.bootstrap_private_child(env)

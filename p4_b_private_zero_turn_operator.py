@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import resource
 import shutil
 import signal
@@ -29,6 +30,7 @@ from typing import Callable
 import p4_b_isolated_ollama_identity_probe as probe
 import p4_preference_fallback_detached_control as control
 import uruha_p4_b_private_endpoint_binding as binding
+import uruha_p4_b_child_local_identity as child_identity
 
 
 ROOT = Path(__file__).resolve().parent
@@ -48,6 +50,8 @@ DESCRIPTOR_FIELDS = frozenset({
     "schema", "private_root", "shared_models", "daemon_pid", "runner_pid",
     "daemon_port", "runner_port", "daemon_process_start", "runner_process_start",
     "daemon_binary", "runner_binary",
+    "daemon_raw_generation", "runner_raw_generation",
+    "daemon_argv_sha256", "runner_argv_sha256", "operator_source_sha256",
 })
 
 
@@ -65,6 +69,77 @@ def _sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _committed_operator_source_sha() -> str:
+    """Cooperative live-file/HEAD lock; it is not executable code signing."""
+    path = Path(__file__).resolve()
+    try:
+        info = path.lstat()
+        if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid():
+            _fail("operator_source_not_owned_regular_file")
+        live = path.read_bytes()
+        committed = subprocess.run(
+            ["/usr/bin/git", "-C", str(ROOT), "show", f"HEAD:{path.name}"],
+            capture_output=True, check=False, timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise OperatorError("operator_source_unavailable") from exc
+    if committed.returncode != 0 or live != committed.stdout:
+        _fail("operator_source_not_committed_or_drifted")
+    return hashlib.sha256(live).hexdigest()
+
+
+def _committed_stateful_source_sha() -> str:
+    """Lock the cache/warm executable to HEAD before any child invocation."""
+    path = ROOT / "p4_stateful_private_evidence.py"
+    try:
+        info = path.lstat()
+        if (not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid()
+                or info.st_nlink != 1):
+            _fail("stateful_evidence_source_not_owned_regular_file")
+        live = path.read_bytes()
+        committed = subprocess.run(
+            ["/usr/bin/git", "-C", str(ROOT), "show", f"HEAD:{path.name}"],
+            capture_output=True, check=False, timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise OperatorError("stateful_evidence_source_unavailable") from exc
+    if committed.returncode != 0 or live != committed.stdout:
+        _fail("stateful_evidence_source_not_committed_or_drifted")
+    return hashlib.sha256(live).hexdigest()
+
+
+def _capture_raw_identity(pid: int, raw_before: tuple[int, int, int, int],
+                          generation: str, binary: Path, port: int, *,
+                          daemon: bool, parent: int | None = None,
+                          expected_env: dict[str, str] | None = None,
+                          expected_argv: tuple[str, ...] | None = None) -> str:
+    """Bracket the existing ps/argv/listener witness with exact OS generation."""
+    try:
+        if not _same_process(pid, generation, binary, daemon=daemon,
+                             expected_parent=parent, expected_argv=expected_argv):
+            _fail("private_process_identity_drift")
+        if daemon and expected_env is not None:
+            control._b_ps_daemon_environment(pid, expected_env["OLLAMA_MODELS"])
+        ps = _process_argv(pid)
+        if ps is None or _listener_pids(port) != frozenset({pid}):
+            _fail("private_process_identity_drift")
+        snapshot = child_identity.observe_process(pid, expected_env=expected_env)
+        raw_after = child_identity.raw_generation(pid)
+        if (raw_before != raw_after
+                or raw_before != (snapshot.pid, snapshot.ppid,
+                                  snapshot.start_sec, snapshot.start_usec)
+                or ps != (snapshot.ppid, list(snapshot.argv))
+                or (parent is not None and snapshot.ppid != parent)
+                or (expected_env is not None
+                    and snapshot.env_exact != {key: True for key in expected_env})
+                or not child_identity.owns_loopback_listener(pid, port)
+                or Path(snapshot.executable).resolve(strict=True) != binary.resolve(strict=True)):
+            _fail("private_process_raw_identity_drift")
+        return child_identity.argv_digest(snapshot)
+    except (child_identity.ProbeError, OSError) as exc:
+        raise OperatorError("private_process_raw_identity_unavailable") from exc
 
 
 def _private_file(path: Path, value: bytes) -> None:
@@ -102,9 +177,34 @@ def _listener_pids(port: int) -> frozenset[int]:
 
 def _generation(pid: int) -> str | None:
     try:
-        return binding._process_start(pid)
-    except binding.PrivateEndpointBindingError:
+        result = subprocess.run(
+            ["/bin/ps", "-p", str(pid), "-o", "lstart="],
+            capture_output=True, text=True, timeout=3, check=True,
+        )
+        value = result.stdout.strip()
+        if re.fullmatch(r"[A-Za-z]{3} [A-Za-z]{3} +\d{1,2} \d\d:\d\d:\d\d \d{4}", value):
+            return value
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return None
+
+
+def _first_raw_generation(pid: int) -> tuple[int, int, int, int] | None:
+    try:
+        return child_identity.raw_generation(pid)
+    except child_identity.ProbeError:
         return None
+
+
+def _pid_absent(pid: int) -> bool:
+    """A missing observer alone is not proof of process exit."""
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    except OSError:
+        return False
+    return False
 
 
 def _process_argv(pid: int) -> tuple[int, list[str]] | None:
@@ -137,12 +237,23 @@ def _same_process(pid: int, generation: str, binary: Path, *, daemon: bool,
 
 def _stop_exact(pid: int, generation: str, binary: Path, *, daemon: bool,
                 expected_parent: int | None = None,
-                expected_argv: tuple[str, ...] | None = None) -> str:
+                expected_argv: tuple[str, ...] | None = None,
+                expected_raw: tuple[int, int, int, int] | None = None) -> str:
+    # A seconds-resolution ps generation is insufficient for same-second PID
+    # reuse. Never signal a discovered process without its initial raw witness.
+    if expected_raw is None or expected_raw[0] != pid:
+        return "raw_generation_not_captured_no_signal"
+    if _first_raw_generation(pid) != expected_raw:
+        return ("already_absent" if _pid_absent(pid)
+                else "raw_generation_drift_no_signal")
     if _generation(pid) is None:
-        return "already_absent"
+        return ("already_absent" if _pid_absent(pid)
+                else "ps_generation_unavailable_no_signal")
     if not _same_process(pid, generation, binary, daemon=daemon,
                          expected_parent=expected_parent, expected_argv=expected_argv):
         return "identity_drift_no_signal"
+    if _first_raw_generation(pid) != expected_raw:
+        return "raw_generation_drift_no_signal"
     try:
         os.kill(pid, signal.SIGTERM)
     except ProcessLookupError:
@@ -151,11 +262,18 @@ def _stop_exact(pid: int, generation: str, binary: Path, *, daemon: bool,
         return "exact_term_failed_review_required"
     for _ in range(50):
         if _generation(pid) is None:
-            return "terminated"
+            return ("terminated" if _pid_absent(pid)
+                    else "ps_generation_unavailable_no_kill")
+        if _first_raw_generation(pid) != expected_raw:
+            return "raw_generation_drift_no_kill"
         time.sleep(0.1)
+    if _first_raw_generation(pid) != expected_raw:
+        return "raw_generation_drift_no_kill"
     if not _same_process(pid, generation, binary, daemon=daemon,
                          expected_parent=expected_parent, expected_argv=expected_argv):
         return "identity_drift_no_kill"
+    if _first_raw_generation(pid) != expected_raw:
+        return "raw_generation_drift_no_kill"
     # This is still only the exact captured process, never a process group.
     try:
         os.kill(pid, signal.SIGKILL)
@@ -165,7 +283,10 @@ def _stop_exact(pid: int, generation: str, binary: Path, *, daemon: bool,
         return "exact_kill_failed_review_required"
     for _ in range(20):
         if _generation(pid) is None:
-            return "killed_exact"
+            return ("killed_exact" if _pid_absent(pid)
+                    else "ps_generation_unavailable_after_kill")
+        if _first_raw_generation(pid) != expected_raw:
+            return "raw_generation_drift_no_kill"
         time.sleep(0.1)
     return "still_alive"
 
@@ -203,12 +324,21 @@ def _static_preflight() -> dict:
             "free_bytes_before": _available_bytes()}
 
 
-def _prepare_product_root(on_created: Callable[[Path], None] | None = None) -> Path:
+def _prepare_product_root(
+    on_created: Callable[[Path], None] | None = None, *,
+    expected_evidence_sha256: str | None = None,
+) -> Path:
+    evidence_sha = (expected_evidence_sha256 if expected_evidence_sha256 is not None
+                    else _committed_stateful_source_sha())
+    if _committed_stateful_source_sha() != evidence_sha:
+        _fail("stateful_evidence_source_drift_before_cache")
     root = Path(control.prepare()["runtime_root"])
     if on_created is not None:
         on_created(root)
     evidence = ROOT / "p4_stateful_private_evidence.py"
     for action in ("cache", "warm"):
+        if _committed_stateful_source_sha() != evidence_sha:
+            _fail(f"stateful_evidence_source_drift_before_{action}")
         command = [str(PYTHON), str(evidence), action, "--runtime-root", str(root)]
         if action == "cache":
             command.extend(["--source-archive", str(ONNX_ARCHIVE)])
@@ -229,6 +359,8 @@ def _prepare_product_root(on_created: Callable[[Path], None] | None = None) -> P
                                   or result.get("httpx_stream_download_attempts") != 0
                                   or result.get("dimensions") != 384):
             _fail("private_onnx_warm_invalid")
+        if _committed_stateful_source_sha() != evidence_sha:
+            _fail(f"stateful_evidence_source_drift_after_{action}")
     return root
 
 
@@ -313,7 +445,7 @@ def _wait_daemon(pid: int, counts: dict[str, object]) -> None:
 
 def _owned_runner_snapshots(
     daemon_pid: int, private_root: Path,
-) -> tuple[list[tuple[int, int, str, str, tuple[str, ...]]], bool]:
+) -> tuple[list[tuple[int, int, str, str, tuple[str, ...], tuple[int, int, int, int]]], bool]:
     """Observe exact daemon children; never return an unverified PID to cleanup."""
     try:
         result = subprocess.run(["/usr/bin/pgrep", "-P", str(daemon_pid)],
@@ -331,6 +463,10 @@ def _owned_runner_snapshots(
     verified = []
     unknown = False
     for pid in pids:
+        raw_before = _first_raw_generation(pid)
+        if raw_before is None:
+            unknown = True
+            continue
         seen = _process_argv(pid)
         if seen is None:
             unknown = True
@@ -357,13 +493,19 @@ def _owned_runner_snapshots(
         if daemon_start is None or runner_start is None:
             unknown = True
             continue
-        verified.append((pid, port, daemon_start, runner_start, tuple(args)))
+        if (_first_raw_generation(pid) != raw_before
+                or raw_before[:2] != (pid, daemon_pid)):
+            unknown = True
+            continue
+        verified.append((pid, port, daemon_start, runner_start,
+                         tuple(args), raw_before))
     return verified, unknown
 
 
 def _load_runner_and_identify(
     daemon_pid: int, private_root: Path, counts: dict[str, object],
-    on_identified: Callable[[int, int, str, tuple[str, ...]], None] | None = None,
+    on_identified: Callable[[int, int, str, tuple[str, ...],
+                             tuple[int, int, int, int]], None] | None = None,
 ) -> tuple[int, int, str, str, tuple[str, ...]]:
     counts["operator_diagnostic_http_count"] = int(
         counts.get("operator_diagnostic_http_count", 0)) + 1
@@ -381,9 +523,9 @@ def _load_runner_and_identify(
         if len(found) > 1 or unknown:
             _fail("multiple_private_runners")
         if len(found) == 1:
-            runner_pid, port, daemon_start, runner_start, argv = found[0]
+            runner_pid, port, daemon_start, runner_start, argv, raw_before = found[0]
             if on_identified is not None:
-                on_identified(runner_pid, port, runner_start, argv)
+                on_identified(runner_pid, port, runner_start, argv, raw_before)
             if _listener_pids(port) == frozenset({runner_pid}):
                 if response_error is not None:
                     _fail(response_error)
@@ -399,20 +541,29 @@ def _load_runner_and_identify(
                         _fail("render_only_not_zero_completion")
                 except (KeyError, IndexError, TypeError) as exc:
                     raise OperatorError("render_only_response_invalid") from exc
-                return found[0]
+                return runner_pid, port, daemon_start, runner_start, argv
         time.sleep(0.25)
     _fail(response_error or "private_runner_not_ready")
 
 
 def _write_descriptor(private_root: Path, runner_pid: int, runner_port: int,
-                      daemon_pid: int, daemon_start: str, runner_start: str) -> Path:
+                      daemon_pid: int, daemon_start: str, runner_start: str, *,
+                      daemon_raw_generation: tuple[int, int, int, int],
+                      runner_raw_generation: tuple[int, int, int, int],
+                      daemon_argv_sha256: str, runner_argv_sha256: str,
+                      operator_source_sha256: str) -> Path:
     value = {
-        "schema": "p4_b_private_endpoint_descriptor_v1",
+        "schema": "p4_b_private_endpoint_descriptor_v2",
         "private_root": str(private_root), "shared_models": str(SHARED_MODELS),
         "daemon_pid": daemon_pid, "runner_pid": runner_pid,
         "daemon_port": DAEMON_PORT, "runner_port": runner_port,
         "daemon_process_start": daemon_start, "runner_process_start": runner_start,
         "daemon_binary": str(DAEMON_BINARY), "runner_binary": str(RUNNER_BINARY),
+        "daemon_raw_generation": list(daemon_raw_generation),
+        "runner_raw_generation": list(runner_raw_generation),
+        "daemon_argv_sha256": daemon_argv_sha256,
+        "runner_argv_sha256": runner_argv_sha256,
+        "operator_source_sha256": operator_source_sha256,
     }
     if set(value) != DESCRIPTOR_FIELDS:
         _fail("private_descriptor_shape_invalid")
@@ -520,16 +671,21 @@ def run_once() -> dict:
     runner_pid: int | None = None
     runner_start: str | None = None
     runner_argv: tuple[str, ...] | None = None
+    runner_raw_before: tuple[int, int, int, int] | None = None
+    daemon_raw_before: tuple[int, int, int, int] | None = None
     logical_bytes = 0
     child_started = False
     child_stop: dict | None = None
     error: str | None = None
     try:
         preflight = _static_preflight()
+        operator_source_sha = _committed_operator_source_sha()
+        evidence_source_sha = _committed_stateful_source_sha()
         state.update(preflight)
         phases["static_preflight_s"] = time.monotonic() - started
         product_root = _prepare_product_root(
-            lambda path: state.__setitem__("product_runtime_root", str(path)))
+            lambda path: state.__setitem__("product_runtime_root", str(path)),
+            expected_evidence_sha256=evidence_source_sha)
         state["product_runtime_root"] = str(product_root)
         phases["prepared_warm_s"] = time.monotonic() - started
         state["free_bytes_before_clone"] = _available_bytes()
@@ -547,15 +703,31 @@ def run_once() -> dict:
             _fail("private_clone_disk_budget_exceeded")
         if _listener_pids(DAEMON_PORT) or _listener_pids(PRODUCT_PORT):
             _fail("private_or_product_port_occupied_before_daemon")
+        if _committed_operator_source_sha() != operator_source_sha:
+            _fail("operator_source_drift_before_daemon")
+        if _committed_stateful_source_sha() != evidence_source_sha:
+            _fail("stateful_evidence_source_drift_before_daemon")
         daemon_proc = _launch_daemon(private_root)
+        daemon_raw_before = child_identity.raw_generation(daemon_proc.pid)
         daemon_start = _generation(daemon_proc.pid)
         if daemon_start is None or not _same_process(daemon_proc.pid, daemon_start,
                                                       DAEMON_BINARY, daemon=True):
             _fail("private_daemon_identity_unavailable")
         sampler.add("daemon", daemon_proc.pid, daemon_start)
         _wait_daemon(daemon_proc.pid, state)
-        def capture_runner(pid: int, port: int, generation: str, argv: tuple[str, ...]) -> None:
-            nonlocal runner_pid, runner_start, runner_argv
+        daemon_argv_sha = _capture_raw_identity(
+            daemon_proc.pid, daemon_raw_before, daemon_start, DAEMON_BINARY,
+            DAEMON_PORT, daemon=True, expected_env={
+                "OLLAMA_MODELS": str(private_root / "models"), "OLLAMA_NO_CLOUD": "1",
+            },
+        )
+        def capture_runner(pid: int, port: int, generation: str,
+                           argv: tuple[str, ...], raw_before: tuple[int, int, int, int]) -> None:
+            nonlocal runner_pid, runner_start, runner_argv, runner_raw_before
+            if runner_raw_before is None:
+                runner_raw_before = raw_before
+            elif raw_before != runner_raw_before:
+                _fail("multiple_private_runner_generations")
             runner_pid, runner_start, runner_argv = pid, generation, argv
             state["runner_port"] = port
             sampler.add("runner", pid, generation)
@@ -564,6 +736,12 @@ def run_once() -> dict:
             daemon_proc.pid, private_root, state, capture_runner)
         if daemon_start_seen != daemon_start:
             _fail("private_daemon_generation_drift")
+        if runner_raw_before is None:
+            _fail("private_runner_raw_identity_unavailable")
+        runner_argv_sha = _capture_raw_identity(
+            runner_pid, runner_raw_before, runner_start, RUNNER_BINARY,
+            runner_port, daemon=False, parent=daemon_proc.pid, expected_argv=runner_argv,
+        )
         phases["runner_loaded_s"] = time.monotonic() - started
         original_http = probe._http_json
         original_store = probe._model_store
@@ -598,8 +776,18 @@ def run_once() -> dict:
             _fail("private_probe_diagnostic_count_drift")
         state["probe_result_sha256"] = hashlib.sha256(json.dumps(
             identity_report, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        if (_committed_operator_source_sha() != operator_source_sha
+                or _committed_stateful_source_sha() != evidence_source_sha
+                or child_identity.raw_generation(daemon_proc.pid) != daemon_raw_before
+                or child_identity.raw_generation(runner_pid) != runner_raw_before):
+            _fail("private_descriptor_source_or_generation_drift")
         descriptor = _write_descriptor(private_root, runner_pid, runner_port,
-                                       daemon_proc.pid, daemon_start, runner_start)
+                                       daemon_proc.pid, daemon_start, runner_start,
+                                       daemon_raw_generation=daemon_raw_before,
+                                       runner_raw_generation=runner_raw_before,
+                                       daemon_argv_sha256=daemon_argv_sha,
+                                       runner_argv_sha256=runner_argv_sha,
+                                       operator_source_sha256=operator_source_sha)
         state.update({"daemon_pid": daemon_proc.pid, "runner_pid": runner_pid,
                       "runner_port": runner_port, "daemon_port": DAEMON_PORT,
                       "descriptor_sha256": _sha256(descriptor),
@@ -676,30 +864,26 @@ def run_once() -> dict:
                 state["runner_cleanup"] = _stop_exact(
                     runner_pid, runner_start, RUNNER_BINARY, daemon=False,
                     expected_parent=daemon_proc.pid, expected_argv=runner_argv,
+                    expected_raw=runner_raw_before,
                 )
             else:
                 try:
                     recovered, unknown_child = _owned_runner_snapshots(daemon_proc.pid, private_root)
                 except Exception:
                     recovered, unknown_child = [], True
-                recovered_results = []
-                for pid, port, seen_daemon_start, seen_runner_start, seen_argv in recovered:
-                    if daemon_start is None or seen_daemon_start != daemon_start:
-                        unknown_child = True
-                        continue
-                    recovered_results.append({
-                        "pid": pid, "port": port,
-                        "cleanup": _stop_exact(
-                            pid, seen_runner_start, RUNNER_BINARY, daemon=False,
-                            expected_parent=daemon_proc.pid, expected_argv=seen_argv,
-                        ),
-                    })
-                state["recovered_runner_cleanup"] = recovered_results
-                state["unknown_daemon_child_at_cleanup"] = unknown_child
+                # A freshly discovered raw tuple is not the runner's initial
+                # witness, so it cannot authorize a signal here.
+                state["recovered_runner_cleanup"] = [
+                    {"pid": row[0], "port": row[1],
+                     "cleanup": "not_initially_captured_no_signal"}
+                    for row in recovered
+                ]
+                state["unknown_daemon_child_at_cleanup"] = bool(unknown_child or recovered)
                 state["runner_cleanup"] = "identity_not_captured_review_required"
-            if daemon_start is not None:
+            if daemon_start is not None and daemon_raw_before is not None:
                 state["daemon_cleanup"] = _stop_exact(
                     daemon_proc.pid, daemon_start, DAEMON_BINARY, daemon=True,
+                    expected_raw=daemon_raw_before,
                 )
             elif daemon_proc.poll() is None:
                 # An unreaped direct Popen child cannot have its PID reused.
