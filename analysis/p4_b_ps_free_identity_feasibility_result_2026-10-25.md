@@ -21,6 +21,6 @@
 
 可主張：先前同類 sandbox profile 已實測 `/bin/ps` EPERM；本輪**未在 sandbox 內重呼 ps**，而是在這台 macOS、這份既有 B 類型 profile、這個已凍結的受控 Python daemon/runner 上，證明 child-local libproc／sysctl／lsof 路線能看見所需九欄，並在真 runner 狀態改變後拒絕舊身份。這移除了「合成程序在沙盒內是否完全不可觀察」的不確定性，足以**開始**新的 B-only 身份契約與成本設計。
 
-不可主張：原第三次 Ollama B zero-turn 已修好、真 Ollama daemon/runner 欄位等價、raw `tvsec/usec` 已與目前秒級 `ps lstart` receipt 同義、模型 SHA 時序、同模型 token 上限、≤20 秒 click→DOM、產品 Web/Brain 同 PID、答覆品質、或 B 放行。`model_calls/b_sends/web_sends=0` 是凍結探針的 source/protocol 計數，**不是外部網路監測**；外部 `ps/lsof` 原始字串未存檔，只有固定結果與 source gate 可追。異常 cleanup 時 supervisor 會優先緊急收尾而可能不保留已得 matrix；本次 `cleanup_verified=true` 僅是受控程序的程式驗證，未另做跨工具 PID 稽核。source review 與 22 個 fake tests 也不是獨立真人或跨機器重現。
+不可主張：原第三次 Ollama B zero-turn 已修好、真 Ollama daemon/runner 欄位等價、raw `tvsec/usec` 已與目前秒級 `ps lstart` receipt 同義、模型 SHA 時序、同模型 token 上限、≤20 秒 click→DOM、產品 Web/Brain 同 PID、答覆品質、或 B 放行。`model_calls/b_sends/web_sends=0` 是凍結探針的 source/protocol 計數，**不是外部網路監測**；外部 `ps/lsof` 原始字串未存檔，只有固定結果與 source gate 可追。本檔 JSON／shell exit／wall 是當輪工具輸出的抄錄，**未另存獨立的原 stdout／終端 transcript**；只讀審核可核它與凍結 source 的一致性，不能獨立證明一次／0 retry 的外部執行歷史。異常 cleanup 時 supervisor 會優先緊急收尾而可能不保留已得 matrix；本次 `cleanup_verified=true` 僅是受控程序的程式驗證，未另做跨工具 PID 稽核。source review 與 22 個 fake tests 也不是獨立真人或跨機器重現。
 
 下一個必要交付：先設計審查一份 B-only live identity 適配契約，列出 raw start↔現有 receipt、Ollama argv/env/listener/source 等價、TOCTOU、模型 SHA 與 20 秒成本；保留上述第三次失敗與 B no Send。此 probe 不授權直接產品改碼或第四次真模型 run；若設計無法給出同等安全證據，B 常閉。
