@@ -78,7 +78,9 @@ def test_warm_failure_still_reports_created_one_use_root(tmp_path, monkeypatch):
     assert observed == [root]
 
 
-def test_clone_only_six_explicit_files_with_distinct_inodes(tmp_path, monkeypatch):
+@pytest.mark.parametrize("via_alias", [False, True])
+def test_clone_only_six_explicit_files_with_distinct_inodes(tmp_path, monkeypatch,
+                                                             via_alias):
     shared = tmp_path / "shared/models"
     manifest_rel = Path("manifests/registry.ollama.ai/library/qwen2.5/7b")
     (shared / manifest_rel.parent).mkdir(parents=True)
@@ -96,16 +98,23 @@ def test_clone_only_six_explicit_files_with_distinct_inodes(tmp_path, monkeypatc
         manifest_sha256=hashlib.sha256(manifest).hexdigest(), blob_sha256s=hashes,
         gguf_sha256=hashes[1], template_sha256=hashes[4], system_sha256=hashes[2],
     )
+    real_parent = tmp_path / "private_var"
+    real_parent.mkdir()
+    alias_parent = tmp_path / "var_alias"
+    alias_parent.symlink_to(real_parent, target_is_directory=True)
+    creation_parent = alias_parent if via_alias else real_parent
     original_mkdtemp = operator.tempfile.mkdtemp
     monkeypatch.setattr(operator.tempfile, "mkdtemp", lambda prefix: original_mkdtemp(
-        prefix=prefix, dir=tmp_path))
+        prefix=prefix, dir=creation_parent))
     monkeypatch.setattr(operator, "SHARED_MODELS", shared)
     monkeypatch.setattr(operator.probe, "FROZEN_BLOBS", hashes)
     monkeypatch.setattr(operator.probe, "FROZEN_MODEL", expected)
     observed = []
     root, logical_bytes = operator._clone_private_model(observed.append)
     assert observed == [root]
-    assert root.parent == tmp_path
+    assert root.parent == real_parent
+    assert root == root.resolve(strict=True)
+    operator.binding._exact_private_directory(root)
     assert root.stat().st_mode & 0o777 == 0o700
     assert logical_bytes == len(manifest) + sum(map(len, payloads))
     for relative in (manifest_rel, *(Path("blobs") / f"sha256-{digest}" for digest in hashes)):
@@ -115,6 +124,12 @@ def test_clone_only_six_explicit_files_with_distinct_inodes(tmp_path, monkeypatc
         assert private.stat().st_ino != source.stat().st_ino
         assert private.stat().st_nlink == 1
         assert private.stat().st_mode & 0o777 == 0o600
+    descriptor = operator._write_descriptor(root, 401, 51234, 400,
+                                            "daemon-start", "runner-start")
+    assert json.loads(descriptor.read_text())["private_root"] == str(root)
+    assert operator._daemon_environment(root)["OLLAMA_MODELS"] == str(root / "models")
+    parsed = operator.control._b_descriptor(str(descriptor), run_id="0123456789abcdef")
+    assert parsed.private_root == root
 
 
 def test_descriptor_is_exact_single_link_0600_and_exclusive(tmp_path):

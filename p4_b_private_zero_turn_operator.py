@@ -233,7 +233,7 @@ def _prepare_product_root(on_created: Callable[[Path], None] | None = None) -> P
 
 
 def _clone_private_model(on_created: Callable[[Path], None] | None = None) -> tuple[Path, int]:
-    root = Path(tempfile.mkdtemp(prefix="uruha-p4-b-zero-"))
+    root = Path(tempfile.mkdtemp(prefix="uruha-p4-b-zero-")).resolve(strict=True)
     root.chmod(0o700)
     if on_created is not None:
         on_created(root)
