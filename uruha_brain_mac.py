@@ -43,6 +43,7 @@ from contextvars import ContextVar
 from dataclasses import asdict, dataclass, field
 
 import chromadb
+import httpx
 import torch
 from colorama import Fore, Style, init
 from dotenv import load_dotenv
@@ -57,6 +58,7 @@ import uruha_profile_grounding as upg
 import uruha_profile_memory as upm
 import public_persona_contract_v3 as ppcv3
 import uruha_compute_ledger as ucl
+import uruha_p4_b_private_endpoint_binding as up4bpeb
 import uruha_leftbrain_rules
 import uruha_reflection_runtime as urr
 import uruha_surface_payload_v2 as uspv2
@@ -1761,10 +1763,17 @@ class MemoryManager:
 # 🧠 左腦：邏輯與回覆規劃 (Left Brain)
 # ===========================
 class LeftBrain:
-    def __init__(self, client_logic, persona_policy_provider=None, compute_ledger=None):
+    def __init__(
+        self,
+        client_logic,
+        persona_policy_provider=None,
+        compute_ledger=None,
+        native_semantic_verifier_url=None,
+    ):
         self.client_logic = client_logic
         self.persona_policy_provider = persona_policy_provider
         self.compute_ledger = compute_ledger
+        self.native_semantic_verifier_url = native_semantic_verifier_url
         self._social_reasoning_frame_cache = {}
 
     def _attach_persona_policy(self, plan, current_psyche):
@@ -8487,7 +8496,7 @@ Current input:
             "options": {"temperature": 0, "num_predict": 280},
         }
         request = urllib.request.Request(
-            M31_SEMANTIC_VERIFIER_URL,
+            getattr(self, "native_semantic_verifier_url", None) or M31_SEMANTIC_VERIFIER_URL,
             data=json.dumps(request_body, ensure_ascii=False).encode("utf-8"),
             headers={"Content-Type": "application/json"},
             method="POST",
@@ -16073,20 +16082,63 @@ class UruhaBrainV4_Mac:
         load_right_brain_model=None,
         persona_policy_provider=None,
         compute_ledger=None,
+        p4_b_private_mode=False,
+        p4_b_private_binding=None,
+        p4_b_run_id=None,
     ):
         print(Fore.CYAN + "🍎 Uruha V5 Local Dual-Brain Starting...")
 
+        if type(p4_b_private_mode) is not bool:
+            raise up4bpeb.PrivateEndpointBindingError("private_mode_invalid")
+        if not p4_b_private_mode and (p4_b_private_binding is not None or p4_b_run_id is not None):
+            raise up4bpeb.PrivateEndpointBindingError("private_binding_without_opt_in")
+        if p4_b_private_mode:
+            # This is only the constructor identity seam. The Web child, the
+            # per-create recheck, and the B token bound are not wired yet.
+            private_target = up4bpeb.validate_private_endpoint_binding(
+                p4_b_private_binding,
+                compute_ledger=compute_ledger,
+                run_id=p4_b_run_id,
+            )
+        else:
+            private_target = None
+
         self.compute_ledger = compute_ledger
         self.persona_policy_provider = persona_policy_provider
+        self.p4_b_private_target = private_target
+        private_http_client = (
+            httpx.Client(trust_env=False, follow_redirects=False)
+            if private_target is not None else None
+        )
         try:
-            raw_client_logic = OpenAI(
-                base_url=OLLAMA_URL,
-                api_key=OLLAMA_API_KEY,
-                max_retries=0,
-            )
-            raw_client_logic.models.list()
+            if private_target is None:
+                raw_client_logic = OpenAI(
+                    base_url=OLLAMA_URL,
+                    api_key=OLLAMA_API_KEY,
+                    max_retries=0,
+                )
+            else:
+                raw_client_logic = OpenAI(
+                    base_url=private_target.base_url,
+                    api_key=OLLAMA_API_KEY,
+                    max_retries=0,
+                    http_client=private_http_client,
+                )
+            listed_models = raw_client_logic.models.list()
+            if private_target is not None:
+                rows = getattr(listed_models, "data", None)
+                if (not isinstance(rows, list) or len(rows) != 1
+                        or getattr(rows[0], "id", None) != "qwen2.5:7b"):
+                    raise up4bpeb.PrivateEndpointBindingError("private_model_listing_drift")
             print(Fore.GREEN + "✅ Left Brain (Ollama) Connected!")
-        except Exception:
+        except Exception as exc:
+            if private_http_client is not None:
+                private_http_client.close()
+                if isinstance(exc, up4bpeb.PrivateEndpointBindingError):
+                    raise
+                raise up4bpeb.PrivateEndpointBindingError(
+                    "private_models_list_unavailable"
+                ) from exc
             print(Fore.RED + "❌ Cannot connect to Ollama. Please run 'ollama run qwen2.5:7b' in terminal.")
             sys.exit(1)
         self.client_logic = ucl.instrument_openai_client(raw_client_logic, compute_ledger)
@@ -16105,11 +16157,13 @@ class UruhaBrainV4_Mac:
             soft_zone=PSYCHE_SOFT_ZONE,
         )
         self.psyche = Psyche(config=self.psyche_config)
-        self.left_brain = LeftBrain(
-            self.client_logic,
-            persona_policy_provider=persona_policy_provider,
-            compute_ledger=compute_ledger,
-        )
+        left_brain_kwargs = {
+            "persona_policy_provider": persona_policy_provider,
+            "compute_ledger": compute_ledger,
+        }
+        if private_target is not None:
+            left_brain_kwargs["native_semantic_verifier_url"] = private_target.native_url
+        self.left_brain = LeftBrain(self.client_logic, **left_brain_kwargs)
         self.right_brain = RightBrain(
             load_model=_resolve_right_brain_model_loading(load_right_brain_model),
             persona_policy_provider=persona_policy_provider,
