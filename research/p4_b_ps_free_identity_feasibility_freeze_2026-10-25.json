@@ -1,0 +1,33 @@
+{
+  "schema": "p4_b_ps_free_identity_feasibility_freeze_v1",
+  "scope": "one zero-model synthetic macOS sandbox probe; no product code or B Send",
+  "execution_limit": 1,
+  "source_sha256": "e2f29f389101af35b297550b80227248cba9567539359731317c5ccc461e183c",
+  "test_sha256": "e74694c521c28c14cdf6a504d139ab6f6d66a09e6dce7c7abd0ecf6ed27a4b25",
+  "plan_sha256": "b07af3248060ec5c2fed21b20daf33a1678870d8cca3e2745b64a1c9170a8ad4",
+  "sandbox_profile_sha256": "5f759a54cfc12a5e68fb73590f585f4dee9ac9f55d50c44338f5e164684e6110",
+  "input_oracle": {
+    "python": ".venv/product_checks/bin/python",
+    "source_modes": ["--worker", "--daemon", "--runner", "--observe"],
+    "environment": {
+      "OLLAMA_MODELS": "/private/tmp/uruha-p4-b-identity-surrogate-no-model",
+      "OLLAMA_NO_CLOUD": "1"
+    },
+    "listeners": "two distinct dynamic 127.0.0.1 TCP listeners, each uniquely owned by its exact PID",
+    "external_oracle": [
+      "raw libproc proc_bsdinfo PID/PPID/start seconds+microseconds",
+      "raw sysctl KERN_PROCARGS2 exact executable/argv and environment tail",
+      "/bin/ps -ww exact PPID/command and -wwE each key exactly once",
+      "/usr/sbin/lsof unique loopback listener PID"
+    ],
+    "positive_fields": [
+      "daemon_start", "runner_start", "daemon_argv", "runner_argv",
+      "daemon_env", "runner_env", "runner_parent", "daemon_listener",
+      "runner_listener"
+    ],
+    "negative_control": "same supervised sandbox observer PID rereads after daemon exact child stop/reap with -SIGTERM; daemon four fields true, runner five fields false",
+    "wall_limits_seconds": {"active": 30, "normal_cleanup": 5, "emergency_cleanup": 5},
+    "allowed_calls": {"model": 0, "B_Send": 0, "Web_Send": 0}
+  },
+  "input_oracle_sha256": "b45a878a386ed788650b483dc096c36e91cdd03a4e7ac1f130507b2baa99c064"
+}
