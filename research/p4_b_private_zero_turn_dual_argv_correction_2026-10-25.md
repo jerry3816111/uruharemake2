@@ -1,0 +1,19 @@
+# P4 B 私有 zero-turn 前瞻修正 2（最後）：雙 argv 身份
+
+狀態：第二次真失敗已封存、第三次任何實機啟動之前凍結。這是同一 zero-turn 工作項的**第二且最後一個**有根據修正批次；若新 root 真驗仍 FAIL，列 `REVIEW_REQUIRED`，不再反覆追 PASS。原件與分段成本見 `analysis/p4_b_private_zero_turn_second_real_child_bootstrap_failure_2026-10-25.md`。目前 HEAD `66f80fd`；修前 controller／binding／bootstrap SHA-256 依序為 `0e9cf998eb98dad6750598154f429c0e480a3fee7125ff9964b95c294ec6be58`、`65fc1dc466cbc07434ae63363febc5399c3a7b55229d53872e8a35956a8e8bb0`、`aaf4a8dc54a93861599a17302f2650d153138535e1fac2671bc8ee9b324b1ebb`。
+
+## 單一核心變因和不變條件
+
+修前真 child stderr 在 Web import 前記 `private_child_argv_drift`：父 controller 在 macOS sandbox calibration 觀察的 `ps` Framework App executable 與 child `sys.executable` venv launcher 是**兩個不同、解析後仍不同**的路徑；舊 v2 receipt 只有前者 digest，bootstrap 誤拿後者驗同一欄。兩個真實 root 的 one-use claim 均已耗，不重用。
+
+唯一變因是把 B-only 的「一個 argv digest」改成**同時且分開驗證 OS `ps` 最終命令與 child 內 Python argv**。保留既有 `expected_final_argv_sha256` 與 controller exact final-command／same-PID HTTP／stop；新增 receipt v3 必填 raw `expected_os_final_argv` 和 `expected_inprocess_python_argv_sha256`。OS 清單必須**恰為兩個 absolute/canonical path** `[calibrated_ps_executable, fixed_ENTRYPOINT]`，其 `_final_argv_digest` 在 issue、child 與 ready 三處均必須等於既有 OS digest；raw self-ps flat command 只接受這兩個 path 的無歧義精確拼接，不把 `ps` 當作加密或真 argv-vector 證明。父方只在同一次 B-only sandbox calibration 擷取真 `sys.executable`，固定 entrypoint，簽兩個不同欄；不靠猜 venv realpath，也不改一般產品／A 路線。child 在任何 Web import／Brain／provider 前，以 `/bin/ps` 讀當前 PID final command 與 raw OS argv **逐字**對比，再以 `sys.executable`＋唯一 `sys.argv[0]` 對第二 digest；每次既有 child revalidation 都重核。任一 ps 查詢失敗、命令附加參數、欄位缺失／歧義、digest／receipt 漂移均 fail closed，**不得 OR／fallback／接受任一條即可**。既有 controller ready 中寫死的 v2 receipt、binding／child exact field/schema validator 必須一併改為 v3 並加 v2 拒絕與 v3 ready 正測；300 秒效期及一次性語意不變。
+
+只允許改 `p4_preference_fallback_detached_control.py`、`uruha_p4_b_private_endpoint_binding.py`、`uruha_p4_b_private_child_bootstrap.py`，及相應 `test_p4_b_private_controller_seam.py`、`test_p4_b_private_endpoint_binding.py`、`test_p4_b_private_child_bootstrap.py`、`test_p4_b_private_child_chain_zero_provider.py`、本卡／結果／`CURRENT_TASK.md`。不改 operator、Web、Brain、ledger、A/B 題／gold、正式 DB、模型與資源門檻；不送任何 B 輪、不做 Safari Send 或外部部署。
+
+## 紅綠、真實驗收與停損
+
+1. 先做 0-provider 紅測：fake OS executable 與 in-process executable 各自存在且 canonical 後仍不同；舊 bootstrap 應在 Web import 前拒，不能只讓兩者 fake 成相同。修後兩者**皆吻合**才能綠。分別篡改 self-ps 路徑、附加 arg、ps 不可查、`sys.executable`、`sys.argv`、receipt 任一新欄／舊 v2、boot 後撤銷或 precreate 漂移，均不能到 provider；竄改負控必須更新 receipt digest，使其真正抵達身份檢查，不能只靠 stale SHA 拒絕。controller fake 確認 Popen 仍用 venv、metadata/ready/stop 仍逐字核 Framework OS final command，私有 URL／ledger gate 不退步。既有 fake-child chain 用狹窄 ps-observer 注入保持其零服務範圍，不為它放寬產品自查。
+2. 跑上述聚焦測試及現有 controller/binding/child chain 相鄰零 provider 回歸、`py_compile`、`git diff --check`；獨立只讀安全複核。fake 綠只證契約，不證真 sandbox 的 ps 格式或 HTTP ready。實機前先 scoped commit/push 既有 PR #435 並核 exact head、critical sources byte-equal HEAD。
+3. 全量真 run 前加一個零服務／零 provider 的**小型真 sandbox Python 探針**：用同一 Python／sandbox profile 類型的實際 script 程序，執行**與產品 child 同一 self-ps observer 和兩個 digest 比較**，而不只是印兩條路徑；核 `ps` flat final command 與 `sys.executable` 差異、自身 `/bin/ps` 可查性與完整命令格式。它不 claim 產品 root、不啟 daemon、不發模型 HTTP；不通過則不花 4.68 GB clone／240s 等待。`ps` 只是 OS 命令列觀察，不是加密的真 argv-vector 證明；不得誇大其強度。
+4. 探針通過後，僅在原 `research/p4_b_private_zero_turn_resource_plan_2026-10-25.md` 20 GiB／1 GiB clone delta、私有 11455/7894 空、共用 11434 身份不變、模型／ONNX SHA、單 daemon／runner、300s receipt 和 480/240s **觀察**停損線下，用**第三組全新** 0700 roots 做一次 0-turn。成功需真 same-PID HTTP ready、身份前後一致、planned child stop、精確私有進程/埠收尾；未過任一項嚴格 FAIL，保留完整私有原件、0 retry。舊 root 與舊 receipt 絕不改寫。
+5. 即使通過，也只說私有 zero-turn 產品身份與可觀測資源。B `prewarm=False`、無 active DB/admission opt-in 仍不證 Brain/SDK 真 child、全域 0 completion 或 B counter。A 作者三項真核與真 A、B transformed request token oracle／M21 terminal／Safari click→DOM 20 秒依然是**獨立 B Send 硬 gate**。不能用 zero-turn 當任何真人理解、日文回答、強 LLM 對照或完整方程式證據。
