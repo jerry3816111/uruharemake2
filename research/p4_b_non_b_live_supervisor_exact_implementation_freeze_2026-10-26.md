@@ -411,6 +411,88 @@ FD cap and raw canary. Preserve the previous 7/7 v1 regression, run the
 affected suite and independent read-only patch review. No real daemon,
 runner, HTTP, Safari or B Send is authorized by this amendment.
 
+### Prospective W-owned fake transport amendment (2026-10-27)
+
+Status: **independently design-reviewed GO only for v3 fake-only source/tests;
+no real HTTP/model/daemon/runner, Safari or B Send authority**. Patch review,
+committed-source audit and separate live release remain pending. The
+committed v1/v2 fake paths already reject
+the *injected callback's claims* of proxy use, redirect, wrong effective URL,
+non-200 and overlong response. They do not construct a no-proxy/no-redirect
+client, and lower-layer tests do not establish the supervised W→D/R failure
+receipt for each transport fault. This amendment changes only that fake
+transport contract; the seven requests, source conditions, score, model,
+question, port witness and T0+90 claim remain fixed.
+
+Add one explicit opt-in v3 fake path with a W-owned strict loopback request
+constructor and an injected fake opener factory. V3 requires the v2
+`port_observe` gate; it is mutually exclusive with the old `fake_http`
+callback. The in-tree fake entry has no implicit real opener or direct socket
+operation; an arbitrary injected callable is a trusted test effect, and
+socket fail-sentinels establish zero sockets for the executed tests. Before
+each fake exchange, W re-canonicalizes its own pending body,
+checks <=256 KiB and the grant SHA, exact bound
+`http://127.0.0.1:{private_port}{frozen_path}`, role/method/ordinal/worker/
+nonce/expiry, then constructs `urllib.request.Request` and a client with
+`ProxyHandler({})` plus a redirect-denying handler. W checks that the factory
+received the explicit empty proxy handler, then validates the **returned
+opener's installed handler inventory** before and after the fake callback:
+zero active `ProxyHandler`/`proxy_open` handlers, exactly the expected
+redirect-denying handler, and no competing redirect handler. Python's
+`build_opener` does not install an empty `ProxyHandler` in `.handlers`, so
+requiring one would be incorrect. Checking only the factory arguments is
+insufficient because a fake factory may ignore them. The supplied fake
+opener is invoked only after D has durably ACKed W's issue-entry; timeout is
+positive and at most the remaining work/grant time. W checks response
+status 200, byte-equal effective URL and bytes type. It repeatedly reads
+at most the remaining allowance until EOF or cumulative bytes exceed
+2 MiB, never requesting or retaining more than 2 MiB + 1; a short non-EOF
+chunk is not mistaken for the end of a bounded response. A blocked read
+remains subject to W's supervised hard deadline. No callback self-reported
+`proxy_used=false` may substitute for checking the constructed handlers.
+All exceptions and callback stdout/stderr are contained; public output and
+R receipt use fixed codes/hashes only. W's existing one-use nonce/spend and
+on-wire-unknown rules remain unchanged.
+
+The v3 result, W summary and R 0600 receipt must use distinct strict v3
+schemas. They bind an ordered SHA of the seven validated request/result
+contracts and a seven-call fake transport policy count; parent checks that
+SHA against the request/result proof frames it actually received before
+setting a v3 `transport_gate_proven` subverdict. This subverdict means
+**only** that W's seven fake transport contracts have an ordered proof; it
+is not overall run success and may stay true if R subsequently fails.
+Positive v3 requires this subverdict, the v2 port gate, normal D/W/O/S_*
+exits and durable R receipt. Any W exchange/proof mismatch, W block/crash
+or raw transport content is terminal with `transport_gate_proven=false` and
+a raw-free failure receipt where R is available. R's own later receipt/exit
+failure changes overall status and `receipt_durable_proven`, not an already
+established W-only subverdict; the receipt cannot predict its own final
+exit. Existing v1/v2 schemas, default behavior and committed result
+remain unchanged. No additional pipes or helper PIDs are allowed: the fake
+resource cap remains 123 pipes/246 reserved endpoints and eight children;
+the extra opener/request are W-local. FD exhaustion fails closed.
+
+Before source edits: preserve a before trace showing current callback-only
+checks, add red v3 positive and failure tests, then implement. Tests inject
+only fake openers/responses and fail-sentinel all socket/connect and real
+opener paths: **zero actual HTTP/model/provider calls**. Controls cover
+empty proxy-handler map, redirect denial, exact request bytes and timeout;
+wrong scheme/host/port/path/method/body SHA/nonce before opener call;
+302/redirect, changed effective URL, installed-handler policy tamper before
+or after exchange, non-200,
+oversize response, blocked/raising exchange, raw printed canary, missing
+or corrupt ordered summary, and R failure-receipt durability. Preserve v1
+and v2 positives, run focused/affected regression and independent read-only
+patch review before scoped commit/push/PR exact-head check.
+
+Passing v3 would prove only the construction and fail-closed behavior of a
+**fake injected** client seam. A fake opener can ignore policy, and these
+tests do not prove real proxy bypass, real redirect behavior, network bytes,
+installed model/source identity, physical cleanup by 90 seconds, Safari or
+B Send. Public `supervise_once()` remains fail-closed; a separately reviewed
+live opener, actual private-loopback observation and all other exact-freeze
+gates are still mandatory before one real attempt.
+
 Focused fake controls must prove a positive seven unique grants/sends,
 six OS-only observations, op7 spent **before** ACK, two private ports
 vacant/11434 unchanged, no raw leakage, a durable initial zero-count journal
