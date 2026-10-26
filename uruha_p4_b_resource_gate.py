@@ -145,6 +145,16 @@ class P4BResourceGate:
                 elif total > 2000:
                     self._terminal_reason = "actual_token_budget_exceeded"
 
+    def require_nonterminal_result(self):
+        """Reject an audited B response whose result is terminal.
+
+        Called only after the physical SDK call and ledger audit complete; it
+        cannot retroactively prevent that call or establish a hard token cap.
+        """
+        with self._lock:
+            if self._terminal_reason:
+                raise P4BResourceGateError(self._terminal_reason)
+
     def snapshot(self):
         """Raw-free local diagnostic state; not a B authorization receipt."""
         with self._lock:

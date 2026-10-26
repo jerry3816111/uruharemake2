@@ -669,7 +669,6 @@ class _CompletionProxy:
         error = None
         try:
             response = self._target.create(*args, **kwargs)
-            return response
         except Exception as exc:
             error = exc
             raise
@@ -684,6 +683,12 @@ class _CompletionProxy:
             finally:
                 if gate is not None:
                     gate.observe_openai_result(response, error)
+        # This runs only after a successful SDK/ledger path. A post-result B
+        # terminal must not return model content to planning or the UI; an
+        # original provider/ledger exception is never masked by this check.
+        if gate is not None:
+            gate.require_nonterminal_result()
+        return response
 
 
 class _ChatProxy:

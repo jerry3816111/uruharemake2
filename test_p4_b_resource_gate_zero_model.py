@@ -167,23 +167,43 @@ def test_missing_usage_marks_terminal_even_after_first_provider_return():
     ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
     client, target = _client(ledger, usage=False)
     with ledger.stage("leftbrain_general_plan"):
-        client.chat.completions.create(**_m21_request())
+        with pytest.raises(P4BResourceGateError, match="missing_provider_usage"):
+            client.chat.completions.create(**_m21_request())
     assert target.calls == 1
     assert gate.snapshot()["terminal_reason"] == "missing_provider_usage"
+    assert gate.snapshot()["actual_total_tokens"] is None
+    assert ledger.snapshot()["call_count"] == 1
+    assert ledger.snapshot()["summary"]["generative_token_accounting_complete"] is False
 
 
 @pytest.mark.parametrize("usage_values,reason", [
     ((1201, 40, 1241), "actual_prompt_exceeded_upper_bound"),
     ((100, 257, 357), "actual_completion_exceeded_output_cap"),
+    ((1200, 801, 2001), "actual_completion_exceeded_output_cap"),
 ])
 def test_posthoc_usage_drift_is_terminal(usage_values, reason):
     gate = P4BResourceGate(prompt_token_upper_bound=lambda request: 1200)
     ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
     client, target = _client(ledger, usage_values=usage_values)
     with ledger.stage("leftbrain_general_plan"):
-        client.chat.completions.create(**_m21_request())
+        with pytest.raises(P4BResourceGateError, match=reason):
+            client.chat.completions.create(**_m21_request())
     assert target.calls == 1
     assert gate.snapshot()["terminal_reason"] == reason
+    assert gate.snapshot()["actual_total_tokens"] == usage_values[2]
+    assert ledger.snapshot()["call_count"] == 1
+    assert ledger.snapshot()["calls"][0]["response"]["total_tokens"] == usage_values[2]
+
+
+def test_non_b_missing_usage_still_returns_without_gate():
+    ledger = ucl.ComputeLedger()
+    client, target = _client(ledger, usage=False)
+    with ledger.stage("leftbrain_general_plan"):
+        response = client.chat.completions.create(**_m21_request())
+    assert response is not None
+    assert target.calls == 1
+    assert ledger.snapshot()["call_count"] == 1
+    assert ledger.snapshot()["summary"]["generative_token_accounting_complete"] is False
 
 
 def test_token_counter_cannot_mutate_real_transformed_request():
