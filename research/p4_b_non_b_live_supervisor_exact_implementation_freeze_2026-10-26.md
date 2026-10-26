@@ -1,12 +1,15 @@
 # P4-B non-B parity: exact live-supervisor implementation freeze
 
-Status: **DRAFT for independent design review. NO-GO source edit, real
-HTTP/model/process or B Send until the review explicitly accepts this exact
-freeze.** The previous prospective design at `352223c` is a design baseline,
-not executable authority. This document freezes the next *fake-controlled*
-implementation scope; a later separate patch review, committed-source audit
-and read-only live preflight are required before at most one synthetic non-B
-attempt. It does not change the B question, gold, gate, or formal evidence.
+Status: **independently reviewed GO only for the listed fake-only source and
+tests; NO-GO real HTTP/model/process, Safari or B Send.** Initial read-only
+review found four contract gaps, and the first re-review found a PID-only
+check-to-signal overclaim. Both were corrected above; the final independent
+read-only review accepted only this fake implementation boundary. The
+previous prospective design at `352223c` is a design baseline, not
+executable authority. A separate patch review, committed-source audit,
+read-only live preflight and explicit live-release decision are still
+required before at most one synthetic non-B attempt. This does not change
+the B question, gold, gate, or formal evidence.
 
 ## Before, single variable, allowed scope
 
@@ -82,10 +85,21 @@ directory fsync) **before** parent ACK. Operation 7 additionally commits
 `completion_attempt_spent=1` before its ACK. An ACK is never issued on a
 missing, blocked or failed durability reply. Journal states are monotonic;
 neither crash nor lost response refunds an ordinal or completion attempt.
+Before operation 1, the helper must create an exclusive 0600 **zero-count**
+journal, fsync that file and its containing directory, and receive a bounded
+ACK. The 0700 run directory must be new and empty; any existing journal,
+intent, receipt or run identifier is a terminal refusal, **not** a resume or
+second-use path. A crashed run keeps every reservation and spent-completion
+bit; this operator never issues a new grant against that run. A lost parent
+or worker ACK after the durability barrier is also spent, not refundable.
 The receipt separately records `reserved`, `granted`, `worker_issued` and
 `on_wire=yes/no/unknown`; it must not infer wire delivery or a runner
 generation from an attempt reservation. No retry, fallback or second
 completion path exists.
+`on_wire=yes` requires a bounded transport success observation; `no` requires
+proof that the operation had **no grant** and its worker was reaped without
+an authorized send. Once a grant may have reached a worker, ACK loss,
+transport uncertainty or worker death is `unknown`, never `no` by default.
 
 Transport accepts only exact bound `127.0.0.1` daemon/runner URLs and
 ordinal-method-path pairs. Disable proxies (`ProxyHandler({})`), redirects
@@ -104,8 +118,13 @@ watchdog: full SHA (including `_model_store`), daemon spawn/readiness, OS
 observers, lsof/ps, journal and receipt fsync/replace execute only in
 supervised helpers, never synchronously on its event loop. Parent polls IPC
 and child exit with no unbounded wait; fake blocked hash/observer/fsync must
-still cause work-stop and cleanup by its deadline. If work completes or
-fails earlier, enter the same cleanup immediately rather than waiting to 80.
+still cause work-stop and a witness-gated **cleanup attempt** by its
+deadline. Every helper must have its initial raw-generation/PGID/argv/binary/
+parent witness captured and ACKed before it enters any blocking callback;
+helper launch/witness capture is itself bounded and cannot hold the parent
+event loop. If that capture cannot finish, do not start the callback or
+claim an owned process. If work completes or fails earlier, enter the same
+cleanup immediately rather than waiting to 80.
 
 The **latest** schedule, measured from T0, is:
 
@@ -124,7 +143,18 @@ helper and still prove exit by 90. Signal only a PID whose *initial* raw
 generation, PGID, argv/binary, parent and listener witness were captured
 when it became visible, and whose corresponding fresh witness is identical
 immediately before TERM or KILL. Use `raw_generation()` bracketing
-`os.getpgid(pid)`; `raw_generation()` itself lacks PGID. No `killpg`.
+`os.getpgid(pid)`; `raw_generation()` itself lacks PGID. The bounded signal
+helper must execute fresh witness acquisition, second raw-generation check
+and `os.kill(initial_pid, signal)` in one helper transaction without a
+parent IPC check-then-signal gap; it returns only a fixed result code. A
+blocked fresh-witness check or any change **detected through the final
+pre-signal check** must cause no signal and `physical_stop_unproven`. Fake
+controls must block this *cleanup* observer as well as the ordinary work
+observer, and inject PID change at that final check. `os.kill` is PID-only:
+the remaining final-check→syscall reuse race is **not** eliminated by a
+same-helper transaction. It remains a cooperative-local residual risk,
+not a generation-qualified OS signal guarantee; a later live release must
+review it explicitly. No `killpg`.
 Unknown/newly discovered child or changed witness is never retroactively
 authorized for signaling. Signal/observation failures, still-owned ports,
 changed 11434, delayed receipt or any action after 90 yield FAIL with
@@ -175,9 +205,20 @@ Before interpreting delta, all of these predicates must be true on the
    derived *source-conditioned* BOS decision, not a callback's boolean.
 4. Parse exactly one `-c` and one `-np` from the current runner argv,
    positive integers with `-c % -np == 0`, then set
-   `effective_NumCtx=-c/-np`. Bind the same PID/raw generation/PGID,
-   parent, binary/GGUF and listener before both tokenizers and completion.
-   Do not substitute trained `qwen2.context_length=32768` or an old runner.
+   `effective_NumCtx=-c/-np`. In tagged v0.34.4
+   `llm/llama_server.go`, `NewLlamaServer` places the same `opts` in both
+   `llamaServerLaunchConfig.opts` and `llamaServerRunner.options`;
+   `startLlamaServer` builds `-c=launch.opts.NumCtx * launch.numParallel`
+   and `-np=launch.numParallel`; `completionPromptForRequest` reads
+   `s.options.NumCtx`. This *source* derivation is valid for the observed
+   normal request only if the same-run daemon model/request/default option
+   inputs, launch branch, exact runner argv and PID/binary/model identity
+   agree. Reconstruct and record the effective request `NumCtx` from the
+   frozen model/options and bound daemon defaults; require it equals
+   `-c/-np`, otherwise `REVIEW_REQUIRED` **before** operation 7. Bind the
+   same PID/raw generation/PGID, parent, binary/GGUF and listener before
+   both tokenizers and completion. Do not substitute trained
+   `qwen2.context_length=32768` or an old runner.
 5. In v0.34.4 `completionPromptForRequest`, after the BOS step, the
    unchanged-string branch fires if Go `len(prompt) < options.NumCtx`.
    Go string length is **UTF-8 bytes**. Therefore require
@@ -200,23 +241,37 @@ Tagged primary source for these predicates:
 `https://github.com/ollama/ollama/blob/v0.34.4/server/routes.go`,
 `server/prompt.go`, `llm/llama_server.go`, `openai/openai.go`, and
 `middleware/openai.go` at the same tag. If a source predicate cannot be
-matched to the installed binary/run, stop before completion if possible;
-never use a completed call to tune the expected margin.
+matched to the installed binary/run, do **not** grant operation 7. All
+then-knowable predicates above (Go render and complete ordered messages,
+source/model/runner identity, BOS decision, request-to-runner NumCtx,
+rendered UTF-8 byte threshold, equal token lists and pre-completion
+identity) are mandatory before the single completion grant. Afterward,
+revalidate the unchanged model/runner/branch and exact usage before
+interpreting delta; failure remains `REVIEW_REQUIRED`, never an attempt
+refund or a tuned expected margin.
 
 ## Fake tests, resource cap and release decision
 
 Focused fake controls must prove a positive seven unique grants/sends,
 six OS-only observations, op7 spent **before** ACK, two private ports
-vacant/11434 unchanged, no raw leakage and 0600 journal/receipt. Negative
+vacant/11434 unchanged, no raw leakage, a durable initial zero-count journal
+and 0600 journal/receipt. Negative
 matrix: blocked HTTP at every stage; blocked hash/readiness/observer/
-journal fsync/replace/receipt helper; worker/daemon/runner crash;
+journal fsync/replace/receipt helper, including a blocked *cleanup-witness*
+observer and blocked initial helper witness; worker/daemon/runner crash;
 missing/replayed/wrong run/worker/nonce/ordinal/method/path/port/payload
-grant; op8/second completion; proxy/redirect/wrong port/oversize;
+grant; existing-run refusal, lost ACK/no refund, on-wire unknown after a
+possibly delivered grant; op8/second completion;
+proxy/redirect/wrong port/oversize;
 deadline and spent ACK-loss; raw-generation/PID reuse/PGID change,
-runner in separate PGID, unknown child, TERM ignored, failed KILL or
+runner in separate PGID, PID change at final pre-signal check, unknown
+child, TERM ignored, failed KILL or
 port/11434 drift; ambiguous `-c/-np`, BOS/branch/truncation, differing
-token lists and raw canary in IPC/receipt/log. Each blocked callback must
-leave the parent watchdog responsive and preserve a raw-free failure code.
+token lists, request-to-runner NumCtx mismatch, known source-predicate
+failure before op7, and raw canary in IPC/receipt/log. Each blocked
+callback must leave the parent watchdog responsive and preserve a raw-free
+failure code; physical cleanup is PASS only with actual exit/port/receipt
+proof by 90 seconds, not merely a responsive watchdog.
 
 Cap one real attempt, <=7 **worker-issued external** HTTP, <=1 external
 normal completion, <=256 KiB/request, <=2 MiB/response, <=256 output
