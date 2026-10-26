@@ -63,3 +63,14 @@ post-provider-result gate terminal failures, ensuring a returned SDK response
 with invalid/missing usage cannot reach final role utterance or episode. Keep
 ordinary non-B response behavior as a negative control. Commit/source closure
 and any real B trial require their own later gates.
+
+## Committed-source check
+
+Scoped product/test/report commit `bbf3aec65ddf6f27acf39e07481948c938bcb1db`
+was pushed to open PR #435; the remote head matched exactly. A single
+subsequent read-only `_b_committed_source_snapshot()` on that HEAD passed
+**239/239 files** in `0.938904s`; Brain SHA-256 was
+`c1833a55ecb9c690decca66d1b90a6bdf075780db83066a5b9c6ea47bc0e7fff`
+and Web SHA-256 was
+`2b541d6f3a1062ae3972df33676597fb42f60b8f19c9610338595f04fc90167a`.
+This is cached source verification, not a B turn latency or approval.
