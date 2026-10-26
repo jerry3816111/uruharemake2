@@ -22,6 +22,7 @@ import signal
 import stat
 import struct
 import sys
+import tempfile
 import threading
 import time
 from typing import Any
@@ -43,6 +44,12 @@ RECEIPT_NAME = "receipt.json"
 _SHA = re.compile(r"[0-9a-f]{64}\Z")
 _RUN = re.compile(r"[A-Za-z0-9._-]{1,128}\Z")
 _NONCE = re.compile(r"[0-9a-f]{32}\Z")
+_SEVEN_PREHASH_LEAF = "synthetic-prehash-v4.bin"
+_SEVEN_PREHASH_BYTES = b"URUHA_P4B_FAKE_HASH_V4\n"
+# Independently frozen expectations; never derive these from the fixture.
+_SEVEN_PREHASH_SHA256 = "2d2078a1d31c931402d626a1321b74731099a9144b32d6aa37e6718c968e95a7"
+_SEVEN_PREHASH_LOGICAL_BYTES = 23
+_SEVEN_PREHASH_LIMIT = 1024 * 1024
 _STAGES = (
     "before_metadata", "after_render", "before_tokenize_true",
     "before_tokenize_default", "before_completion", "after_completion",
@@ -2765,9 +2772,14 @@ _SEVEN_EXTRA = {
     "r_write": frozenset({"receipt"}),
     "r_proof": frozenset({"receipt_sha256", "receipt_bytes"}),
     "o_pre": frozenset({"daemon_port"}),
+    "o_pre_hash_port": frozenset({"daemon_port"}),
     "o_pre_proof": frozenset({"port_sha256", "daemon_port",
                               "daemon_vacant", "runner_port",
                               "runner_vacant", "shared_11434_sha256"}),
+    "o_pre_hash_port_proof": frozenset({
+        "port_sha256", "daemon_port", "daemon_vacant", "runner_port",
+        "runner_vacant", "shared_11434_sha256", "prehash_sha256",
+        "prehash_logical_bytes"}),
     "o_final": frozenset({"daemon_port", "runner_port"}),
     "o_final_proof": frozenset({"port_sha256", "daemon_port",
                                 "daemon_vacant", "runner_port",
@@ -2805,6 +2817,15 @@ _SEVEN_RECEIPT_PORT_FIELDS = frozenset({
 _SEVEN_TRANSPORT_FIELDS = frozenset({
     "transport_gate_proven", "transport_proof_sha256",
     "transport_policy_calls",
+})
+_SEVEN_PREHASH_FIELDS = frozenset({
+    "prehash_gate_proven", "prehash_sha256", "prehash_logical_bytes",
+    "pre_stage_failure_code",
+})
+_SEVEN_PRE_STAGE_CODES = frozenset({
+    "none", "pre_stage_unavailable", "pre_stage_mismatch",
+    "port_pre_not_vacant", "port_helper_initial_unavailable",
+    "signal_helper_initial_unavailable",
 })
 _SEVEN_SUMMARY_FIELDS = frozenset({
     "schema", "status", "request_sha256", "request_utf8_bytes",
@@ -2845,6 +2866,10 @@ _SEVEN_FAILURE_CODES = frozenset({
     "port_final_occupied", "shared_11434_changed",
     "runner_port_unavailable", "port_cleanup_unavailable",
     "transport_gate_unproven",
+})
+_SEVEN_V4_FAILURE_CODES = frozenset({
+    "pre_stage_unavailable", "pre_stage_mismatch",
+    "cleanup_review_required",
 })
 
 
@@ -2960,6 +2985,160 @@ def _seven_port_proof(snapshot: dict) -> dict:
         "shared_11434_sha256": _sha(_canonical(
             shared, "fake_port_snapshot_invalid")),
     }
+
+
+def _seven_prehash_metadata(value: os.stat_result) -> tuple[int, ...]:
+    return (value.st_dev, value.st_ino, value.st_uid, value.st_mode,
+            value.st_nlink, value.st_size)
+
+
+def _seven_prehash_prepare(run_dir) -> dict:
+    """P creates only a fixed, tiny, private fixture before IPC reservation."""
+    required = ("O_NOFOLLOW", "O_DIRECTORY", "O_CLOEXEC", "O_NONBLOCK")
+    if any(not hasattr(os, name) for name in required):
+        _fail("fake_seven_prehash_fixture_unavailable")
+    directory = None
+    try:
+        base = Path(os.path.realpath(tempfile.gettempdir()))
+        repository = Path(__file__).resolve().parent
+        attempt = Path(os.path.realpath(os.path.abspath(os.fspath(run_dir))))
+        if (not base.is_absolute() or not base.is_dir()
+                or base == repository or repository in base.parents
+                or base == attempt or attempt in base.parents):
+            _fail("fake_seven_prehash_fixture_unavailable")
+        component = Path(base.anchor)
+        for part in base.parts[1:]:
+            component /= part
+            if stat.S_ISLNK(os.lstat(component).st_mode):
+                _fail("fake_seven_prehash_fixture_unavailable")
+        directory = Path(tempfile.mkdtemp(prefix="uruha-p4b-v4-", dir=base))
+        if (not directory.is_absolute()
+                or Path(os.path.realpath(directory)) != directory):
+            _fail("fake_seven_prehash_fixture_unavailable")
+        leaf = directory / _SEVEN_PREHASH_LEAF
+        fd = os.open(leaf, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                     | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        try:
+            os.fchmod(fd, 0o600)
+            if os.write(fd, _SEVEN_PREHASH_BYTES) != _SEVEN_PREHASH_LOGICAL_BYTES:
+                _fail("fake_seven_prehash_fixture_unavailable")
+            os.fsync(fd)
+        finally:
+            _fake_close(fd)
+        DurableJournal._sync_directory(directory)
+        directory_stat = os.lstat(directory)
+        leaf_stat = os.lstat(leaf)
+        if (not stat.S_ISDIR(directory_stat.st_mode)
+                or stat.S_IMODE(directory_stat.st_mode) != 0o700
+                or directory_stat.st_uid != os.geteuid()
+                or not stat.S_ISREG(leaf_stat.st_mode)
+                or stat.S_IMODE(leaf_stat.st_mode) != 0o600
+                or leaf_stat.st_uid != os.geteuid()
+                or leaf_stat.st_nlink != 1
+                or leaf_stat.st_size != _SEVEN_PREHASH_LOGICAL_BYTES):
+            _fail("fake_seven_prehash_fixture_unavailable")
+        return {"directory": directory,
+                "directory_identity": _seven_prehash_metadata(directory_stat),
+                "leaf_identity": _seven_prehash_metadata(leaf_stat),
+                "expected_sha256": _SEVEN_PREHASH_SHA256,
+                "expected_bytes": _SEVEN_PREHASH_LOGICAL_BYTES}
+    except BaseException:
+        if directory is not None:
+            try:
+                os.unlink(directory / _SEVEN_PREHASH_LEAF)
+            except OSError:
+                pass
+            try:
+                os.rmdir(directory)
+            except OSError:
+                pass
+        _fail("fake_seven_prehash_fixture_unavailable")
+
+
+def _seven_prehash_read(pinned: dict, hook) -> tuple[str, int]:
+    """O hashes bytes actually read; no path or content enters its proof."""
+    directory = pinned["directory"]
+    leaf = directory / _SEVEN_PREHASH_LEAF
+    directory_fd = leaf_fd = None
+    try:
+        if hook is not None:
+            hook("before_open", leaf)
+        directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY
+                               | os.O_NOFOLLOW | os.O_CLOEXEC)
+        directory_stat = os.fstat(directory_fd)
+        if (not stat.S_ISDIR(directory_stat.st_mode)
+                or _seven_prehash_metadata(directory_stat)
+                   != pinned["directory_identity"]
+                or _seven_prehash_metadata(os.lstat(directory))
+                   != pinned["directory_identity"]):
+            _fail("fake_seven_prehash_unavailable")
+        leaf_stat = os.stat(_SEVEN_PREHASH_LEAF, dir_fd=directory_fd,
+                            follow_symlinks=False)
+        if (not stat.S_ISREG(leaf_stat.st_mode)
+                or stat.S_IMODE(leaf_stat.st_mode) != 0o600
+                or leaf_stat.st_uid != os.geteuid()
+                or leaf_stat.st_nlink != 1
+                or leaf_stat.st_size > _SEVEN_PREHASH_LIMIT
+                or _seven_prehash_metadata(leaf_stat)
+                   != pinned["leaf_identity"]):
+            _fail("fake_seven_prehash_unavailable")
+        leaf_fd = os.open(_SEVEN_PREHASH_LEAF, os.O_RDONLY | os.O_NOFOLLOW
+                          | os.O_NONBLOCK | os.O_CLOEXEC,
+                          dir_fd=directory_fd)
+        if _seven_prehash_metadata(os.fstat(leaf_fd)) != pinned["leaf_identity"]:
+            _fail("fake_seven_prehash_unavailable")
+        if hook is not None:
+            hook("before_first_read", leaf)
+        digest = hashlib.sha256()
+        length = 0
+        while True:
+            block = os.read(leaf_fd, min(65536, _SEVEN_PREHASH_LIMIT + 1 - length))
+            if not block:
+                break
+            length += len(block)
+            if length > _SEVEN_PREHASH_LIMIT or length > pinned["expected_bytes"]:
+                _fail("fake_seven_prehash_unavailable")
+            digest.update(block)
+        if (length != pinned["expected_bytes"]
+                or _seven_prehash_metadata(os.fstat(directory_fd))
+                   != pinned["directory_identity"]
+                or _seven_prehash_metadata(os.lstat(directory))
+                   != pinned["directory_identity"]
+                or _seven_prehash_metadata(os.fstat(leaf_fd))
+                   != pinned["leaf_identity"]
+                or _seven_prehash_metadata(os.stat(
+                    _SEVEN_PREHASH_LEAF, dir_fd=directory_fd,
+                    follow_symlinks=False)) != pinned["leaf_identity"]):
+            _fail("fake_seven_prehash_unavailable")
+        return digest.hexdigest(), length
+    finally:
+        _fake_close(leaf_fd, directory_fd)
+
+
+def _seven_prehash_dispose(pinned: dict) -> None:
+    """Remove only our fixed leaf/direct-child directory after O/S_O stop."""
+    directory = pinned["directory"]
+    fd = None
+    try:
+        fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY
+                     | os.O_NOFOLLOW | os.O_CLOEXEC)
+        metadata = os.fstat(fd)
+        if (metadata.st_dev != pinned["directory_identity"][0]
+                or metadata.st_ino != pinned["directory_identity"][1]
+                or metadata.st_uid != os.geteuid()
+                or stat.S_IMODE(metadata.st_mode) != 0o700
+                or _seven_prehash_metadata(os.lstat(directory))
+                   != _seven_prehash_metadata(metadata)):
+            return
+        os.unlink(_SEVEN_PREHASH_LEAF, dir_fd=fd)
+        current = os.lstat(directory)
+        if (current.st_dev == metadata.st_dev
+                and current.st_ino == metadata.st_ino):
+            os.rmdir(directory)
+    except OSError:
+        pass
+    finally:
+        _fake_close(fd)
 
 
 class _SevenNoRedirect(urllib.request.HTTPRedirectHandler):
@@ -3087,15 +3266,22 @@ def _seven_transport_row(ordinal: int, request_sha: str, grant_sha: str,
 
 
 def _seven_receipt_valid(value: Any, run_id: str) -> bool:
+    v4 = (type(value) is dict
+          and value.get("schema") == "fake_seven_process_receipt_v4")
     v3 = (type(value) is dict
-          and value.get("schema") == "fake_seven_process_receipt_v3")
+          and value.get("schema") in (
+              "fake_seven_process_receipt_v3",
+              "fake_seven_process_receipt_v4"))
     v2 = (type(value) is dict and value.get("schema") in (
-        "fake_seven_process_receipt_v2", "fake_seven_process_receipt_v3"))
+        "fake_seven_process_receipt_v2", "fake_seven_process_receipt_v3",
+        "fake_seven_process_receipt_v4"))
     allowed = (_SEVEN_RECEIPT_FIELDS
                | (_SEVEN_RECEIPT_PORT_FIELDS if v2 else frozenset())
-               | (_SEVEN_TRANSPORT_FIELDS if v3 else frozenset()))
+               | (_SEVEN_TRANSPORT_FIELDS if v3 else frozenset())
+               | (_SEVEN_PREHASH_FIELDS if v4 else frozenset()))
     if (type(value) is not dict or set(value) != allowed
             or value["schema"] != (
+                "fake_seven_process_receipt_v4" if v4 else
                 "fake_seven_process_receipt_v3" if v3 else
                 "fake_seven_process_receipt_v2" if v2 else
                 "fake_seven_process_receipt_v1")
@@ -3103,7 +3289,9 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
             or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
             or value["status"] not in (
                 "fake_seven_process_pending_receipt", "fake_seven_process_unproven")
-            or value["failure_code"] not in _SEVEN_FAILURE_CODES
+            or value["failure_code"] not in (
+                _SEVEN_FAILURE_CODES | _SEVEN_V4_FAILURE_CODES
+                if v4 else _SEVEN_FAILURE_CODES)
             or any(type(value[key]) is not bool for key in (
                 "zero_ack_received", "receipt_preflight_accepted",
                 "d_reaped", "w_reaped"))
@@ -3151,6 +3339,19 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
                     not _valid_sha(value["transport_proof_sha256"])
                     or value["transport_policy_calls"] != 7))):
             return False
+    if v4:
+        if (type(value["prehash_gate_proven"]) is not bool
+                or type(value["pre_stage_failure_code"]) is not str
+                or value["pre_stage_failure_code"] not in _SEVEN_PRE_STAGE_CODES
+                or (value["prehash_gate_proven"] and (
+                    value["prehash_sha256"] != _SEVEN_PREHASH_SHA256
+                    or type(value["prehash_logical_bytes"]) is not int
+                    or value["prehash_logical_bytes"]
+                       != _SEVEN_PREHASH_LOGICAL_BYTES))
+                or (not value["prehash_gate_proven"] and (
+                    value["prehash_sha256"] is not None
+                    or value["prehash_logical_bytes"] is not None))):
+            return False
     for key in ("reserved", "granted", "worker_issued", "on_wire_yes",
                 "completion_attempt_spent", "http_calls", "identity_checks"):
         item = value[key]
@@ -3160,6 +3361,8 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
         return (value["failure_code"] == "none"
                 and (not v2 or value["port_gate_proven"])
                 and (not v3 or value["transport_gate_proven"])
+                and (not v4 or (value["prehash_gate_proven"]
+                                and value["pre_stage_failure_code"] == "none"))
                 and all(value[key] == 7 for key in (
                     "reserved", "granted", "worker_issued", "on_wire_yes",
                     "http_calls")) and value["identity_checks"] == 6
@@ -3197,14 +3400,19 @@ def _seven_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
             return False
     if phase == "initial":
         return value["role"] in ("D", "W", "R", "O")
-    if phase in ("o_pre", "o_final"):
+    if phase in ("o_pre", "o_pre_hash_port", "o_final"):
         return (_port(value["daemon_port"])
-                and (phase == "o_pre" or
+                and (phase in ("o_pre", "o_pre_hash_port") or
                      (_port(value["runner_port"])
                       and value["runner_port"] != value["daemon_port"])))
-    if phase in ("o_pre_proof", "o_final_proof"):
-        pre = phase == "o_pre_proof"
-        return (all(_valid_sha(value[key]) for key in (
+    if phase in ("o_pre_proof", "o_pre_hash_port_proof", "o_final_proof"):
+        pre = phase != "o_final_proof"
+        return ((phase != "o_pre_hash_port_proof" or (
+                    _valid_sha(value["prehash_sha256"])
+                    and type(value["prehash_logical_bytes"]) is int
+                    and 0 <= value["prehash_logical_bytes"]
+                        <= _SEVEN_PREHASH_LIMIT))
+                and all(_valid_sha(value[key]) for key in (
                     "port_sha256", "shared_11434_sha256"))
                 and _port(value["daemon_port"])
                 and type(value["daemon_vacant"]) is bool
@@ -3696,8 +3904,10 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
                    inherited_signal_pipes: dict[str, tuple[int, int]],
                    run_id: str, observer, prep_deadline: float,
                    work_deadline: float, final_deadline: float,
-                   hard_deadline: float) -> int:
-    """Initially witnessed fake OS-only observer; never opens a socket."""
+                   hard_deadline: float,
+                   prehash_pinned: dict | None = None,
+                   hash_hook=None) -> int:
+    """Initially witnessed fake observer; v4 also hashes its tiny fixture."""
     owned = {pipes[name][1] for name in (
         "o_initial", "o_pre_proof", "o_final_proof")} | {
         pipes[name][0] for name in ("o_pre", "o_final")}
@@ -3718,25 +3928,40 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
     except BaseException:
         return 125
     try:
+        if prehash_pinned is not None:
+            # Inherited Python stream wrappers may target capture FDs other
+            # than numeric 1/2. V4 callbacks must be isolated at both layers.
+            sys.stdout = os.fdopen(os.dup(1), "w", buffering=1)
+            sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
         os.setsid()
         _fake_child_lifetime(hard_deadline)
         own = _fake_os_witness(os.getpid())
         if not _seven_child_send(pipes, "o_initial", run_id, "initial", 0,
                                  own, prep_deadline, role="O"):
             return 125
-        pre = _seven_child_receive(pipes, "o_pre", run_id, "o_pre", 1,
+        pre_phase = ("o_pre_hash_port" if prehash_pinned is not None
+                     else "o_pre")
+        pre = _seven_child_receive(pipes, "o_pre", run_id, pre_phase, 1,
                                    own, work_deadline)
         if pre is None:
             return 0
         daemon_port = pre["daemon_port"]
+        prehash = (_seven_prehash_read(prehash_pinned, hash_hook)
+                   if prehash_pinned is not None else None)
         snapshot = observer("pre", daemon_port, None)
         if not _seven_port_snapshot_valid(snapshot, phase="pre",
                                           daemon_port=daemon_port,
                                           runner_port=None):
             return 125
+        proof = _seven_port_proof(snapshot)
+        if prehash is not None:
+            proof.update(prehash_sha256=prehash[0],
+                         prehash_logical_bytes=prehash[1])
+        proof_phase = ("o_pre_hash_port_proof" if prehash is not None
+                       else "o_pre_proof")
         if not _seven_child_send(pipes, "o_pre_proof", run_id,
-                                 "o_pre_proof", 1, own, work_deadline,
-                                 **_seven_port_proof(snapshot)):
+                                 proof_phase, 1, own, work_deadline,
+                                 **proof):
             return 125
         final = _seven_child_receive(pipes, "o_final", run_id, "o_final",
                                      2, own, final_deadline)
@@ -3760,11 +3985,15 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
     status = ("fake_seven_process_pending_receipt"
               if result["status"] == "fake_seven_process_pending_receipt"
               else "fake_seven_process_unproven")
-    v3 = result["schema"] == "fake_seven_process_result_v3"
+    v4 = result["schema"] == "fake_seven_process_result_v4"
+    v3 = result["schema"] in ("fake_seven_process_result_v3",
+                              "fake_seven_process_result_v4")
     v2 = result["schema"] in ("fake_seven_process_result_v2",
-                              "fake_seven_process_result_v3")
+                              "fake_seven_process_result_v3",
+                              "fake_seven_process_result_v4")
     return {
-        "schema": ("fake_seven_process_receipt_v3" if v3 else
+        "schema": ("fake_seven_process_receipt_v4" if v4 else
+                   "fake_seven_process_receipt_v3" if v3 else
                    "fake_seven_process_receipt_v2" if v2
                    else "fake_seven_process_receipt_v1"), "run_id": run_id,
         "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
@@ -3786,6 +4015,8 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
             "s_o_normal_exit")} if v2 else {}),
         **({key: result[key] for key in _SEVEN_TRANSPORT_FIELDS}
            if v3 else {}),
+        **({key: result[key] for key in _SEVEN_PREHASH_FIELDS}
+           if v4 else {}),
     }
 
 
@@ -3832,6 +4063,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                observe_identity, fake_http,
                                port_observe=None,
                                fake_opener_factory=None,
+                               fake_prehash: bool = False,
+                               fake_hash_hook=None,
                                work_seconds: float = 2.0,
                                preparation_seconds: float = 0.5,
                                cleanup_seconds: float = 0.5,
@@ -3847,7 +4080,12 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     The public ``supervise_once`` remains fail-closed.
     """
     v3 = fake_opener_factory is not None
-    if (type(binding_template) is not dict
+    v4 = fake_prehash is True
+    if (type(fake_prehash) is not bool
+            or (v4 and (not v3 or not callable(port_observe)))
+            or (fake_hash_hook is not None
+                and (not v4 or not callable(fake_hash_hook)))
+            or type(binding_template) is not dict
             or not callable(observe_identity)
             or (v3 and (fake_http is not None
                         or not callable(fake_opener_factory)
@@ -3869,9 +4107,11 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
         _fail("fake_seven_configuration_invalid")
     bound, _ = _validate_binding(binding_template)
     v2 = port_observe is not None
+    prehash_pinned = _seven_prehash_prepare(run_dir) if v4 else None
     run_id = bound["run_id"]
     result = {
-        "schema": ("fake_seven_process_result_v3" if v3 else
+        "schema": ("fake_seven_process_result_v4" if v4 else
+                   "fake_seven_process_result_v3" if v3 else
                    "fake_seven_process_result_v2" if v2
                    else "fake_seven_process_result_v1"),
         "status": "fake_seven_process_unproven",
@@ -3910,6 +4150,11 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
         result.update({"transport_gate_proven": False,
                        "transport_proof_sha256": None,
                        "transport_policy_calls": 0})
+    if v4:
+        result.update({"prehash_gate_proven": False,
+                       "prehash_sha256": None,
+                       "prehash_logical_bytes": None,
+                       "pre_stage_failure_code": "none"})
     started = time.monotonic()
     prep_deadline = started + preparation_seconds
     work_deadline = prep_deadline + work_seconds
@@ -3946,6 +4191,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     runner_port_candidate: int | None = None
     runner_port_verified = False
     transport_rows: list[dict] = []
+    v4_command_started = False
+    v4_pre_stage_complete = False
 
     def require(value, code: str) -> None:
         if not value:
@@ -4153,7 +4400,9 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                         prep_deadline=work_deadline,
                         work_deadline=work_deadline,
                         final_deadline=port_final_deadline,
-                        hard_deadline=port_hard_deadline)
+                        hard_deadline=port_hard_deadline,
+                        prehash_pinned=prehash_pinned,
+                        hash_hook=fake_hash_hook)
                 except BaseException:
                     child_code = 125
                 os._exit(child_code)
@@ -4217,20 +4466,42 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                     "signal_helper_initial_unavailable")
             signal_witnesses["O"] = s_o_initial["witness"]
             daemon_port = bound["daemon"]["port"]
+            pre_phase = "o_pre_hash_port" if v4 else "o_pre"
+            proof_phase = ("o_pre_hash_port_proof" if v4
+                           else "o_pre_proof")
+            if v4:
+                v4_command_started = True
             require(parent_send(port_pipes, port_parent_fds, "o_pre",
-                                "o_pre", 1, o_witness, work_deadline,
+                                pre_phase, 1, o_witness, work_deadline,
                                 daemon_port=daemon_port),
-                    "port_pre_unavailable")
+                    "pre_stage_unavailable" if v4 else "port_pre_unavailable")
             pre_proof = parent_receive(
                 port_pipes, port_parent_fds, "o_pre_proof",
-                "o_pre_proof", 1, o_witness, work_deadline,
-                expected={"daemon_port": daemon_port,
-                          "runner_port": None, "runner_vacant": None})
-            require(pre_proof is not None, "port_pre_unavailable")
+                proof_phase, 1, o_witness, work_deadline,
+                expected=({"runner_port": None, "runner_vacant": None}
+                          if v4 else
+                          {"daemon_port": daemon_port,
+                           "runner_port": None, "runner_vacant": None}))
+            require(pre_proof is not None,
+                    "pre_stage_unavailable" if v4 else "port_pre_unavailable")
+            if v4:
+                require(pre_proof["prehash_sha256"]
+                        == prehash_pinned["expected_sha256"]
+                        and pre_proof["prehash_logical_bytes"]
+                            == prehash_pinned["expected_bytes"],
+                        "pre_stage_mismatch")
+                result.update({"prehash_gate_proven": True,
+                               "prehash_sha256": _SEVEN_PREHASH_SHA256,
+                               "prehash_logical_bytes":
+                                   _SEVEN_PREHASH_LOGICAL_BYTES})
+                require(pre_proof["daemon_port"] == daemon_port,
+                        "pre_stage_mismatch")
             pre_shared_sha = pre_proof["shared_11434_sha256"]
             result["port_pre_sha256"] = pre_proof["port_sha256"]
             require(pre_proof["daemon_vacant"] is True,
                     "port_pre_not_vacant")
+            if v4:
+                v4_pre_stage_complete = True
         require(parent_send(core, core_parent_fds, "w_go", "w_go", 0,
                             w_witness, work_deadline),
                 "worker_go_unavailable")
@@ -4398,10 +4669,23 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
         # An injected helper may raise this same exception type with raw
         # contents. Never let its message become a public result/receipt.
         code = str(exc)
-        result["failure_code"] = (code if code in _SEVEN_FAILURE_CODES
+        allowed_codes = (_SEVEN_FAILURE_CODES | _SEVEN_V4_FAILURE_CODES
+                         if v4 else _SEVEN_FAILURE_CODES)
+        result["failure_code"] = (code if code in allowed_codes
                                   else "ipc_or_spawn_unavailable")
+        if v4 and result["receipt_preflight_accepted"]:
+            if (code in _SEVEN_PRE_STAGE_CODES and code != "none"
+                    and result["pre_stage_failure_code"] == "none"):
+                result["pre_stage_failure_code"] = code
+            elif (v4_command_started and not v4_pre_stage_complete
+                  and result["pre_stage_failure_code"] == "none"):
+                result["pre_stage_failure_code"] = "pre_stage_unavailable"
     except Exception:
         result["failure_code"] = "ipc_or_spawn_unavailable"
+        if (v4 and result["receipt_preflight_accepted"]
+                and v4_command_started and not v4_pre_stage_complete
+                and result["pre_stage_failure_code"] == "none"):
+            result["pre_stage_failure_code"] = "pre_stage_unavailable"
     finally:
         _fake_close(*core_parent_fds)
         if not core_layout_ready:
@@ -4524,6 +4808,30 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 result["status"] = "fake_seven_process_unproven"
                 if result["failure_code"] == "none":
                     result["failure_code"] = "port_cleanup_unavailable"
+        if v4 and result["receipt_preflight_accepted"]:
+            initial_refusal = (not v4_command_started
+                               and result["pre_stage_failure_code"] in (
+                                   "port_helper_initial_unavailable",
+                                   "signal_helper_initial_unavailable"))
+            cleanup_unproven = (v4_command_started and (
+                any(not result[f"{role}_reaped"]
+                    or result[f"{role}_stop"] == "unproven"
+                    for role in ("d", "w", "o"))
+                or not result["s_o_reaped"]
+                or not result["s_o_normal_exit"]))
+            if initial_refusal:
+                result["failure_code"] = result["pre_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif cleanup_unproven:
+                result["failure_code"] = "cleanup_review_required"
+                result["status"] = "fake_seven_process_unproven"
+            elif result["pre_stage_failure_code"] != "none":
+                result["failure_code"] = result["pre_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif not result["prehash_gate_proven"]:
+                result["pre_stage_failure_code"] = "pre_stage_unavailable"
+                result["failure_code"] = "pre_stage_unavailable"
+                result["status"] = "fake_seven_process_unproven"
         try:
             if (result["receipt_preflight_accepted"]
                     and child_pids["R"] is not None
@@ -4591,4 +4899,17 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             else:
                 result["status"] = "fake_seven_process_unproven"
                 result["failure_code"] = "receipt_unavailable_review_required"
+        if (v4 and result["receipt_preflight_accepted"]
+                and (not result["receipt_durable_proven"]
+                     or result["r_stop"] != "normal_exit"
+                     or not result["s_r_normal_exit"])):
+            result["status"] = "fake_seven_process_unproven"
+            result["failure_code"] = "receipt_unavailable_review_required"
+        if (prehash_pinned is not None
+                and (child_pids["O"] is None or result["o_reaped"])
+                and (signal_pids.get("O") is None or result["s_o_reaped"])):
+            try:
+                _seven_prehash_dispose(prehash_pinned)
+            except Exception:
+                pass
     return result

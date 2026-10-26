@@ -9,6 +9,7 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import json
+import mmap
 import os
 from pathlib import Path
 import select
@@ -16,6 +17,7 @@ import signal
 import socket
 import stat
 import sys
+import tempfile
 import time
 import urllib.request
 
@@ -3651,6 +3653,719 @@ def test_fake_seven_transport_v3_strict_opener_positive_zero_sockets(
     assert receipt["transport_policy_calls"] == 7
     assert receipt["transport_proof_sha256"] == result["transport_proof_sha256"]
     assert CANARY.encode() not in receipt_path.read_bytes()
+    assert "prehash_gate_proven" not in result
+    assert "prehash_gate_proven" not in receipt
+    control = {**receipt, "status": "fake_seven_process_unproven",
+               "failure_code": "initial_unavailable"}
+    assert live._seven_receipt_valid(control, binding["run_id"])
+    for code in ("pre_stage_unavailable", "pre_stage_mismatch",
+                 "cleanup_review_required"):
+        assert not live._seven_receipt_valid(
+            {**control, "failure_code": code}, binding["run_id"])
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_precedes_port_and_seven_fake_opens(
+        monkeypatch, tmp_path):
+    """O hashes its fixed tiny fixture before W can receive its first GO."""
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    base_factory = _v3_fake_factory(fake_http, marker_dir)
+    literal = b"URUHA_P4B_FAKE_HASH_V4\n"
+    pinned_sha = "2d2078a1d31c931402d626a1321b74731099a9144b32d6aa37e6718c968e95a7"
+    assert len(literal) == 23
+    assert hashlib.sha256(literal).hexdigest() == pinned_sha
+
+    # Anonymous shared memory is test-only: O and W are separate forked
+    # children, so an ordinary closure flag would not witness their order.
+    original_send = live._seven_send
+    original_receive = live._seven_receive
+    with mmap.mmap(-1, 5) as stages:
+        def witnessed_receive(fd, deadline, **validation):
+            value = original_receive(fd, deadline, **validation)
+            if (validation.get("phase") == "o_pre_hash_port_proof"
+                    and value is not None):
+                stages[2] = 1
+            return value
+
+        def witnessed_send(fd, value, deadline, **validation):
+            if validation.get("phase") == "w_go":
+                assert stages[0] == stages[1] == stages[2] == 1
+            return original_send(fd, value, deadline, **validation)
+
+        monkeypatch.setattr(live, "_seven_receive", witnessed_receive)
+        monkeypatch.setattr(live, "_seven_send", witnessed_send)
+
+        def hash_hook(phase, fixture_path):
+            assert phase in ("before_open", "before_first_read")
+            fixture = Path(fixture_path)
+            assert fixture.is_absolute()
+            assert fixture.name == "synthetic-prehash-v4.bin"
+            assert fixture.stat().st_size == 23
+            assert stat.S_IMODE(fixture.stat().st_mode) == 0o600
+            assert stat.S_IMODE(fixture.parent.stat().st_mode) == 0o700
+            if phase == "before_open":
+                stages[3] = len(os.listdir("/dev/fd"))
+            if phase == "before_first_read":
+                stages[0] += 1
+                stages[4] = len(os.listdir("/dev/fd"))
+
+        def port_observe(phase, daemon_port, runner_port):
+            if phase == "pre":
+                assert stages[0] == 1
+                assert not list(marker_dir.iterdir())
+                stages[1] += 1
+            return _v3_port_observer(phase, daemon_port, runner_port)
+
+        def checked_factory(proxy_handler, no_redirect_handler):
+            assert stages[0] == stages[1] == stages[2] == 1
+            return base_factory(proxy_handler, no_redirect_handler)
+
+        run_dir = tmp_path / "seven-prehash-v4"
+        result = live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, fake_http=None,
+            fake_opener_factory=checked_factory,
+            port_observe=port_observe, fake_prehash=True,
+            fake_hash_hook=hash_hook, work_seconds=2.0)
+        assert stages[0] == stages[1] == stages[2] == 1
+        assert stages[4] - stages[3] == 2
+
+    assert result["schema"] == "fake_seven_process_result_v4", result
+    assert result["status"] == "fake_seven_process_pass", result
+    assert result["prehash_gate_proven"] is True
+    assert result["prehash_sha256"] == pinned_sha
+    assert result["prehash_logical_bytes"] == 23
+    assert result["pre_stage_failure_code"] == "none"
+    assert result["port_gate_proven"] is True
+    assert result["transport_gate_proven"] is True
+    assert result["transport_policy_calls"] == 7
+    assert result["http_calls"] == 7
+    assert result["identity_checks"] == 6
+    assert result["fd_endpoints_reserved"] == 246
+    assert all(result[f"{role}_reaped"] for role in (
+        "d", "w", "r", "o", "s_d", "s_w", "s_r", "s_o"))
+    assert result["receipt_durable_proven"] is True
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert [json.loads((marker_dir / f"call-{n}.json").read_bytes())["ordinal"]
+            for n in range(1, 8)] == list(range(1, 8))
+    journal_path, disk = _read_only_journal(run_dir)
+    assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
+    assert stat.S_IMODE(journal_path.stat().st_mode) == 0o600
+    assert [op["ordinal"] for op in disk["operations"]] == list(range(1, 8))
+    assert disk["reserved"] == disk["granted"] == disk["worker_issued"] == 7
+    assert disk["completion_attempt_spent"] == 1
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v4"
+    for key in ("prehash_gate_proven", "prehash_sha256",
+                "prehash_logical_bytes", "pre_stage_failure_code"):
+        assert receipt[key] == result[key]
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_blocked_first_read_has_no_port_or_opener(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-blocked-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    base_factory = _v3_fake_factory(fake_http, marker_dir)
+
+    original_send = live._seven_send
+    with mmap.mmap(-1, 4) as stages:
+        def record_w_go(fd, value, deadline, **validation):
+            if validation.get("phase") == "w_go":
+                stages[3] = 1
+            return original_send(fd, value, deadline, **validation)
+
+        monkeypatch.setattr(live, "_seven_send", record_w_go)
+
+        def hash_hook(phase, fixture_path):
+            if phase == "before_first_read":
+                assert Path(fixture_path).name == "synthetic-prehash-v4.bin"
+                stages[0] = 1
+                time.sleep(10)
+
+        def port_observe(phase, daemon_port, runner_port):
+            stages[1] = 1
+            return _v3_port_observer(phase, daemon_port, runner_port)
+
+        def counted_factory(proxy_handler, no_redirect_handler):
+            stages[2] = 1
+            return base_factory(proxy_handler, no_redirect_handler)
+
+        run_dir = tmp_path / "seven-prehash-v4-blocked"
+        started = time.monotonic()
+        result = live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, fake_http=None,
+            fake_opener_factory=counted_factory,
+            port_observe=port_observe, fake_prehash=True,
+            fake_hash_hook=hash_hook, work_seconds=0.5,
+            preparation_seconds=0.5, cleanup_seconds=0.5)
+        assert time.monotonic() - started < 4.0
+        assert tuple(stages[:]) == (1, 0, 0, 0)
+
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] != "none"
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["prehash_gate_proven"] is False
+    assert result["prehash_sha256"] is None
+    assert result["prehash_logical_bytes"] is None
+    assert result["granted"] == 0
+    assert result["transport_policy_calls"] == 0
+    assert result["receipt_durable_proven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert not list(marker_dir.iterdir())
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == disk["worker_issued"] == 0
+    assert disk["operations"] == []
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v4"
+    assert receipt["status"] == "fake_seven_process_unproven"
+    assert receipt["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert receipt["prehash_gate_proven"] is False
+    assert receipt["prehash_sha256"] is None
+    assert receipt["prehash_logical_bytes"] is None
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_same_length_file_drift_is_not_self_report(
+        monkeypatch, tmp_path):
+    """O's actual bytes, not the pinned expected digest, decide admission."""
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-drift-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+
+    def mutate_before_read(phase, fixture_path):
+        if phase == "before_first_read":
+            path = Path(fixture_path)
+            path.write_bytes(b"ZRUHA_P4B_FAKE_HASH_V4\n")
+
+    run_dir = tmp_path / "seven-prehash-v4-drift"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        fake_hash_hook=mutate_before_read, work_seconds=2.0)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == "pre_stage_mismatch"
+    assert result["prehash_gate_proven"] is False
+    assert result["prehash_sha256"] is None
+    assert result["prehash_logical_bytes"] is None
+    assert result["granted"] == 0
+    assert not list(marker_dir.iterdir())
+    _, disk = _read_only_journal(run_dir)
+    assert disk["operations"] == []
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["pre_stage_failure_code"] == "pre_stage_mismatch"
+    assert receipt["prehash_gate_proven"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["bool_count", "extra_field", "wrong_phase"])
+def test_fake_seven_prehash_v4_malformed_composite_proof_fails_closed(
+        monkeypatch, tmp_path, variant):
+    original_send = live._seven_child_send
+
+    def damaged_preproof(pipes, name, run_id, phase, seq, own, deadline,
+                         **extra):
+        if name == "o_pre_proof" and phase == "o_pre_hash_port_proof":
+            if variant == "bool_count":
+                extra["prehash_logical_bytes"] = True
+            elif variant == "extra_field":
+                extra["unexpected_raw"] = CANARY
+            else:
+                phase = "o_pre_proof"
+        return original_send(pipes, name, run_id, phase, seq, own, deadline,
+                             **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", damaged_preproof)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-malformed-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-prehash-v4-malformed-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        work_seconds=0.8)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["prehash_gate_proven"] is False
+    assert result["granted"] == 0
+    assert not list(marker_dir.iterdir())
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert json.loads(receipt_path.read_bytes())[
+        "pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["wrong_sha", "wrong_count", "wrong_port",
+                                     "port_occupied"])
+def test_fake_seven_prehash_v4_wellformed_wrong_proof_stops_before_w_go(
+        monkeypatch, tmp_path, variant):
+    original_send = live._seven_child_send
+
+    def wrong_preproof(pipes, name, run_id, phase, seq, own, deadline,
+                       **extra):
+        if name == "o_pre_proof" and phase == "o_pre_hash_port_proof":
+            if variant == "wrong_sha":
+                extra["prehash_sha256"] = "0" * 64
+            elif variant == "wrong_count":
+                extra["prehash_logical_bytes"] = 22
+            elif variant == "wrong_port":
+                extra["daemon_port"] += 1
+            else:
+                extra["daemon_vacant"] = False
+        return original_send(pipes, name, run_id, phase, seq, own, deadline,
+                             **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", wrong_preproof)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-wrong-proof-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-prehash-v4-wrong-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        work_seconds=0.8)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == (
+        "port_pre_not_vacant" if variant == "port_occupied"
+        else "pre_stage_mismatch")
+    assert result["prehash_gate_proven"] is (variant in (
+        "wrong_port", "port_occupied"))
+    assert result["granted"] == 0
+    assert result["transport_policy_calls"] == 0
+    assert not list(marker_dir.iterdir())
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["pre_stage_failure_code"] == result[
+        "pre_stage_failure_code"]
+    assert receipt["prehash_gate_proven"] == result[
+        "prehash_gate_proven"]
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["duplicate", "trailing"])
+def test_fake_seven_prehash_v4_rejects_extra_wire_after_proof(
+        monkeypatch, tmp_path, variant):
+    original_send = live._seven_child_send
+
+    def extra_wire(pipes, name, run_id, phase, seq, own, deadline,
+                   **extra):
+        if name == "o_pre_proof" and phase == "o_pre_hash_port_proof":
+            fd = pipes[name][1]
+            try:
+                frame = live.encode_frame(live._seven_frame(
+                    run_id, phase, seq, own, **extra))
+                suffix = frame if variant == "duplicate" else b"x"
+                raw = frame + suffix
+                assert os.write(fd, raw) == len(raw)
+                return True
+            finally:
+                os.close(fd)
+        return original_send(pipes, name, run_id, phase, seq, own, deadline,
+                             **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", extra_wire)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-extra-wire-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-prehash-v4-extra-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        work_seconds=0.8)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["prehash_gate_proven"] is False
+    assert result["granted"] == 0
+    assert not list(marker_dir.iterdir())
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert json.loads(receipt_path.read_bytes())[
+        "pre_stage_failure_code"] == "pre_stage_unavailable"
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["o_initial_missing", "s_o_initial_missing",
+                                     "s_o_abnormal_exit"])
+def test_fake_seven_prehash_v4_initial_and_signal_exit_precedence(
+        monkeypatch, tmp_path, variant):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    original_child_send = live._seven_child_send
+    original_signal_child = live._split_signal_child
+    marker_dir = tmp_path / "v4-initial-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    with mmap.mmap(-1, 2) as callbacks:
+        def hook(phase, _path):
+            callbacks[0] = 1
+
+        def port_observe(phase, daemon_port, runner_port):
+            callbacks[1] = 1
+            return _v3_port_observer(phase, daemon_port, runner_port)
+
+        if variant == "o_initial_missing":
+            def no_o_initial(*args, **kwargs):
+                if args[1] == "o_initial":
+                    return False
+                return original_child_send(*args, **kwargs)
+            monkeypatch.setattr(live, "_seven_child_send", no_o_initial)
+        else:
+            def altered_signal_child(*args, **kwargs):
+                if kwargs.get("target_role") == "O":
+                    if variant == "s_o_initial_missing":
+                        return 125
+                    code = original_signal_child(*args, **kwargs)
+                    return 121 if code == 0 else code
+                return original_signal_child(*args, **kwargs)
+            monkeypatch.setattr(live, "_split_signal_child",
+                                altered_signal_child)
+
+        run_dir = tmp_path / f"seven-prehash-v4-{variant}"
+        result = live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, fake_http=None,
+            fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+            port_observe=port_observe, fake_prehash=True,
+            fake_hash_hook=hook, work_seconds=1.0)
+        if variant != "s_o_abnormal_exit":
+            assert tuple(callbacks[:]) == (0, 0)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    if variant == "o_initial_missing":
+        assert result["pre_stage_failure_code"] == \
+               "port_helper_initial_unavailable"
+        assert result["failure_code"] == "port_helper_initial_unavailable"
+    elif variant == "s_o_initial_missing":
+        assert result["pre_stage_failure_code"] == \
+               "signal_helper_initial_unavailable"
+        assert result["failure_code"] == "signal_helper_initial_unavailable"
+    else:
+        assert result["failure_code"] == "cleanup_review_required"
+        assert result["s_o_normal_exit"] is False
+    assert result["receipt_durable_proven"] is True
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert json.loads(receipt_path.read_bytes())[
+        "pre_stage_failure_code"] == result["pre_stage_failure_code"]
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", [
+    "same_bytes_new_inode", "symlink_leaf", "oversize", "hardlink",
+])
+def test_fake_seven_prehash_v4_fixture_identity_or_limit_refuses_read(
+        monkeypatch, tmp_path, variant, request):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-fixture-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    fixture_marker = tmp_path / "v4-fixture-location.txt"
+
+    def cleanup_test_created_entries():
+        if not fixture_marker.exists():
+            return
+        leaf = Path(fixture_marker.read_text())
+        directory = leaf.parent
+        assert leaf.name == "synthetic-prehash-v4.bin"
+        assert directory.name.startswith("uruha-p4b-v4-")
+        assert directory.parent == Path(tempfile.gettempdir()).resolve()
+        for name in ("replacement.bin", "extra-hardlink.bin"):
+            extra = directory / name
+            if extra.exists() or extra.is_symlink():
+                extra.unlink()
+        if leaf.exists() or leaf.is_symlink():
+            leaf.unlink()
+        if directory.exists():
+            directory.rmdir()
+
+    request.addfinalizer(cleanup_test_created_entries)
+    with mmap.mmap(-1, 1) as port_called:
+        def mutate_before_open(phase, fixture_path):
+            if phase != "before_open":
+                return
+            path = Path(fixture_path)
+            fixture_marker.write_text(str(path))
+            if variant in ("same_bytes_new_inode", "symlink_leaf"):
+                replacement = path.with_name("replacement.bin")
+                replacement.write_bytes(b"URUHA_P4B_FAKE_HASH_V4\n")
+                replacement.chmod(0o600)
+                if variant == "same_bytes_new_inode":
+                    os.replace(replacement, path)
+                else:
+                    path.unlink()
+                    path.symlink_to(replacement)
+            elif variant == "oversize":
+                path.write_bytes(b"x" * (1024 * 1024 + 1))
+            else:
+                os.link(path, path.with_name("extra-hardlink.bin"))
+
+        def port_observe(phase, daemon_port, runner_port):
+            port_called[0] = 1
+            return _v3_port_observer(phase, daemon_port, runner_port)
+
+        run_dir = tmp_path / f"seven-prehash-v4-fixture-{variant}"
+        result = live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, fake_http=None,
+            fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+            port_observe=port_observe, fake_prehash=True,
+            fake_hash_hook=mutate_before_open, work_seconds=0.8)
+        assert port_called[0] == 0
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["prehash_gate_proven"] is False
+    assert result["prehash_sha256"] is None
+    assert result["prehash_logical_bytes"] is None
+    assert result["granted"] == 0
+    assert not list(marker_dir.iterdir())
+    _, disk = _read_only_journal(run_dir)
+    assert disk["operations"] == []
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert json.loads(receipt_path.read_bytes())[
+        "pre_stage_failure_code"] == "pre_stage_unavailable"
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_r_failure_keeps_hash_subverdict(
+        monkeypatch, tmp_path):
+    def unavailable_receipt(*_args, **_kwargs):
+        raise RuntimeError(CANARY)
+
+    monkeypatch.setattr(live, "_seven_write_receipt", unavailable_receipt)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-r-fail-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / "seven-prehash-v4-r-fail"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        work_seconds=2.0)
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["prehash_gate_proven"] is True
+    assert result["pre_stage_failure_code"] == "none"
+    assert result["transport_gate_proven"] is True
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert result["receipt_durable_proven"] is False
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert CANARY not in json.dumps(result)
+    assert not (run_dir / "receipt.json").exists()
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_r_failure_after_hash_stall_keeps_first_error(
+        monkeypatch, tmp_path):
+    def unavailable_receipt(*_args, **_kwargs):
+        raise RuntimeError(CANARY)
+
+    monkeypatch.setattr(live, "_seven_write_receipt", unavailable_receipt)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-r-after-stall-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+
+    def blocked_read(phase, _fixture_path):
+        if phase == "before_first_read":
+            time.sleep(10)
+
+    run_dir = tmp_path / "seven-prehash-v4-r-after-stall"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        fake_hash_hook=blocked_read, work_seconds=0.5)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert result["receipt_durable_proven"] is False
+    assert result["prehash_gate_proven"] is False
+    assert result["transport_policy_calls"] == 0
+    assert not list(marker_dir.iterdir())
+    assert not (run_dir / "receipt.json").exists()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["print_canary", "raise_canary"])
+def test_fake_seven_prehash_v4_hook_raw_output_is_contained(
+        monkeypatch, tmp_path, capfd, variant):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-hook-canary-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+
+    def noisy_hook(phase, _fixture_path):
+        if phase == "before_first_read":
+            print(CANARY, flush=True)
+            print(CANARY, file=sys.stderr, flush=True)
+            if variant == "raise_canary":
+                raise RuntimeError(CANARY)
+
+    run_dir = tmp_path / f"seven-prehash-v4-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        fake_hash_hook=noisy_hook, work_seconds=2.0)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == (
+        "fake_seven_process_pass" if variant == "print_canary"
+        else "fake_seven_process_unproven")
+    assert result["prehash_gate_proven"] is (variant == "print_canary")
+    assert CANARY not in json.dumps(result)
+    journal_path, _ = _read_only_journal(run_dir)
+    assert CANARY.encode() not in journal_path.read_bytes()
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert CANARY.encode() not in receipt_path.read_bytes()
+    captured = capfd.readouterr()
+    assert CANARY not in captured.out + captured.err
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_blocked_cleanup_witness_keeps_first_error(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-cleanup-block-markers"
+    marker_dir.mkdir()
+    blocked_o_pid = tmp_path / "v4-blocked-o-pid"
+    _v3_socket_sentinels(monkeypatch)
+
+    def blocking_read_hook(phase, _fixture_path):
+        if phase == "before_first_read":
+            blocked_o_pid.write_text(str(os.getpid()))
+            time.sleep(10)
+
+    def blocked_cleanup_observer(pid):
+        if blocked_o_pid.exists() and str(pid) == blocked_o_pid.read_text():
+            time.sleep(10)
+        return live._fake_os_witness(pid)
+
+    run_dir = tmp_path / "seven-prehash-v4-cleanup-block"
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True,
+        fake_hash_hook=blocking_read_hook,
+        cleanup_observe=blocked_cleanup_observer,
+        work_seconds=0.5, preparation_seconds=0.5,
+        cleanup_seconds=0.5)
+    assert time.monotonic() - started < 4.0
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["failure_code"] == "cleanup_review_required"
+    assert result["prehash_gate_proven"] is False
+    assert result["transport_policy_calls"] == 0
+    assert result["o_stop"] == "unproven"
+    assert result["receipt_durable_proven"] is True
+    assert not list(marker_dir.iterdir())
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert receipt["failure_code"] == "cleanup_review_required"
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+def test_fake_seven_prehash_v4_fd_cap_fails_before_journal_or_work(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-fd-cap-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    monkeypatch.setattr(live.resource, "getrlimit", lambda _kind: (245, 245))
+    run_dir = tmp_path / "seven-prehash-v4-fd-cap"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, fake_prehash=True)
+    assert result["schema"] == "fake_seven_process_result_v4"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "fake_seven_fd_reservation_unavailable"
+    assert result["fd_endpoints_reserved"] == 0
+    assert result["prehash_gate_proven"] is False
+    assert not run_dir.exists()
+    assert not list(marker_dir.iterdir())
+
+
+@pytest.mark.parametrize("variant", [
+    "missing_factory", "missing_ports", "legacy_http", "hook_without_opt_in",
+])
+def test_fake_seven_prehash_v4_rejects_invalid_opt_in_before_work(
+        monkeypatch, tmp_path, variant):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v4-invalid-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-prehash-v4-invalid-{variant}"
+    kwargs = {
+        "fake_prehash": variant != "hook_without_opt_in",
+        "fake_hash_hook": (lambda _phase, _path: None),
+        "fake_http": fake_http if variant in (
+            "missing_factory", "legacy_http") else None,
+        "fake_opener_factory": None if variant == "missing_factory" else
+        _v3_fake_factory(fake_http, marker_dir),
+        "port_observe": None if variant == "missing_ports" else
+        _v3_port_observer,
+    }
+    with pytest.raises(live.LiveOperatorError,
+                       match="^fake_seven_configuration_invalid$"):
+        live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, **kwargs)
+    assert not run_dir.exists()
+    assert not list(marker_dir.iterdir())
 
 
 @_DARWIN_FORK
@@ -3945,6 +4660,17 @@ def test_fake_seven_transport_v3_opt_in_preserves_old_callback_paths(
     assert result["schema"] == schema
     assert result["status"] == "fake_seven_process_pass"
     assert "transport_gate_proven" not in result
+    assert "prehash_gate_proven" not in result
+    receipt = json.loads((tmp_path / "legacy-callback" / "receipt.json")
+                         .read_bytes())
+    assert "prehash_gate_proven" not in receipt
+    control = {**receipt, "status": "fake_seven_process_unproven",
+               "failure_code": "initial_unavailable"}
+    assert live._seven_receipt_valid(control, binding["run_id"])
+    for code in ("pre_stage_unavailable", "pre_stage_mismatch",
+                 "cleanup_review_required"):
+        assert not live._seven_receipt_valid(
+            {**control, "failure_code": code}, binding["run_id"])
 
 
 @pytest.mark.parametrize("variant", ["missing_ports", "dual_transport"])
