@@ -7,6 +7,7 @@ slice signals only its own short-lived synthetic fork children.
 from __future__ import annotations
 
 from copy import deepcopy
+import ctypes
 import hashlib
 import json
 import mmap
@@ -25,6 +26,7 @@ import pytest
 
 import p4_b_non_b_parity_live_operator as live
 import p4_b_non_b_usage_parity as parity
+from uruha_p4_b_child_local_identity import raw_generation
 from p4_b_isolated_ollama_identity_probe import (
     FROZEN_DAEMON_SHA256, FROZEN_MANIFEST_SHA256, FROZEN_RUNNER_SHA256,
     GGUF_SHA256,
@@ -52,6 +54,114 @@ _DARWIN_FORK = pytest.mark.skipif(
     sys.platform != "darwin" or not hasattr(os, "fork"),
     reason="the synthetic raw-generation watcher uses macOS libproc/fork",
 )
+
+
+@_DARWIN_FORK
+def test_non_b_runner_os_discovery_and_nonparent_exit_feasibility():
+    """A local grandchild exercises OS primitives, not installed Ollama.
+
+    The real supervisor still needs same-run executable/argv/GGUF/listener
+    proof, signal ownership, deadlines, and a separate live release.
+    """
+    pid_read, pid_write = os.pipe()
+    try:
+        release_read, release_write = os.pipe()
+    except BaseException:
+        os.close(pid_read)
+        os.close(pid_write)
+        raise
+    try:
+        daemon_pid = os.fork()
+    except BaseException:
+        for fd in (pid_read, pid_write, release_read, release_write):
+            os.close(fd)
+        raise
+    if daemon_pid == 0:
+        signal.alarm(5)  # Test-only fallback, not a product stop witness.
+        os.close(pid_read)
+        os.close(release_write)
+        runner_pid = os.fork()
+        if runner_pid == 0:
+            signal.alarm(5)
+            os.close(pid_write)
+            os.read(release_read, 1)
+            os._exit(0)
+        os.close(release_read)
+        os.write(pid_write, str(runner_pid).encode("ascii"))
+        os.close(pid_write)
+        os.waitpid(runner_pid, 0)
+        os._exit(0)
+
+    os.close(pid_write)
+    os.close(release_read)
+    watcher = None
+    try:
+        ready, _, _ = select.select([pid_read], [], [], 2.0)
+        assert ready, "synthetic child did not disclose its runner PID"
+        runner_pid = int(os.read(pid_read, 64))
+        assert raw_generation(runner_pid)[:2] == (runner_pid, daemon_pid)
+
+        libproc = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
+        enumerate_children = libproc.proc_listchildpids
+        enumerate_children.argtypes = [ctypes.c_int, ctypes.c_void_p,
+                                       ctypes.c_int]
+        enumerate_children.restype = ctypes.c_int
+        listed = (ctypes.c_int * 16)()
+        assert enumerate_children(
+            daemon_pid, listed, ctypes.sizeof(listed)) > 0
+        assert tuple(pid for pid in listed if pid > 0) == (runner_pid,)
+
+        # A live direct child remains waitable without being reaped. The
+        # product-checks Python has no os.waitid, despite macOS exposing the
+        # WNOWAIT constant, so the real path cannot assume that API exists.
+        assert os.waitpid(daemon_pid, os.WNOHANG) == (0, 0)
+        with pytest.raises(ChildProcessError):
+            os.waitpid(runner_pid, os.WNOHANG)
+        watcher = select.kqueue()
+        watcher.control([select.kevent(
+            runner_pid, filter=select.KQ_FILTER_PROC,
+            flags=select.KQ_EV_ADD | select.KQ_EV_ENABLE,
+            fflags=select.KQ_NOTE_EXIT)], 0, 0)
+        assert watcher.control(None, 1, 0) == []
+        os.write(release_write, b"x")
+        os.close(release_write)
+        release_write = -1
+        events = watcher.control(None, 1, 3.0)
+        assert len(events) == 1 and events[0].ident == runner_pid
+        assert events[0].fflags & select.KQ_NOTE_EXIT
+    finally:
+        if watcher is not None:
+            watcher.close()
+        os.close(pid_read)
+        if release_write >= 0:
+            os.close(release_write)
+        # The local synthetic pair must never hang the suite. P retains
+        # waitable ownership of A until the exact PID has exited/reaped.
+        reaped = False
+        for delay, escalation in ((5.5, None), (0.5, signal.SIGTERM),
+                                  (0.5, signal.SIGKILL)):
+            if escalation is not None:
+                try:
+                    if os.waitpid(daemon_pid, os.WNOHANG)[0] == daemon_pid:
+                        reaped = True
+                        break
+                    os.kill(daemon_pid, escalation)
+                except ChildProcessError:
+                    reaped = True
+                    break
+            deadline = time.monotonic() + delay
+            while time.monotonic() < deadline:
+                try:
+                    if os.waitpid(daemon_pid, os.WNOHANG)[0] == daemon_pid:
+                        reaped = True
+                        break
+                except ChildProcessError:
+                    reaped = True
+                    break
+                time.sleep(0.01)
+            if reaped:
+                break
+        assert reaped, "synthetic daemon did not exit within bounded cleanup"
 
 
 def _canonical(value):

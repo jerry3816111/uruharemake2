@@ -157,6 +157,26 @@ weakened PASS. A failed initial runner witness forbids ordinal 7 and may
 leave physical cleanup unproven. The T0+80/90 schedule, private ports and
 shared 11434 invariance apply to this real path exactly as frozen.
 
+### Isolated OS feasibility result (2026-10-27)
+
+An added macOS synthetic grandchild test in
+`test_p4_b_non_b_parity_live_operator.py` now exercises the *necessary OS
+primitive*, not the candidate topology: `proc_listchildpids(A)` yielded the
+one local child B; the kernel raw-generation witness identified B's parent
+as A; P's `waitpid(B, WNOHANG)` correctly refused non-parent ownership;
+`EVFILT_PROC/NOTE_EXIT` registered by P before release was absent while B
+waited and delivered one exit event afterward. The first version failed
+because this repository's `product_checks` Python has no `os.waitid`, even
+though a different system Python did. The final test uses the already used
+nonblocking `waitpid(A, WNOHANG)` only for its *direct, live* child and
+provides test-only five-second child alarms plus bounded parent cleanup.
+Focused final result **1/1 in 0.70 s**; final operator-file regression
+**369/369 in 111.06 s**. No Ollama, private model bytes, HTTP, Safari or
+B Send were used. This rules out one local API-availability objection but
+does not prove enumeration completeness under races, a runner listener,
+S_runner's initial witness, kqueue availability inside a future sandbox,
+exact daemon identity, or T0+90. Those remain hard gates.
+
 Before implementing the gate, a focused topology test must calculate maximum
 simultaneous FD demand at every allocation/close barrier and record P's FD
 samples under success **and** FD-allocation/blocked-hash/abort/receipt paths.
