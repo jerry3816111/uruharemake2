@@ -116,6 +116,47 @@ process isolation. The private clone is read-only and is not rebuilt here.
 
 ## Pre-source feasibility, controls, and stop rules
 
+The real path must be separate from V5's 123+12 one-shot-pipe fake topology.
+One prospective topology to review before a red test is a nonblocking parent
+P with resident journal D, worker W, receipt R, attestor O, and bootstrap A;
+initially witnessed signal helpers S_D/S_W/S_R/S_O/S_A plus S_runner wait
+for commands or a later runner. At most two unidirectional pipes per role
+would be 22 pipes/44 endpoints before forks for these 11 roles, with P
+retaining only its end of each channel after fork; an exec-status pipe and
+logs are additional, short-lived and must be counted. All channels are
+bounded canonical frames with monotonic phase/sequence and one-use grants;
+the seven ordinals do **not** each reserve twelve more pipes. This is a
+candidate upper-budget calculation, **not** a measured peak, a source GO, or
+permission to relax the existing durability/cleanup contract. The parent
+must close every inherited non-role FD in children and keep blocking hash,
+OS inspection, fsync and HTTP out of its event loop. If the candidate cannot
+preserve frozen semantics, stop for design review rather than copy V5's
+nearly exhausted topology into the live path.
+
+The candidate A is a direct, unreaped P child which first waits as a
+bootstrap under an initial PID/raw-generation/PGID/PPID/argv witness. Only
+after the pre-store/binary proof and S_A initial ACK may it make one
+explicit `execve` transition to the pinned Ollama `serve` binary with
+private endpoint/model/cloud-disabled environment and 0600 logs. CLOEXEC
+EOF alone is not success: require A still waitable, unchanged raw generation,
+and O's fresh executable/exact argv/env/loopback-owner proof before W_GO.
+Before a listener exists, an exact-PID stop can only rely on the still
+waitable direct child plus its known bootstrap or fully observed post-exec
+identity; a PID with an unknown intermediate image is *not* blindly
+signaled and remains `physical_stop_unproven`. This pre-listener stop rule
+and the authorized one-time exec identity transition require a reviewed
+amendment to the existing exact freeze before source edits.
+
+The runner is a later A child, potentially created during render-only
+operation 4. S_runner must acquire its own initial raw-generation/parent/
+PGID/executable/argv/GGUF/listener witness before operations 5–7. P cannot
+`waitpid` that grandchild, so independent runner exit/port-vacancy proof
+must be recorded separately from a claim that P reaped it. Whether this
+meets the old cleanup wording is a **design-review question**, not a silent
+weakened PASS. A failed initial runner witness forbids ordinal 7 and may
+leave physical cleanup unproven. The T0+80/90 schedule, private ports and
+shared 11434 invariance apply to this real path exactly as frozen.
+
 Before implementing the gate, a focused topology test must calculate maximum
 simultaneous FD demand at every allocation/close barrier and record P's FD
 samples under success **and** FD-allocation/blocked-hash/abort/receipt paths.
@@ -147,8 +188,19 @@ green; a true live verdict requires separate committed-source review,
 read-only live preflight, explicit GO and at most one frozen attempt.
 
 Decision now: **GO for this source-only design and for a subsequent focused
-topology/red-test phase; NO-GO for an installed-identity PASS or live
-execution.** If FD or cold T0+90 feasibility fails, keep `REVIEW_REQUIRED`
+real-supervisor topology review, then a focused red test of the public
+fail-closed entry; NO-GO for an installed-identity PASS or live execution.**
+Do not add a V6 fake H-identity flag: V5 test binding uses daemon PID 101,
+while its actual H listener is a different forked Python PID. H itself sends
+`h_initial/h_ready/h_stopped` and owns the synthetic port. Executing Ollama
+in H would erase that IPC and change the initial argv/binary witness;
+forking Ollama from H would move the port owner to a child with no initial
+S_H witness. Neither is a valid one-variable extension of V5. The real
+path needs an explicit launcher→daemon→runner parentage, initial and fresh
+OS witnesses for each, and a different phase-scoped IPC/FD budget. Small
+synthetic files/processes can test that new *protocol*, but a fake positive
+must never set installed-identity or live-release PASS. If FD or cold T0+90
+feasibility fails, keep `REVIEW_REQUIRED`
 with the minimal measured counterexample; revise topology prospectively,
 not by deleting SHA, relaxing the clock, adding HTTP calls or recasting a
 synthetic fixture as a real model. Safari/node graph, character quality,
