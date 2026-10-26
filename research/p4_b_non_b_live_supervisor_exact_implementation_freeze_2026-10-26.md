@@ -252,6 +252,98 @@ refund or a tuned expected margin.
 
 ## Fake tests, resource cap and release decision
 
+### Prospective fake seven-operation process protocol amendment (2026-10-26)
+
+Status: **independently reviewed GO only for fake-only source/tests; NO-GO
+real HTTP/model/process, Safari or B Send.** Two read-only design reviews
+accepted this prospective protocol; neither reviewed implemented code or
+authorized a live run. This amendment preserves every earlier failure,
+data, resource and release gate above. It addresses an implementation
+ambiguity exposed after the fake P+D/W/R op1 and receipt slices: the phrase
+"for each ordinal, a dedicated supervised I/O helper commits" does not say
+whether the helper must be a new PID per ordinal. Choosing one resident D is
+an explicit prospective **fake-only override of helper cardinality**, not a
+silent reinterpretation of that phrase. Reopening the journal in
+seven new PIDs would add a new cross-process resume/lease protocol not
+covered by this freeze. The proposed design is **one initially
+witnessed, separate durability-only D process per one-use attempt**, alive
+through operations 1..7, with an individually committed, fsynced, readback
+and ACKed transition for each ordinal. D never sends HTTP, never reopens a
+crashed run, and exits or is witnessed-stopped after the first terminal
+failure. A self-alarm or child exit alone is not a witnessed stop; only the
+existing signal-helper transaction and matching waitpid status may prove it.
+A missing proof or D death is terminal; no new D or grant is issued
+against that run. The existing journal still durably spends ordinal 7 before
+its grant ACK. Independent design review must accept this amendment
+before implementation; otherwise use distinct per-ordinal helpers only
+after a separate prospective safe-reopen design.
+
+The single next fake-only variable is the **process-backed seven-operation
+grant/issue/result loop**, reusing the existing `worker_once()` behavior in
+initially witnessed W. W alone builds the frozen request, rendered prompt,
+token payloads and raw fake responses. The parent receives only bounded
+canonical specs, proofs and a raw-free final summary. No change to frozen
+question, score, source predicates, model parameters or existing in-process
+worker contract is allowed. The old five-second `compare_non_b_parity()`
+callback path is not the process worker.
+
+For each ordinal, the planned order is W request/spec → P/D durable reserve
+and readback proof → P/W grant → W enters its one-use local transport gate,
+re-canonicalizes its *own* payload and exact URL/role/port/method/path/SHA/
+expiry/worker witness/nonce, and consumes the nonce → W/P **issue-entry**
+proof → P/D durable `worker_issued` proof → P/W issue ACK → W's sole injected
+fake callback → W fixed bounded result evidence → P/D durable `on_wire`
+update only after success → P/W result ACK. `worker_issued` means a
+durably observed W **gate-entry/attempt**, not a parent-issued permission
+and not proof that a byte reached the wire. If W dies after issue ACK but
+before its fake callback, `worker_issued=1` and `on_wire=unknown` are both
+honest. If it dies before issue-entry proof, `worker_issued=0` is only a
+lower bound and never proves no send after a grant. A fake success is
+labeled fake and never establishes real HTTP wire delivery. Any lost,
+failed or uncertain fake callback, issue/result/`on_wire` ACK, or D/W crash
+terminates the whole run with no next ordinal, no retry and no refund.
+Only validated success plus all mandatory durable proofs/ACKs allows the
+next ordinal.
+`worker_once()` must run its existing six OS-only observation order and
+source/BOS/NumCtx/rendered-byte/token checks **before** requesting operation
+7. The final W summary needs exact seven-call/six-observation counts and
+normal W exit; D's final canonical disk proof, D exit, D/W cleanup and the
+existing prewitnessed R/S_R receipt gate remain separately required.
+
+Child-to-parent grant-affecting replies use **per-ordinal one-shot pipes**:
+one bounded canonical frame plus EOF before parent advances. This closes
+the delayed duplicate/trailing-frame window on those edges. Parent-to-D/W
+commands may use separately bounded persistent pipes only if an explicit
+phase/ordinal/sequence state machine rejects stale/duplicate frames *when
+received*, before any additional side effect; final EOF is required before
+positive fake-run conclusion. Such a stream cannot prove that no future
+delayed duplicate will arrive before the next grant and must not be used to
+make that claim. A persistent stream without the state machine cannot be
+called equivalent to the one-shot proof. Every forked child must close all
+unowned inherited pipe ends before work, or EOF is not proof. Pipe layout
+must be counted against
+the observed macOS soft FD limit
+(currently 256); if all required ends cannot be reserved before any work GO,
+fail closed rather than silently dropping an EOF or witness barrier.
+After operation 7, P closes both command writers; D and W must consume and
+validate EOF **before** sending their final proof/summary and exiting
+normally. A trailing or late frame is terminal, not ignored after a
+positive summary. The parent must verify these exits and final child-to-P
+one-shot frame+EOF before requesting R's final receipt.
+
+Prospective fake acceptance includes 7/7 ordered unique reservations,
+issue-entry proofs and injected sends, six OS-only observations, op7 spent
+before ACK, R receipt counts, and targeted lost/duplicate/wrong
+run/worker/nonce/ordinal/target role/method/port/path/payload/expiry,
+blocked stage, crash,
+source-pre-op7 and raw-canary negative controls. The process-backed fake
+result must remain `fake_*`, `physical_stop_unproven=true`,
+`full_gate_pass=false`; it does **not** establish private-port/11434
+vacancy, real transport/proxy isolation, installed source/model identity,
+T0+90 cleanup or provider parity. Those retain the unchanged release gates
+below. A small red test and affected regressions precede any fake source
+implementation; an independent patch review follows it.
+
 Focused fake controls must prove a positive seven unique grants/sends,
 six OS-only observations, op7 spent **before** ACK, two private ports
 vacant/11434 unchanged, no raw leakage, a durable initial zero-count journal
