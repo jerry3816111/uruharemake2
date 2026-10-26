@@ -1474,3 +1474,494 @@ def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
             "grant_sha256": _sha(_canonical(grant, "fake_journal_proof_invalid")),
             "reserved": 1, "granted": 1, "worker_issued": 0,
             "on_wire": "unknown"}
+
+
+# This is a separate fake-only process topology. Each edge has its own
+# one-frame pipe, so EOF proves there was no second or trailing frame.
+_SPLIT_SCHEMA = "fake_split_op1_v1"
+_SPLIT_EDGES = (
+    "d_initial", "w_initial", "d_go", "d_zero", "w_go", "w_request",
+    "d_reserve", "d_proof", "w_delivery", "w_received",
+)
+_SPLIT_EXTRA = {
+    "initial": frozenset({"role"}),
+    "d_go": frozenset(),
+    "zero": frozenset({"journal_sha256", "reserved", "granted",
+                       "completion_attempt_spent"}),
+    "w_go": frozenset(),
+    "op1_request": frozenset({"fields"}),
+    "reserve": frozenset({"fields", "worker_witness"}),
+    "grant_proof": frozenset({"grant", "journal_sha256"}),
+    "grant_delivery": frozenset({"grant", "journal_sha256"}),
+    "received": frozenset({"grant_sha256"}),
+}
+_SPLIT_BASE = frozenset({"schema", "run_id", "phase", "seq", "witness"})
+
+
+def _split_zero_state(run_id: str) -> dict:
+    # Match DurableJournal.create's canonical, empty state without touching
+    # disk on the parent watchdog. D independently reads back actual bytes.
+    return {
+        "schema": "fake_non_b_journal_v1", "run_id": run_id,
+        "reserved": 0, "granted": 0, "worker_issued": 0,
+        "ack_callback_returned": 0, "ack_failed_terminal": 0,
+        "completion_attempt_spent": 0, "operations": [],
+    }
+
+
+def _split_worker_from_witness(witness: dict) -> dict:
+    generation = witness["raw_generation"]
+    return {"pid": generation[0], "ppid": generation[1],
+            "start_sec": generation[2], "start_usec": generation[3]}
+
+
+def _split_worker_request(spec: dict, witness: dict) -> dict:
+    """W alone builds its own pending request after both initial ACKs."""
+    return {**spec, "worker": _split_worker_from_witness(witness)}
+
+
+def _split_frame(run_id: str, phase: str, seq: int, witness: dict,
+                 **extra) -> dict:
+    return {"schema": _SPLIT_SCHEMA, "run_id": run_id, "phase": phase,
+            "seq": seq, "witness": witness, **extra}
+
+
+def _split_same(left: Any, right: Any) -> bool:
+    try:
+        return _canonical(left, "ipc_invalid") == _canonical(right, "ipc_invalid")
+    except LiveOperatorError:
+        return False
+
+
+def _split_fields_valid(fields: Any, spec: dict, worker_witness: dict) -> bool:
+    if not _grant_valid(fields, nonce_required=False):
+        return False
+    if not _fake_witness_valid(worker_witness, worker_witness.get("pid", -1)
+                               if type(worker_witness) is dict else -1):
+        return False
+    expected = {**spec, "worker": _split_worker_from_witness(worker_witness)}
+    return _split_same(fields, expected)
+
+
+def _split_grant_valid(grant: Any, fields: dict) -> bool:
+    return (_grant_valid(grant, nonce_required=True)
+            and _split_same({key: grant[key] for key in _GRANT_FIELDS}, fields)
+            and time.monotonic() < grant["expires_at"])
+
+
+def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
+                       witness: dict | None = None, pid: int | None = None,
+                       role: str | None = None, spec: dict | None = None,
+                       worker_witness: dict | None = None,
+                       fields: dict | None = None, grant: dict | None = None,
+                       journal_sha256: str | None = None) -> bool:
+    """Exact schema and semantic allowlist before encode/after decode."""
+    if (type(value) is not dict or phase not in _SPLIT_EXTRA
+            or set(value) != _SPLIT_BASE | _SPLIT_EXTRA[phase]
+            or value["schema"] != _SPLIT_SCHEMA or value["run_id"] != run_id
+            or value["phase"] != phase or type(value["seq"]) is not int
+            or value["seq"] != seq):
+        return False
+    try:
+        if len(_canonical(value, "ipc_invalid")) + 4 > FRAME_LIMIT:
+            return False
+    except LiveOperatorError:
+        return False
+    got_witness = value["witness"]
+    if (type(got_witness) is not dict
+            or not _fake_witness_valid(got_witness, got_witness.get("pid", -1))):
+        return False
+    if witness is None:
+        if (phase != "initial" or pid is None
+                or not _fake_witness_valid(got_witness, pid)
+                or got_witness["ppid"] != os.getpid()
+                or got_witness["pgid"] != pid):
+            return False
+    elif not _split_same(got_witness, witness):
+        return False
+    if phase == "initial":
+        return value["role"] == role and role in ("D", "W")
+    if phase == "zero":
+        return (journal_sha256 is not None
+                and value["journal_sha256"] == journal_sha256
+                and all(type(value[key]) is int and value[key] == 0
+                        for key in ("reserved", "granted",
+                                    "completion_attempt_spent")))
+    if phase in ("op1_request", "reserve"):
+        if spec is None:
+            return False
+        bound_worker = (got_witness if phase == "op1_request"
+                        else value["worker_witness"])
+        return (worker_witness is None or _split_same(bound_worker, worker_witness)) \
+            and _split_fields_valid(value["fields"], spec, bound_worker)
+    if phase in ("grant_proof", "grant_delivery"):
+        return (fields is not None and _split_grant_valid(value["grant"], fields)
+                and _valid_sha(value["journal_sha256"])
+                and (journal_sha256 is None
+                     or value["journal_sha256"] == journal_sha256)
+                and (grant is None or _split_same(value["grant"], grant)))
+    if phase == "received":
+        return (grant is not None and value["grant_sha256"] ==
+                _sha(_canonical(grant, "ipc_invalid")))
+    return True  # fixed, payload-free GO commands
+
+
+def _split_close_except(pipes: dict[str, tuple[int, int]], keep: set[int]) -> None:
+    for read_fd, write_fd in pipes.values():
+        if read_fd not in keep:
+            _fake_close(read_fd)
+        if write_fd not in keep:
+            _fake_close(write_fd)
+
+
+def _split_send(fd: int, value: dict, deadline: float, **validation) -> bool:
+    """One nonblocking bounded canonical frame; caller closes its one-shot FD."""
+    try:
+        if not _split_frame_valid(value, **validation):
+            return False
+        frame = encode_frame(value)
+        if type(frame) is not bytes or not 5 <= len(frame) <= FRAME_LIMIT:
+            return False
+        # Validate the actual bytes after serialization but before writing.
+        # A changed encoder must not put raw/unknown fields on the IPC pipe.
+        encoded_value = decode_frame(
+            frame, keys=set(_SPLIT_BASE | _SPLIT_EXTRA[validation["phase"]]))
+        if (not _split_frame_valid(encoded_value, **validation)
+                or not _split_same(encoded_value, value)):
+            return False
+        os.set_blocking(fd, False)
+        offset = 0
+        while offset < len(frame) and time.monotonic() < deadline:
+            _, writable, _ = select.select([], [fd], [], min(
+                0.005, max(0, deadline - time.monotonic())))
+            if not writable:
+                continue
+            try:
+                written = os.write(fd, frame[offset:])
+            except BlockingIOError:
+                continue
+            if written <= 0:
+                return False
+            offset += written
+        return offset == len(frame)
+    except Exception:
+        # Neither an injected encoder nor an OS callback may expose a raw
+        # exception string through this fake control boundary.
+        return False
+
+
+def _split_receive(fd: int, deadline: float, *, phase: str, **validation) -> dict | None:
+    keys = set(_SPLIT_BASE | _SPLIT_EXTRA[phase])
+    value = _fake_read_bounded(fd, deadline, framed=True, keys=keys)
+    if not _split_frame_valid(value, phase=phase, **validation):
+        return None
+    return value
+
+
+def _split_disk_readback(journal: DurableJournal, state: dict) -> bytes:
+    with open(journal.path, "rb") as handle:
+        disk = handle.read(FRAME_LIMIT + 1)
+    if (len(disk) > FRAME_LIMIT
+            or disk != _canonical(state, "fake_journal_readback_invalid")):
+        _fail("fake_journal_readback_invalid")
+    return disk
+
+
+def _split_d_child(pipes: dict[str, tuple[int, int]], *, run_dir: Path,
+                   spec: dict, hard_deadline: float, work_deadline: float,
+                   fault: str | None) -> int:
+    owned = (pipes["d_initial"][1], pipes["d_go"][0],
+             pipes["d_zero"][1], pipes["d_reserve"][0],
+             pipes["d_proof"][1])
+    _split_close_except(pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        run_id = spec["run_id"]
+        initial = _split_frame(run_id, "initial", 0, own, role="D")
+        if not _split_send(owned[0], initial, work_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own, role="D"):
+            return 125
+        _fake_close(owned[0])
+        go = _split_receive(owned[1], work_deadline, phase="d_go",
+                            run_id=run_id, seq=1, witness=own)
+        _fake_close(owned[1])
+        if go is None:
+            return 125
+        journal = DurableJournal.create(run_dir, run_id)
+        zero_state = journal.snapshot()
+        if not _split_same(zero_state, _split_zero_state(run_id)):
+            return 125
+        zero_disk = _split_disk_readback(journal, zero_state)
+        zero_sha = _sha(zero_disk)
+        zero = _split_frame(run_id, "zero", 1, own,
+                            journal_sha256=zero_sha, reserved=0, granted=0,
+                            completion_attempt_spent=0)
+        if not _split_send(owned[2], zero, work_deadline, run_id=run_id,
+                           phase="zero", seq=1, witness=own,
+                           journal_sha256=zero_sha):
+            return 125
+        _fake_close(owned[2])
+        if fault == "d_after_zero":
+            return 121
+        reserve = _split_receive(owned[3], work_deadline, phase="reserve",
+                                  run_id=run_id, seq=2, witness=own, spec=spec)
+        _fake_close(owned[3])
+        if reserve is None:
+            return 125
+        fields = reserve["fields"]
+        grant = journal.reserve(fields, ack=lambda _grant: None)
+        state = journal.snapshot()
+        disk = _split_disk_readback(journal, state)
+        if (state["reserved"] != 1 or state["granted"] != 1
+                or state["ack_callback_returned"] != 1
+                or state["worker_issued"] != 0
+                or state["operations"][0]["on_wire"] != "unknown"):
+            return 125
+        if fault == "d_after_commit":
+            return 121
+        proof = _split_frame(run_id, "grant_proof", 2, own,
+                             grant=grant, journal_sha256=_sha(disk))
+        return (0 if _split_send(owned[4], proof, work_deadline, run_id=run_id,
+                                 phase="grant_proof", seq=2, witness=own,
+                                 fields=fields) else 125)
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _split_w_child(pipes: dict[str, tuple[int, int]], *, spec: dict,
+                   hard_deadline: float, work_deadline: float,
+                   fault: str | None) -> int:
+    owned = (pipes["w_initial"][1], pipes["w_go"][0],
+             pipes["w_request"][1], pipes["w_delivery"][0],
+             pipes["w_received"][1])
+    _split_close_except(pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        run_id = spec["run_id"]
+        initial = _split_frame(run_id, "initial", 0, own, role="W")
+        if not _split_send(owned[0], initial, work_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own, role="W"):
+            return 125
+        _fake_close(owned[0])
+        go = _split_receive(owned[1], work_deadline, phase="w_go",
+                            run_id=run_id, seq=1, witness=own)
+        _fake_close(owned[1])
+        if go is None:
+            return 125
+        fields = _split_worker_request(spec, own)
+        request = _split_frame(run_id, "op1_request", 1, own, fields=fields)
+        if not _split_send(owned[2], request, work_deadline, run_id=run_id,
+                           phase="op1_request", seq=1, witness=own, spec=spec):
+            return 125
+        _fake_close(owned[2])
+        if fault == "w_after_request":
+            return 121
+        delivery = _split_receive(owned[3], work_deadline,
+                                   phase="grant_delivery", run_id=run_id,
+                                   seq=2, witness=own, fields=fields)
+        _fake_close(owned[3])
+        if delivery is None:
+            return 125
+        ack = _split_frame(run_id, "received", 2, own,
+                           grant_sha256=_sha(_canonical(
+                               delivery["grant"], "ipc_invalid")))
+        return (0 if _split_send(owned[4], ack, work_deadline, run_id=run_id,
+                                 phase="received", seq=2, witness=own,
+                                 grant=delivery["grant"]) else 125)
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
+                                   work_seconds: float = 0.4,
+                                   preparation_seconds: float = 0.2,
+                                   fault: str | None = None) -> dict:
+    """Fake-only P+D+W zero→request→durable op1→received-ACK probe.
+
+    W performs no HTTP. `worker_received_proven=False` means no valid received
+    ACK proof, not proof W never received a grant. There is no receipt, port
+    or live cleanup proof;
+    `supervise_once` deliberately stays fail-closed. Parent does only bounded
+    canonical IPC and nonblocking waitpid, never journal disk operations.
+    """
+    if (type(grant_without_worker) is not dict
+            or set(grant_without_worker) != _GRANT_FIELDS - {"worker"}
+            or not _grant_valid({**grant_without_worker,
+                                 "worker": {"pid": 1, "ppid": 1,
+                                            "start_sec": 0, "start_usec": 0}},
+                                nonce_required=False)
+            or grant_without_worker["ordinal"] != 1
+            or fault not in (None, "d_after_zero", "d_after_commit",
+                             "w_after_request")
+            or any(type(value) not in (int, float) or not math.isfinite(value)
+                   or not 0.05 <= value <= 5.0
+                   for value in (work_seconds, preparation_seconds))):
+        _fail("fake_split_spec_invalid")
+    spec = _plain_copy(grant_without_worker, "fake_split_spec_invalid")
+    run_id = spec["run_id"]
+    result = {"schema": "fake_split_op1_partial_v1",
+              "status": "fake_partial_split_unproven", "failure_code": "initial_unavailable",
+              "zero_ack_received": False, "request_accepted": False,
+              "grant_proven": False, "worker_received_proven": False,
+              "durable_reserved": "unknown", "on_wire": "unknown",
+              "d_reaped": False, "w_reaped": False,
+              "physical_stop_unproven": True, "full_gate_pass": False}
+    started = time.monotonic()
+    prep_deadline = started + preparation_seconds
+    work_deadline = prep_deadline + work_seconds
+    hard_deadline = work_deadline + 0.25
+    pipes: dict[str, tuple[int, int]] = {}
+    d_pid = w_pid = None
+    parent_fds: set[int] = set()
+    parent_layout_ready = False
+    statuses: dict[int, int] = {}
+    try:
+        for name in _SPLIT_EDGES:
+            pipes[name] = os.pipe()
+        d_pid = os.fork()
+        if d_pid == 0:
+            try:
+                child_code = _split_d_child(
+                    pipes, run_dir=Path(run_dir), spec=spec,
+                    hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        w_pid = os.fork()
+        if w_pid == 0:
+            try:
+                child_code = _split_w_child(
+                    pipes, spec=spec, hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        parent_fds = {
+            pipes[name][0] for name in ("d_initial", "w_initial", "d_zero",
+                                      "w_request", "d_proof", "w_received")
+        } | {
+            pipes[name][1] for name in ("d_go", "w_go", "d_reserve",
+                                      "w_delivery")
+        }
+        _split_close_except(pipes, parent_fds)
+        parent_layout_ready = True
+
+        def receive(name: str, phase: str, deadline: float, **kwargs):
+            fd = pipes[name][0]
+            try:
+                return _split_receive(fd, deadline, phase=phase,
+                                      run_id=run_id, **kwargs)
+            finally:
+                _fake_close(fd)
+                parent_fds.discard(fd)
+
+        def send(name: str, phase: str, seq: int, witness: dict,
+                 **extra) -> bool:
+            fd = pipes[name][1]
+            try:
+                frame = _split_frame(run_id, phase, seq, witness, **extra)
+                validation = {"run_id": run_id, "phase": phase, "seq": seq,
+                              "witness": witness}
+                if phase == "reserve":
+                    validation["spec"] = spec
+                    validation["worker_witness"] = w_witness
+                if phase == "grant_delivery":
+                    validation["fields"] = request["fields"]
+                return _split_send(fd, frame, work_deadline, **validation)
+            finally:
+                _fake_close(fd)
+                parent_fds.discard(fd)
+
+        d_initial_frame = receive("d_initial", "initial", prep_deadline,
+                                  seq=0, pid=d_pid, role="D")
+        w_initial_frame = receive("w_initial", "initial", prep_deadline,
+                                  seq=0, pid=w_pid, role="W")
+        if d_initial_frame is None or w_initial_frame is None:
+            return result
+        d_witness = d_initial_frame["witness"]
+        w_witness = w_initial_frame["witness"]
+        result["failure_code"] = "zero_ack_unavailable"
+        if not send("d_go", "d_go", 1, d_witness):
+            return result
+        zero_sha = _sha(_canonical(_split_zero_state(run_id), "ipc_invalid"))
+        zero = receive("d_zero", "zero", work_deadline, seq=1,
+                       witness=d_witness, journal_sha256=zero_sha)
+        if zero is None:
+            return result
+        result["zero_ack_received"] = True
+        result["durable_reserved"] = 0
+        result["failure_code"] = "worker_request_unavailable"
+        if not send("w_go", "w_go", 1, w_witness):
+            return result
+        request = receive("w_request", "op1_request", work_deadline,
+                          seq=1, witness=w_witness, spec=spec,
+                          worker_witness=w_witness)
+        if request is None:
+            return result
+        result["request_accepted"] = True
+        result["failure_code"] = "grant_proof_unavailable"
+        # A partial/lost parent command may still have reached D. Once this
+        # edge is attempted, only D's durable proof can narrow reservation.
+        result["durable_reserved"] = "unknown"
+        if not send("d_reserve", "reserve", 2, d_witness,
+                    fields=request["fields"], worker_witness=w_witness):
+            return result
+        proof = receive("d_proof", "grant_proof", work_deadline,
+                        seq=2, witness=d_witness, fields=request["fields"])
+        if proof is None:
+            result["durable_reserved"] = "unknown"
+            return result
+        # A full frame+EOF is not enough if D failed after emitting it.
+        if not _fake_wait_reap(d_pid, work_deadline, statuses):
+            result["durable_reserved"] = "unknown"
+            return result
+        result["d_reaped"] = True
+        d_status = statuses[d_pid]
+        if not (os.WIFEXITED(d_status) and os.WEXITSTATUS(d_status) == 0):
+            result["durable_reserved"] = "unknown"
+            return result
+        result["grant_proven"] = True
+        result["durable_reserved"] = 1
+        result["journal_sha256"] = proof["journal_sha256"]
+        result["grant_sha256"] = _sha(_canonical(proof["grant"], "ipc_invalid"))
+        result["failure_code"] = "worker_received_ack_unavailable"
+        if not send("w_delivery", "grant_delivery", 2, w_witness,
+                    grant=proof["grant"], journal_sha256=proof["journal_sha256"]):
+            return result
+        received = receive("w_received", "received", work_deadline,
+                           seq=2, witness=w_witness, grant=proof["grant"])
+        if received is None:
+            return result
+        if not _fake_wait_reap(w_pid, work_deadline, statuses):
+            return result
+        result["w_reaped"] = True
+        w_status = statuses[w_pid]
+        if not (os.WIFEXITED(w_status) and os.WEXITSTATUS(w_status) == 0):
+            return result
+        result["worker_received_proven"] = True
+        result["failure_code"] = "none"
+        result["status"] = "fake_partial_op1_worker_received"
+        return result
+    except Exception:
+        result["failure_code"] = "ipc_or_spawn_unavailable"
+        return result
+    finally:
+        # No killpg and no un-witnessed signal. Child self-alarms are only a
+        # test containment backstop and never count as physical stop proof.
+        _fake_close(*parent_fds)
+        if not parent_layout_ready:  # a pipe/fork failed before FD layout
+            for read_fd, write_fd in pipes.values():
+                _fake_close(read_fd, write_fd)
+        for pid, key in ((d_pid, "d_reaped"), (w_pid, "w_reaped")):
+            if pid is not None and pid > 0 and not result[key]:
+                result[key] = _fake_wait_reap(pid, hard_deadline + 0.25,
+                                               statuses)

@@ -1499,3 +1499,269 @@ def test_fake_journal_bad_final_frame_keeps_spent_disk_but_no_proof(
     assert "journal_sha256" not in result
     _, disk = _read_only_journal(run_dir)
     assert disk["reserved"] == disk["granted"] == 1
+
+
+@_DARWIN_FORK
+def test_fake_split_op1_requires_both_witnesses_zero_and_worker_received(tmp_path):
+    run_dir = tmp_path / "split-success"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_op1_worker_received"
+    assert result["d_reaped"] is result["w_reaped"] is True
+    assert result["zero_ack_received"] is True
+    assert result["request_accepted"] is True
+    assert result["grant_proven"] is True
+    assert result["worker_received_proven"] is True
+    assert result["durable_reserved"] == 1
+    assert result["on_wire"] == "unknown"
+    assert result["full_gate_pass"] is False
+    journal, disk = _read_only_journal(run_dir)
+    assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
+    assert hashlib.sha256(journal.read_bytes()).hexdigest() == result["journal_sha256"]
+    assert disk["reserved"] == disk["granted"] == 1
+    assert disk["worker_issued"] == 0  # W only ACKs reception; no HTTP.
+    assert disk["operations"][0]["on_wire"] == "unknown"
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("fault", ["wrong_run", "wrong_seq", "duplicate",
+                                           "split_duplicate", "lost"])
+def test_fake_split_bad_or_lost_zero_ack_never_requests_op1(
+        monkeypatch, tmp_path, fault):
+    original_encode = live.encode_frame
+    original_write = os.write
+    original_read = os.read
+
+    def bad_zero(value):
+        if type(value) is dict and value.get("phase") == "zero":
+            altered = deepcopy(value)
+            if fault == "wrong_run":
+                altered["run_id"] = "wrong-run"
+            elif fault == "wrong_seq":
+                altered["seq"] = 7
+            elif fault in ("duplicate", "split_duplicate"):
+                frame = original_encode(value)
+                return frame + frame
+            return original_encode(altered)
+        return original_encode(value)
+
+    def lose_zero(fd, data):
+        if fault == "lost" and b'"phase":"zero"' in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live, "encode_frame", bad_zero)
+    monkeypatch.setattr(live.os, "write", lose_zero)
+    if fault == "split_duplicate":
+        monkeypatch.setattr(live.os, "read",
+                            lambda fd, size: original_read(fd, min(size, 17)))
+    run_dir = tmp_path / f"split-zero-{fault}"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        work_seconds=0.15)
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["zero_ack_received"] is False
+    assert result["request_accepted"] is False
+    assert result["grant_proven"] is False
+    assert result["worker_received_proven"] is False
+    assert result["on_wire"] == "unknown"
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == 0
+
+
+@_DARWIN_FORK
+def test_fake_split_worker_request_wrong_initial_witness_never_reserves(
+        monkeypatch, tmp_path):
+    original = live._split_worker_request
+
+    def wrong_witness(spec, witness):
+        request = original(spec, witness)
+        request["worker"]["pid"] += 1
+        return request
+
+    monkeypatch.setattr(live, "_split_worker_request", wrong_witness)
+    run_dir = tmp_path / "split-wrong-worker"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["zero_ack_received"] is True
+    assert result["request_accepted"] is False
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == 0
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("lost_phase", ["grant_proof", "received"])
+def test_fake_split_ack_loss_after_durability_never_refunds(
+        monkeypatch, tmp_path, lost_phase):
+    original_write = os.write
+
+    def lose_ack(fd, data):
+        if f'"phase":"{lost_phase}"'.encode() in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", lose_ack)
+    run_dir = tmp_path / f"split-lost-{lost_phase}"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        work_seconds=0.15)
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["zero_ack_received"] is True
+    assert result["request_accepted"] is True
+    assert result["worker_received_proven"] is False
+    assert result["grant_proven"] is (lost_phase == "received")
+    assert result["on_wire"] == "unknown"
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == 1
+    assert disk["operations"][0]["on_wire"] == "unknown"
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+def test_fake_split_partial_parent_reserve_write_is_unknown_not_zero(
+        monkeypatch, tmp_path):
+    original_write = os.write
+    partial = False
+
+    def tear_reserve_frame(fd, data):
+        nonlocal partial
+        if b'"phase":"reserve"' in data and not partial:
+            partial = True
+            return original_write(fd, data[:7])
+        if partial:
+            raise BrokenPipeError(CANARY)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", tear_reserve_frame)
+    run_dir = tmp_path / "split-partial-reserve"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["zero_ack_received"] is True
+    assert result["request_accepted"] is True
+    assert result["durable_reserved"] == "unknown"
+    assert result["grant_proven"] is False
+    assert result["worker_received_proven"] is False
+    assert CANARY not in json.dumps(result)
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 0
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("blocked_stage", ["create", "reserve"])
+def test_fake_split_blocked_fsync_keeps_parent_bounded_and_unproven(
+        monkeypatch, tmp_path, blocked_stage):
+    original_fsync = os.fsync
+    calls = 0
+
+    def blocked_fsync(fd):
+        nonlocal calls
+        calls += 1
+        if calls == (1 if blocked_stage == "create" else 3):
+            time.sleep(20)
+        return original_fsync(fd)
+
+    monkeypatch.setattr(live.os, "fsync", blocked_fsync)
+    start = time.monotonic()
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / f"split-blocked-fsync-{blocked_stage}",
+        grant_without_worker=_op1_without_worker(), work_seconds=0.12)
+    assert time.monotonic() - start < 2
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["grant_proven"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["on_wire"] == "unknown"
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("phase", ["op1_request", "grant_proof", "received"])
+def test_fake_split_encoded_raw_canary_is_rejected_before_ipc_write(
+        monkeypatch, tmp_path, phase):
+    original_encode = live.encode_frame
+    original_write = os.write
+    marker_r, marker_w = os.pipe()
+
+    def pollute_encoded_frame(value):
+        if type(value) is dict and value.get("phase") == phase:
+            altered = deepcopy(value)
+            altered["raw"] = {"secret": CANARY}
+            return original_encode(altered)
+        return original_encode(value)
+
+    def record_raw_write(fd, data):
+        if CANARY.encode() in data:
+            original_write(marker_w, b"X")
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live, "encode_frame", pollute_encoded_frame)
+    monkeypatch.setattr(live.os, "write", record_raw_write)
+    try:
+        run_dir = tmp_path / f"split-raw-frame-{phase}"
+        result = live._supervise_fake_split_op1_once(
+            run_dir=run_dir, grant_without_worker=_op1_without_worker())
+        assert result["status"] == "fake_partial_split_unproven"
+        assert result["worker_received_proven"] is False
+        assert result["on_wire"] == "unknown"
+        assert not _pipe_has_byte(marker_r)
+        assert CANARY not in json.dumps(result)
+        _, disk = _read_only_journal(run_dir)
+        assert disk["reserved"] == (0 if phase == "op1_request" else 1)
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("fault", ["d_after_zero", "d_after_commit",
+                                           "w_after_request"])
+def test_fake_split_child_crash_is_terminal_without_refund(tmp_path, fault):
+    run_dir = tmp_path / f"split-crash-{fault}"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        fault=fault, work_seconds=0.15)
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["worker_received_proven"] is False
+    assert result["on_wire"] == "unknown"
+    _, disk = _read_only_journal(run_dir)
+    # W can die just after sending its valid request while D has already
+    # committed. The parent must not assume that race refunds the ordinal.
+    expected = (0, 1) if fault == "w_after_request" else (
+        (1,) if fault == "d_after_commit" else (0,))
+    assert disk["reserved"] == disk["granted"]
+    assert disk["reserved"] in expected
+
+
+@_DARWIN_FORK
+def test_fake_split_existing_run_is_terminal_and_unchanged(tmp_path):
+    run_dir = tmp_path / "split-existing"
+    live.DurableJournal.create(run_dir, "synthetic-run")
+    old = (run_dir / "journal.json").read_bytes()
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["zero_ack_received"] is False
+    assert result["worker_received_proven"] is False
+    assert (run_dir / "journal.json").read_bytes() == old
+
+
+@_DARWIN_FORK
+def test_fake_split_raw_canary_in_worker_request_is_rejected_before_ipc(
+        monkeypatch, tmp_path):
+    original = live._split_worker_request
+
+    def raw_request(spec, witness):
+        request = original(spec, witness)
+        request["raw"] = {"secret": CANARY}
+        return request
+
+    monkeypatch.setattr(live, "_split_worker_request", raw_request)
+    run_dir = tmp_path / "split-raw"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["request_accepted"] is False
+    assert CANARY not in json.dumps(result)
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 0
