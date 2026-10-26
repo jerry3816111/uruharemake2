@@ -19,6 +19,7 @@ import resource
 import secrets
 import select
 import signal
+import socket
 import stat
 import struct
 import sys
@@ -1670,7 +1671,8 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                        target_role: str | None = None,
                        target_witness: dict | None = None,
                        signal_name: str | None = None,
-                       receipt: dict | None = None) -> bool:
+                       receipt: dict | None = None,
+                       allow_h: bool = False) -> bool:
     """Exact schema and semantic allowlist before encode/after decode."""
     if (type(value) is not dict or phase not in _SPLIT_EXTRA
             or set(value) != _SPLIT_BASE | _SPLIT_EXTRA[phase]
@@ -1697,14 +1699,17 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
         return False
     if phase == "initial":
         return value["role"] == role and role in (
-            "D", "W", "R", "O", "S_D", "S_W", "S_R", "S_O")
+            "D", "W", "R", "O", "S_D", "S_W", "S_R", "S_O",
+            *(("H", "S_H") if allow_h else ()))
     if phase in ("signal_term", "signal_kill"):
-        return (target_role in ("D", "W", "R", "O")
+        return (target_role in (("D", "W", "R", "O", "H") if allow_h
+                               else ("D", "W", "R", "O"))
                 and value["target_role"] == target_role
                 and target_witness is not None
                 and _split_same(value["target_witness"], target_witness))
     if phase == "signal_result":
-        return (target_role in ("D", "W", "R", "O")
+        return (target_role in (("D", "W", "R", "O", "H") if allow_h
+                               else ("D", "W", "R", "O"))
                 and value["target_role"] == target_role
                 and signal_name in ("term", "kill")
                 and value["signal_name"] == signal_name
@@ -2047,7 +2052,8 @@ def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
                         inherited_split_fds: set[int],
                         run_id: str, target_role: str, target_witness: dict,
                         initial_reader, observer, prep_deadline: float,
-                        cleanup_deadline: float, hard_deadline: float) -> int:
+                        cleanup_deadline: float, hard_deadline: float,
+                        allow_h: bool = False) -> int:
     """Pre-witnessed, independent exact-PID transaction child for D or W."""
     prefix = f"s_{target_role.lower()}"
     owned = (signal_pipes[f"{prefix}_initial"][1],
@@ -2060,6 +2066,8 @@ def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
     _fake_close(*inherited_split_fds)
     _split_close_except(signal_pipes, set(owned))
     try:
+        if allow_h:
+            _seven_v5_quiet_stdio()
         os.setsid()
         _fake_child_lifetime(hard_deadline)
         actual = _fake_os_witness(os.getpid())
@@ -2070,7 +2078,7 @@ def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
                                role=f"S_{target_role}")
         if not _split_send(owned[0], initial, prep_deadline, run_id=run_id,
                            phase="initial", seq=0, witness=own,
-                           role=f"S_{target_role}"):
+                           role=f"S_{target_role}", allow_h=allow_h):
             return 125
         _fake_close(owned[0])
         for name, seq, signum, command_fd, reply_fd in (
@@ -2079,7 +2087,8 @@ def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
             command = _split_receive(
                 command_fd, cleanup_deadline, phase=f"signal_{name}",
                 run_id=run_id, seq=seq, witness=own,
-                target_role=target_role, target_witness=target_witness)
+                target_role=target_role, target_witness=target_witness,
+                allow_h=allow_h)
             _fake_close(command_fd)
             if command is None:
                 return 0  # P did not request this transaction or pipe broke.
@@ -2091,7 +2100,7 @@ def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
             if not _split_send(reply_fd, reply, cleanup_deadline,
                                run_id=run_id, phase="signal_result", seq=seq,
                                witness=own, target_role=target_role,
-                               signal_name=name):
+                               signal_name=name, allow_h=allow_h):
                 return 125
             _fake_close(reply_fd)
         return 0
@@ -2111,7 +2120,9 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
                             signal_parent_fds: set[int], run_id: str,
                             work_deadline: float, cleanup_deadline: float,
                             hard_deadline: float,
-                            term_grace_seconds: float) -> None:
+                            term_grace_seconds: float,
+                            allow_h: bool = False,
+                            strict_reap_deadline: bool = False) -> None:
     """Bounded P-side exact witnessed cleanup; no parent OS observation."""
 
     def close_parent(fd: int) -> None:
@@ -2129,7 +2140,7 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
                 fd, frame, cleanup_deadline, run_id=run_id,
                 phase=f"signal_{name}", seq=1 if name == "term" else 2,
                 witness=signal_witnesses[role], target_role=role,
-                target_witness=child_witnesses[role])
+                target_witness=child_witnesses[role], allow_h=allow_h)
         finally:
             close_parent(fd)
 
@@ -2177,7 +2188,8 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
                                         phase="signal_result",
                                         seq=1 if name == "term" else 2,
                                         witness=signal_witnesses[role],
-                                        target_role=role, signal_name=name):
+                                        target_role=role, signal_name=name,
+                                        allow_h=allow_h):
                                     codes[role] = value["code"]
                             except Exception:
                                 pass
@@ -2245,12 +2257,22 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
     for role in roles:
         pid = child_pids[role]
         if pid is not None and pid not in statuses:
-            _fake_wait_reap(pid, hard_deadline + 0.1, statuses)
+            _fake_wait_reap(pid, cleanup_deadline if strict_reap_deadline
+                            else hard_deadline + 0.1, statuses)
         status = statuses.get(pid)
+        timely = (not strict_reap_deadline or
+                  (status is not None and time.monotonic() <= cleanup_deadline))
+        if strict_reap_deadline and status is None and pid is not None:
+            # A missed verdict deadline is permanently FAIL, but direct
+            # children must still be drained after their independent alarm.
+            # This later waitpid cannot promote an untimely stop to PASS.
+            _fake_wait_reap(pid, hard_deadline + 0.1, statuses)
+            status = statuses.get(pid)
         result[f"{role.lower()}_reaped"] = status is not None
-        if status is not None and os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0:
+        if (timely and status is not None and os.WIFEXITED(status)
+                and os.WEXITSTATUS(status) == 0):
             stop = "normal_exit"
-        elif status is not None and os.WIFSIGNALED(status) and (
+        elif timely and status is not None and os.WIFSIGNALED(status) and (
                 (os.WTERMSIG(status) == signal.SIGTERM
                  and result[f"{role.lower()}_term"] == "signal_sent") or
                 (os.WTERMSIG(status) == signal.SIGKILL
@@ -2264,15 +2286,23 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
         pid = signal_pids.get(role)
         if pid is not None:
             helper_statuses: dict[int, int] = {}
-            _fake_wait_reap(pid, hard_deadline + 0.1, helper_statuses)
+            _fake_wait_reap(pid, cleanup_deadline if strict_reap_deadline
+                            else hard_deadline + 0.1, helper_statuses)
             helper_status = helper_statuses.get(pid)
+            timely = (not strict_reap_deadline or (
+                helper_status is not None
+                and time.monotonic() <= cleanup_deadline))
+            if strict_reap_deadline and helper_status is None:
+                _fake_wait_reap(pid, hard_deadline + 0.1, helper_statuses)
+                helper_status = helper_statuses.get(pid)
             result[f"s_{role.lower()}_reaped"] = helper_status is not None
             if f"s_{role.lower()}_normal_exit" in result:
                 result[f"s_{role.lower()}_normal_exit"] = bool(
-                    helper_status is not None
+                    timely and helper_status is not None
                     and os.WIFEXITED(helper_status)
                     and os.WEXITSTATUS(helper_status) == 0)
-            if (helper_status is None or not os.WIFEXITED(helper_status)
+            if (not timely or helper_status is None
+                    or not os.WIFEXITED(helper_status)
                     or os.WEXITSTATUS(helper_status) != 0):
                 if result["status"] == "fake_partial_op1_worker_received":
                     result["status"] = "fake_partial_split_unproven"
@@ -2800,6 +2830,24 @@ _SEVEN_RECEIPT_EDGES = (
 _SEVEN_PORT_EDGES = (
     "o_initial", "o_pre", "o_pre_proof", "o_final", "o_final_proof",
 )
+_SEVEN_V5_EDGES = (
+    "o_ready_cmd", "o_ready_proof", "h_initial", "h_go", "h_ready",
+    "h_stop", "h_stopped", "s_h_initial", "s_h_term",
+    "s_h_term_result", "s_h_kill", "s_h_kill_result",
+)
+_SEVEN_V5_FIELDS = frozenset({
+    "synthetic_listener_gate_proven", "listener_observation_sha256",
+    "continuous_listener_proven", "daemon_stage_failure_code",
+    "h_reaped", "h_stop", "h_term", "h_kill", "s_h_reaped",
+    "s_h_normal_exit",
+})
+_SEVEN_V5_STAGE_CODES = frozenset({
+    "not_started", "none", "phase2_fd_unavailable",
+    "h_initial_unavailable", "s_h_initial_unavailable",
+    "h_go_unavailable", "h_ready_unavailable", "h_ready_mismatch",
+    "o_ready_unavailable", "o_ready_mismatch", "h_lost_after_ready",
+    "h_stop_unavailable", "h_cleanup_unproven",
+})
 _SEVEN_RECEIPT_FIELDS = frozenset({
     "schema", "run_id", "snapshot_phase", "status", "failure_code",
     "zero_ack_received", "receipt_preflight_accepted", "reserved",
@@ -2870,6 +2918,18 @@ _SEVEN_FAILURE_CODES = frozenset({
 _SEVEN_V4_FAILURE_CODES = frozenset({
     "pre_stage_unavailable", "pre_stage_mismatch",
     "cleanup_review_required",
+})
+
+# V5 reuses the canonical outer IPC envelope but does not widen any older
+# phase's fields. The two O final phases remain unchanged except for seq 3.
+_SEVEN_EXTRA.update({
+    "h_go": frozenset({"daemon_port", "nonce"}),
+    "h_ready": frozenset({"daemon_port", "nonce_sha256", "listener_state"}),
+    "o_ready_cmd": frozenset({"daemon_port", "h_witness", "nonce_sha256"}),
+    "o_ready_proof": frozenset({"daemon_port", "h_witness_sha256",
+                                "nonce_sha256", "listener_observation_sha256"}),
+    "h_stop": frozenset(),
+    "h_stopped": frozenset({"listener_closed"}),
 })
 
 
@@ -3266,31 +3326,40 @@ def _seven_transport_row(ordinal: int, request_sha: str, grant_sha: str,
 
 
 def _seven_receipt_valid(value: Any, run_id: str) -> bool:
+    v5 = (type(value) is dict
+          and value.get("schema") == "fake_seven_process_receipt_v5")
     v4 = (type(value) is dict
-          and value.get("schema") == "fake_seven_process_receipt_v4")
+          and value.get("schema") in ("fake_seven_process_receipt_v4",
+                                      "fake_seven_process_receipt_v5"))
     v3 = (type(value) is dict
           and value.get("schema") in (
               "fake_seven_process_receipt_v3",
-              "fake_seven_process_receipt_v4"))
+              "fake_seven_process_receipt_v4",
+              "fake_seven_process_receipt_v5"))
     v2 = (type(value) is dict and value.get("schema") in (
         "fake_seven_process_receipt_v2", "fake_seven_process_receipt_v3",
-        "fake_seven_process_receipt_v4"))
+        "fake_seven_process_receipt_v4", "fake_seven_process_receipt_v5"))
     allowed = (_SEVEN_RECEIPT_FIELDS
                | (_SEVEN_RECEIPT_PORT_FIELDS if v2 else frozenset())
                | (_SEVEN_TRANSPORT_FIELDS if v3 else frozenset())
-               | (_SEVEN_PREHASH_FIELDS if v4 else frozenset()))
+               | (_SEVEN_PREHASH_FIELDS if v4 else frozenset())
+               | (_SEVEN_V5_FIELDS if v5 else frozenset()))
     if (type(value) is not dict or set(value) != allowed
             or value["schema"] != (
+                "fake_seven_process_receipt_v5" if v5 else
                 "fake_seven_process_receipt_v4" if v4 else
                 "fake_seven_process_receipt_v3" if v3 else
                 "fake_seven_process_receipt_v2" if v2 else
                 "fake_seven_process_receipt_v1")
             or value["run_id"] != run_id
-            or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
+            or value["snapshot_phase"] != (
+                "after_d_w_h_o_cleanup_attempt_before_r_final_reap"
+                if v5 else "after_dw_cleanup_before_r_final_reap")
             or value["status"] not in (
                 "fake_seven_process_pending_receipt", "fake_seven_process_unproven")
             or value["failure_code"] not in (
                 _SEVEN_FAILURE_CODES | _SEVEN_V4_FAILURE_CODES
+                | (_SEVEN_V5_STAGE_CODES if v5 else frozenset())
                 if v4 else _SEVEN_FAILURE_CODES)
             or any(type(value[key]) is not bool for key in (
                 "zero_ack_received", "receipt_preflight_accepted",
@@ -3352,6 +3421,18 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
                     value["prehash_sha256"] is not None
                     or value["prehash_logical_bytes"] is not None))):
             return False
+    if v5:
+        if (any(type(value[key]) is not bool for key in (
+                "synthetic_listener_gate_proven", "continuous_listener_proven",
+                "h_reaped", "s_h_reaped", "s_h_normal_exit"))
+                or value["continuous_listener_proven"] is not False
+                or value["daemon_stage_failure_code"] not in _SEVEN_V5_STAGE_CODES
+                or value["h_stop"] not in _SPLIT_STOP_CODES
+                or value["h_term"] not in _SPLIT_CLEANUP_CODES
+                or value["h_kill"] not in _SPLIT_CLEANUP_CODES
+                or (value["synthetic_listener_gate_proven"]
+                    != _valid_sha(value["listener_observation_sha256"]))):
+            return False
     for key in ("reserved", "granted", "worker_issued", "on_wire_yes",
                 "completion_attempt_spent", "http_calls", "identity_checks"):
         item = value[key]
@@ -3363,6 +3444,12 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
                 and (not v3 or value["transport_gate_proven"])
                 and (not v4 or (value["prehash_gate_proven"]
                                 and value["pre_stage_failure_code"] == "none"))
+                and (not v5 or (
+                    value["synthetic_listener_gate_proven"]
+                    and value["daemon_stage_failure_code"] == "none"
+                    and value["h_reaped"] and value["s_h_reaped"]
+                    and value["h_stop"] == "normal_exit"
+                    and value["s_h_normal_exit"]))
                 and all(value[key] == 7 for key in (
                     "reserved", "granted", "worker_issued", "on_wire_yes",
                     "http_calls")) and value["identity_checks"] == 6
@@ -3376,8 +3463,12 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
 
 def _seven_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                        witness: dict | None = None, pid: int | None = None,
-                       expected: dict | None = None) -> bool:
+                       expected: dict | None = None,
+                       v5: bool = False) -> bool:
     if (type(value) is not dict or phase not in _SEVEN_EXTRA
+            or (phase in ("h_go", "h_ready", "o_ready_cmd",
+                          "o_ready_proof", "h_stop", "h_stopped")
+                and not v5)
             or set(value) != _SEVEN_BASE | _SEVEN_EXTRA[phase]
             or value["schema"] != _SEVEN_SCHEMA or value["run_id"] != run_id
             or value["phase"] != phase or type(value["seq"]) is not int
@@ -3399,7 +3490,24 @@ def _seven_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                for key, item in expected.items()):
             return False
     if phase == "initial":
-        return value["role"] in ("D", "W", "R", "O")
+        return value["role"] in (("D", "W", "R", "O", "H") if v5
+                                 else ("D", "W", "R", "O"))
+    if phase in ("h_go", "h_ready", "o_ready_cmd", "o_ready_proof"):
+        if (not _port(value["daemon_port"])
+                or ("nonce" in value and (type(value["nonce"]) is not str
+                    or _NONCE.fullmatch(value["nonce"]) is None))
+                or any(not _valid_sha(value[key]) for key in (
+                    "nonce_sha256", "h_witness_sha256",
+                    "listener_observation_sha256") if key in value)):
+            return False
+        if "h_witness" in value:
+            h = value["h_witness"]
+            if (type(h) is not dict or not _fake_witness_valid(
+                    h, h.get("pid", -1))):
+                return False
+        return (phase != "h_ready" or value["listener_state"] == "listening")
+    if phase == "h_stopped":
+        return value["listener_closed"] is True
     if phase in ("o_pre", "o_pre_hash_port", "o_final"):
         return (_port(value["daemon_port"])
                 and (phase in ("o_pre", "o_pre_hash_port") or
@@ -3493,23 +3601,25 @@ def _seven_edge(name: str, ordinal: int) -> str:
 
 def _seven_child_send(pipes: dict[str, tuple[int, int]], name: str,
                       run_id: str, phase: str, seq: int, own: dict,
-                      deadline: float, **extra) -> bool:
+                      deadline: float, *, v5: bool = False, **extra) -> bool:
     fd = pipes[name][1]
     try:
         value = _seven_frame(run_id, phase, seq, own, **extra)
         return _seven_send(fd, value, deadline, run_id=run_id, phase=phase,
-                           seq=seq, witness=own)
+                           seq=seq, witness=own, v5=v5)
     finally:
         _fake_close(fd)
 
 
 def _seven_child_receive(pipes: dict[str, tuple[int, int]], name: str,
                          run_id: str, phase: str, seq: int, own: dict,
-                         deadline: float, expected: dict | None = None) -> dict | None:
+                         deadline: float, expected: dict | None = None,
+                         v5: bool = False) -> dict | None:
     fd = pipes[name][0]
     try:
         return _seven_receive(fd, deadline, run_id=run_id, phase=phase,
-                              seq=seq, witness=own, expected=expected)
+                              seq=seq, witness=own, expected=expected,
+                              v5=v5)
     finally:
         _fake_close(fd)
 
@@ -3848,6 +3958,162 @@ def _seven_write_receipt(run_dir: Path, receipt: dict,
     return _sha(raw), len(raw)
 
 
+def _seven_v5_psutil():
+    """Only the pinned project dependency may provide H-owned TCP rows."""
+    import psutil  # lazy: v1-v4 have no dependency on this package
+    if (getattr(psutil, "__version__", None) != "7.2.2"
+            or not callable(getattr(psutil, "Process", None))):
+        _fail("fake_seven_configuration_invalid")
+    return psutil
+
+
+def _seven_v5_fd_measure() -> tuple[int, int]:
+    """Measure actual descriptors, including the transient /dev/fd reader."""
+    try:
+        soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+        fds = [int(name) for name in os.listdir("/dev/fd") if name.isdecimal()]
+        if not fds or len(fds) >= soft or max(fds) >= soft:
+            _fail("phase2_fd_unavailable")
+        return len(fds), max(fds)
+    except BaseException:
+        _fail("phase2_fd_unavailable")
+
+
+def _seven_v5_pipe_layout() -> dict[str, tuple[int, int]]:
+    """Atomically reserve only the twelve late, one-shot V5 pipes."""
+    pipes: dict[str, tuple[int, int]] = {}
+    try:
+        for name in _SEVEN_V5_EDGES:
+            pipes[name] = os.pipe()
+        if len(pipes) != 12 or len({fd for pair in pipes.values()
+                                    for fd in pair}) != 24:
+            _fail("phase2_fd_unavailable")
+        _seven_v5_fd_measure()
+        return pipes
+    except BaseException:
+        for pair in pipes.values():
+            _fake_close(*pair)
+        _fail("phase2_fd_unavailable")
+
+
+def _seven_v5_observation(witness: dict, port: int) -> dict:
+    return {**witness, "family": "AF_INET", "type": "SOCK_STREAM",
+            "status": "LISTEN", "host": "127.0.0.1", "port": port}
+
+
+def _seven_v5_child_live(pid: int, statuses: dict[int, int]) -> bool:
+    """Only an exact nonblocking waitpid=0 proves still waitable/live now."""
+    if type(pid) is not int or pid <= 0 or pid in statuses:
+        return False
+    try:
+        seen_pid, wait_status = os.waitpid(pid, os.WNOHANG)
+    except (ChildProcessError, OSError):
+        return False
+    if seen_pid == pid:
+        statuses[pid] = wait_status
+    return seen_pid == 0
+
+
+def _seven_v5_observe_listener(h_witness: dict, port: int) -> str:
+    """O-only, bracketed per-process OS observation; no injected port rows."""
+    pid = h_witness["pid"]
+    first = _fake_os_witness(pid)
+    if not _split_same(first, h_witness):
+        _fail("o_ready_unavailable")
+    psutil = _seven_v5_psutil()
+    process = psutil.Process(pid)
+    if type(process.pid) is not int or process.pid != pid:
+        _fail("o_ready_unavailable")
+    rows = process.net_connections(kind="tcp4")
+    second = _fake_os_witness(pid)
+    if (not _split_same(second, h_witness)
+            or type(rows) not in (list, tuple)):
+        _fail("o_ready_unavailable")
+    matches = 0
+    for row in rows:
+        if (row.family == socket.AF_INET
+                and row.type == socket.SOCK_STREAM
+                and row.status == "LISTEN"):
+            address = row.laddr
+            if (len(address) != 2 or address[0] != "127.0.0.1"
+                    or type(address[1]) is not int
+                    or address[1] != port):
+                _fail("o_ready_unavailable")
+            matches += 1
+    if matches != 1:
+        _fail("o_ready_unavailable")
+    return _sha(_canonical(_seven_v5_observation(
+        h_witness, port), "o_ready_unavailable"))
+
+
+def _seven_v5_quiet_stdio() -> None:
+    sink = os.open(os.devnull, os.O_WRONLY)
+    try:
+        os.dup2(sink, 1)
+        os.dup2(sink, 2)
+    finally:
+        if sink not in (1, 2):
+            os.close(sink)
+    sys.stdout = os.fdopen(os.dup(1), "w", buffering=1)
+    sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
+
+
+def _seven_h_child(pipes: dict[str, tuple[int, int]], *,
+                   inherited_fds: set[int], run_id: str,
+                   work_deadline: float, stop_deadline: float,
+                   hard_deadline: float, hook=None) -> int:
+    owned = {pipes[name][1] for name in ("h_initial", "h_ready",
+                                          "h_stopped")} | {
+        pipes[name][0] for name in ("h_go", "h_stop")}
+    _fake_close(*inherited_fds)
+    _split_close_except(pipes, owned)
+    listener = None
+    try:
+        _seven_v5_quiet_stdio()
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "h_initial", run_id, "initial", 0,
+                                 own, work_deadline, v5=True, role="H"):
+            return 125
+        command = _seven_child_receive(pipes, "h_go", run_id, "h_go", 1,
+                                       own, work_deadline, v5=True)
+        if command is None:
+            return 0
+        port = command["daemon_port"]
+        nonce_sha = _sha(command["nonce"].encode("utf-8"))
+        if hook is not None:
+            hook("before_bind")
+        _seven_v5_fd_measure()
+        listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        _seven_v5_fd_measure()
+        listener.bind(("127.0.0.1", port))
+        listener.listen(1)
+        _seven_v5_fd_measure()
+        if hook is not None:
+            hook("after_listen")
+        if not _seven_child_send(pipes, "h_ready", run_id, "h_ready", 1,
+                                 own, work_deadline, v5=True,
+                                 daemon_port=port, nonce_sha256=nonce_sha,
+                                 listener_state="listening"):
+            return 125
+        if hook is not None:
+            hook("after_ready")
+        if _seven_child_receive(pipes, "h_stop", run_id, "h_stop", 2,
+                                own, stop_deadline, v5=True) is None:
+            return 0
+        listener.close()
+        listener = None
+        return (0 if _seven_child_send(
+            pipes, "h_stopped", run_id, "h_stopped", 2, own,
+            stop_deadline, v5=True, listener_closed=True) else 125)
+    except BaseException:
+        return 125
+    finally:
+        if listener is not None:
+            listener.close()
+
+
 def _seven_r_child(pipes: dict[str, tuple[int, int]], *,
                    inherited_core_fds: set[int],
                    inherited_signal_pipes: dict[str, tuple[int, int]],
@@ -3906,7 +4172,8 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
                    work_deadline: float, final_deadline: float,
                    hard_deadline: float,
                    prehash_pinned: dict | None = None,
-                   hash_hook=None) -> int:
+                   hash_hook=None,
+                   listener_pipes: dict[str, tuple[int, int]] | None = None) -> int:
     """Initially witnessed fake observer; v4 also hashes its tiny fixture."""
     owned = {pipes[name][1] for name in (
         "o_initial", "o_pre_proof", "o_final_proof")} | {
@@ -3914,6 +4181,10 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
     _fake_close(*inherited_core_fds, *inherited_receipt_fds)
     _split_close_except(inherited_signal_pipes, set())
     _split_close_except(pipes, owned)
+    if listener_pipes is not None:
+        _split_close_except(listener_pipes, {
+            listener_pipes["o_ready_cmd"][0],
+            listener_pipes["o_ready_proof"][1]})
     # An injected OS observer may print raw lsof text or a traceback. Keep
     # this fake-only child's output off the parent's terminal and test logs;
     # failure to isolate stdio must happen before any observer callback.
@@ -3935,6 +4206,8 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
             sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
         os.setsid()
         _fake_child_lifetime(hard_deadline)
+        if listener_pipes is not None:
+            _seven_v5_fd_measure()
         own = _fake_os_witness(os.getpid())
         if not _seven_child_send(pipes, "o_initial", run_id, "initial", 0,
                                  own, prep_deadline, role="O"):
@@ -3963,8 +4236,28 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
                                  proof_phase, 1, own, work_deadline,
                                  **proof):
             return 125
+        if listener_pipes is not None:
+            ready = _seven_child_receive(
+                listener_pipes, "o_ready_cmd", run_id, "o_ready_cmd", 2,
+                own, work_deadline, v5=True)
+            if ready is None or ready["daemon_port"] != daemon_port:
+                return 0
+            h_witness = ready["h_witness"]
+            _seven_v5_fd_measure()
+            observation_sha = _seven_v5_observe_listener(
+                h_witness, daemon_port)
+            if not _seven_child_send(
+                    listener_pipes, "o_ready_proof", run_id,
+                    "o_ready_proof", 2, own, work_deadline, v5=True,
+                    daemon_port=daemon_port,
+                    h_witness_sha256=_sha(_canonical(
+                        h_witness, "o_ready_unavailable")),
+                    nonce_sha256=ready["nonce_sha256"],
+                    listener_observation_sha256=observation_sha):
+                return 125
         final = _seven_child_receive(pipes, "o_final", run_id, "o_final",
-                                     2, own, final_deadline)
+                                     3 if listener_pipes is not None else 2,
+                                     own, final_deadline)
         if final is None or final["daemon_port"] != daemon_port:
             return 0
         runner_port = final["runner_port"]
@@ -3974,7 +4267,9 @@ def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
                                           runner_port=runner_port):
             return 125
         return (0 if _seven_child_send(pipes, "o_final_proof", run_id,
-                                      "o_final_proof", 2, own, final_deadline,
+                                      "o_final_proof",
+                                      3 if listener_pipes is not None else 2,
+                                      own, final_deadline,
                                       **_seven_port_proof(snapshot)) else 125)
     except BaseException:
         return 125
@@ -3985,18 +4280,25 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
     status = ("fake_seven_process_pending_receipt"
               if result["status"] == "fake_seven_process_pending_receipt"
               else "fake_seven_process_unproven")
-    v4 = result["schema"] == "fake_seven_process_result_v4"
+    v5 = result["schema"] == "fake_seven_process_result_v5"
+    v4 = result["schema"] in ("fake_seven_process_result_v4",
+                              "fake_seven_process_result_v5")
     v3 = result["schema"] in ("fake_seven_process_result_v3",
-                              "fake_seven_process_result_v4")
+                              "fake_seven_process_result_v4",
+                              "fake_seven_process_result_v5")
     v2 = result["schema"] in ("fake_seven_process_result_v2",
                               "fake_seven_process_result_v3",
-                              "fake_seven_process_result_v4")
+                              "fake_seven_process_result_v4",
+                              "fake_seven_process_result_v5")
     return {
-        "schema": ("fake_seven_process_receipt_v4" if v4 else
+        "schema": ("fake_seven_process_receipt_v5" if v5 else
+                   "fake_seven_process_receipt_v4" if v4 else
                    "fake_seven_process_receipt_v3" if v3 else
                    "fake_seven_process_receipt_v2" if v2
                    else "fake_seven_process_receipt_v1"), "run_id": run_id,
-        "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
+        "snapshot_phase": (
+            "after_d_w_h_o_cleanup_attempt_before_r_final_reap"
+            if v5 else "after_dw_cleanup_before_r_final_reap"),
         "status": status, "failure_code": result["failure_code"],
         "zero_ack_received": result["zero_ack_received"],
         "receipt_preflight_accepted": result["receipt_preflight_accepted"],
@@ -4017,6 +4319,8 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
            if v3 else {}),
         **({key: result[key] for key in _SEVEN_PREHASH_FIELDS}
            if v4 else {}),
+        **({key: result[key] for key in _SEVEN_V5_FIELDS}
+           if v5 else {}),
     }
 
 
@@ -4065,6 +4369,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                fake_opener_factory=None,
                                fake_prehash: bool = False,
                                fake_hash_hook=None,
+                               fake_listener: bool = False,
+                               fake_listener_hook=None,
                                work_seconds: float = 2.0,
                                preparation_seconds: float = 0.5,
                                cleanup_seconds: float = 0.5,
@@ -4081,7 +4387,13 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     """
     v3 = fake_opener_factory is not None
     v4 = fake_prehash is True
+    v5 = fake_listener is True
     if (type(fake_prehash) is not bool
+            or type(fake_listener) is not bool
+            or (v5 and (not v4 or not v3 or fake_http is not None
+                        or not callable(port_observe)))
+            or (fake_listener_hook is not None
+                and (not v5 or not callable(fake_listener_hook)))
             or (v4 and (not v3 or not callable(port_observe)))
             or (fake_hash_hook is not None
                 and (not v4 or not callable(fake_hash_hook)))
@@ -4105,12 +4417,18 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 r"(?:d_after_(?:reserve|issue|wire)|w_after_issue)_[1-7]",
                 fault) is None)):
         _fail("fake_seven_configuration_invalid")
+    if v5:
+        try:
+            _seven_v5_psutil()
+        except BaseException:
+            _fail("fake_seven_configuration_invalid")
     bound, _ = _validate_binding(binding_template)
     v2 = port_observe is not None
     prehash_pinned = _seven_prehash_prepare(run_dir) if v4 else None
     run_id = bound["run_id"]
     result = {
-        "schema": ("fake_seven_process_result_v4" if v4 else
+        "schema": ("fake_seven_process_result_v5" if v5 else
+                   "fake_seven_process_result_v4" if v4 else
                    "fake_seven_process_result_v3" if v3 else
                    "fake_seven_process_result_v2" if v2
                    else "fake_seven_process_result_v1"),
@@ -4155,6 +4473,16 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                        "prehash_sha256": None,
                        "prehash_logical_bytes": None,
                        "pre_stage_failure_code": "none"})
+    if v5:
+        result.update({
+            "synthetic_listener_gate_proven": False,
+            "listener_observation_sha256": None,
+            "continuous_listener_proven": False,
+            "daemon_stage_failure_code": "not_started",
+            "h_reaped": False, "h_stop": "unproven",
+            "h_term": "not_attempted", "h_kill": "not_attempted",
+            "s_h_reaped": False, "s_h_normal_exit": False,
+        })
     started = time.monotonic()
     prep_deadline = started + preparation_seconds
     work_deadline = prep_deadline + work_seconds
@@ -4163,26 +4491,33 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     # V2 may consume its entire bounded O/S_O cleanup window when the fresh
     # OS witness stalls. R must retain a separate later window to persist the
     # failure receipt rather than expiring behind that unrelated helper.
-    receipt_deadline = hard_deadline + (0.85 if v2 else 0.45)
+    receipt_deadline = hard_deadline + (1.20 if v5 else
+                                        0.85 if v2 else 0.45)
     receipt_cleanup_deadline = receipt_deadline + 0.15
     receipt_hard_deadline = receipt_cleanup_deadline + 0.10
-    port_final_deadline = hard_deadline + 0.12
-    port_cleanup_deadline = port_final_deadline + 0.15
-    port_hard_deadline = port_cleanup_deadline + 0.10
+    port_final_deadline = hard_deadline + (0.45 if v5 else 0.12)
+    port_cleanup_deadline = hard_deadline + (0.70 if v5 else 0.27)
+    port_hard_deadline = hard_deadline + (0.72 if v5 else 0.37)
+    h_stop_deadline = hard_deadline + 0.08
+    h_cleanup_deadline = hard_deadline + 0.25
+    h_hard_deadline = hard_deadline + 0.30
     core: dict[str, tuple[int, int]] = {}
     receipt_pipes: dict[str, tuple[int, int]] = {}
     signal_pipes: dict[str, tuple[int, int]] = {}
     port_pipes: dict[str, tuple[int, int]] = {}
+    listener_pipes: dict[str, tuple[int, int]] = {}
     core_parent_fds: set[int] = set()
     receipt_parent_fds: set[int] = set()
     signal_parent_fds: set[int] = set()
     port_parent_fds: set[int] = set()
+    listener_parent_fds: set[int] = set()
     core_layout_ready = False
     receipt_layout_ready = False
     signal_layout_ready = False
     port_layout_ready = False
+    listener_layout_ready = False
     child_pids: dict[str, int | None] = {
-        "D": None, "W": None, "R": None, "O": None}
+        "D": None, "W": None, "R": None, "O": None, "H": None}
     child_witnesses: dict[str, dict] = {}
     signal_pids: dict[str, int] = {}
     signal_witnesses: dict[str, dict] = {}
@@ -4193,6 +4528,10 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     transport_rows: list[dict] = []
     v4_command_started = False
     v4_pre_stage_complete = False
+    v5_stage_started = False
+    v5_phase2_pending = False
+    v5_admission_complete = False
+    h_go_attempted = False
 
     def require(value, code: str) -> None:
         if not value:
@@ -4201,24 +4540,26 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     def parent_receive(mapping, owned: set[int], name: str,
                        phase: str, seq: int, witness: dict | None,
                        deadline: float, *, pid: int | None = None,
-                       expected: dict | None = None):
+                       expected: dict | None = None,
+                       v5_frame: bool = False):
         fd = mapping[name][0]
         try:
             return _seven_receive(fd, deadline, run_id=run_id,
                                   phase=phase, seq=seq, witness=witness,
-                                  pid=pid, expected=expected)
+                                  pid=pid, expected=expected, v5=v5_frame)
         finally:
             _fake_close(fd)
             owned.discard(fd)
 
     def parent_send(mapping, owned: set[int], name: str, phase: str,
                     seq: int, witness: dict, deadline: float,
-                    **extra) -> bool:
+                    *, v5_frame: bool = False, **extra) -> bool:
         fd = mapping[name][1]
         try:
             frame = _seven_frame(run_id, phase, seq, witness, **extra)
             return _seven_send(fd, frame, deadline, run_id=run_id,
-                               phase=phase, seq=seq, witness=witness)
+                               phase=phase, seq=seq, witness=witness,
+                               v5=v5_frame)
         finally:
             _fake_close(fd)
             owned.discard(fd)
@@ -4230,6 +4571,11 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
         else:
             core, receipt_pipes, signal_pipes = _seven_pipe_layout()
         result["fd_endpoints_reserved"] = 246 if v2 else 226
+        if v5:
+            try:
+                _seven_v5_fd_measure()
+            except LiveOperatorError:
+                _fail("fake_seven_fd_reservation_unavailable")
         d_pid = os.fork()
         if d_pid == 0:
             try:
@@ -4388,6 +4734,15 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                    1, r_witness, work_deadline)
         require(preflight is not None, "receipt_preflight_unavailable")
         result["receipt_preflight_accepted"] = True
+        if v5:
+            v5_stage_started = True
+            v5_phase2_pending = True
+            listener_pipes = _seven_v5_pipe_layout()
+            v5_phase2_pending = False
+            listener_parent_fds = {
+                fd for pair in listener_pipes.values() for fd in pair}
+            listener_layout_ready = True
+            result["fd_endpoints_reserved"] = 270
         if v2:
             o_pid = os.fork()
             if o_pid == 0:
@@ -4402,11 +4757,20 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                         final_deadline=port_final_deadline,
                         hard_deadline=port_hard_deadline,
                         prehash_pinned=prehash_pinned,
-                        hash_hook=fake_hash_hook)
+                        hash_hook=fake_hash_hook,
+                        listener_pipes=listener_pipes if v5 else None)
                 except BaseException:
                     child_code = 125
                 os._exit(child_code)
             child_pids["O"] = o_pid
+            if v5:
+                for name, parent_end in (
+                        ("o_ready_cmd", listener_pipes["o_ready_cmd"][1]),
+                        ("o_ready_proof", listener_pipes["o_ready_proof"][0])):
+                    for fd in listener_pipes[name]:
+                        if fd != parent_end:
+                            _fake_close(fd)
+                            listener_parent_fds.discard(fd)
             port_reads = {"o_initial", "o_pre_proof", "o_final_proof"}
             port_parent_fds = {
                 port_pipes[name][0] for name in port_reads
@@ -4425,6 +4789,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             s_o_pid = os.fork()
             if s_o_pid == 0:
                 try:
+                    if v5:
+                        _split_close_except(listener_pipes, set())
                     child_code = _split_signal_child(
                         signal_pipes,
                         inherited_split_fds=(core_parent_fds
@@ -4502,6 +4868,128 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                     "port_pre_not_vacant")
             if v4:
                 v4_pre_stage_complete = True
+        if v5:
+            # H is not even forked until P has validated the complete V4
+            # hash-and-vacancy composite. R's durable zero preflight already
+            # holds a failure-receipt path open.
+            h_pid = os.fork()
+            if h_pid == 0:
+                try:
+                    child_code = _seven_h_child(
+                        listener_pipes,
+                        inherited_fds=(core_parent_fds | receipt_parent_fds
+                                       | signal_parent_fds | port_parent_fds),
+                        run_id=run_id, work_deadline=work_deadline,
+                        stop_deadline=h_stop_deadline,
+                        hard_deadline=h_hard_deadline,
+                        hook=fake_listener_hook)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            child_pids["H"] = h_pid
+            for name, parent_end in (
+                    ("h_initial", listener_pipes["h_initial"][0]),
+                    ("h_go", listener_pipes["h_go"][1]),
+                    ("h_ready", listener_pipes["h_ready"][0]),
+                    ("h_stop", listener_pipes["h_stop"][1]),
+                    ("h_stopped", listener_pipes["h_stopped"][0])):
+                for fd in listener_pipes[name]:
+                    if fd != parent_end:
+                        _fake_close(fd)
+                        listener_parent_fds.discard(fd)
+            h_initial = parent_receive(
+                listener_pipes, listener_parent_fds, "h_initial",
+                "initial", 0, None, work_deadline, pid=h_pid,
+                expected={"role": "H"}, v5_frame=True)
+            require(h_initial is not None, "h_initial_unavailable")
+            h_witness = h_initial["witness"]
+            child_witnesses["H"] = h_witness
+            s_h_pid = os.fork()
+            if s_h_pid == 0:
+                try:
+                    _split_close_except(signal_pipes, set())
+                    child_code = _split_signal_child(
+                        listener_pipes,
+                        inherited_split_fds=(core_parent_fds
+                                             | receipt_parent_fds
+                                             | port_parent_fds),
+                        run_id=run_id, target_role="H",
+                        target_witness=h_witness,
+                        initial_reader=signal_initial_witness
+                        or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=work_deadline,
+                        cleanup_deadline=h_cleanup_deadline,
+                        hard_deadline=h_hard_deadline,
+                        allow_h=True)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids["H"] = s_h_pid
+            for name, parent_end in (
+                    ("s_h_initial", listener_pipes["s_h_initial"][0]),
+                    ("s_h_term", listener_pipes["s_h_term"][1]),
+                    ("s_h_term_result", listener_pipes["s_h_term_result"][0]),
+                    ("s_h_kill", listener_pipes["s_h_kill"][1]),
+                    ("s_h_kill_result", listener_pipes["s_h_kill_result"][0])):
+                for fd in listener_pipes[name]:
+                    if fd != parent_end:
+                        _fake_close(fd)
+                        listener_parent_fds.discard(fd)
+            s_h_initial_fd = listener_pipes["s_h_initial"][0]
+            try:
+                s_h_initial = _split_receive(
+                    s_h_initial_fd, work_deadline, phase="initial",
+                    run_id=run_id, seq=0, pid=s_h_pid, role="S_H",
+                    allow_h=True)
+            finally:
+                _fake_close(s_h_initial_fd)
+                listener_parent_fds.discard(s_h_initial_fd)
+            require(s_h_initial is not None, "s_h_initial_unavailable")
+            signal_witnesses["H"] = s_h_initial["witness"]
+            nonce = secrets.token_hex(16)
+            nonce_sha = _sha(nonce.encode("utf-8"))
+            daemon_port = bound["daemon"]["port"]
+            h_go_attempted = True
+            require(parent_send(
+                listener_pipes, listener_parent_fds, "h_go", "h_go", 1,
+                h_witness, work_deadline, v5_frame=True,
+                daemon_port=daemon_port, nonce=nonce), "h_go_unavailable")
+            h_ready = parent_receive(
+                listener_pipes, listener_parent_fds, "h_ready",
+                "h_ready", 1, h_witness, work_deadline, v5_frame=True)
+            require(h_ready is not None, "h_ready_unavailable")
+            require(h_ready["daemon_port"] == daemon_port
+                    and h_ready["nonce_sha256"] == nonce_sha,
+                    "h_ready_mismatch")
+            require(parent_send(
+                listener_pipes, listener_parent_fds,
+                "o_ready_cmd", "o_ready_cmd", 2, o_witness,
+                work_deadline, v5_frame=True,
+                daemon_port=daemon_port, h_witness=h_witness,
+                nonce_sha256=nonce_sha), "o_ready_unavailable")
+            o_ready = parent_receive(
+                listener_pipes, listener_parent_fds,
+                "o_ready_proof", "o_ready_proof", 2, o_witness,
+                work_deadline, v5_frame=True)
+            require(o_ready is not None, "o_ready_unavailable")
+            expected_observation_sha = _sha(_canonical(
+                _seven_v5_observation(h_witness, daemon_port),
+                "o_ready_unavailable"))
+            require(o_ready["daemon_port"] == daemon_port
+                    and o_ready["h_witness_sha256"] == _sha(_canonical(
+                        h_witness, "o_ready_unavailable"))
+                    and o_ready["nonce_sha256"] == nonce_sha
+                    and o_ready["listener_observation_sha256"]
+                        == expected_observation_sha,
+                    "o_ready_mismatch")
+            require(_seven_v5_child_live(h_pid, statuses),
+                    "h_ready_unavailable")
+            require(_seven_v5_child_live(r_pid, statuses),
+                    "o_ready_unavailable")
+            result["synthetic_listener_gate_proven"] = True
+            result["listener_observation_sha256"] = expected_observation_sha
+            v5_admission_complete = True
         require(parent_send(core, core_parent_fds, "w_go", "w_go", 0,
                             w_witness, work_deadline),
                 "worker_go_unavailable")
@@ -4529,6 +5017,9 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                     require(fields["port"] == runner_port_candidate,
                             "runner_port_unavailable")
                     runner_port_verified = True
+            if v5:
+                require(_seven_v5_child_live(
+                    child_pids["H"], statuses), "h_lost_after_ready")
             # D itself also rejects moving on while the previous operation's
             # on_wire state is unknown. P cannot mint a grant independently.
             result["reserved"] = result["granted"] = "unknown"
@@ -4555,6 +5046,9 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             result.update({"reserved": ordinal, "granted": ordinal,
                            "completion_attempt_spent": int(ordinal == 7),
                            "journal_sha256": proof["journal_sha256"]})
+            if v5:
+                require(_seven_v5_child_live(
+                    child_pids["H"], statuses), "h_lost_after_ready")
             require(parent_send(core, core_parent_fds,
                                 _seven_edge("w_grant", ordinal),
                                 "grant_delivery", ordinal, w_witness,
@@ -4670,9 +5164,15 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
         # contents. Never let its message become a public result/receipt.
         code = str(exc)
         allowed_codes = (_SEVEN_FAILURE_CODES | _SEVEN_V4_FAILURE_CODES
+                         | (_SEVEN_V5_STAGE_CODES if v5 else frozenset())
                          if v4 else _SEVEN_FAILURE_CODES)
         result["failure_code"] = (code if code in allowed_codes
                                   else "ipc_or_spawn_unavailable")
+        if (v5 and v5_stage_started
+                and code in _SEVEN_V5_STAGE_CODES
+                and code not in ("none", "not_started")
+                and result["daemon_stage_failure_code"] == "not_started"):
+            result["daemon_stage_failure_code"] = code
         if v4 and result["receipt_preflight_accepted"]:
             if (code in _SEVEN_PRE_STAGE_CODES and code != "none"
                     and result["pre_stage_failure_code"] == "none"):
@@ -4682,12 +5182,21 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 result["pre_stage_failure_code"] = "pre_stage_unavailable"
     except Exception:
         result["failure_code"] = "ipc_or_spawn_unavailable"
+        if (v5 and v5_phase2_pending
+                and result["daemon_stage_failure_code"] == "not_started"):
+            result["daemon_stage_failure_code"] = "phase2_fd_unavailable"
         if (v4 and result["receipt_preflight_accepted"]
                 and v4_command_started and not v4_pre_stage_complete
                 and result["pre_stage_failure_code"] == "none"):
             result["pre_stage_failure_code"] = "pre_stage_unavailable"
     finally:
-        _fake_close(*core_parent_fds)
+        # V5 may abort after phase-2 reservation but before W_GO. Keep the
+        # remaining D/W command writers until their witnessed cleanup has a
+        # chance to signal them; closing first makes both exit 125 on EOF and
+        # destroys otherwise available stop evidence. V1–V4 keep their
+        # frozen ordering.
+        if not v5:
+            _fake_close(*core_parent_fds)
         if not core_layout_ready:
             # Before parent ownership is established all allocated ends are
             # still owned here; afterward only core_parent_fds is authoritative.
@@ -4710,6 +5219,10 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             result["status"] = "fake_seven_process_unproven"
             result["failure_code"] = "cleanup_unavailable"
             result["d_stop"] = result["w_stop"] = "unproven"
+        finally:
+            if v5:
+                _fake_close(*core_parent_fds)
+                core_parent_fds.clear()
         if (result["status"] == "fake_seven_process_pending_receipt"
                 and not all(result[key] for key in (
                     "d_reaped", "w_reaped", "s_d_normal_exit",
@@ -4720,23 +5233,99 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             if result["d_stop"] != "normal_exit" or result["w_stop"] != "normal_exit":
                 result["status"] = "fake_seven_process_unproven"
                 result["failure_code"] = "cleanup_unavailable"
+        if v5:
+            # An aborted admission must release H's GO reader and O's ready
+            # reader, without holding another child's one-shot writer open.
+            for name, fd in (
+                    ("h_go", listener_pipes.get("h_go", (None, None))[1]),
+                    ("h_ready", listener_pipes.get("h_ready", (None, None))[0]),
+                    ("o_ready_cmd", listener_pipes.get(
+                        "o_ready_cmd", (None, None))[1]),
+                    ("o_ready_proof", listener_pipes.get(
+                        "o_ready_proof", (None, None))[0])):
+                if fd in listener_parent_fds:
+                    _fake_close(fd)
+                    listener_parent_fds.discard(fd)
+            h_stopped_proven = False
+            if (h_go_attempted and "H" in child_witnesses
+                    and "H" in signal_witnesses
+                    and child_pids["H"] is not None
+                    and child_pids["H"] not in statuses):
+                h_witness = child_witnesses["H"]
+                try:
+                    sent = parent_send(
+                        listener_pipes, listener_parent_fds,
+                        "h_stop", "h_stop", 2, h_witness,
+                        h_stop_deadline, v5_frame=True)
+                    stopped = (parent_receive(
+                        listener_pipes, listener_parent_fds,
+                        "h_stopped", "h_stopped", 2, h_witness,
+                        h_stop_deadline, v5_frame=True)
+                        if sent else None)
+                    h_stopped_proven = stopped is not None
+                    if h_stopped_proven:
+                        _fake_wait_reap(child_pids["H"], min(
+                            h_stop_deadline,
+                            time.monotonic() + 0.05), statuses)
+                except Exception:
+                    h_stopped_proven = False
+                if (not h_stopped_proven
+                        and result["daemon_stage_failure_code"]
+                            == "not_started"):
+                    result["daemon_stage_failure_code"] = "h_stop_unavailable"
+            try:
+                _split_cleanup_children(
+                    result=result, statuses=statuses, roles=("H",),
+                    child_pids={"H": child_pids["H"]},
+                    child_witnesses=child_witnesses,
+                    signal_pids=signal_pids,
+                    signal_witnesses=signal_witnesses,
+                    signal_pipes=listener_pipes,
+                    signal_parent_fds=listener_parent_fds,
+                    run_id=run_id, work_deadline=h_stop_deadline,
+                    cleanup_deadline=h_cleanup_deadline,
+                    hard_deadline=h_hard_deadline,
+                    term_grace_seconds=term_grace_seconds,
+                    allow_h=True, strict_reap_deadline=True)
+            except Exception:
+                result["h_stop"] = "unproven"
+            finally:
+                _fake_close(*listener_parent_fds)
+                listener_parent_fds.clear()
+                if not listener_layout_ready:
+                    for pair in listener_pipes.values():
+                        _fake_close(*pair)
+            if result["daemon_stage_failure_code"] == "not_started":
+                if (v5_admission_complete and h_stopped_proven
+                        and result["h_reaped"]
+                        and result["h_stop"] == "normal_exit"
+                        and result["s_h_reaped"]
+                        and result["s_h_normal_exit"]):
+                    result["daemon_stage_failure_code"] = "none"
+                elif v5_stage_started and v4_pre_stage_complete:
+                    result["daemon_stage_failure_code"] = (
+                        "h_cleanup_unproven" if h_go_attempted else
+                        "h_initial_unavailable")
         if v2:
             try:
                 if (pre_shared_sha is not None
                         and runner_port_candidate is not None
                         and runner_port_verified
                         and "O" in child_witnesses
-                        and child_pids["O"] is not None):
+                        and child_pids["O"] is not None
+                        and (not v5 or (
+                            result["h_reaped"] and result["s_h_reaped"]))):
                     o_witness = child_witnesses["O"]
                     daemon_port = bound["daemon"]["port"]
                     sent = parent_send(
                         port_pipes, port_parent_fds, "o_final", "o_final",
-                        2, o_witness, port_final_deadline,
+                        3 if v5 else 2, o_witness, port_final_deadline,
                         daemon_port=daemon_port,
                         runner_port=runner_port_candidate)
                     proof = (parent_receive(
                         port_pipes, port_parent_fds, "o_final_proof",
-                        "o_final_proof", 2, o_witness, port_final_deadline,
+                        "o_final_proof", 3 if v5 else 2,
+                        o_witness, port_final_deadline,
                         expected={"daemon_port": daemon_port,
                                   "runner_port": runner_port_candidate})
                              if sent else None)
@@ -4787,7 +5376,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                     run_id=run_id, work_deadline=port_final_deadline,
                     cleanup_deadline=port_cleanup_deadline,
                     hard_deadline=port_hard_deadline,
-                    term_grace_seconds=term_grace_seconds)
+                    term_grace_seconds=term_grace_seconds,
+                    strict_reap_deadline=v5)
             except Exception:
                 result["o_stop"] = "unproven"
                 if result["status"] == "fake_seven_process_pending_receipt":
@@ -4828,10 +5418,37 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             elif result["pre_stage_failure_code"] != "none":
                 result["failure_code"] = result["pre_stage_failure_code"]
                 result["status"] = "fake_seven_process_unproven"
-            elif not result["prehash_gate_proven"]:
+            elif (not result["prehash_gate_proven"]
+                  and not (v5 and result["daemon_stage_failure_code"]
+                           != "not_started")):
                 result["pre_stage_failure_code"] = "pre_stage_unavailable"
                 result["failure_code"] = "pre_stage_unavailable"
                 result["status"] = "fake_seven_process_unproven"
+        if v5 and result["receipt_preflight_accepted"]:
+            v5_cleanup_unproven = (
+                any(child_pids[role.upper()] is not None
+                    and (not result[f"{role}_reaped"]
+                         or result[f"{role}_stop"] == "unproven")
+                    for role in ("d", "w", "h", "o"))
+                or any(signal_pids.get(role.upper()) is not None
+                       and (not result[f"s_{role}_reaped"]
+                            or not result[f"s_{role}_normal_exit"])
+                       for role in ("d", "w", "h", "o")))
+            if v5_cleanup_unproven and v5_stage_started:
+                result["failure_code"] = "cleanup_review_required"
+                result["status"] = "fake_seven_process_unproven"
+            elif result["pre_stage_failure_code"] != "none":
+                result["failure_code"] = result["pre_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif result["daemon_stage_failure_code"] not in (
+                    "none", "not_started"):
+                result["failure_code"] = result["daemon_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif (result["status"] == "fake_seven_process_pending_receipt"
+                  and (result["daemon_stage_failure_code"] != "none"
+                       or not result["synthetic_listener_gate_proven"])):
+                result["status"] = "fake_seven_process_unproven"
+                result["failure_code"] = "h_cleanup_unproven"
         try:
             if (result["receipt_preflight_accepted"]
                     and child_pids["R"] is not None
@@ -4879,7 +5496,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 run_id=run_id, work_deadline=receipt_deadline,
                 cleanup_deadline=receipt_cleanup_deadline,
                 hard_deadline=receipt_hard_deadline,
-                term_grace_seconds=term_grace_seconds)
+                term_grace_seconds=term_grace_seconds,
+                strict_reap_deadline=v5)
         except Exception:
             result["receipt_durable_proven"] = False
             result["r_stop"] = "unproven"

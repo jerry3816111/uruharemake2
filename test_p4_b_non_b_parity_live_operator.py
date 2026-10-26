@@ -2852,9 +2852,9 @@ def test_fake_seven_w_does_not_close_reused_callback_fd(
 
 
 def _fake_seven_port_snapshot(*, phase, daemon_port, runner_port,
-                              shared_sha=None):
+                              shared_sha=None, expected_daemon_port=11455):
     """Injected fake OS observation, not an actual lsof or live-port proof."""
-    assert daemon_port == 11455
+    assert daemon_port == expected_daemon_port
     assert runner_port == (None if phase == "pre" else 55132)
     return {
         "schema": "fake_port_snapshot_v1",
@@ -3519,7 +3519,30 @@ def _v3_port_observer(phase, daemon_port, runner_port):
         phase=phase, daemon_port=daemon_port, runner_port=runner_port)
 
 
-def _v3_fake_factory(fake_http, marker_dir, *, variant=None):
+def _v5_fake_inputs(monkeypatch, tmp_path, *, port=None):
+    """A v4-compatible binding whose private daemon port belongs only to H."""
+    binding, base_observer, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    if port is None:
+        port = 30000 + (int.from_bytes(hashlib.sha256(
+            str(tmp_path).encode()).digest()[:2], "big") % 20000)
+    binding["daemon"]["port"] = port
+
+    def observer(stage):
+        row = base_observer(stage)
+        row["daemon"]["port"] = port
+        return row
+
+    def port_observe(phase, daemon_port, runner_port):
+        return _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port,
+            expected_daemon_port=port)
+
+    return binding, observer, fake_http, port_observe, port
+
+
+def _v3_fake_factory(fake_http, marker_dir, *, variant=None,
+                     daemon_port=11455):
     """Only the injected opener can answer; records the actual W Request."""
     counter = {"value": 0}
 
@@ -3552,7 +3575,7 @@ def _v3_fake_factory(fake_http, marker_dir, *, variant=None):
                 counter["value"] += 1
                 ordinal = counter["value"]
                 method, path = OPERATIONS[ordinal - 1]
-                role_port = 55132 if ordinal in (5, 6) else 11455
+                role_port = 55132 if ordinal in (5, 6) else daemon_port
                 expected_url = f"http://127.0.0.1:{role_port}{path}"
                 assert isinstance(request, urllib.request.Request)
                 assert request.full_url == expected_url
@@ -4739,3 +4762,1216 @@ def test_fake_seven_transport_v3_exact_response_and_request_size_bounds(
             payload_raw=big, remaining=2.0, grant=grant, spec=spec,
             work_deadline=time.monotonic() + 3.0)
     assert len(calls) == count_before
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_proves_owned_listen_before_w_go(
+        monkeypatch, tmp_path):
+    """V5 is process-backed admission, not another ready=True callback."""
+    binding, observer, fake_http, port_observe, port = _v5_fake_inputs(
+        monkeypatch, tmp_path)
+    # A synthetic port is selected without opening a second socket. H is
+    # the only process allowed to bind/listen in this fake-only contract.
+
+    marker_dir = tmp_path / "v5-fake-opener-markers"
+    marker_dir.mkdir()
+    _v5_socket_sentinels(monkeypatch, port)
+    # The result's 270 cumulative endpoints are not an open-FD peak.
+    # Record the actual P/O/H measurements made by the frozen V5 barriers.
+    fd_samples_path = tmp_path / "v5-fd-samples.jsonl"
+    parent_pid = os.getpid()
+    role_pids = {"P": parent_pid}
+    original_fd_measure = live._seven_v5_fd_measure
+    original_receive = live._seven_receive
+
+    def measured_fd_barrier():
+        count, maximum = original_fd_measure()
+        row = _canonical({"pid": os.getpid(), "count": count,
+                          "max_fd": maximum}) + b"\n"
+        fd = os.open(fd_samples_path, os.O_WRONLY | os.O_APPEND | os.O_CREAT,
+                     0o600)
+        try:
+            assert os.write(fd, row) == len(row)
+        finally:
+            os.close(fd)
+        return count, maximum
+
+    def record_child_witness(fd, deadline, **validation):
+        value = original_receive(fd, deadline, **validation)
+        expected = validation.get("expected")
+        if (validation.get("phase") == "initial" and value is not None
+                and expected in ({"role": "O"}, {"role": "H"})):
+            role_pids[expected["role"]] = value["witness"]["pid"]
+        return value
+
+    monkeypatch.setattr(live, "_seven_v5_fd_measure", measured_fd_barrier)
+    monkeypatch.setattr(live, "_seven_receive", record_child_witness)
+    run_dir = tmp_path / "seven-synthetic-listener-v5"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(
+            fake_http, marker_dir, daemon_port=port),
+        port_observe=port_observe, fake_prehash=True,
+        fake_listener=True, work_seconds=2.0)
+
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["status"] == "fake_seven_process_pass", result
+    assert result["fd_endpoints_reserved"] == 270
+    assert set(role_pids) == {"P", "O", "H"}
+    samples = [json.loads(line) for line in fd_samples_path.read_bytes().splitlines()]
+    assert stat.S_IMODE(fd_samples_path.stat().st_mode) == 0o600
+    soft_limit, _ = live.resource.getrlimit(live.resource.RLIMIT_NOFILE)
+    assert soft_limit == 256
+    for role, pid in role_pids.items():
+        rows = [row for row in samples if row["pid"] == pid]
+        assert rows, (role, samples)
+        assert max(row["count"] for row in rows) < soft_limit
+        assert max(row["max_fd"] for row in rows) < soft_limit
+    assert result["synthetic_listener_gate_proven"] is True
+    assert result["continuous_listener_proven"] is False
+    assert result["daemon_stage_failure_code"] == "none"
+    assert result["listener_observation_sha256"] is not None
+    assert result["h_reaped"] and result["h_stop"] == "normal_exit"
+    assert result["s_h_reaped"] and result["s_h_normal_exit"]
+    assert result["prehash_gate_proven"] and result["port_gate_proven"]
+    assert result["transport_gate_proven"]
+    assert result["http_calls"] == 7 and result["identity_checks"] == 6
+    assert result["receipt_durable_proven"] is True
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert sorted(path.name for path in marker_dir.iterdir()) == [
+        f"call-{n}.json" for n in range(1, 8)]
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v5"
+    assert receipt["synthetic_listener_gate_proven"] is True
+    assert receipt["listener_observation_sha256"] == result[
+        "listener_observation_sha256"]
+
+
+def _v5_negative_case(monkeypatch, tmp_path, *, port=None):
+    binding, observer, fake_http, port_observe, port = _v5_fake_inputs(
+        monkeypatch, tmp_path, port=port)
+    marker_dir = tmp_path / "v5-request-markers"
+    marker_dir.mkdir()
+    run_dir = tmp_path / "v5-negative-run"
+    w_go_sends = []
+    original_send = live._seven_send
+
+    def record_w_go(fd, value, deadline, **validation):
+        if validation.get("phase") == "w_go":
+            w_go_sends.append(value)
+        return original_send(fd, value, deadline, **validation)
+
+    monkeypatch.setattr(live, "_seven_send", record_w_go)
+    kwargs = {
+        "run_dir": run_dir, "binding_template": binding,
+        "observe_identity": observer, "fake_http": None,
+        "fake_opener_factory": _v3_fake_factory(
+            fake_http, marker_dir, daemon_port=port),
+        "port_observe": port_observe, "fake_prehash": True,
+        "fake_listener": True, "work_seconds": 0.6,
+        "preparation_seconds": 0.5, "cleanup_seconds": 0.5,
+    }
+    return kwargs, marker_dir, w_go_sends, port
+
+
+def _v5_socket_sentinels(monkeypatch, port):
+    """Permit H's one exact LISTEN, never an accept/connect or real opener."""
+    original_bind = socket.socket.bind
+    original_listen = socket.socket.listen
+    original_setsockopt = socket.socket.setsockopt
+
+    def checked_bind(sock, address):
+        assert sock.family == socket.AF_INET
+        assert sock.type == socket.SOCK_STREAM
+        assert address == ("127.0.0.1", port)
+        return original_bind(sock, address)
+
+    def checked_listen(sock, backlog):
+        assert sock.getsockname() == ("127.0.0.1", port)
+        return original_listen(sock, backlog)
+
+    def checked_setsockopt(sock, level, option, value):
+        assert not (level == socket.SOL_SOCKET and option in (
+            socket.SO_REUSEADDR, getattr(socket, "SO_REUSEPORT", -1)))
+        return original_setsockopt(sock, level, option, value)
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("v5 fake listener attempted accept/connect/HTTP")
+
+    monkeypatch.setattr(socket.socket, "bind", checked_bind)
+    monkeypatch.setattr(socket.socket, "listen", checked_listen)
+    monkeypatch.setattr(socket.socket, "setsockopt", checked_setsockopt)
+    monkeypatch.setattr(socket.socket, "accept", forbidden)
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket.socket, "connect_ex", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    monkeypatch.setattr(urllib.request, "build_opener", forbidden)
+    monkeypatch.setattr(urllib.request, "urlopen", forbidden)
+    monkeypatch.setattr(urllib.request.OpenerDirector, "open", forbidden)
+
+
+def _assert_v5_pre_w_failure(result, run_dir, marker_dir, w_go_sends,
+                             stage_code):
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["status"] == "fake_seven_process_unproven", result
+    assert result["daemon_stage_failure_code"] == stage_code, result
+    assert result["synthetic_listener_gate_proven"] is False
+    assert result["listener_observation_sha256"] is None
+    assert result["continuous_listener_proven"] is False
+    assert result["zero_ack_received"] is True
+    assert result["receipt_preflight_accepted"] is True
+    assert result["granted"] == 0
+    assert result["transport_policy_calls"] == 0
+    assert result["port_gate_proven"] is False
+    assert result["runner_port_vacant_after"] == "unknown"
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert not w_go_sends
+    assert not list(marker_dir.iterdir())
+    journal_path, disk = _read_only_journal(run_dir)
+    assert disk["operations"] == []
+    assert disk["reserved"] == disk["granted"] == 0
+    assert CANARY.encode() not in journal_path.read_bytes()
+    receipt_path = run_dir / "receipt.json"
+    assert result["receipt_durable_proven"] is True, result
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["schema"] == "fake_seven_process_receipt_v5"
+    assert receipt["snapshot_phase"] == (
+        "after_d_w_h_o_cleanup_attempt_before_r_final_reap")
+    assert receipt["daemon_stage_failure_code"] == stage_code
+    assert receipt["synthetic_listener_gate_proven"] is False
+    assert receipt["listener_observation_sha256"] is None
+    assert CANARY.encode() not in receipt_path.read_bytes()
+    return receipt
+
+
+@pytest.mark.parametrize("variant", [
+    "wrong_type", "missing_prehash", "missing_factory", "missing_ports",
+    "legacy_http", "hook_without_listener", "noncallable_hook",
+])
+def test_fake_seven_listener_v5_rejects_invalid_opt_in_before_journal_or_fork(
+        monkeypatch, tmp_path, variant):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v5-invalid-markers"
+    marker_dir.mkdir()
+    run_dir = tmp_path / f"v5-invalid-{variant}"
+    kwargs = {
+        "fake_listener": True, "fake_prehash": True, "fake_http": None,
+        "fake_opener_factory": _v3_fake_factory(fake_http, marker_dir),
+        "port_observe": _v3_port_observer,
+    }
+    if variant == "wrong_type":
+        kwargs["fake_listener"] = 1
+    elif variant == "missing_prehash":
+        kwargs["fake_prehash"] = False
+    elif variant == "missing_factory":
+        kwargs["fake_opener_factory"] = None
+    elif variant == "missing_ports":
+        kwargs["port_observe"] = None
+    elif variant == "legacy_http":
+        kwargs["fake_http"] = fake_http
+    elif variant == "hook_without_listener":
+        kwargs["fake_listener"] = False
+        kwargs["fake_listener_hook"] = lambda _phase: None
+    else:
+        kwargs["fake_listener_hook"] = object()
+    with pytest.raises(live.LiveOperatorError,
+                       match="^fake_seven_configuration_invalid$"):
+        live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, **kwargs)
+    assert not run_dir.exists()
+    assert not list(marker_dir.iterdir())
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("version", (1, 2, 3, 4))
+def test_fake_seven_listener_v5_does_not_widen_v1_through_v4_receipts(
+        monkeypatch, tmp_path, version):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v5-legacy-markers"
+    marker_dir.mkdir()
+    run_dir = tmp_path / f"v{version}-unchanged"
+    kwargs = {"fake_http": fake_http}
+    if version >= 2:
+        kwargs["port_observe"] = _v3_port_observer
+    if version >= 3:
+        kwargs["fake_http"] = None
+        kwargs["fake_opener_factory"] = _v3_fake_factory(
+            fake_http, marker_dir)
+    if version >= 4:
+        kwargs["fake_prehash"] = True
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, **kwargs)
+    receipt = json.loads((run_dir / "receipt.json").read_bytes())
+    assert result["schema"] == f"fake_seven_process_result_v{version}"
+    assert receipt["schema"] == f"fake_seven_process_receipt_v{version}"
+    for key in ("synthetic_listener_gate_proven",
+                "listener_observation_sha256", "daemon_stage_failure_code",
+                "h_reaped", "s_h_normal_exit"):
+        assert key not in result and key not in receipt
+    assert live._seven_receipt_valid(receipt, binding["run_id"])
+    assert not live._seven_receipt_valid(
+        {**receipt, "synthetic_listener_gate_proven": False},
+        binding["run_id"])
+    assert not live._seven_receipt_valid(
+        {**receipt, "failure_code": "h_ready_unavailable"},
+        binding["run_id"])
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_phase2_fd_failure_keeps_zero_and_r_receipt(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+
+    def no_phase2_fds(*_args, **_kwargs):
+        _, disk = _read_only_journal(kwargs["run_dir"])
+        assert disk["reserved"] == disk["granted"] == 0
+        raise OSError(CANARY)
+
+    monkeypatch.setattr(live, "_seven_v5_pipe_layout", no_phase2_fds)
+    result = live._supervise_fake_seven_once(**kwargs)
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "phase2_fd_unavailable")
+    assert result["failure_code"] == "phase2_fd_unavailable"
+    assert receipt["failure_code"] == "phase2_fd_unavailable"
+    assert result["pre_stage_failure_code"] == "none"
+    assert receipt["pre_stage_failure_code"] == "none"
+    for role in ("d", "w"):
+        assert result[f"{role}_stop"] in (
+            "witnessed_term", "witnessed_kill"), result
+        assert receipt[f"{role}_stop"] == result[f"{role}_stop"]
+    assert result["fd_endpoints_reserved"] == 246
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_bind_collision_is_not_readiness(
+        monkeypatch, tmp_path):
+    # A deliberately competing local LISTEN is the bind-collision negative
+    # control; it is never accepted, connected to, or used as HTTP.
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as competitor:
+        competitor.bind(("127.0.0.1", 0))
+        port = competitor.getsockname()[1]
+        competitor.listen(1)
+        kwargs, marker_dir, w_go_sends, _ = _v5_negative_case(
+            monkeypatch, tmp_path, port=port)
+        _v5_socket_sentinels(monkeypatch, port)
+        result = live._supervise_fake_seven_once(**kwargs)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant,stage", [
+    ("h_initial_missing", "h_initial_unavailable"),
+    ("s_h_initial_missing", "s_h_initial_unavailable"),
+    ("h_ready_missing", "h_ready_unavailable"),
+    ("h_ready_wrong_port", "h_ready_mismatch"),
+    ("o_ready_wrong_sha", "o_ready_mismatch"),
+])
+def test_fake_seven_listener_v5_initial_and_proof_faults_never_release_w(
+        monkeypatch, tmp_path, variant, stage):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_child_send = live._seven_child_send
+    original_signal_child = live._split_signal_child
+
+    def damaged_send(pipes, name, run_id, phase, seq, own, deadline,
+                     **extra):
+        if variant == "h_initial_missing" and name == "h_initial":
+            return False
+        if variant == "h_ready_missing" and name == "h_ready":
+            return False
+        if variant == "h_ready_wrong_port" and name == "h_ready":
+            extra["daemon_port"] = port + 1
+        if variant == "o_ready_wrong_sha" and name == "o_ready_proof":
+            extra["listener_observation_sha256"] = "0" * 64
+        return original_child_send(pipes, name, run_id, phase, seq, own,
+                                   deadline, **extra)
+
+    def damaged_signal_child(*args, **signal_kwargs):
+        if (variant == "s_h_initial_missing"
+                and signal_kwargs.get("target_role") == "H"):
+            return 125
+        return original_signal_child(*args, **signal_kwargs)
+
+    monkeypatch.setattr(live, "_seven_child_send", damaged_send)
+    monkeypatch.setattr(live, "_split_signal_child", damaged_signal_child)
+    result = live._supervise_fake_seven_once(**kwargs)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends, stage)
+    if variant in ("h_initial_missing", "s_h_initial_missing"):
+        assert result["h_reaped"] is True
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("phase,action", [
+    ("before_bind", "block"), ("before_bind", "crash"),
+    ("after_listen", "block"), ("after_listen", "crash"),
+])
+def test_fake_seven_listener_v5_blocked_or_crashed_h_before_ready(
+        monkeypatch, tmp_path, phase, action):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+
+    def stall_or_crash(current_phase):
+        if current_phase == phase:
+            if action == "crash":
+                os._exit(77)
+            time.sleep(2.0)
+
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=stall_or_crash)
+    assert time.monotonic() - started < 3.5
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_h_ready_frame_without_eof_is_not_proof(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_child_send = live._seven_child_send
+
+    def keep_h_ready_writer(pipes, name, run_id, phase, seq, own,
+                            deadline, **extra):
+        if name == "h_ready":
+            fd = pipes[name][1]
+            v5 = extra.pop("v5", False)
+            frame = live._seven_frame(run_id, phase, seq, own, **extra)
+            # A complete canonical frame is still not proof without EOF.
+            return live._seven_send(fd, frame, deadline, run_id=run_id,
+                                    phase=phase, seq=seq, witness=own,
+                                    v5=v5)
+        return original_child_send(pipes, name, run_id, phase, seq, own,
+                                   deadline, **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", keep_h_ready_writer)
+    result = live._supervise_fake_seven_once(**kwargs)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", [
+    "wrong_owner", "wrong_address", "wrong_port", "wrong_state",
+    "access_denied",
+])
+def test_fake_seven_listener_v5_o_requires_actual_h_owned_tcp4_listen(
+        monkeypatch, tmp_path, variant):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    actual_psutil = live._seven_v5_psutil()
+
+    class ProcessProxy:
+        def __init__(self, pid):
+            self._real = actual_psutil.Process(pid)
+            self.pid = pid + 1 if variant == "wrong_owner" else pid
+
+        def net_connections(self, *, kind):
+            assert kind == "tcp4"
+            if variant == "access_denied":
+                raise actual_psutil.AccessDenied(pid=self.pid)
+            rows = self._real.net_connections(kind=kind)
+            altered = []
+            for row in rows:
+                if row.status != "LISTEN":
+                    altered.append(row)
+                    continue
+                if variant == "wrong_address":
+                    address = type(row.laddr)("0.0.0.0", port)
+                    altered.append(row._replace(laddr=address))
+                elif variant == "wrong_port":
+                    address = type(row.laddr)("127.0.0.1", port + 1)
+                    altered.append(row._replace(laddr=address))
+                elif variant == "wrong_state":
+                    altered.append(row._replace(status="ESTABLISHED"))
+                else:
+                    altered.append(row)
+            return altered
+
+    class PsutilProxy:
+        __version__ = actual_psutil.__version__
+        AccessDenied = actual_psutil.AccessDenied
+
+        @staticmethod
+        def Process(pid):
+            return ProcessProxy(pid)
+
+    monkeypatch.setattr(live, "_seven_v5_psutil", lambda: PsutilProxy)
+    result = live._supervise_fake_seven_once(**kwargs)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "o_ready_unavailable")
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_r_death_at_admission_forbids_w_go(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_receive = live._seven_receive
+    r_pid = None
+
+    def kill_witnessed_r_at_o_proof(fd, deadline, **validation):
+        nonlocal r_pid
+        value = original_receive(fd, deadline, **validation)
+        if (validation.get("phase") == "initial"
+                and validation.get("expected") == {"role": "R"}
+                and value is not None):
+            r_pid = value["witness"]["pid"]
+        if validation.get("phase") == "o_ready_proof" and value is not None:
+            assert r_pid is not None
+            os.kill(r_pid, signal.SIGKILL)
+            # Yield to the already-spawned R, without consuming its waitpid.
+            time.sleep(0.05)
+        return value
+
+    monkeypatch.setattr(live, "_seven_receive", kill_witnessed_r_at_o_proof)
+    result = live._supervise_fake_seven_once(**kwargs)
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["receipt_durable_proven"] is False
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert not w_go_sends
+    assert not list(marker_dir.iterdir())
+    _, disk = _read_only_journal(kwargs["run_dir"])
+    assert disk["reserved"] == disk["granted"] == 0
+    assert not (kwargs["run_dir"] / "receipt.json").exists()
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_midrun_h_loss_forbids_later_grants(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    kwargs["work_seconds"] = 2.0
+    original_receive = live._seven_receive
+    h_pid = None
+
+    def kill_h_after_first_fake_result(fd, deadline, **validation):
+        nonlocal h_pid
+        value = original_receive(fd, deadline, **validation)
+        if (validation.get("phase") == "initial"
+                and validation.get("expected") == {"role": "H"}
+                and value is not None):
+            h_pid = value["witness"]["pid"]
+        if (validation.get("phase") == "result_entry"
+                and validation.get("seq") == 1 and value is not None):
+            assert h_pid is not None
+            os.kill(h_pid, signal.SIGKILL)
+            time.sleep(0.05)
+        return value
+
+    monkeypatch.setattr(live, "_seven_receive", kill_h_after_first_fake_result)
+    result = live._supervise_fake_seven_once(**kwargs)
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["synthetic_listener_gate_proven"] is True, result
+    assert result["listener_observation_sha256"] is not None
+    assert result["daemon_stage_failure_code"] == "h_lost_after_ready"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert len(w_go_sends) == 1
+    assert (marker_dir / "call-1.json").exists()
+    assert not (marker_dir / "call-2.json").exists()
+    _, disk = _read_only_journal(kwargs["run_dir"])
+    assert disk["reserved"] == disk["granted"] == 1
+    assert disk["operations"][0]["on_wire"] == "yes"
+    receipt_path = kwargs["run_dir"] / "receipt.json"
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["daemon_stage_failure_code"] == "h_lost_after_ready"
+    assert receipt["synthetic_listener_gate_proven"] is True
+    assert receipt["listener_observation_sha256"] == result[
+        "listener_observation_sha256"]
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_h_cleanup_identity_stall_keeps_first_error(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    h_pid_file = tmp_path / "synthetic-h-pid"
+
+    def blocked_h(phase):
+        if phase == "before_bind":
+            h_pid_file.write_text(str(os.getpid()))
+            time.sleep(2.0)
+
+    def blocked_fresh_witness(pid):
+        if h_pid_file.exists() and str(pid) == h_pid_file.read_text():
+            time.sleep(2.0)
+        return live._fake_os_witness(pid)
+
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=blocked_h,
+        cleanup_observe=blocked_fresh_witness)
+    assert time.monotonic() - started < 4.0
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+    assert result["failure_code"] == "cleanup_review_required"
+    assert result["h_stop"] == "unproven"
+    assert receipt["failure_code"] == "cleanup_review_required"
+    assert receipt["h_stop"] == "unproven"
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_r_failure_dominates_after_h_admission(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, _, port = _v5_negative_case(monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    kwargs["work_seconds"] = 2.0
+
+    def unavailable_receipt(*_args, **_kwargs):
+        raise RuntimeError(CANARY)
+
+    monkeypatch.setattr(live, "_seven_write_receipt", unavailable_receipt)
+    result = live._supervise_fake_seven_once(**kwargs)
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["synthetic_listener_gate_proven"] is True, result
+    assert result["listener_observation_sha256"] is not None
+    assert result["continuous_listener_proven"] is False
+    assert result["daemon_stage_failure_code"] == "none"
+    assert result["h_reaped"] and result["s_h_reaped"]
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert result["receipt_durable_proven"] is False
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    assert not (kwargs["run_dir"] / "receipt.json").exists()
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant,pre_stage", [
+    ("wrong_sha", "pre_stage_mismatch"),
+    ("wrong_port", "pre_stage_mismatch"),
+    ("port_occupied", "port_pre_not_vacant"),
+])
+def test_fake_seven_listener_v5_v4_prehash_or_port_failure_never_starts_h(
+        monkeypatch, tmp_path, variant, pre_stage):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_send = live._seven_child_send
+
+    def wrong_v4_preproof(pipes, name, run_id, phase, seq, own, deadline,
+                          **extra):
+        if name == "o_pre_proof" and phase == "o_pre_hash_port_proof":
+            if variant == "wrong_sha":
+                extra["prehash_sha256"] = "0" * 64
+            elif variant == "wrong_port":
+                extra["daemon_port"] += 1
+            else:
+                extra["daemon_vacant"] = False
+        return original_send(pipes, name, run_id, phase, seq, own, deadline,
+                             **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", wrong_v4_preproof)
+    result = live._supervise_fake_seven_once(**kwargs)
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends, "not_started")
+    assert result["pre_stage_failure_code"] == pre_stage
+    assert result["failure_code"] == pre_stage
+    assert result["h_reaped"] is False and result["s_h_reaped"] is False
+    assert result["h_term"] == result["h_kill"] == "not_attempted"
+    assert receipt["pre_stage_failure_code"] == pre_stage
+    assert receipt["failure_code"] == pre_stage
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_partial_phase2_allocation_closes_its_fds(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_layout = live._seven_v5_pipe_layout
+    original_pipe = os.pipe
+    acquired = []
+    closed_after_failure = []
+
+    def fail_sixth_late_pipe():
+        calls = 0
+
+        def partial_pipe():
+            nonlocal calls
+            calls += 1
+            if calls == 6:
+                raise OSError(CANARY)
+            pair = original_pipe()
+            acquired.extend(pair)
+            return pair
+
+        live.os.pipe = partial_pipe
+        try:
+            return original_layout()
+        except live.LiveOperatorError:
+            closed_after_failure.extend(
+                _fd_is_closed(fd) for fd in acquired)
+            raise
+        finally:
+            live.os.pipe = original_pipe
+
+    def _fd_is_closed(fd):
+        try:
+            os.fstat(fd)
+        except OSError:
+            return True
+        return False
+
+    monkeypatch.setattr(live, "_seven_v5_pipe_layout", fail_sixth_late_pipe)
+    result = live._supervise_fake_seven_once(**kwargs)
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "phase2_fd_unavailable")
+    assert len(acquired) == 10
+    assert closed_after_failure == [True] * 10
+    assert result["fd_endpoints_reserved"] == 246
+    assert result["pre_stage_failure_code"] == "none"
+    assert result["failure_code"] == "phase2_fd_unavailable"
+    assert receipt["pre_stage_failure_code"] == "none"
+    assert receipt["failure_code"] == "phase2_fd_unavailable"
+    for role in ("d", "w"):
+        assert result[f"{role}_stop"] in (
+            "witnessed_term", "witnessed_kill"), result
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("edge,variant,stage", [
+    ("o_ready_proof", "no_eof", "o_ready_unavailable"),
+    ("o_ready_proof", "duplicate", "o_ready_unavailable"),
+    ("o_ready_proof", "trailing", "o_ready_unavailable"),
+    ("h_ready", "duplicate", "h_ready_unavailable"),
+    ("h_ready", "trailing", "h_ready_unavailable"),
+])
+def test_fake_seven_listener_v5_rejects_extra_or_unterminated_ready_wire(
+        monkeypatch, tmp_path, edge, variant, stage):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_send = live._seven_child_send
+
+    def damaged_ready_wire(pipes, name, run_id, phase, seq, own, deadline,
+                           **extra):
+        if name != edge:
+            return original_send(pipes, name, run_id, phase, seq, own,
+                                 deadline, **extra)
+        fd = pipes[name][1]
+        assert extra.pop("v5") is True
+        frame_value = live._seven_frame(run_id, phase, seq, own, **extra)
+        if variant == "no_eof":
+            # A valid canonical frame with its writer still open is not a
+            # completed proof, even though the child remains alive.
+            return live._seven_send(
+                fd, frame_value, deadline, run_id=run_id, phase=phase,
+                seq=seq, witness=own, v5=True)
+        frame = live.encode_frame(frame_value)
+        raw = frame + (frame if variant == "duplicate" else b"x")
+        try:
+            assert os.write(fd, raw) == len(raw)
+            return True
+        finally:
+            os.close(fd)
+
+    monkeypatch.setattr(live, "_seven_child_send", damaged_ready_wire)
+    result = live._supervise_fake_seven_once(**kwargs)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends, stage)
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("field,bracket", [
+    ("raw_generation", 1), ("raw_generation", 2),
+    ("pgid", 1), ("pgid", 2),
+])
+def test_fake_seven_listener_v5_o_rejects_identity_drift_on_both_sides(
+        monkeypatch, tmp_path, field, bracket):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_observe = live._seven_v5_observe_listener
+    original_witness = live._fake_os_witness
+
+    def drift_during_o_bracket(h_witness, daemon_port):
+        calls = 0
+
+        def drifted_witness(pid):
+            nonlocal calls
+            calls += 1
+            value = original_witness(pid)
+            if calls == bracket:
+                value = deepcopy(value)
+                if field == "pgid":
+                    value["pgid"] += 1
+                else:
+                    value["raw_generation"][-1] += 1
+            return value
+
+        live._fake_os_witness = drifted_witness
+        try:
+            return original_observe(h_witness, daemon_port)
+        finally:
+            live._fake_os_witness = original_witness
+
+    monkeypatch.setattr(live, "_seven_v5_observe_listener",
+                        drift_during_o_bracket)
+    result = live._supervise_fake_seven_once(**kwargs)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "o_ready_unavailable")
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_after_ready_crash_before_liveness_check(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    release = tmp_path / "release-after-o-proof"
+    original_receive = live._seven_receive
+
+    def crash_after_ready(phase):
+        if phase == "after_ready":
+            # Keep H's listener alive for O's independent OS proof, then
+            # force a real exit before P's final nonblocking liveness check.
+            while not release.exists():
+                time.sleep(0.001)
+            os._exit(77)
+
+    def release_at_complete_o_proof(fd, deadline, **validation):
+        value = original_receive(fd, deadline, **validation)
+        if validation.get("phase") == "o_ready_proof" and value is not None:
+            release.touch()
+            time.sleep(0.05)
+        return value
+
+    monkeypatch.setattr(live, "_seven_receive", release_at_complete_o_proof)
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=crash_after_ready)
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+    assert release.exists()
+    assert result["h_reaped"] is True
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_after_ready_block_is_not_continuity(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    kwargs["work_seconds"] = 2.0
+
+    def block_after_ready(phase):
+        if phase == "after_ready":
+            time.sleep(10.0)
+
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=block_after_ready)
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["synthetic_listener_gate_proven"] is True, result
+    assert result["listener_observation_sha256"] is not None
+    assert result["continuous_listener_proven"] is False
+    assert len(w_go_sends) == 1
+    assert result["status"] == "fake_seven_process_unproven", result
+    assert result["daemon_stage_failure_code"] == "h_stop_unavailable"
+    assert result["h_stop"] in ("witnessed_term", "witnessed_kill")
+    assert result["receipt_durable_proven"] is True
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    receipt = json.loads((kwargs["run_dir"] / "receipt.json").read_bytes())
+    assert receipt["daemon_stage_failure_code"] == "h_stop_unavailable"
+    assert receipt["continuous_listener_proven"] is False
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("role", ["H", "O", "S_H"])
+def test_fake_seven_listener_v5_h_o_s_h_printed_canary_is_isolated(
+        monkeypatch, tmp_path, capsys, role):
+    kwargs, marker_dir, _, port = _v5_negative_case(monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    kwargs["work_seconds"] = 2.0
+    original_observe = live._seven_v5_observe_listener
+    original_signal_child = live._split_signal_child
+
+    def noisy_h(phase):
+        if role == "H" and phase == "before_bind":
+            print(CANARY, flush=True)
+            print(CANARY, file=sys.stderr, flush=True)
+
+    def noisy_o(h_witness, daemon_port):
+        if role == "O":
+            print(CANARY, flush=True)
+            print(CANARY, file=sys.stderr, flush=True)
+        return original_observe(h_witness, daemon_port)
+
+    def noisy_s_h(*args, **signal_kwargs):
+        if role == "S_H" and signal_kwargs.get("target_role") == "H":
+            initial_reader = signal_kwargs["initial_reader"]
+
+            def noisy_initial(pid):
+                print(CANARY, flush=True)
+                print(CANARY, file=sys.stderr, flush=True)
+                return initial_reader(pid)
+
+            signal_kwargs["initial_reader"] = noisy_initial
+        return original_signal_child(*args, **signal_kwargs)
+
+    monkeypatch.setattr(live, "_seven_v5_observe_listener", noisy_o)
+    monkeypatch.setattr(live, "_split_signal_child", noisy_s_h)
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=noisy_h)
+    assert result["status"] == "fake_seven_process_pass", {
+        key: result[key] for key in (
+            "failure_code", "pre_stage_failure_code",
+            "daemon_stage_failure_code", "fd_endpoints_reserved",
+            "zero_ack_received", "receipt_preflight_accepted",
+            "receipt_durable_proven", "h_stop", "o_stop")}
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    journal_path, _ = _read_only_journal(kwargs["run_dir"])
+    receipt_path = kwargs["run_dir"] / "receipt.json"
+    assert CANARY.encode() not in journal_path.read_bytes()
+    assert CANARY.encode() not in receipt_path.read_bytes()
+    assert CANARY not in json.dumps(result)
+    # capfd's extra OS descriptors would itself exceed this V5 256-FD
+    # stress path; these hooks intentionally use Python print streams.
+    captured = capsys.readouterr()
+    assert CANARY not in captured.out + captured.err
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("failure_fork", [7, 8])
+def test_fake_seven_listener_v5_post_phase2_observer_fork_failure_is_not_fd(
+        monkeypatch, tmp_path, failure_fork):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_fork = os.fork
+    calls = 0
+
+    def fail_o_or_s_o_fork():
+        nonlocal calls
+        calls += 1
+        if calls == failure_fork:
+            raise OSError(CANARY)
+        return original_fork()
+
+    monkeypatch.setattr(live.os, "fork", fail_o_or_s_o_fork)
+    result = live._supervise_fake_seven_once(**kwargs)
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "not_started")
+    assert calls == failure_fork
+    assert result["fd_endpoints_reserved"] == 270
+    assert result["pre_stage_failure_code"] == "pre_stage_unavailable"
+    assert result["daemon_stage_failure_code"] == "not_started"
+    assert result["failure_code"] != "phase2_fd_unavailable"
+    assert receipt["daemon_stage_failure_code"] == "not_started"
+    assert receipt["failure_code"] != "phase2_fd_unavailable"
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_missing_waitable_h_at_admission_forbids_w_go(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_receive = live._seven_receive
+    original_waitpid = os.waitpid
+    h_pid = None
+    injected = False
+
+    def no_waitable_once(pid, options):
+        nonlocal injected
+        if pid == h_pid and options == os.WNOHANG and not injected:
+            injected = True
+            raise ChildProcessError(CANARY)
+        return original_waitpid(pid, options)
+
+    def lose_waitability_at_o_proof(fd, deadline, **validation):
+        nonlocal h_pid
+        value = original_receive(fd, deadline, **validation)
+        if (validation.get("phase") == "initial"
+                and validation.get("expected") == {"role": "H"}
+                and value is not None):
+            h_pid = value["witness"]["pid"]
+        if validation.get("phase") == "o_ready_proof" and value is not None:
+            assert h_pid is not None
+            live.os.waitpid = no_waitable_once
+        return value
+
+    monkeypatch.setattr(live, "_seven_receive", lose_waitability_at_o_proof)
+    try:
+        result = live._supervise_fake_seven_once(**kwargs)
+    finally:
+        live.os.waitpid = original_waitpid
+    assert injected is True
+    _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+    assert result["failure_code"] in (
+        "h_ready_unavailable", "cleanup_review_required")
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_late_normal_s_h_exit_is_not_timely_cleanup(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, _, port = _v5_negative_case(monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    kwargs["work_seconds"] = 2.0
+    original_signal_child = live._split_signal_child
+    original_split_receive = live._split_receive
+    original_waitpid = os.waitpid
+    s_h_pid = None
+    s_h_wait_statuses = []
+
+    def record_s_h_reap(pid, options):
+        waited_pid, wait_status = original_waitpid(pid, options)
+        if pid == s_h_pid and waited_pid == pid:
+            s_h_wait_statuses.append(wait_status)
+        return waited_pid, wait_status
+
+    def late_normal_s_h(*args, **signal_kwargs):
+        code = original_signal_child(*args, **signal_kwargs)
+        if signal_kwargs.get("target_role") == "H" and code == 0:
+            # This fake child really exits zero, but only *after* its
+            # frozen cleanup deadline. Its self-alarm is canceled solely
+            # to make the late-normal counterexample observable.
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            target = signal_kwargs["cleanup_deadline"] + 0.06
+            time.sleep(max(0, target - time.monotonic()))
+        return code
+
+    def record_s_h_initial(fd, deadline, *, phase, **validation):
+        nonlocal s_h_pid
+        value = original_split_receive(fd, deadline, phase=phase,
+                                       **validation)
+        if phase == "initial" and validation.get("role") == "S_H":
+            assert value is not None
+            s_h_pid = value["witness"]["pid"]
+        return value
+
+    monkeypatch.setattr(live, "_split_signal_child", late_normal_s_h)
+    monkeypatch.setattr(live, "_split_receive", record_s_h_initial)
+    monkeypatch.setattr(live.os, "waitpid", record_s_h_reap)
+    result = live._supervise_fake_seven_once(**kwargs)
+    assert s_h_pid is not None
+    # Whether P reaped during the bounded wait or the test reaps just after
+    # it, the late child must really exit zero and leave no synthetic zombie.
+    if not s_h_wait_statuses:
+        waited_pid, wait_status = os.waitpid(s_h_pid, 0)
+        assert waited_pid == s_h_pid
+        s_h_wait_statuses.append(wait_status)
+    assert any(os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0
+               for status in s_h_wait_statuses)
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["synthetic_listener_gate_proven"] is True
+    assert result["continuous_listener_proven"] is False
+    assert result["h_reaped"] and result["h_stop"] == "normal_exit"
+    assert result["s_h_normal_exit"] is False
+    assert result["status"] == "fake_seven_process_unproven", result
+    assert result["failure_code"] == "cleanup_review_required"
+    assert result["receipt_durable_proven"] is True
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    receipt = json.loads((kwargs["run_dir"] / "receipt.json").read_bytes())
+    assert receipt["s_h_normal_exit"] is False
+    assert receipt["failure_code"] == "cleanup_review_required"
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("lose_kill_proof", [False, True])
+def test_fake_seven_listener_v5_h_ignored_term_requires_witnessed_kill(
+        monkeypatch, tmp_path, lose_kill_proof):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_split_send = live._split_send
+
+    def h_ignores_term_before_stalling(phase):
+        if phase == "before_bind":
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
+            time.sleep(10.0)
+
+    def lose_only_h_kill_reply(fd, value, deadline, **validation):
+        if (lose_kill_proof
+                and validation.get("phase") == "signal_result"
+                and validation.get("target_role") == "H"
+                and validation.get("signal_name") == "kill"):
+            # S_H really sent KILL, but without its canonical response P
+            # cannot promote waitpid's signaled status to witnessed stop.
+            return True
+        return original_split_send(fd, value, deadline, **validation)
+
+    monkeypatch.setattr(live, "_split_send", lose_only_h_kill_reply)
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=h_ignores_term_before_stalling)
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+    assert result["h_term"] == "signal_sent", result
+    assert result["h_reaped"] is True
+    if lose_kill_proof:
+        assert result["h_kill"] == "cleanup_response_unavailable"
+        assert result["h_stop"] == "unproven"
+        assert result["failure_code"] == "cleanup_review_required"
+    else:
+        assert result["h_kill"] == "signal_sent"
+        assert result["h_stop"] == "witnessed_kill"
+        cleanup_unproven = (
+            any(not result[f"{role}_reaped"]
+                or result[f"{role}_stop"] == "unproven"
+                for role in ("d", "w", "h", "o"))
+            or any(not result[f"s_{role}_reaped"]
+                   or not result[f"s_{role}_normal_exit"]
+                   for role in ("d", "w", "h", "o")))
+        assert result["failure_code"] == (
+            "cleanup_review_required" if cleanup_unproven
+            else "h_ready_unavailable")
+    assert receipt["h_term"] == result["h_term"]
+    assert receipt["h_kill"] == result["h_kill"]
+    assert receipt["h_stop"] == result["h_stop"]
+    assert receipt["failure_code"] == result["failure_code"]
+
+
+@_DARWIN_FORK
+def test_fake_seven_listener_v5_r_death_at_h_initial_forbids_w_go(
+        monkeypatch, tmp_path):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    kwargs["work_seconds"] = 2.0
+    original_receive = live._seven_receive
+    r_pid = None
+    killed_before_h_go = False
+
+    def kill_r_when_h_initial_arrives(fd, deadline, **validation):
+        nonlocal r_pid, killed_before_h_go
+        value = original_receive(fd, deadline, **validation)
+        if (validation.get("phase") == "initial"
+                and validation.get("expected") == {"role": "R"}
+                and value is not None):
+            r_pid = value["witness"]["pid"]
+        if (validation.get("phase") == "initial"
+                and validation.get("expected") == {"role": "H"}
+                and value is not None):
+            assert r_pid is not None
+            # This receive finishes before P can fork S_H or send H_GO.
+            os.kill(r_pid, signal.SIGKILL)
+            killed_before_h_go = True
+            time.sleep(0.05)
+        return value
+
+    monkeypatch.setattr(live, "_seven_receive", kill_r_when_h_initial_arrives)
+    result = live._supervise_fake_seven_once(**kwargs)
+    assert killed_before_h_go is True
+    assert result["schema"] == "fake_seven_process_result_v5", result
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert result["receipt_durable_proven"] is False
+    assert result["r_reaped"] is True
+    assert result["h_reaped"] is True and result["s_h_reaped"] is True
+    assert result["synthetic_listener_gate_proven"] is False
+    assert result["continuous_listener_proven"] is False
+    assert result["granted"] == 0
+    assert result["transport_policy_calls"] == 0
+    assert not w_go_sends
+    assert not list(marker_dir.iterdir())
+    _, disk = _read_only_journal(kwargs["run_dir"])
+    assert disk["reserved"] == disk["granted"] == 0
+    assert disk["operations"] == []
+    assert not (kwargs["run_dir"] / "receipt.json").exists()
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("drift_field", ["raw_generation", "pgid"])
+def test_fake_seven_listener_v5_h_cleanup_structural_identity_drift_no_signal(
+        monkeypatch, tmp_path, drift_field):
+    kwargs, marker_dir, w_go_sends, port = _v5_negative_case(
+        monkeypatch, tmp_path)
+    _v5_socket_sentinels(monkeypatch, port)
+    original_receive = live._seven_receive
+    h_pid = None
+
+    def record_h_initial(fd, deadline, **validation):
+        nonlocal h_pid
+        value = original_receive(fd, deadline, **validation)
+        if (validation.get("phase") == "initial"
+                and validation.get("expected") == {"role": "H"}
+                and value is not None):
+            h_pid = value["witness"]["pid"]
+        return value
+
+    def block_before_bind(phase):
+        if phase == "before_bind":
+            time.sleep(10.0)
+
+    def drifted_cleanup_witness(pid):
+        value = live._fake_os_witness(pid)
+        if pid == h_pid:
+            assert live._fake_witness_valid(value, pid)
+            print(CANARY, flush=True)
+            value = deepcopy(value)
+            if drift_field == "raw_generation":
+                value["raw_generation"][2] += 1
+            else:
+                value["pgid"] += 1
+            assert live._fake_witness_valid(value, pid)
+        return value
+
+    monkeypatch.setattr(live, "_seven_receive", record_h_initial)
+    result = live._supervise_fake_seven_once(
+        **kwargs, fake_listener_hook=block_before_bind,
+        cleanup_observe=drifted_cleanup_witness)
+    assert h_pid is not None
+    receipt = _assert_v5_pre_w_failure(
+        result, kwargs["run_dir"], marker_dir, w_go_sends,
+        "h_ready_unavailable")
+    assert result["h_term"] == "identity_changed_no_signal", result
+    assert result["h_kill"] == "identity_changed_no_signal", result
+    assert result["h_stop"] == "unproven"
+    assert result["failure_code"] == "cleanup_review_required"
+    assert result["receipt_durable_proven"] is True
+    assert receipt["h_term"] == result["h_term"]
+    assert receipt["h_kill"] == result["h_kill"]
+    assert receipt["h_stop"] == "unproven"
+    assert receipt["failure_code"] == "cleanup_review_required"
+    assert CANARY not in json.dumps(result)
+    # No signal was allowed. The synthetic child either was already reaped
+    # by P or must now exit under its independent hard-lifetime backstop.
+    if not result["h_reaped"]:
+        waited_pid, wait_status = os.waitpid(h_pid, 0)
+        assert waited_pid == h_pid
+        assert os.WIFEXITED(wait_status) and os.WEXITSTATUS(wait_status) == 124
