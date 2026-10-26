@@ -13,9 +13,11 @@ import os
 from pathlib import Path
 import select
 import signal
+import socket
 import stat
 import sys
 import time
+import urllib.request
 
 import pytest
 
@@ -3460,3 +3462,554 @@ def test_fake_split_blocked_d_and_ineffective_signal_still_gets_failure_receipt(
     assert disk["failure_code"] == "grant_proof_unavailable"
     assert disk["physical_stop_unproven"] is True
     assert disk["full_gate_pass"] is False
+
+
+class _V3FakeResponse:
+    """A deliberately short-reading fake response; never a network object."""
+
+    def __init__(self, body, url, *, status=200, chunk_size=17,
+                 first_chunk_size=None):
+        self.body = body
+        self.url = url
+        self.status = status
+        self.chunk_size = chunk_size
+        self.first_chunk_size = first_chunk_size
+        self.offset = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def geturl(self):
+        return self.url
+
+    def getcode(self):
+        return self.status
+
+    def read(self, count=-1):
+        assert count > 0 and count <= live.RESPONSE_LIMIT + 1
+        size = min(count, self.first_chunk_size if self.offset == 0
+                   and self.first_chunk_size is not None else self.chunk_size)
+        result = self.body[self.offset:self.offset + size]
+        self.offset += len(result)
+        return result
+
+
+def _v3_socket_sentinels(monkeypatch):
+    """Any accidental real transport/openers fail before a connection."""
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("v3 fake test attempted a real socket/opener")
+
+    monkeypatch.setattr(socket.socket, "__init__", forbidden)
+    monkeypatch.setattr(socket.socket, "connect", forbidden)
+    monkeypatch.setattr(socket.socket, "connect_ex", forbidden)
+    monkeypatch.setattr(socket, "create_connection", forbidden)
+    monkeypatch.setattr(urllib.request, "build_opener", forbidden)
+    monkeypatch.setattr(urllib.request, "urlopen", forbidden)
+    monkeypatch.setattr(urllib.request.OpenerDirector, "open", forbidden)
+
+
+def _v3_port_observer(phase, daemon_port, runner_port):
+    return _fake_seven_port_snapshot(
+        phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+
+
+def _v3_fake_factory(fake_http, marker_dir, *, variant=None):
+    """Only the injected opener can answer; records the actual W Request."""
+    counter = {"value": 0}
+
+    def factory(proxy_handler, no_redirect_handler):
+        assert isinstance(proxy_handler, urllib.request.ProxyHandler)
+        assert proxy_handler.proxies == {}
+        assert isinstance(no_redirect_handler,
+                          urllib.request.HTTPRedirectHandler)
+        assert type(no_redirect_handler) is not urllib.request.HTTPRedirectHandler
+
+        class CompetingRedirect:
+            def http_error_302(self, *_args):
+                return object()
+
+        class FakeOpener:
+            def __init__(self):
+                self.handlers = [no_redirect_handler]
+                if variant == "proxy_before":
+                    self.handlers.append(urllib.request.ProxyHandler(
+                        {"http": "http://proxy.invalid:8080"}))
+                if variant == "redirect_before":
+                    self.handlers.append(urllib.request.HTTPRedirectHandler())
+                if variant == "redirect_error_before":
+                    self.handlers.append(CompetingRedirect())
+                if variant == "redirect_policy_before":
+                    no_redirect_handler.redirect_request = (
+                        lambda *_args: object())
+
+            def open(self, request, timeout=None):
+                counter["value"] += 1
+                ordinal = counter["value"]
+                method, path = OPERATIONS[ordinal - 1]
+                role_port = 55132 if ordinal in (5, 6) else 11455
+                expected_url = f"http://127.0.0.1:{role_port}{path}"
+                assert isinstance(request, urllib.request.Request)
+                assert request.full_url == expected_url
+                assert request.get_method() == method
+                assert type(timeout) in (int, float) and 0 < timeout <= 2.0
+                payload = request.data
+                assert payload is None or type(payload) is bytes
+                if method == "POST":
+                    assert payload == _canonical(json.loads(payload))
+                else:
+                    assert payload is None
+                (marker_dir / f"call-{ordinal}.json").write_bytes(_canonical({
+                    "ordinal": ordinal, "method": method, "url": expected_url,
+                    "payload_sha256": None if payload is None else
+                    hashlib.sha256(payload).hexdigest(),
+                    "timeout": timeout,
+                }))
+                if variant == "raise":
+                    raise RuntimeError(CANARY)
+                if variant == "block" or variant == f"block_at_{ordinal}":
+                    time.sleep(10)
+                if variant == "print_canary":
+                    print(CANARY, flush=True)
+                    print(CANARY, file=sys.stderr, flush=True)
+                answer = fake_http(method, expected_url, payload, timeout,
+                                   {"ordinal": ordinal})
+                if variant == "proxy_after":
+                    self.handlers.append(urllib.request.ProxyHandler(
+                        {"http": "http://proxy.invalid:8080"}))
+                if variant == "redirect_after":
+                    self.handlers.append(urllib.request.HTTPRedirectHandler())
+                if variant == "redirect_error_after":
+                    self.handlers.append(CompetingRedirect())
+                if variant == "redirect_policy_after":
+                    no_redirect_handler.redirect_request = (
+                        lambda *_args: object())
+                body = answer["body"]
+                if variant in ("oversize", "oversize_short_chunks"):
+                    body = b"x" * (live.RESPONSE_LIMIT + 1)
+                return _V3FakeResponse(
+                    body,
+                    (expected_url + "/changed" if variant == "effective_url"
+                     else expected_url),
+                    status=302 if variant == "redirect" else
+                    503 if variant == "non200" else 200,
+                    chunk_size=65536 if variant in (
+                        "oversize", "oversize_short_chunks") else 17,
+                    first_chunk_size=7 if variant ==
+                    "oversize_short_chunks" else None,
+                )
+
+        return FakeOpener()
+
+    return factory
+
+
+@_DARWIN_FORK
+def test_fake_seven_transport_v3_strict_opener_positive_zero_sockets(
+        monkeypatch, tmp_path):
+    """W-owned Request/opener, seven ordered proofs and separate R receipt."""
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-request-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / "seven-transport-v3"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, work_seconds=2.0)
+    assert result["schema"] == "fake_seven_process_result_v3", result
+    assert result["status"] == "fake_seven_process_pass", result
+    assert result["transport_gate_proven"] is True
+    assert result["transport_policy_calls"] == 7
+    assert len(result["transport_proof_sha256"]) == 64
+    assert result["port_gate_proven"] is True
+    assert result["http_calls"] == 7
+    assert result["fd_endpoints_reserved"] == 246
+    assert result["receipt_durable_proven"] is True
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert [json.loads((marker_dir / f"call-{n}.json").read_bytes())["ordinal"]
+            for n in range(1, 8)] == list(range(1, 8))
+    journal_path, disk = _read_only_journal(run_dir)
+    assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
+    assert stat.S_IMODE(journal_path.stat().st_mode) == 0o600
+    assert [op["ordinal"] for op in disk["operations"]] == list(range(1, 8))
+    assert disk["reserved"] == disk["granted"] == disk["worker_issued"] == 7
+    assert disk["completion_attempt_spent"] == 1
+    assert all(op["on_wire"] == "yes" for op in disk["operations"])
+    assert CANARY.encode() not in journal_path.read_bytes()
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v3"
+    assert receipt["transport_gate_proven"] is True
+    assert receipt["transport_policy_calls"] == 7
+    assert receipt["transport_proof_sha256"] == result["transport_proof_sha256"]
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+def test_fake_seven_transport_v3_fd_cap_fails_before_journal_or_work(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-fd-markers"
+    marker_dir.mkdir()
+    monkeypatch.setattr(live.resource, "getrlimit", lambda _kind: (245, 245))
+    run_dir = tmp_path / "seven-transport-v3-fd-cap"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer)
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "fake_seven_fd_reservation_unavailable"
+    assert result["fd_endpoints_reserved"] == 0
+    assert result["transport_gate_proven"] is False
+    assert not run_dir.exists()
+    assert not list(marker_dir.iterdir())
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", [
+    "proxy_before", "proxy_after", "redirect_before", "redirect_after",
+    "redirect_error_before", "redirect_error_after",
+    "redirect_policy_before", "redirect_policy_after",
+    "redirect", "effective_url", "non200", "oversize",
+    "oversize_short_chunks", "raise", "block",
+])
+def test_fake_seven_transport_v3_faults_fail_closed_with_receipt(
+        monkeypatch, tmp_path, variant):
+    """Transport policy and bounded-read failures cannot become a pass."""
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-fault-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-transport-v3-{variant}"
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(
+            fake_http, marker_dir, variant=variant),
+        port_observe=_v3_port_observer, work_seconds=0.8)
+    assert time.monotonic() - started < 3.0
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["status"] != "fake_seven_process_pass", result
+    assert result["transport_gate_proven"] is False
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert CANARY not in json.dumps(result)
+    if variant in ("proxy_before", "redirect_before",
+                   "redirect_error_before",
+                   "redirect_policy_before"):
+        assert not list(marker_dir.iterdir())
+    else:
+        assert (marker_dir / "call-1.json").is_file()
+        assert not (marker_dir / "call-2.json").exists()
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v3"
+    assert receipt["transport_gate_proven"] is False
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+def test_fake_seven_transport_v3_printed_canary_is_contained(
+        monkeypatch, tmp_path, capfd):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-canary-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / "seven-transport-v3-print-canary"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(
+            fake_http, marker_dir, variant="print_canary"),
+        port_observe=_v3_port_observer, work_seconds=2.0)
+    assert result["status"] == "fake_seven_process_pass", result
+    assert result["transport_gate_proven"] is True
+    assert CANARY not in json.dumps(result)
+    assert CANARY.encode() not in (run_dir / "receipt.json").read_bytes()
+    assert CANARY.encode() not in (run_dir / live.JOURNAL_NAME).read_bytes()
+    captured = capfd.readouterr()
+    assert CANARY not in captured.out + captured.err
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant,ordinal", [
+    ("wrong_scheme", 1), ("wrong_host", 1), ("wrong_port", 1),
+    ("wrong_path", 1), ("wrong_method", 1), ("wrong_payload", 3),
+    ("wrong_nonce", 1),
+])
+def test_fake_seven_transport_v3_rejects_request_tamper_before_opener(
+        monkeypatch, tmp_path, variant, ordinal):
+    original_worker = live.worker_once
+    marker_dir = tmp_path / "v3-tamper-markers"
+    marker_dir.mkdir()
+
+    def corrupted_worker(**kwargs):
+        original_http = kwargs["http_call"]
+        calls = {"count": 0}
+
+        def corrupt(method, url, payload, remaining, grant):
+            calls["count"] += 1
+            if calls["count"] == ordinal:
+                if variant == "wrong_scheme":
+                    url = url.replace("http://", "https://", 1)
+                elif variant == "wrong_host":
+                    url = url.replace("127.0.0.1", "localhost", 1)
+                elif variant == "wrong_port":
+                    url = url.replace(":11455", ":11456", 1)
+                elif variant == "wrong_path":
+                    url += "/extra"
+                elif variant == "wrong_method":
+                    method = "POST"
+                elif variant == "wrong_payload":
+                    payload = {"model": "wrong"}
+                elif variant == "wrong_nonce":
+                    grant["nonce"] = "0" * 32
+            return original_http(method, url, payload, remaining, grant)
+
+        kwargs["http_call"] = corrupt
+        return original_worker(**kwargs)
+
+    monkeypatch.setattr(live, "worker_once", corrupted_worker)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-transport-v3-tamper-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, work_seconds=0.8)
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["transport_gate_proven"] is False
+    assert not (marker_dir / f"call-{ordinal}.json").exists()
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert json.loads(receipt_path.read_bytes())["transport_gate_proven"] is False
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["missing", "corrupt", "float_count"])
+def test_fake_seven_transport_v3_missing_or_corrupt_w_summary_is_not_proof(
+        monkeypatch, tmp_path, variant):
+    original_send = live._seven_child_send
+
+    def damaged_summary(pipes, name, run_id, phase, seq, own, deadline,
+                        **extra):
+        if name == "w_summary":
+            if variant == "missing":
+                return False
+            extra["summary"] = dict(extra["summary"])
+            if variant == "float_count":
+                extra["summary"]["transport_policy_calls"] = 7.0
+            else:
+                extra["summary"]["transport_proof_sha256"] = "0" * 64
+        return original_send(pipes, name, run_id, phase, seq, own, deadline,
+                             **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", damaged_summary)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-summary-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-transport-v3-summary-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, work_seconds=2.0)
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["transport_gate_proven"] is False
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    receipt = json.loads(receipt_path.read_bytes())
+    assert receipt["schema"] == "fake_seven_process_receipt_v3"
+    assert receipt["transport_gate_proven"] is False
+    assert CANARY.encode() not in receipt_path.read_bytes()
+
+
+@_DARWIN_FORK
+def test_fake_seven_transport_v3_parent_rehashes_received_result_frames(
+        monkeypatch, tmp_path):
+    """A W summary cannot certify a result frame P actually saw corrupted."""
+    original_send = live._seven_child_send
+
+    def damaged_result(pipes, name, run_id, phase, seq, own, deadline,
+                       **extra):
+        if name == "w_result_4":
+            extra["response_sha256"] = "0" * 64
+        return original_send(pipes, name, run_id, phase, seq, own, deadline,
+                             **extra)
+
+    monkeypatch.setattr(live, "_seven_child_send", damaged_result)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-frame-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / "seven-transport-v3-frame-mismatch"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, work_seconds=2.0)
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["transport_gate_proven"] is False
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert json.loads(receipt_path.read_bytes())["transport_gate_proven"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("ordinal", range(1, 8))
+def test_fake_seven_transport_v3_blocked_read_at_each_ordinal_fail_closed(
+        monkeypatch, tmp_path, ordinal):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / f"v3-block-{ordinal}-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-transport-v3-block-{ordinal}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(
+            fake_http, marker_dir, variant=f"block_at_{ordinal}"),
+        port_observe=_v3_port_observer, work_seconds=0.8)
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["transport_gate_proven"] is False
+    assert sorted(int(path.stem.split("-")[1]) for path in
+                  marker_dir.glob("call-*.json")) == list(range(1, ordinal + 1))
+    receipt_path = run_dir / "receipt.json"
+    assert receipt_path.exists()
+    assert json.loads(receipt_path.read_bytes())["transport_gate_proven"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_transport_v3_r_receipt_failure_does_not_erase_w_proof(
+        monkeypatch, tmp_path):
+    def no_receipt(*_args, **_kwargs):
+        raise RuntimeError(CANARY)
+
+    monkeypatch.setattr(live, "_seven_write_receipt", no_receipt)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-r-fail-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / "seven-transport-v3-r-fail"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=None,
+        fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+        port_observe=_v3_port_observer, work_seconds=2.0)
+    assert len(list(marker_dir.glob("call-*.json"))) == 7
+    assert result["schema"] == "fake_seven_process_result_v3"
+    assert result["transport_gate_proven"] is True
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["receipt_durable_proven"] is False
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert CANARY not in json.dumps(result)
+    assert not (run_dir / "receipt.json").exists()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("with_ports,schema", [
+    (False, "fake_seven_process_result_v1"),
+    (True, "fake_seven_process_result_v2"),
+])
+def test_fake_seven_transport_v3_opt_in_preserves_old_callback_paths(
+        monkeypatch, tmp_path, with_ports, schema):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    result = live._supervise_fake_seven_once(
+        run_dir=tmp_path / "legacy-callback", binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        port_observe=_v3_port_observer if with_ports else None,
+        work_seconds=2.0)
+    assert result["schema"] == schema
+    assert result["status"] == "fake_seven_process_pass"
+    assert "transport_gate_proven" not in result
+
+
+@pytest.mark.parametrize("variant", ["missing_ports", "dual_transport"])
+def test_fake_seven_transport_v3_rejects_invalid_opt_in_before_work(
+        monkeypatch, tmp_path, variant):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    marker_dir = tmp_path / "v3-config-markers"
+    marker_dir.mkdir()
+    _v3_socket_sentinels(monkeypatch)
+    run_dir = tmp_path / f"seven-transport-v3-invalid-{variant}"
+    with pytest.raises(live.LiveOperatorError,
+                       match="^fake_seven_configuration_invalid$"):
+        live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer,
+            fake_http=fake_http if variant == "dual_transport" else None,
+            fake_opener_factory=_v3_fake_factory(fake_http, marker_dir),
+            port_observe=_v3_port_observer if variant == "dual_transport"
+            else None)
+    assert not run_dir.exists()
+    assert not list(marker_dir.iterdir())
+
+
+def test_fake_seven_transport_v3_exact_response_and_request_size_bounds(
+        monkeypatch):
+    """W's fake seam includes the boundary and refuses oversize pre-open."""
+    _v3_socket_sentinels(monkeypatch)
+    calls = []
+
+    def factory(proxy_handler, no_redirect_handler):
+        assert proxy_handler.proxies == {}
+
+        class FakeOpener:
+            handlers = [no_redirect_handler]
+
+            def open(self, request, timeout=None):
+                calls.append((request.full_url, timeout))
+                return _V3FakeResponse(
+                    b"x" * live.RESPONSE_LIMIT, request.full_url,
+                    chunk_size=65536, first_chunk_size=7)
+
+        return FakeOpener()
+
+    spec = _grant_fields(1)
+    spec["expires_at"] = time.monotonic() + 3.0
+    grant = {**spec, "nonce": "0" * 32}
+    url = f"http://127.0.0.1:{spec['port']}{spec['path']}"
+    answer = live._seven_v3_exchange(
+        factory, method=spec["method"], url=url, payload_raw=None,
+        remaining=2.0, grant=grant, spec=spec,
+        work_deadline=time.monotonic() + 3.0)
+    assert len(answer["body"]) == live.RESPONSE_LIMIT
+    assert calls and calls[0][0] == url
+
+    big = b"x" * (live.REQUEST_LIMIT + 1)
+    spec = _grant_fields(3)
+    spec["expires_at"] = time.monotonic() + 3.0
+    spec["payload_sha256"] = hashlib.sha256(big).hexdigest()
+    grant = {**spec, "nonce": "1" * 32}
+    count_before = len(calls)
+    with pytest.raises(live.LiveOperatorError,
+                       match="^fake_seven_transport_gate_invalid$"):
+        live._seven_v3_exchange(
+            factory, method=spec["method"],
+            url=f"http://127.0.0.1:{spec['port']}{spec['path']}",
+            payload_raw=big, remaining=2.0, grant=grant, spec=spec,
+            work_deadline=time.monotonic() + 3.0)
+    assert len(calls) == count_before

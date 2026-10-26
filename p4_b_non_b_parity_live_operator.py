@@ -21,9 +21,11 @@ import select
 import signal
 import stat
 import struct
+import sys
 import threading
 import time
 from typing import Any
+import urllib.request
 
 from p4_b_isolated_ollama_identity_probe import (
     FROZEN_DAEMON_SHA256, FROZEN_MANIFEST_SHA256, FROZEN_RUNNER_SHA256,
@@ -2800,6 +2802,10 @@ _SEVEN_RECEIPT_PORT_FIELDS = frozenset({
     "daemon_port_vacant_after", "runner_port_vacant_after",
     "shared_11434_unchanged", "o_reaped", "o_stop", "s_o_normal_exit",
 })
+_SEVEN_TRANSPORT_FIELDS = frozenset({
+    "transport_gate_proven", "transport_proof_sha256",
+    "transport_policy_calls",
+})
 _SEVEN_SUMMARY_FIELDS = frozenset({
     "schema", "status", "request_sha256", "request_utf8_bytes",
     "rendered_prompt_sha256", "rendered_prompt_utf8_bytes",
@@ -2810,6 +2816,10 @@ _SEVEN_SUMMARY_FIELDS = frozenset({
     "external_completion_attempts", "internal_runner_generations",
     "elapsed_seconds", "b_upper_bound_proven", "b_send_authorized",
 })
+_SEVEN_SUMMARY_TRANSPORT_FIELDS = frozenset({
+    "transport_proof_sha256", "transport_policy_calls",
+})
+_SEVEN_TRANSPORT_POLICY = "fake_urllib_empty_proxy_no_redirect_v1"
 _SEVEN_SOURCE_EVIDENCE_FIELDS = frozenset({
     "source_revision", "version", "branch", "bos_strip_applied",
     "context_total", "parallel", "effective_num_ctx", "request_num_ctx",
@@ -2834,6 +2844,7 @@ _SEVEN_FAILURE_CODES = frozenset({
     "port_pre_not_vacant", "port_final_unavailable",
     "port_final_occupied", "shared_11434_changed",
     "runner_port_unavailable", "port_cleanup_unavailable",
+    "transport_gate_unproven",
 })
 
 
@@ -2844,8 +2855,13 @@ def _seven_frame(run_id: str, phase: str, seq: int, witness: dict,
 
 
 def _seven_summary_valid(value: Any) -> bool:
-    if (type(value) is not dict or set(value) != _SEVEN_SUMMARY_FIELDS
-            or value["schema"] != "fake_non_b_worker_v1"
+    v3 = (type(value) is dict
+          and value.get("schema") == "fake_non_b_worker_v3")
+    allowed = (_SEVEN_SUMMARY_FIELDS | _SEVEN_SUMMARY_TRANSPORT_FIELDS
+               if v3 else _SEVEN_SUMMARY_FIELDS)
+    if (type(value) is not dict or set(value) != allowed
+            or value["schema"] != ("fake_non_b_worker_v3" if v3
+                                   else "fake_non_b_worker_v1")
             or value["status"] not in (
                 "fake_non_b_parity_pass", "fake_non_b_parity_mismatch")
             or value["http_calls"] != 7 or value["identity_checks"] != 6
@@ -2856,6 +2872,10 @@ def _seven_summary_valid(value: Any) -> bool:
             or any(not _valid_sha(value[key]) for key in (
                 "request_sha256", "rendered_prompt_sha256",
                 "identity_observation_sha256"))):
+        return False
+    if v3 and (not _valid_sha(value["transport_proof_sha256"])
+               or type(value["transport_policy_calls"]) is not int
+               or value["transport_policy_calls"] != 7):
         return False
     source = value["source_evidence"]
     if (type(source) is not dict or set(source) != _SEVEN_SOURCE_EVIDENCE_FIELDS
@@ -2942,14 +2962,143 @@ def _seven_port_proof(snapshot: dict) -> dict:
     }
 
 
+class _SevenNoRedirect(urllib.request.HTTPRedirectHandler):
+    """W-local fake client policy; no default opener is ever installed."""
+
+    def redirect_request(self, request, fp, code, msg, headers, newurl):
+        return None
+
+
+_SEVEN_DENY_REDIRECT = _SevenNoRedirect.redirect_request
+_SEVEN_REDIRECT_ERROR = urllib.request.HTTPRedirectHandler.http_error_302
+_SEVEN_REDIRECT_CODES = frozenset({301, 302, 303, 307, 308})
+
+
+def _seven_v3_opener_valid(opener: Any, proxy_handler: Any,
+                           no_redirect_handler: Any) -> bool:
+    """Inspect installed handlers, not a fake callback's proxy claim."""
+    try:
+        handlers = opener.handlers
+        return (type(handlers) in (list, tuple)
+                and type(proxy_handler) is urllib.request.ProxyHandler
+                and proxy_handler.proxies == {}
+                and type(no_redirect_handler) is _SevenNoRedirect
+                and no_redirect_handler.redirect_request.__func__
+                    is _SEVEN_DENY_REDIRECT
+                and "redirect_request" not in vars(no_redirect_handler)
+                and all(getattr(no_redirect_handler,
+                                f"http_error_{code}").__func__
+                        is _SEVEN_REDIRECT_ERROR
+                        for code in _SEVEN_REDIRECT_CODES)
+                and not any(name.startswith("http_error_3")
+                            and name not in {
+                                f"http_error_{code}"
+                                for code in _SEVEN_REDIRECT_CODES}
+                            and callable(getattr(no_redirect_handler, name))
+                            for name in dir(no_redirect_handler))
+                and not any(name.startswith("http_error_3")
+                            for name in vars(no_redirect_handler))
+                and sum(handler is no_redirect_handler
+                        for handler in handlers) == 1
+                and all(
+                    handler is no_redirect_handler
+                    or (not isinstance(handler, urllib.request.ProxyHandler)
+                        and not isinstance(
+                            handler, urllib.request.HTTPRedirectHandler)
+                        and not callable(getattr(handler, "proxy_open", None))
+                        and not callable(getattr(
+                            handler, "redirect_request", None))
+                        and not any(callable(getattr(
+                            handler, f"http_error_{code}", None))
+                                    for code in range(300, 400)))
+                    for handler in handlers)
+                and callable(opener.open))
+    except BaseException:
+        return False
+
+
+def _seven_v3_exchange(factory, *, method: str, url: str,
+                       payload_raw: bytes | None, remaining: float,
+                       grant: dict, spec: dict,
+                       work_deadline: float) -> dict:
+    """Explicit fake-only W-owned Request and bounded response exchange."""
+    if (not callable(factory)
+            or (payload_raw is not None and (
+                type(payload_raw) is not bytes
+                or len(payload_raw) > REQUEST_LIMIT))
+            or not _split_grant_valid(grant, spec)
+            or method != spec["method"]
+            or url != f"http://127.0.0.1:{spec['port']}{spec['path']}"
+            or (None if payload_raw is None else _sha(payload_raw))
+               != grant["payload_sha256"]
+            or not _finite_number(remaining) or remaining <= 0):
+        _fail("fake_seven_transport_gate_invalid")
+    proxy_handler = urllib.request.ProxyHandler({})
+    no_redirect_handler = _SevenNoRedirect()
+    opener = factory(proxy_handler, no_redirect_handler)
+    if not _seven_v3_opener_valid(opener, proxy_handler,
+                                  no_redirect_handler):
+        _fail("fake_seven_transport_failed")
+    now = time.monotonic()
+    timeout = min(2.0, remaining, work_deadline - now,
+                  float(grant["expires_at"]) - now)
+    if timeout <= 0:
+        _fail("fake_seven_transport_gate_invalid")
+    request = urllib.request.Request(url, data=payload_raw, method=method)
+    with opener.open(request, timeout=timeout) as response:
+        if not _seven_v3_opener_valid(opener, proxy_handler,
+                                      no_redirect_handler):
+            _fail("fake_seven_transport_failed")
+        status = response.getcode()
+        effective_url = response.geturl()
+        if (type(status) is not int or status != 200
+                or type(effective_url) is not str
+                or effective_url.encode("utf-8") != url.encode("utf-8")):
+            _fail("fake_seven_transport_failed")
+        chunks: list[bytes] = []
+        size = 0
+        while True:
+            allowance = min(65536, RESPONSE_LIMIT + 1 - size)
+            chunk = response.read(allowance)
+            if type(chunk) is not bytes or len(chunk) > allowance:
+                _fail("fake_seven_transport_failed")
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > RESPONSE_LIMIT:
+                _fail("fake_seven_transport_failed")
+            chunks.append(chunk)
+    if not _seven_v3_opener_valid(opener, proxy_handler,
+                                  no_redirect_handler):
+        _fail("fake_seven_transport_failed")
+    return {"requested_url": url, "effective_url": effective_url,
+            "proxy_used": False, "redirected": False,
+            "status": status, "body": b"".join(chunks)}
+
+
+def _seven_transport_row(ordinal: int, request_sha: str, grant_sha: str,
+                         response_sha: str, response_bytes: int) -> dict:
+    """Raw-free ordered W/P contract for the seven fake exchanges."""
+    return {"ordinal": ordinal, "request_sha256": request_sha,
+            "grant_sha256": grant_sha,
+            "response_sha256": response_sha,
+            "response_bytes": response_bytes,
+            "policy": _SEVEN_TRANSPORT_POLICY}
+
+
 def _seven_receipt_valid(value: Any, run_id: str) -> bool:
-    v2 = (type(value) is dict
-          and value.get("schema") == "fake_seven_process_receipt_v2")
-    allowed = (_SEVEN_RECEIPT_FIELDS | _SEVEN_RECEIPT_PORT_FIELDS
-               if v2 else _SEVEN_RECEIPT_FIELDS)
+    v3 = (type(value) is dict
+          and value.get("schema") == "fake_seven_process_receipt_v3")
+    v2 = (type(value) is dict and value.get("schema") in (
+        "fake_seven_process_receipt_v2", "fake_seven_process_receipt_v3"))
+    allowed = (_SEVEN_RECEIPT_FIELDS
+               | (_SEVEN_RECEIPT_PORT_FIELDS if v2 else frozenset())
+               | (_SEVEN_TRANSPORT_FIELDS if v3 else frozenset()))
     if (type(value) is not dict or set(value) != allowed
-            or value["schema"] != ("fake_seven_process_receipt_v2" if v2
-                                   else "fake_seven_process_receipt_v1")
+            or value["schema"] != (
+                "fake_seven_process_receipt_v3" if v3 else
+                "fake_seven_process_receipt_v2" if v2 else
+                "fake_seven_process_receipt_v1")
             or value["run_id"] != run_id
             or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
             or value["status"] not in (
@@ -2992,6 +3141,16 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
                 and value["o_reaped"] and value["o_stop"] == "normal_exit"
                 and value["s_o_normal_exit"]):
             return False
+    if v3:
+        if (type(value["transport_gate_proven"]) is not bool
+                or value["transport_proof_sha256"] is not None
+                   and not _valid_sha(value["transport_proof_sha256"])
+                or type(value["transport_policy_calls"]) is not int
+                or not 0 <= value["transport_policy_calls"] <= 7
+                or (value["transport_gate_proven"] and (
+                    not _valid_sha(value["transport_proof_sha256"])
+                    or value["transport_policy_calls"] != 7))):
+            return False
     for key in ("reserved", "granted", "worker_issued", "on_wire_yes",
                 "completion_attempt_spent", "http_calls", "identity_checks"):
         item = value[key]
@@ -3000,6 +3159,7 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
     if value["status"] == "fake_seven_process_pending_receipt":
         return (value["failure_code"] == "none"
                 and (not v2 or value["port_gate_proven"])
+                and (not v3 or value["transport_gate_proven"])
                 and all(value[key] == 7 for key in (
                     "reserved", "granted", "worker_issued", "on_wire_yes",
                     "http_calls")) and value["identity_checks"] == 6
@@ -3269,7 +3429,8 @@ def _seven_d_child(pipes: dict[str, tuple[int, int]], *, run_dir: Path,
 
 
 def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
-                   observe_identity, fake_http, run_id: str,
+                   observe_identity, fake_http, fake_opener_factory,
+                   run_id: str,
                    hard_deadline: float, work_deadline: float,
                    fault: str | None) -> int:
     writes = {"w_initial", "w_summary"} | {
@@ -3284,6 +3445,21 @@ def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
     try:
         os.setsid()
         _fake_child_lifetime(hard_deadline)
+        v3 = fake_opener_factory is not None
+        if v3:
+            # W is a forked, one-use child. Contain output from every injected
+            # effect, including the opener factory, at the descriptor layer.
+            null_fd = os.open(os.devnull, os.O_WRONLY)
+            try:
+                os.dup2(null_fd, 1)
+                os.dup2(null_fd, 2)
+            finally:
+                if null_fd > 2:
+                    os.close(null_fd)
+            # pytest's capfd (and similar embedders) may replace the Python
+            # stream objects with wrappers around different descriptors.
+            sys.stdout = os.fdopen(os.dup(1), "w", buffering=1)
+            sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
         own = _fake_os_witness(os.getpid())
         if not _seven_child_send(pipes, "w_initial", run_id, "initial", 0,
                                  own, work_deadline, role="W"):
@@ -3302,6 +3478,7 @@ def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
         pending: dict[int, tuple[dict, dict]] = {}
         used: set[str] = set()
         callback_count = 0
+        transport_rows: list[dict] = []
 
         def authorize_call(spec: dict) -> dict:
             ordinal = spec["ordinal"]
@@ -3363,7 +3540,15 @@ def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
                 _fail("fake_seven_issue_ack_unavailable")
             if fault == f"w_after_issue_{ordinal}":
                 return None  # worker_once rejects it; no fake send occurred.
-            value = fake_http(method, url, payload, remaining, deepcopy(grant))
+            if v3:
+                value = _seven_v3_exchange(
+                    fake_opener_factory, method=method, url=url,
+                    payload_raw=payload_raw, remaining=remaining,
+                    grant=deepcopy(grant), spec=deepcopy(spec),
+                    work_deadline=work_deadline)
+            else:
+                value = fake_http(method, url, payload, remaining,
+                                  deepcopy(grant))
             callback_count += 1
             if (type(value) is not dict or set(value) != _HTTP_FIELDS
                     or value["requested_url"] != expected_url
@@ -3374,13 +3559,19 @@ def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
                     or value["status"] != 200 or type(value["body"]) is not bytes
                     or len(value["body"]) > RESPONSE_LIMIT):
                 _fail("fake_seven_transport_failed")
+            response_sha = _sha(value["body"])
+            response_bytes = len(value["body"])
             if not _seven_child_send(
                     pipes, _seven_edge("w_result", ordinal), run_id,
                     "result_entry", ordinal, own, work_deadline,
                     grant_sha256=grant_sha,
-                    response_sha256=_sha(value["body"]),
-                    response_bytes=len(value["body"])):
+                    response_sha256=response_sha,
+                    response_bytes=response_bytes):
                 _fail("fake_seven_result_unavailable")
+            if v3:
+                transport_rows.append(_seven_transport_row(
+                    ordinal, _sha(_canonical(spec, "grant_invalid")),
+                    grant_sha, response_sha, response_bytes))
             if _seven_child_receive(
                     pipes, _seven_edge("w_result_ack", ordinal), run_id,
                     "result_ack", ordinal, own, work_deadline) is None:
@@ -3391,6 +3582,12 @@ def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
             binding=binding, clock=time.monotonic,
             observe_identity=observe_identity,
             authorize_call=authorize_call, http_call=http_call)
+        if v3:
+            summary = {**summary,
+                       "schema": "fake_non_b_worker_v3",
+                       "transport_proof_sha256": _sha(_canonical(
+                           transport_rows, "fake_seven_transport_invalid")),
+                       "transport_policy_calls": len(transport_rows)}
         if (not _seven_summary_valid(summary) or callback_count != 7
                 or len(used) != 7):
             return 125
@@ -3563,9 +3760,12 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
     status = ("fake_seven_process_pending_receipt"
               if result["status"] == "fake_seven_process_pending_receipt"
               else "fake_seven_process_unproven")
-    v2 = result["schema"] == "fake_seven_process_result_v2"
+    v3 = result["schema"] == "fake_seven_process_result_v3"
+    v2 = result["schema"] in ("fake_seven_process_result_v2",
+                              "fake_seven_process_result_v3")
     return {
-        "schema": ("fake_seven_process_receipt_v2" if v2
+        "schema": ("fake_seven_process_receipt_v3" if v3 else
+                   "fake_seven_process_receipt_v2" if v2
                    else "fake_seven_process_receipt_v1"), "run_id": run_id,
         "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
         "status": status, "failure_code": result["failure_code"],
@@ -3584,6 +3784,8 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
             "daemon_port_vacant_after", "runner_port_vacant_after",
             "shared_11434_unchanged", "o_reaped", "o_stop",
             "s_o_normal_exit")} if v2 else {}),
+        **({key: result[key] for key in _SEVEN_TRANSPORT_FIELDS}
+           if v3 else {}),
     }
 
 
@@ -3629,6 +3831,7 @@ def _seven_pipe_layout(*, port_enabled: bool = False):
 def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                observe_identity, fake_http,
                                port_observe=None,
+                               fake_opener_factory=None,
                                work_seconds: float = 2.0,
                                preparation_seconds: float = 0.5,
                                cleanup_seconds: float = 0.5,
@@ -3643,8 +3846,13 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     frames and waitpid only; D exclusively owns the journal, R the receipt.
     The public ``supervise_once`` remains fail-closed.
     """
+    v3 = fake_opener_factory is not None
     if (type(binding_template) is not dict
-            or not callable(observe_identity) or not callable(fake_http)
+            or not callable(observe_identity)
+            or (v3 and (fake_http is not None
+                        or not callable(fake_opener_factory)
+                        or not callable(port_observe)))
+            or (not v3 and not callable(fake_http))
             or (port_observe is not None and not callable(port_observe))
             or (cleanup_observe is not None and not callable(cleanup_observe))
             or (signal_initial_witness is not None
@@ -3663,7 +3871,8 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     v2 = port_observe is not None
     run_id = bound["run_id"]
     result = {
-        "schema": ("fake_seven_process_result_v2" if v2
+        "schema": ("fake_seven_process_result_v3" if v3 else
+                   "fake_seven_process_result_v2" if v2
                    else "fake_seven_process_result_v1"),
         "status": "fake_seven_process_unproven",
         "failure_code": "initial_unavailable",
@@ -3697,6 +3906,10 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             "o_term": "not_attempted", "o_kill": "not_attempted",
             "s_o_reaped": False, "s_o_normal_exit": False,
         })
+    if v3:
+        result.update({"transport_gate_proven": False,
+                       "transport_proof_sha256": None,
+                       "transport_policy_calls": 0})
     started = time.monotonic()
     prep_deadline = started + preparation_seconds
     work_deadline = prep_deadline + work_seconds
@@ -3732,6 +3945,7 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     pre_shared_sha: str | None = None
     runner_port_candidate: int | None = None
     runner_port_verified = False
+    transport_rows: list[dict] = []
 
     def require(value, code: str) -> None:
         if not value:
@@ -3792,6 +4006,7 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 child_code = _seven_w_child(
                     core, binding_template=bound,
                     observe_identity=observe_identity, fake_http=fake_http,
+                    fake_opener_factory=fake_opener_factory,
                     run_id=run_id, hard_deadline=hard_deadline,
                     work_deadline=work_deadline, fault=fault)
             except BaseException:
@@ -4106,6 +4321,12 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 "result_entry", ordinal, w_witness, work_deadline,
                 expected={"grant_sha256": grant_sha})
             require(fake_result is not None, "fake_result_unavailable")
+            if v3:
+                transport_rows.append(_seven_transport_row(
+                    ordinal, _sha(_canonical(fields, "grant_invalid")),
+                    grant_sha, fake_result["response_sha256"],
+                    fake_result["response_bytes"]))
+                result["transport_policy_calls"] = len(transport_rows)
             result["on_wire_yes"] = "unknown"
             require(parent_send(core, core_parent_fds,
                                 _seven_edge("d_wire", ordinal),
@@ -4146,11 +4367,23 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                        work_deadline)
         require(summary_frame is not None, "w_summary_unavailable")
         summary = summary_frame["summary"]
+        require(summary["schema"] == ("fake_non_b_worker_v3" if v3
+                                      else "fake_non_b_worker_v1"),
+                "w_summary_unavailable")
         require(_fake_wait_reap(d_pid, work_deadline, statuses)
                 and _fake_wait_reap(w_pid, work_deadline, statuses)
                 and all(os.WIFEXITED(statuses[pid])
                         and os.WEXITSTATUS(statuses[pid]) == 0
                         for pid in (d_pid, w_pid)), "normal_exit_unavailable")
+        if v3:
+            require(len(transport_rows) == 7
+                    and summary["transport_policy_calls"] == 7
+                    and summary["transport_proof_sha256"] == _sha(_canonical(
+                        transport_rows, "fake_seven_transport_invalid")),
+                    "transport_gate_unproven")
+            result["transport_gate_proven"] = True
+            result["transport_proof_sha256"] = summary[
+                "transport_proof_sha256"]
         result.update({"d_reaped": True, "w_reaped": True,
                        "d_stop": "normal_exit", "w_stop": "normal_exit",
                        "http_calls": summary["http_calls"],
