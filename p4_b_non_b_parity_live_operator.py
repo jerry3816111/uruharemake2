@@ -18,6 +18,7 @@ import re
 import secrets
 import select
 import signal
+import stat
 import struct
 import threading
 import time
@@ -1497,10 +1498,40 @@ _SPLIT_EXTRA = {
     "signal_term": frozenset({"target_role", "target_witness"}),
     "signal_kill": frozenset({"target_role", "target_witness"}),
     "signal_result": frozenset({"target_role", "signal_name", "code"}),
+    "receipt_preflight": frozenset(),
+    "receipt_preflight_ack": frozenset(),
+    "receipt_write": frozenset({"receipt"}),
+    "receipt_proof": frozenset({"receipt_sha256", "receipt_bytes"}),
 }
 _SPLIT_BASE = frozenset({"schema", "run_id", "phase", "seq", "witness"})
 _SPLIT_SIGNAL_CODES = frozenset({
     "signal_sent", "identity_changed_no_signal", "witness_or_signal_unavailable",
+})
+_SPLIT_RECEIPT_FIELDS = frozenset({
+    "schema", "run_id", "snapshot_phase", "status", "failure_code",
+    "zero_ack_received",
+    "request_accepted", "grant_proven", "worker_received_proven",
+    "reserved", "granted", "worker_issued", "on_wire", "journal_sha256",
+    "grant_sha256", "d_reaped", "w_reaped", "s_d_reaped", "s_w_reaped",
+    "d_term", "d_kill", "w_term", "w_kill", "d_stop", "w_stop",
+    "physical_stop_unproven", "full_gate_pass", "b_upper_bound_proven",
+    "b_send_authorized",
+})
+_SPLIT_FAILURE_CODES = frozenset({
+    "initial_unavailable", "receipt_helper_initial_unavailable",
+    "receipt_preflight_unavailable",
+    "signal_helper_initial_unavailable", "zero_ack_unavailable",
+    "worker_request_unavailable", "grant_proof_unavailable",
+    "worker_received_ack_unavailable", "ipc_or_spawn_unavailable",
+    "signal_helper_exit_unavailable", "cleanup_unavailable",
+    "receipt_unavailable_review_required", "none",
+})
+_SPLIT_CLEANUP_CODES = frozenset({
+    "not_attempted", "command_sent", "cleanup_command_unavailable",
+    "cleanup_response_unavailable",
+}) | _SPLIT_SIGNAL_CODES
+_SPLIT_STOP_CODES = frozenset({
+    "normal_exit", "witnessed_term", "witnessed_kill", "unproven",
 })
 
 
@@ -1555,6 +1586,69 @@ def _split_grant_valid(grant: Any, fields: dict) -> bool:
             and time.monotonic() < grant["expires_at"])
 
 
+def _split_receipt_payload(result: dict, run_id: str) -> dict:
+    """Project only fixed fake-result fields into the on-disk receipt."""
+    reserved = result["durable_reserved"]
+    return {
+        "schema": "fake_split_receipt_v1", "run_id": run_id,
+        "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
+        "status": result["status"], "failure_code": result["failure_code"],
+        "zero_ack_received": result["zero_ack_received"],
+        "request_accepted": result["request_accepted"],
+        "grant_proven": result["grant_proven"],
+        "worker_received_proven": result["worker_received_proven"],
+        "reserved": reserved, "granted": reserved,
+        "worker_issued": 0, "on_wire": "unknown",
+        "journal_sha256": result.get("journal_sha256"),
+        "grant_sha256": result.get("grant_sha256"),
+        **{key: result[key] for key in (
+            "d_reaped", "w_reaped", "s_d_reaped", "s_w_reaped",
+            "d_term", "d_kill", "w_term", "w_kill", "d_stop", "w_stop")},
+        "physical_stop_unproven": True, "full_gate_pass": False,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+    }
+
+
+def _split_receipt_valid(value: Any, run_id: str) -> bool:
+    if (type(value) is not dict or set(value) != _SPLIT_RECEIPT_FIELDS
+            or value["schema"] != "fake_split_receipt_v1"
+            or value["run_id"] != run_id
+            or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
+            or value["status"] not in (
+                "fake_partial_split_unproven", "fake_partial_op1_worker_received")
+            or value["failure_code"] not in _SPLIT_FAILURE_CODES
+            or value["reserved"] not in (0, 1, "unknown")
+            or type(value["reserved"]) not in (int, str)
+            or type(value["granted"]) is not type(value["reserved"])
+            or value["granted"] != value["reserved"]
+            or value["worker_issued"] != 0
+            or type(value["worker_issued"]) is not int
+            or value["on_wire"] != "unknown"
+            or any(value[key] is not None and not _valid_sha(value[key])
+                   for key in ("journal_sha256", "grant_sha256"))
+            or any(type(value[key]) is not bool for key in (
+                "zero_ack_received", "request_accepted", "grant_proven",
+                "worker_received_proven", "d_reaped", "w_reaped",
+                "s_d_reaped", "s_w_reaped"))
+            or any(value[key] not in _SPLIT_CLEANUP_CODES for key in (
+                "d_term", "d_kill", "w_term", "w_kill"))
+            or any(value[key] not in _SPLIT_STOP_CODES
+                   for key in ("d_stop", "w_stop"))
+            or any(value[key] is not expected for key, expected in (
+                ("physical_stop_unproven", True), ("full_gate_pass", False),
+                ("b_upper_bound_proven", False),
+                ("b_send_authorized", False)))):
+        return False
+    if (value["worker_received_proven"]
+            and (not value["grant_proven"] or value["reserved"] != 1)):
+        return False
+    if (value["status"] == "fake_partial_op1_worker_received"
+            and (value["failure_code"] != "none"
+                 or not value["worker_received_proven"])):
+        return False
+    return True
+
+
 def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                        witness: dict | None = None, pid: int | None = None,
                        role: str | None = None, spec: dict | None = None,
@@ -1563,7 +1657,8 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                        journal_sha256: str | None = None,
                        target_role: str | None = None,
                        target_witness: dict | None = None,
-                       signal_name: str | None = None) -> bool:
+                       signal_name: str | None = None,
+                       receipt: dict | None = None) -> bool:
     """Exact schema and semantic allowlist before encode/after decode."""
     if (type(value) is not dict or phase not in _SPLIT_EXTRA
             or set(value) != _SPLIT_BASE | _SPLIT_EXTRA[phase]
@@ -1589,18 +1684,28 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
     elif not _split_same(got_witness, witness):
         return False
     if phase == "initial":
-        return value["role"] == role and role in ("D", "W", "S_D", "S_W")
+        return value["role"] == role and role in (
+            "D", "W", "R", "S_D", "S_W", "S_R")
     if phase in ("signal_term", "signal_kill"):
-        return (target_role in ("D", "W")
+        return (target_role in ("D", "W", "R")
                 and value["target_role"] == target_role
                 and target_witness is not None
                 and _split_same(value["target_witness"], target_witness))
     if phase == "signal_result":
-        return (target_role in ("D", "W")
+        return (target_role in ("D", "W", "R")
                 and value["target_role"] == target_role
                 and signal_name in ("term", "kill")
                 and value["signal_name"] == signal_name
                 and value["code"] in _SPLIT_SIGNAL_CODES)
+    if phase == "receipt_write":
+        return _split_receipt_valid(value["receipt"], run_id)
+    if phase == "receipt_proof":
+        if receipt is None or not _split_receipt_valid(receipt, run_id):
+            return False
+        raw = _canonical(receipt, "ipc_invalid")
+        return (value["receipt_sha256"] == _sha(raw)
+                and type(value["receipt_bytes"]) is int
+                and value["receipt_bytes"] == len(raw))
     if phase == "zero":
         return (journal_sha256 is not None
                 and value["journal_sha256"] == journal_sha256
@@ -1800,6 +1905,126 @@ def _split_w_child(pipes: dict[str, tuple[int, int]], *, spec: dict,
         _fake_close(*owned)
 
 
+def _split_write_receipt(run_dir: Path, receipt: dict, run_id: str) -> tuple[str, int]:
+    """R-only one-use O_EXCL receipt; no parent filesystem callback."""
+    if not _split_receipt_valid(receipt, run_id):
+        _fail("receipt_invalid")
+    directory = Path(run_dir)
+    directory_mode = os.lstat(directory).st_mode
+    if (not stat.S_ISDIR(directory_mode)
+            or stat.S_IMODE(directory_mode) != 0o700):
+        _fail("receipt_directory_invalid")
+    raw = _canonical(receipt, "receipt_invalid")
+    if len(raw) > FRAME_LIMIT:
+        _fail("receipt_oversize")
+    path = directory / RECEIPT_NAME
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags, 0o600)
+    try:
+        os.fchmod(fd, 0o600)
+        if os.write(fd, raw) != len(raw):
+            _fail("receipt_short_write")
+        os.fsync(fd)
+    finally:
+        _fake_close(fd)
+    DurableJournal._sync_directory(directory)
+    read_fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(read_fd)
+        readback = os.read(read_fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(read_fd)
+    if (not stat.S_ISREG(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or readback != raw):
+        _fail("receipt_readback_invalid")
+    return _sha(raw), len(raw)
+
+
+def _split_receipt_preflight(run_dir: Path, run_id: str) -> bool:
+    """R-only new-run, zero-journal and receipt-absence check before W GO."""
+    directory = Path(run_dir)
+    mode = os.lstat(directory).st_mode
+    if (not stat.S_ISDIR(mode) or stat.S_IMODE(mode) != 0o700
+            or set(os.listdir(directory)) != {JOURNAL_NAME}):
+        return False
+    fd = os.open(directory / JOURNAL_NAME,
+                 os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(fd)
+        raw = os.read(fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(fd)
+    return (stat.S_ISREG(metadata.st_mode)
+            and stat.S_IMODE(metadata.st_mode) == 0o600
+            and raw == _canonical(_split_zero_state(run_id), "ipc_invalid"))
+
+
+def _split_receipt_child(receipt_pipes: dict[str, tuple[int, int]], *,
+                         inherited_split_fds: set[int],
+                         inherited_signal_pipes: dict[str, tuple[int, int]],
+                         run_dir: Path, run_id: str, initial_reader,
+                         prep_deadline: float, preflight_deadline: float,
+                         work_deadline: float,
+                         hard_deadline: float, fault: str | None) -> int:
+    """Pre-witnessed R stays idle until P's final raw-free receipt command."""
+    owned = (receipt_pipes["r_initial"][1],
+             receipt_pipes["r_preflight"][0],
+             receipt_pipes["r_preflight_ack"][1],
+             receipt_pipes["r_write"][0], receipt_pipes["r_proof"][1])
+    _fake_close(*inherited_split_fds)
+    _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(receipt_pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        actual = _fake_os_witness(os.getpid())
+        own = initial_reader(os.getpid())
+        if not _split_same(actual, own):
+            return 126
+        initial = _split_frame(run_id, "initial", 0, own, role="R")
+        if not _split_send(owned[0], initial, prep_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own, role="R"):
+            return 125
+        _fake_close(owned[0])
+        preflight = _split_receive(owned[1], preflight_deadline,
+                                    phase="receipt_preflight", run_id=run_id,
+                                    seq=1, witness=own)
+        _fake_close(owned[1])
+        if preflight is None:
+            return 0
+        if not _split_receipt_preflight(run_dir, run_id):
+            return 125
+        ack = _split_frame(run_id, "receipt_preflight_ack", 1, own)
+        if not _split_send(owned[2], ack, preflight_deadline, run_id=run_id,
+                           phase="receipt_preflight_ack", seq=1,
+                           witness=own):
+            return 125
+        _fake_close(owned[2])
+        command = _split_receive(owned[3], work_deadline,
+                                  phase="receipt_write", run_id=run_id,
+                                  seq=2, witness=own)
+        _fake_close(owned[3])
+        if command is None:
+            return 0  # No final command or invalid/lost frame; never write.
+        receipt = command["receipt"]
+        sha, size = _split_write_receipt(run_dir, receipt, run_id)
+        if fault == "r_after_commit":
+            return 121
+        proof = _split_frame(run_id, "receipt_proof", 2, own,
+                             receipt_sha256=sha, receipt_bytes=size)
+        if not _split_send(owned[4], proof, work_deadline, run_id=run_id,
+                           phase="receipt_proof", seq=2, witness=own,
+                           receipt=receipt):
+            return 125
+        _fake_close(owned[4])
+        return 121 if fault == "r_after_proof" else 0
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
 def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
                         inherited_split_fds: set[int],
                         run_id: str, target_role: str, target_witness: dict,
@@ -1859,6 +2084,7 @@ def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
 
 
 def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
+                            roles: tuple[str, ...] = ("D", "W"),
                             child_pids: dict[str, int | None],
                             child_witnesses: dict[str, dict],
                             signal_pids: dict[str, int],
@@ -1868,8 +2094,7 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
                             work_deadline: float, cleanup_deadline: float,
                             hard_deadline: float,
                             term_grace_seconds: float) -> None:
-    """Bounded P-side D/W cleanup; no parent OS observation or killpg."""
-    roles = ("D", "W")
+    """Bounded P-side exact witnessed cleanup; no parent OS observation."""
 
     def close_parent(fd: int) -> None:
         _fake_close(fd)
@@ -2040,13 +2265,14 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
                                    fault: str | None = None,
                                    cleanup_observe=None,
                                    signal_initial_witness=None,
+                                   receipt_initial_witness=None,
                                    term_grace_seconds: float = 0.05,
                                    cleanup_seconds: float = 0.25) -> dict:
     """Fake-only P+D+W zero→request→durable op1→received-ACK probe.
 
     W performs no HTTP. `worker_received_proven=False` means no valid received
-    ACK proof, not proof W never received a grant. There is no receipt, port
-    or live cleanup proof;
+    ACK proof, not proof W never received a grant. The separate fake receipt
+    is not port or live cleanup proof;
     `supervise_once` deliberately stays fail-closed. Parent does only bounded
     canonical IPC and nonblocking waitpid, never journal disk operations.
     """
@@ -2058,10 +2284,13 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
                                 nonce_required=False)
             or grant_without_worker["ordinal"] != 1
             or fault not in (None, "d_after_zero", "d_after_commit",
-                             "w_after_request")
+                             "w_after_request", "r_after_commit",
+                             "r_after_proof")
             or (cleanup_observe is not None and not callable(cleanup_observe))
             or (signal_initial_witness is not None
                 and not callable(signal_initial_witness))
+            or (receipt_initial_witness is not None
+                and not callable(receipt_initial_witness))
             or any(type(value) not in (int, float) or not math.isfinite(value)
                    or not 0.05 <= value <= 5.0
                    for value in (work_seconds, preparation_seconds,
@@ -2075,18 +2304,29 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
               "grant_proven": False, "worker_received_proven": False,
               "durable_reserved": "unknown", "on_wire": "unknown",
               "d_reaped": False, "w_reaped": False,
-              "s_d_reaped": False, "s_w_reaped": False,
+              "r_reaped": False, "s_d_reaped": False,
+              "s_w_reaped": False, "s_r_reaped": False,
               "d_term": "not_attempted", "d_kill": "not_attempted",
               "w_term": "not_attempted", "w_kill": "not_attempted",
+              "r_term": "not_attempted", "r_kill": "not_attempted",
               "d_stop": "unproven", "w_stop": "unproven",
+              "r_stop": "unproven", "receipt_durable_proven": False,
+              "receipt_preflight_accepted": False,
+              "receipt_failure_code": "receipt_unavailable_review_required",
               "physical_stop_unproven": True, "full_gate_pass": False}
     started = time.monotonic()
     prep_deadline = started + preparation_seconds
     work_deadline = prep_deadline + work_seconds
     cleanup_deadline = work_deadline + cleanup_seconds
     hard_deadline = cleanup_deadline + 0.10
+    # Even when D/W consume their full bounded self-alarm/reap window, R
+    # retains a separate fake-only receipt window. This is not T0+90 proof.
+    receipt_work_deadline = hard_deadline + 0.30
+    receipt_cleanup_deadline = receipt_work_deadline + 0.15
+    receipt_hard_deadline = receipt_cleanup_deadline + 0.10
     pipes: dict[str, tuple[int, int]] = {}
-    d_pid = w_pid = None
+    receipt_pipes: dict[str, tuple[int, int]] = {}
+    d_pid = w_pid = r_pid = None
     parent_fds: set[int] = set()
     parent_layout_ready = False
     statuses: dict[int, int] = {}
@@ -2096,12 +2336,25 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
     signal_witnesses: dict[str, dict] = {}
     signal_parent_fds: set[int] = set()
     signal_layout_ready = False
+    receipt_parent_fds: set[int] = set()
+    receipt_layout_ready = False
+    r_witness = None
     try:
         for name in _SPLIT_EDGES:
             pipes[name] = os.pipe()
+        for role in ("D", "W", "R"):
+            prefix = f"s_{role.lower()}"
+            for edge in ("initial", "term", "term_result", "kill",
+                         "kill_result"):
+                signal_pipes[f"{prefix}_{edge}"] = os.pipe()
+        for name in ("r_initial", "r_preflight", "r_preflight_ack",
+                     "r_write", "r_proof"):
+            receipt_pipes[name] = os.pipe()
         d_pid = os.fork()
         if d_pid == 0:
             try:
+                _split_close_except(signal_pipes, set())
+                _split_close_except(receipt_pipes, set())
                 child_code = _split_d_child(
                     pipes, run_dir=Path(run_dir), spec=spec,
                     hard_deadline=hard_deadline,
@@ -2112,6 +2365,8 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
         w_pid = os.fork()
         if w_pid == 0:
             try:
+                _split_close_except(signal_pipes, set())
+                _split_close_except(receipt_pipes, set())
                 child_code = _split_w_child(
                     pipes, spec=spec, hard_deadline=hard_deadline,
                     work_deadline=work_deadline, fault=fault)
@@ -2163,39 +2418,76 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
         d_witness = d_initial_frame["witness"]
         w_witness = w_initial_frame["witness"]
         child_witnesses = {"D": d_witness, "W": w_witness}
-        for role in ("D", "W"):
-            prefix = f"s_{role.lower()}"
-            for edge in ("initial", "term", "term_result", "kill",
-                         "kill_result"):
-                signal_pipes[f"{prefix}_{edge}"] = os.pipe()
-        for role, target in (("D", d_witness), ("W", w_witness)):
+        # R is process-reserved before D's first work GO. It does not create
+        # the directory: exclusive ownership stays with DurableJournal.create.
+        r_pid = os.fork()
+        if r_pid == 0:
+            try:
+                child_code = _split_receipt_child(
+                    receipt_pipes, inherited_split_fds=parent_fds,
+                    inherited_signal_pipes=signal_pipes,
+                    run_dir=Path(run_dir), run_id=run_id,
+                    initial_reader=receipt_initial_witness or _fake_os_witness,
+                    prep_deadline=prep_deadline,
+                    preflight_deadline=work_deadline,
+                    work_deadline=receipt_work_deadline,
+                    hard_deadline=receipt_hard_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        receipt_parent_fds = {
+            receipt_pipes["r_initial"][0],
+            receipt_pipes["r_preflight"][1],
+            receipt_pipes["r_preflight_ack"][0],
+            receipt_pipes["r_write"][1], receipt_pipes["r_proof"][0],
+        }
+        _split_close_except(receipt_pipes, receipt_parent_fds)
+        receipt_layout_ready = True
+        fd = receipt_pipes["r_initial"][0]
+        try:
+            initial = _split_receive(fd, prep_deadline, phase="initial",
+                                      run_id=run_id, seq=0, pid=r_pid,
+                                      role="R")
+        finally:
+            _fake_close(fd)
+            receipt_parent_fds.discard(fd)
+        if initial is None:
+            result["failure_code"] = "receipt_helper_initial_unavailable"
+            return result
+        r_witness = initial["witness"]
+        child_witnesses["R"] = r_witness
+        for role, target in (("D", d_witness), ("W", w_witness),
+                             ("R", r_witness)):
             pid = os.fork()
             if pid == 0:
                 try:
                     child_code = _split_signal_child(
-                        signal_pipes, inherited_split_fds=parent_fds,
+                        signal_pipes,
+                        inherited_split_fds=parent_fds | receipt_parent_fds,
                         run_id=run_id,
                         target_role=role, target_witness=target,
                         initial_reader=signal_initial_witness or _fake_os_witness,
                         observer=cleanup_observe or _fake_os_witness,
                         prep_deadline=prep_deadline,
-                        cleanup_deadline=cleanup_deadline,
-                        hard_deadline=hard_deadline)
+                        cleanup_deadline=(receipt_cleanup_deadline if role == "R"
+                                          else cleanup_deadline),
+                        hard_deadline=(receipt_hard_deadline if role == "R"
+                                       else hard_deadline))
                 except BaseException:
                     child_code = 125
                 os._exit(child_code)
             signal_pids[role] = pid
         signal_parent_fds = {
             signal_pipes[f"s_{role.lower()}_{edge}"][0]
-            for role in ("D", "W")
+            for role in ("D", "W", "R")
             for edge in ("initial", "term_result", "kill_result")
         } | {
             signal_pipes[f"s_{role.lower()}_{edge}"][1]
-            for role in ("D", "W") for edge in ("term", "kill")
+            for role in ("D", "W", "R") for edge in ("term", "kill")
         }
         _split_close_except(signal_pipes, signal_parent_fds)
         signal_layout_ready = True
-        for role in ("D", "W"):
+        for role in ("D", "W", "R"):
             fd = signal_pipes[f"s_{role.lower()}_initial"][0]
             try:
                 initial = _split_receive(
@@ -2218,6 +2510,29 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
             return result
         result["zero_ack_received"] = True
         result["durable_reserved"] = 0
+        result["failure_code"] = "receipt_preflight_unavailable"
+        preflight_fd = receipt_pipes["r_preflight"][1]
+        try:
+            preflight = _split_frame(run_id, "receipt_preflight", 1, r_witness)
+            sent = _split_send(preflight_fd, preflight, work_deadline,
+                               run_id=run_id, phase="receipt_preflight",
+                               seq=1, witness=r_witness)
+        finally:
+            _fake_close(preflight_fd)
+            receipt_parent_fds.discard(preflight_fd)
+        if not sent:
+            return result
+        ack_fd = receipt_pipes["r_preflight_ack"][0]
+        try:
+            preflight_ack = _split_receive(
+                ack_fd, work_deadline, phase="receipt_preflight_ack",
+                run_id=run_id, seq=1, witness=r_witness)
+        finally:
+            _fake_close(ack_fd)
+            receipt_parent_fds.discard(ack_fd)
+        if preflight_ack is None:
+            return result
+        result["receipt_preflight_accepted"] = True
         result["failure_code"] = "worker_request_unavailable"
         if not send("w_go", "w_go", 1, w_witness):
             return result
@@ -2297,11 +2612,6 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
             result["failure_code"] = "cleanup_unavailable"
             result["physical_stop_unproven"] = True
             result["d_stop"] = result["w_stop"] = "unproven"
-        finally:
-            _fake_close(*signal_parent_fds)
-            if not signal_layout_ready:
-                for read_fd, write_fd in signal_pipes.values():
-                    _fake_close(read_fd, write_fd)
         if cleanup_failed:
             for role, pid in (("D", d_pid), ("W", w_pid),
                               ("S_D", signal_pids.get("D")),
@@ -2318,3 +2628,89 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
                     result[f"{role.lower()}_reaped"] = bool(reaped)
                 except Exception:
                     result[f"{role.lower()}_reaped"] = False
+        # R was pre-witnessed before D GO and held idle through D/W cleanup.
+        # Only its child performs the O_EXCL write, fsync and readback.
+        try:
+            if (result["receipt_preflight_accepted"]
+                    and r_pid is not None and r_witness is not None
+                    and "R" in signal_witnesses):
+                receipt = _split_receipt_payload(result, run_id)
+                frame = _split_frame(run_id, "receipt_write", 2, r_witness,
+                                     receipt=receipt)
+                command_fd = receipt_pipes["r_write"][1]
+                try:
+                    sent = _split_send(
+                        command_fd, frame, receipt_work_deadline,
+                        run_id=run_id, phase="receipt_write", seq=2,
+                        witness=r_witness)
+                finally:
+                    _fake_close(command_fd)
+                    receipt_parent_fds.discard(command_fd)
+                if sent:
+                    proof_fd = receipt_pipes["r_proof"][0]
+                    try:
+                        proof = _split_receive(
+                            proof_fd, receipt_work_deadline,
+                            phase="receipt_proof", run_id=run_id, seq=2,
+                            witness=r_witness, receipt=receipt)
+                    finally:
+                        _fake_close(proof_fd)
+                        receipt_parent_fds.discard(proof_fd)
+                    if proof is not None and _fake_wait_reap(
+                            r_pid, receipt_work_deadline, statuses):
+                        r_status = statuses[r_pid]
+                        if (os.WIFEXITED(r_status)
+                                and os.WEXITSTATUS(r_status) == 0):
+                            result["receipt_durable_proven"] = True
+                            result["receipt_sha256"] = proof["receipt_sha256"]
+                            result["receipt_failure_code"] = "none"
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result.pop("receipt_sha256", None)
+            result["receipt_failure_code"] = "receipt_unavailable_review_required"
+        finally:
+            _fake_close(*receipt_parent_fds)
+            if not receipt_layout_ready:
+                for read_fd, write_fd in receipt_pipes.values():
+                    _fake_close(read_fd, write_fd)
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses, roles=("R",),
+                child_pids={"R": r_pid},
+                child_witnesses=child_witnesses, signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses, signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds, run_id=run_id,
+                work_deadline=receipt_work_deadline,
+                cleanup_deadline=receipt_cleanup_deadline,
+                hard_deadline=receipt_hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result.pop("receipt_sha256", None)
+            result["receipt_failure_code"] = "receipt_unavailable_review_required"
+            result["r_stop"] = "unproven"
+            result["physical_stop_unproven"] = True
+            for role, pid in (("R", r_pid), ("S_R", signal_pids.get("R"))):
+                if pid is None or pid <= 0:
+                    continue
+                try:
+                    reaped = (pid in statuses if role == "R" else
+                              result["s_r_reaped"])
+                    if not reaped:
+                        reaped = _fake_wait_reap(
+                            pid, receipt_hard_deadline + 0.1,
+                            statuses if role == "R" else None)
+                    result[f"{role.lower()}_reaped"] = bool(reaped)
+                except Exception:
+                    result[f"{role.lower()}_reaped"] = False
+        finally:
+            _fake_close(*signal_parent_fds)
+            if not signal_layout_ready:
+                for read_fd, write_fd in signal_pipes.values():
+                    _fake_close(read_fd, write_fd)
+        if (not result["receipt_durable_proven"]
+                and result["status"] == "fake_partial_op1_worker_received"):
+            # W receipt proof remains separately true; the overall one-use
+            # result cannot retain a positive status without durable receipt.
+            result["status"] = "fake_partial_split_unproven"
+            result["failure_code"] = "receipt_unavailable_review_required"

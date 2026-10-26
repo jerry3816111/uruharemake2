@@ -2001,3 +2001,369 @@ def test_fake_split_parent_cleanup_error_is_fixed_code_and_reaps(
     assert "RAW_CANARY" not in json.dumps(result)
     assert result["physical_stop_unproven"] is True
     assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_receipt_is_prestarted_durable_raw_free_and_still_partial(tmp_path):
+    run_dir = tmp_path / "split-receipt-positive"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    receipt = run_dir / "receipt.json"
+    raw = receipt.read_bytes()
+    disk = json.loads(raw)
+    assert stat.S_IMODE(receipt.stat().st_mode) == 0o600
+    assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
+    assert raw == _canonical(disk)
+    assert CANARY.encode() not in raw
+    assert disk["schema"] == "fake_split_receipt_v1"
+    assert disk["snapshot_phase"] == "after_dw_cleanup_before_r_final_reap"
+    assert disk["status"] == "fake_partial_op1_worker_received"
+    assert disk["physical_stop_unproven"] is True
+    assert disk["full_gate_pass"] is False
+    assert disk["b_send_authorized"] is False
+    assert result["receipt_durable_proven"] is True
+    assert result["receipt_sha256"] == hashlib.sha256(raw).hexdigest()
+    assert result["r_reaped"] is result["s_r_reaped"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_existing_receipt_is_never_overwritten(monkeypatch, tmp_path):
+    original = live._split_disk_readback
+
+    def plant_existing(journal, state):
+        path = journal.run_dir / "receipt.json"
+        if not path.exists():
+            path.write_bytes(b"existing-user-data")
+        return original(journal, state)
+
+    monkeypatch.setattr(live, "_split_disk_readback", plant_existing)
+    run_dir = tmp_path / "split-existing-receipt"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert (run_dir / "receipt.json").read_bytes() == b"existing-user-data"
+    assert result["zero_ack_received"] is True
+    assert result["receipt_preflight_accepted"] is False
+    assert result["request_accepted"] is False
+    assert result["grant_proven"] is False
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 0
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_blocked_receipt_write_keeps_parent_bounded(monkeypatch, tmp_path):
+    original = live._split_write_receipt
+
+    def blocked_write(*args, **kwargs):
+        time.sleep(20)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(live, "_split_write_receipt", blocked_write)
+    started = time.monotonic()
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-blocked-receipt",
+        grant_without_worker=_op1_without_worker())
+    assert time.monotonic() - started < 2
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert result["worker_received_proven"] is True
+    assert result["r_stop"] in ("witnessed_term", "witnessed_kill")
+    assert result["r_reaped"] is True
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+def test_fake_split_blocked_receipt_directory_fsync_is_witnessed_stopped(
+        monkeypatch, tmp_path):
+    original_sync = live.DurableJournal._sync_directory
+
+    def stall_receipt_sync(directory):
+        if (Path(directory) / "receipt.json").exists():
+            time.sleep(20)
+        return original_sync(directory)
+
+    monkeypatch.setattr(live.DurableJournal, "_sync_directory",
+                        staticmethod(stall_receipt_sync))
+    started = time.monotonic()
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-receipt-fsync-stall",
+        grant_without_worker=_op1_without_worker())
+    assert time.monotonic() - started < 2
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["r_stop"] in ("witnessed_term", "witnessed_kill")
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+def test_fake_split_receipt_readback_mismatch_cannot_prove_durability(
+        monkeypatch, tmp_path):
+    original_write_receipt = live._split_write_receipt
+
+    def corrupt_readback(*args, **kwargs):
+        original_read = os.read
+
+        def read(fd, size):
+            if size == live.FRAME_LIMIT + 1:
+                return b"corrupted-readback"
+            return original_read(fd, size)
+
+        live.os.read = read  # R-only post-fork injection
+        return original_write_receipt(*args, **kwargs)
+
+    monkeypatch.setattr(live, "_split_write_receipt", corrupt_readback)
+    run_dir = tmp_path / "split-receipt-readback-mismatch"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert (run_dir / "receipt.json").is_file()  # uncertain parent ACK
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["failure_code"] == "receipt_unavailable_review_required"
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("fault", ["r_after_commit", "r_after_proof"])
+def test_fake_split_receipt_child_nonzero_exit_never_proves_durability(
+        tmp_path, fault):
+    run_dir = tmp_path / f"split-receipt-{fault}"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        fault=fault)
+    assert (run_dir / "receipt.json").is_file()  # disk may be spent
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_lost_receipt_proof_does_not_assume_disk_failed(
+        monkeypatch, tmp_path):
+    original_write = os.write
+
+    def lose_receipt_proof(fd, data):
+        if b'"phase":"receipt_proof"' in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", lose_receipt_proof)
+    run_dir = tmp_path / "split-receipt-lost-proof"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert (run_dir / "receipt.json").is_file()
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_lost_receipt_command_causes_zero_receipt_write(
+        monkeypatch, tmp_path):
+    original_write = os.write
+
+    def lose_receipt_command(fd, data):
+        if b'"phase":"receipt_write"' in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", lose_receipt_command)
+    run_dir = tmp_path / "split-receipt-lost-command"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert not (run_dir / "receipt.json").exists()
+    assert result["receipt_durable_proven"] is False
+    assert result["receipt_failure_code"] == "receipt_unavailable_review_required"
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_receipt_signal_noop_is_not_stop_proof(monkeypatch, tmp_path):
+    original = live._split_write_receipt
+    original_kill = os.kill
+
+    def blocked_write(*args, **kwargs):
+        time.sleep(20)
+        return original(*args, **kwargs)
+
+    def ignore_signal(pid, signum):
+        if signum in (signal.SIGTERM, signal.SIGKILL):
+            return None
+        return original_kill(pid, signum)
+
+    monkeypatch.setattr(live, "_split_write_receipt", blocked_write)
+    monkeypatch.setattr(live.os, "kill", ignore_signal)
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-receipt-noop-signal",
+        grant_without_worker=_op1_without_worker())
+    assert result["receipt_durable_proven"] is False
+    assert result["r_stop"] == "unproven"
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_raw_receipt_field_cannot_cross_parent_ipc(
+        monkeypatch, tmp_path):
+    original = live._split_receipt_payload
+
+    def inject_raw(*args, **kwargs):
+        return {**original(*args, **kwargs), "raw": CANARY}
+
+    monkeypatch.setattr(live, "_split_receipt_payload", inject_raw)
+    run_dir = tmp_path / "split-raw-receipt"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert not (run_dir / "receipt.json").exists()
+    assert result["receipt_durable_proven"] is False
+    assert CANARY not in json.dumps(result)
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_receipt_initial_witness_failure_prevents_d_go(tmp_path):
+    def bad_initial(pid):
+        value = live._fake_os_witness(pid)
+        value["pgid"] += 1
+        return value
+
+    run_dir = tmp_path / "split-receipt-initial-bad"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        receipt_initial_witness=bad_initial)
+    assert not (run_dir / "journal.json").exists()
+    assert result["zero_ack_received"] is False
+    assert result["receipt_durable_proven"] is False
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_receipt_signal_helper_bad_initial_prevents_d_go(
+        monkeypatch, tmp_path):
+    original = live._split_signal_child
+
+    def bad_r_signal_initial(*args, **kwargs):
+        if kwargs["target_role"] == "R":
+            def wrong(pid):
+                value = live._fake_os_witness(pid)
+                value["pgid"] += 1
+                return value
+            kwargs["initial_reader"] = wrong
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(live, "_split_signal_child", bad_r_signal_initial)
+    run_dir = tmp_path / "split-receipt-signal-initial-bad"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert not (run_dir / "journal.json").exists()
+    assert result["zero_ack_received"] is False
+    assert result["receipt_durable_proven"] is False
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_blocked_receipt_preflight_never_grants_op1(
+        monkeypatch, tmp_path):
+    original = live._split_receipt_preflight
+
+    def blocked_preflight(*args, **kwargs):
+        time.sleep(20)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(live, "_split_receipt_preflight", blocked_preflight)
+    started = time.monotonic()
+    run_dir = tmp_path / "split-receipt-preflight-stall"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        work_seconds=0.12)
+    assert time.monotonic() - started < 2
+    assert result["zero_ack_received"] is True
+    assert result["receipt_preflight_accepted"] is False
+    assert result["request_accepted"] is False
+    assert result["r_stop"] in ("witnessed_term", "witnessed_kill")
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 0
+    assert result["receipt_durable_proven"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_lost_receipt_preflight_ack_never_grants_op1(
+        monkeypatch, tmp_path):
+    original_write = os.write
+
+    def lose_preflight_ack(fd, data):
+        if b'"phase":"receipt_preflight_ack"' in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", lose_preflight_ack)
+    run_dir = tmp_path / "split-receipt-preflight-ack-lost"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["zero_ack_received"] is True
+    assert result["receipt_preflight_accepted"] is False
+    assert result["request_accepted"] is False
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 0
+    assert result["receipt_durable_proven"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_receipt_preflight_rejects_changed_zero_journal(
+        monkeypatch, tmp_path):
+    original = live._split_disk_readback
+
+    def alter_after_d_readback(journal, state):
+        raw = original(journal, state)
+        if state["reserved"] == 0:
+            journal.path.write_bytes(b"tampered-after-D-zero-proof")
+        return raw
+
+    monkeypatch.setattr(live, "_split_disk_readback", alter_after_d_readback)
+    run_dir = tmp_path / "split-receipt-journal-drift"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["zero_ack_received"] is True
+    assert result["receipt_preflight_accepted"] is False
+    assert result["request_accepted"] is False
+    assert result["grant_proven"] is False
+    assert (run_dir / "journal.json").read_bytes() == b"tampered-after-D-zero-proof"
+    assert result["receipt_durable_proven"] is False
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_blocked_d_and_ineffective_signal_still_gets_failure_receipt(
+        monkeypatch, tmp_path):
+    original_commit = live.DurableJournal._commit
+    original_kill = os.kill
+
+    def blocked_commit(self, state):
+        time.sleep(20)
+        return original_commit(self, state)
+
+    def ignore_signal(pid, signum):
+        if signum in (signal.SIGTERM, signal.SIGKILL):
+            return None
+        return original_kill(pid, signum)
+
+    monkeypatch.setattr(live.DurableJournal, "_commit", blocked_commit)
+    monkeypatch.setattr(live.os, "kill", ignore_signal)
+    run_dir = tmp_path / "split-blocked-d-failure-receipt"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        work_seconds=0.12)
+    receipt = run_dir / "receipt.json"
+    disk = json.loads(receipt.read_bytes())
+    assert result["receipt_preflight_accepted"] is True
+    assert result["d_stop"] == "unproven"
+    assert result["receipt_durable_proven"] is True
+    assert disk["status"] == "fake_partial_split_unproven"
+    assert disk["failure_code"] == "grant_proof_unavailable"
+    assert disk["physical_stop_unproven"] is True
+    assert disk["full_gate_pass"] is False
