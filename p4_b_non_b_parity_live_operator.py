@@ -1688,14 +1688,14 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
         return False
     if phase == "initial":
         return value["role"] == role and role in (
-            "D", "W", "R", "S_D", "S_W", "S_R")
+            "D", "W", "R", "O", "S_D", "S_W", "S_R", "S_O")
     if phase in ("signal_term", "signal_kill"):
-        return (target_role in ("D", "W", "R")
+        return (target_role in ("D", "W", "R", "O")
                 and value["target_role"] == target_role
                 and target_witness is not None
                 and _split_same(value["target_witness"], target_witness))
     if phase == "signal_result":
-        return (target_role in ("D", "W", "R")
+        return (target_role in ("D", "W", "R", "O")
                 and value["target_role"] == target_role
                 and signal_name in ("term", "kill")
                 and value["signal_name"] == signal_name
@@ -2762,6 +2762,14 @@ _SEVEN_EXTRA = {
     "r_preflight": frozenset(), "r_preflight_ack": frozenset(),
     "r_write": frozenset({"receipt"}),
     "r_proof": frozenset({"receipt_sha256", "receipt_bytes"}),
+    "o_pre": frozenset({"daemon_port"}),
+    "o_pre_proof": frozenset({"port_sha256", "daemon_port",
+                              "daemon_vacant", "runner_port",
+                              "runner_vacant", "shared_11434_sha256"}),
+    "o_final": frozenset({"daemon_port", "runner_port"}),
+    "o_final_proof": frozenset({"port_sha256", "daemon_port",
+                                "daemon_vacant", "runner_port",
+                                "runner_vacant", "shared_11434_sha256"}),
 }
 _SEVEN_ORDINAL_EDGES = (
     "w_request", "d_reserve", "d_grant", "w_grant", "w_issue",
@@ -2775,6 +2783,9 @@ _SEVEN_BASE_EDGES = (
 _SEVEN_RECEIPT_EDGES = (
     "r_initial", "r_preflight", "r_preflight_ack", "r_write", "r_proof",
 )
+_SEVEN_PORT_EDGES = (
+    "o_initial", "o_pre", "o_pre_proof", "o_final", "o_final_proof",
+)
 _SEVEN_RECEIPT_FIELDS = frozenset({
     "schema", "run_id", "snapshot_phase", "status", "failure_code",
     "zero_ack_received", "receipt_preflight_accepted", "reserved",
@@ -2783,6 +2794,11 @@ _SEVEN_RECEIPT_FIELDS = frozenset({
     "journal_sha256", "summary_sha256", "d_reaped", "w_reaped",
     "d_stop", "w_stop", "physical_stop_unproven", "full_gate_pass",
     "b_upper_bound_proven", "b_send_authorized",
+})
+_SEVEN_RECEIPT_PORT_FIELDS = frozenset({
+    "port_gate_proven", "port_pre_sha256", "port_post_sha256",
+    "daemon_port_vacant_after", "runner_port_vacant_after",
+    "shared_11434_unchanged", "o_reaped", "o_stop", "s_o_normal_exit",
 })
 _SEVEN_SUMMARY_FIELDS = frozenset({
     "schema", "status", "request_sha256", "request_utf8_bytes",
@@ -2814,6 +2830,10 @@ _SEVEN_FAILURE_CODES = frozenset({
     "signal_helper_exit_unavailable",
     "receipt_unavailable_review_required", "ipc_or_spawn_unavailable",
     "fake_seven_fd_reservation_unavailable",
+    "port_helper_initial_unavailable", "port_pre_unavailable",
+    "port_pre_not_vacant", "port_final_unavailable",
+    "port_final_occupied", "shared_11434_changed",
+    "runner_port_unavailable", "port_cleanup_unavailable",
 })
 
 
@@ -2877,9 +2897,59 @@ def _seven_summary_valid(value: Any) -> bool:
     return True
 
 
+def _seven_port_snapshot_valid(value: Any, *, phase: str,
+                               daemon_port: int,
+                               runner_port: int | None) -> bool:
+    """Strict fake OS-observer contract; it is not an actual lsof proof."""
+    if (type(value) is not dict
+            or set(value) != {"schema", "phase", "daemon_port",
+                              "daemon_vacant", "runner_port",
+                              "runner_vacant", "shared_11434"}
+            or value["schema"] != "fake_port_snapshot_v1"
+            or value["phase"] != phase
+            or not _port(daemon_port)
+            or value["daemon_port"] != daemon_port
+            or type(value["daemon_vacant"]) is not bool
+            or phase not in ("pre", "post")):
+        return False
+    if phase == "pre":
+        if (runner_port is not None or value["runner_port"] is not None
+                or value["runner_vacant"] is not None):
+            return False
+    elif (not _port(runner_port) or runner_port == daemon_port
+          or value["runner_port"] != runner_port
+          or type(value["runner_vacant"]) is not bool):
+        return False
+    shared = value["shared_11434"]
+    return (type(shared) is dict
+            and set(shared) == {"state", "listener_sha256"}
+            and ((shared["state"] == "vacant"
+                  and shared["listener_sha256"] is None)
+                 or (shared["state"] == "listener"
+                     and _valid_sha(shared["listener_sha256"]))))
+
+
+def _seven_port_proof(snapshot: dict) -> dict:
+    shared = snapshot["shared_11434"]
+    return {
+        "port_sha256": _sha(_canonical(snapshot, "fake_port_snapshot_invalid")),
+        "daemon_port": snapshot["daemon_port"],
+        "daemon_vacant": snapshot["daemon_vacant"],
+        "runner_port": snapshot["runner_port"],
+        "runner_vacant": snapshot["runner_vacant"],
+        "shared_11434_sha256": _sha(_canonical(
+            shared, "fake_port_snapshot_invalid")),
+    }
+
+
 def _seven_receipt_valid(value: Any, run_id: str) -> bool:
-    if (type(value) is not dict or set(value) != _SEVEN_RECEIPT_FIELDS
-            or value["schema"] != "fake_seven_process_receipt_v1"
+    v2 = (type(value) is dict
+          and value.get("schema") == "fake_seven_process_receipt_v2")
+    allowed = (_SEVEN_RECEIPT_FIELDS | _SEVEN_RECEIPT_PORT_FIELDS
+               if v2 else _SEVEN_RECEIPT_FIELDS)
+    if (type(value) is not dict or set(value) != allowed
+            or value["schema"] != ("fake_seven_process_receipt_v2" if v2
+                                   else "fake_seven_process_receipt_v1")
             or value["run_id"] != run_id
             or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
             or value["status"] not in (
@@ -2897,6 +2967,31 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
             or any(value[key] is not None and not _valid_sha(value[key])
                    for key in ("journal_sha256", "summary_sha256"))):
         return False
+    if v2:
+        if (type(value["port_gate_proven"]) is not bool
+                or type(value["o_reaped"]) is not bool
+                or type(value["s_o_normal_exit"]) is not bool
+                or value["o_stop"] not in _SPLIT_STOP_CODES
+                or any(value[key] is not None and not _valid_sha(value[key])
+                       for key in ("port_pre_sha256", "port_post_sha256"))
+                or any(value[key] != "unknown"
+                       and type(value[key]) is not bool for key in (
+                           "daemon_port_vacant_after",
+                           "runner_port_vacant_after",
+                           "shared_11434_unchanged"))):
+            return False
+        if value["port_gate_proven"] != bool(
+                _valid_sha(value["port_pre_sha256"])
+                and _valid_sha(value["port_post_sha256"])
+                and all(value[key] is True for key in (
+                    "daemon_port_vacant_after",
+                    "runner_port_vacant_after", "shared_11434_unchanged"))
+                and value["d_reaped"] and value["w_reaped"]
+                and value["d_stop"] != "unproven"
+                and value["w_stop"] != "unproven"
+                and value["o_reaped"] and value["o_stop"] == "normal_exit"
+                and value["s_o_normal_exit"]):
+            return False
     for key in ("reserved", "granted", "worker_issued", "on_wire_yes",
                 "completion_attempt_spent", "http_calls", "identity_checks"):
         item = value[key]
@@ -2904,6 +2999,7 @@ def _seven_receipt_valid(value: Any, run_id: str) -> bool:
             return False
     if value["status"] == "fake_seven_process_pending_receipt":
         return (value["failure_code"] == "none"
+                and (not v2 or value["port_gate_proven"])
                 and all(value[key] == 7 for key in (
                     "reserved", "granted", "worker_issued", "on_wire_yes",
                     "http_calls")) and value["identity_checks"] == 6
@@ -2940,7 +3036,23 @@ def _seven_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                for key, item in expected.items()):
             return False
     if phase == "initial":
-        return value["role"] in ("D", "W", "R")
+        return value["role"] in ("D", "W", "R", "O")
+    if phase in ("o_pre", "o_final"):
+        return (_port(value["daemon_port"])
+                and (phase == "o_pre" or
+                     (_port(value["runner_port"])
+                      and value["runner_port"] != value["daemon_port"])))
+    if phase in ("o_pre_proof", "o_final_proof"):
+        pre = phase == "o_pre_proof"
+        return (all(_valid_sha(value[key]) for key in (
+                    "port_sha256", "shared_11434_sha256"))
+                and _port(value["daemon_port"])
+                and type(value["daemon_vacant"]) is bool
+                and ((value["runner_port"] is None
+                      and value["runner_vacant"] is None) if pre else
+                     (_port(value["runner_port"])
+                      and value["runner_port"] != value["daemon_port"]
+                      and type(value["runner_vacant"]) is bool)))
     if "fields" in value and not _grant_valid(value["fields"], nonce_required=False):
         return False
     if "worker_witness" in value:
@@ -3334,6 +3446,7 @@ def _seven_write_receipt(run_dir: Path, receipt: dict,
 def _seven_r_child(pipes: dict[str, tuple[int, int]], *,
                    inherited_core_fds: set[int],
                    inherited_signal_pipes: dict[str, tuple[int, int]],
+                   inherited_port_pipes: dict[str, tuple[int, int]],
                    run_dir: Path, run_id: str,
                    hard_deadline: float, prep_deadline: float,
                    preflight_deadline: float, receipt_deadline: float,
@@ -3343,6 +3456,7 @@ def _seven_r_child(pipes: dict[str, tuple[int, int]], *,
         pipes[name][0] for name in ("r_preflight", "r_write")}
     _fake_close(*inherited_core_fds)
     _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(inherited_port_pipes, set())
     _split_close_except(pipes, owned)
     try:
         os.setsid()
@@ -3379,12 +3493,80 @@ def _seven_r_child(pipes: dict[str, tuple[int, int]], *,
     # The fork wrapper immediately os._exit()s and owns any unused ends.
 
 
+def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
+                   inherited_core_fds: set[int],
+                   inherited_receipt_fds: set[int],
+                   inherited_signal_pipes: dict[str, tuple[int, int]],
+                   run_id: str, observer, prep_deadline: float,
+                   work_deadline: float, final_deadline: float,
+                   hard_deadline: float) -> int:
+    """Initially witnessed fake OS-only observer; never opens a socket."""
+    owned = {pipes[name][1] for name in (
+        "o_initial", "o_pre_proof", "o_final_proof")} | {
+        pipes[name][0] for name in ("o_pre", "o_final")}
+    _fake_close(*inherited_core_fds, *inherited_receipt_fds)
+    _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(pipes, owned)
+    # An injected OS observer may print raw lsof text or a traceback. Keep
+    # this fake-only child's output off the parent's terminal and test logs;
+    # failure to isolate stdio must happen before any observer callback.
+    try:
+        sink = os.open(os.devnull, os.O_WRONLY)
+        try:
+            os.dup2(sink, 1)
+            os.dup2(sink, 2)
+        finally:
+            if sink not in (1, 2):
+                os.close(sink)
+    except BaseException:
+        return 125
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "o_initial", run_id, "initial", 0,
+                                 own, prep_deadline, role="O"):
+            return 125
+        pre = _seven_child_receive(pipes, "o_pre", run_id, "o_pre", 1,
+                                   own, work_deadline)
+        if pre is None:
+            return 0
+        daemon_port = pre["daemon_port"]
+        snapshot = observer("pre", daemon_port, None)
+        if not _seven_port_snapshot_valid(snapshot, phase="pre",
+                                          daemon_port=daemon_port,
+                                          runner_port=None):
+            return 125
+        if not _seven_child_send(pipes, "o_pre_proof", run_id,
+                                 "o_pre_proof", 1, own, work_deadline,
+                                 **_seven_port_proof(snapshot)):
+            return 125
+        final = _seven_child_receive(pipes, "o_final", run_id, "o_final",
+                                     2, own, final_deadline)
+        if final is None or final["daemon_port"] != daemon_port:
+            return 0
+        runner_port = final["runner_port"]
+        snapshot = observer("post", daemon_port, runner_port)
+        if not _seven_port_snapshot_valid(snapshot, phase="post",
+                                          daemon_port=daemon_port,
+                                          runner_port=runner_port):
+            return 125
+        return (0 if _seven_child_send(pipes, "o_final_proof", run_id,
+                                      "o_final_proof", 2, own, final_deadline,
+                                      **_seven_port_proof(snapshot)) else 125)
+    except BaseException:
+        return 125
+    # The fork wrapper exits immediately; numeric FDs may have been reused.
+
+
 def _seven_receipt_payload(result: dict, run_id: str) -> dict:
     status = ("fake_seven_process_pending_receipt"
               if result["status"] == "fake_seven_process_pending_receipt"
               else "fake_seven_process_unproven")
+    v2 = result["schema"] == "fake_seven_process_result_v2"
     return {
-        "schema": "fake_seven_process_receipt_v1", "run_id": run_id,
+        "schema": ("fake_seven_process_receipt_v2" if v2
+                   else "fake_seven_process_receipt_v1"), "run_id": run_id,
         "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
         "status": status, "failure_code": result["failure_code"],
         "zero_ack_received": result["zero_ack_received"],
@@ -3397,16 +3579,20 @@ def _seven_receipt_payload(result: dict, run_id: str) -> dict:
         "summary_sha256": result.get("summary_sha256"),
         "physical_stop_unproven": True, "full_gate_pass": False,
         "b_upper_bound_proven": False, "b_send_authorized": False,
+        **({key: result[key] for key in (
+            "port_gate_proven", "port_pre_sha256", "port_post_sha256",
+            "daemon_port_vacant_after", "runner_port_vacant_after",
+            "shared_11434_unchanged", "o_reaped", "o_stop",
+            "s_o_normal_exit")} if v2 else {}),
     }
 
 
-def _seven_pipe_layout() -> tuple[dict[str, tuple[int, int]],
-                                  dict[str, tuple[int, int]],
-                                  dict[str, tuple[int, int]]]:
+def _seven_pipe_layout(*, port_enabled: bool = False):
     """Reserve every fake IPC edge before any D/W/R/S child is work-GOed."""
     core: dict[str, tuple[int, int]] = {}
     receipt: dict[str, tuple[int, int]] = {}
     signals: dict[str, tuple[int, int]] = {}
+    ports: dict[str, tuple[int, int]] = {}
     try:
         for name in _SEVEN_BASE_EDGES:
             core[name] = os.pipe()
@@ -3415,27 +3601,34 @@ def _seven_pipe_layout() -> tuple[dict[str, tuple[int, int]],
                 core[_seven_edge(edge, ordinal)] = os.pipe()
         for name in _SEVEN_RECEIPT_EDGES:
             receipt[name] = os.pipe()
-        for role in ("D", "W", "R"):
+        for role in (("D", "W", "R", "O") if port_enabled
+                     else ("D", "W", "R")):
             prefix = f"s_{role.lower()}"
             for edge in ("initial", "term", "term_result", "kill",
                          "kill_result"):
                 signals[f"{prefix}_{edge}"] = os.pipe()
-        all_fds = [fd for mapping in (core, receipt, signals)
+        if port_enabled:
+            for name in _SEVEN_PORT_EDGES:
+                ports[name] = os.pipe()
+        all_fds = [fd for mapping in (core, receipt, signals, ports)
                    for pair in mapping.values() for fd in pair]
         soft_limit, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
-        if (len(all_fds) != 226 or len(set(all_fds)) != len(all_fds)
+        if (len(all_fds) != (246 if port_enabled else 226)
+                or len(set(all_fds)) != len(all_fds)
                 or max(all_fds) >= soft_limit):
             _fail("fake_seven_fd_reservation_unavailable")
-        return core, receipt, signals
+        return ((core, receipt, signals, ports) if port_enabled
+                else (core, receipt, signals))
     except BaseException:
-        for mapping in (core, receipt, signals):
+        for mapping in (core, receipt, signals, ports):
             for pair in mapping.values():
                 _fake_close(*pair)
-        raise
+        _fail("fake_seven_fd_reservation_unavailable")
 
 
 def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                observe_identity, fake_http,
+                               port_observe=None,
                                work_seconds: float = 2.0,
                                preparation_seconds: float = 0.5,
                                cleanup_seconds: float = 0.5,
@@ -3452,6 +3645,7 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
     """
     if (type(binding_template) is not dict
             or not callable(observe_identity) or not callable(fake_http)
+            or (port_observe is not None and not callable(port_observe))
             or (cleanup_observe is not None and not callable(cleanup_observe))
             or (signal_initial_witness is not None
                 and not callable(signal_initial_witness))
@@ -3466,9 +3660,11 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 fault) is None)):
         _fail("fake_seven_configuration_invalid")
     bound, _ = _validate_binding(binding_template)
+    v2 = port_observe is not None
     run_id = bound["run_id"]
     result = {
-        "schema": "fake_seven_process_result_v1",
+        "schema": ("fake_seven_process_result_v2" if v2
+                   else "fake_seven_process_result_v1"),
         "status": "fake_seven_process_unproven",
         "failure_code": "initial_unavailable",
         "zero_ack_received": False,
@@ -3490,28 +3686,52 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
         "physical_stop_unproven": True, "full_gate_pass": False,
         "b_upper_bound_proven": False, "b_send_authorized": False,
     }
+    if v2:
+        result.update({
+            "port_gate_proven": False,
+            "port_pre_sha256": None, "port_post_sha256": None,
+            "daemon_port_vacant_after": "unknown",
+            "runner_port_vacant_after": "unknown",
+            "shared_11434_unchanged": "unknown",
+            "o_reaped": False, "o_stop": "unproven",
+            "o_term": "not_attempted", "o_kill": "not_attempted",
+            "s_o_reaped": False, "s_o_normal_exit": False,
+        })
     started = time.monotonic()
     prep_deadline = started + preparation_seconds
     work_deadline = prep_deadline + work_seconds
     cleanup_deadline = work_deadline + cleanup_seconds
     hard_deadline = cleanup_deadline + 0.10
-    receipt_deadline = hard_deadline + 0.45
+    # V2 may consume its entire bounded O/S_O cleanup window when the fresh
+    # OS witness stalls. R must retain a separate later window to persist the
+    # failure receipt rather than expiring behind that unrelated helper.
+    receipt_deadline = hard_deadline + (0.85 if v2 else 0.45)
     receipt_cleanup_deadline = receipt_deadline + 0.15
     receipt_hard_deadline = receipt_cleanup_deadline + 0.10
+    port_final_deadline = hard_deadline + 0.12
+    port_cleanup_deadline = port_final_deadline + 0.15
+    port_hard_deadline = port_cleanup_deadline + 0.10
     core: dict[str, tuple[int, int]] = {}
     receipt_pipes: dict[str, tuple[int, int]] = {}
     signal_pipes: dict[str, tuple[int, int]] = {}
+    port_pipes: dict[str, tuple[int, int]] = {}
     core_parent_fds: set[int] = set()
     receipt_parent_fds: set[int] = set()
     signal_parent_fds: set[int] = set()
+    port_parent_fds: set[int] = set()
     core_layout_ready = False
     receipt_layout_ready = False
     signal_layout_ready = False
-    child_pids: dict[str, int | None] = {"D": None, "W": None, "R": None}
+    port_layout_ready = False
+    child_pids: dict[str, int | None] = {
+        "D": None, "W": None, "R": None, "O": None}
     child_witnesses: dict[str, dict] = {}
     signal_pids: dict[str, int] = {}
     signal_witnesses: dict[str, dict] = {}
     statuses: dict[int, int] = {}
+    pre_shared_sha: str | None = None
+    runner_port_candidate: int | None = None
+    runner_port_verified = False
 
     def require(value, code: str) -> None:
         if not value:
@@ -3543,13 +3763,18 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             owned.discard(fd)
 
     try:
-        core, receipt_pipes, signal_pipes = _seven_pipe_layout()
-        result["fd_endpoints_reserved"] = 226
+        if v2:
+            core, receipt_pipes, signal_pipes, port_pipes = _seven_pipe_layout(
+                port_enabled=True)
+        else:
+            core, receipt_pipes, signal_pipes = _seven_pipe_layout()
+        result["fd_endpoints_reserved"] = 246 if v2 else 226
         d_pid = os.fork()
         if d_pid == 0:
             try:
                 _split_close_except(receipt_pipes, set())
                 _split_close_except(signal_pipes, set())
+                _split_close_except(port_pipes, set())
                 child_code = _seven_d_child(
                     core, run_dir=Path(run_dir), run_id=run_id,
                     hard_deadline=hard_deadline,
@@ -3563,6 +3788,7 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             try:
                 _split_close_except(receipt_pipes, set())
                 _split_close_except(signal_pipes, set())
+                _split_close_except(port_pipes, set())
                 child_code = _seven_w_child(
                     core, binding_template=bound,
                     observe_identity=observe_identity, fake_http=fake_http,
@@ -3602,6 +3828,7 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                 child_code = _seven_r_child(
                     receipt_pipes, inherited_core_fds=core_parent_fds,
                     inherited_signal_pipes=signal_pipes,
+                    inherited_port_pipes=port_pipes,
                     run_dir=Path(run_dir), run_id=run_id,
                     hard_deadline=receipt_hard_deadline,
                     prep_deadline=prep_deadline,
@@ -3630,6 +3857,7 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             pid = os.fork()
             if pid == 0:
                 try:
+                    _split_close_except(port_pipes, set())
                     child_code = _split_signal_child(
                         signal_pipes,
                         inherited_split_fds=core_parent_fds
@@ -3657,6 +3885,12 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             for role in ("D", "W", "R")
             for edge in ("term", "kill")
         }
+        if v2:
+            # S_O has not forked yet. Keep both ends until O is initially
+            # witnessed, then transfer only its parent-owned ends to P.
+            signal_parent_fds.update(
+                fd for name, pair in signal_pipes.items()
+                if name.startswith("s_o_") for fd in pair)
         _split_close_except(signal_pipes, signal_parent_fds)
         signal_layout_ready = True
         for role in ("D", "W", "R"):
@@ -3692,6 +3926,96 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                                    1, r_witness, work_deadline)
         require(preflight is not None, "receipt_preflight_unavailable")
         result["receipt_preflight_accepted"] = True
+        if v2:
+            o_pid = os.fork()
+            if o_pid == 0:
+                try:
+                    child_code = _seven_o_child(
+                        port_pipes, inherited_core_fds=core_parent_fds,
+                        inherited_receipt_fds=receipt_parent_fds,
+                        inherited_signal_pipes=signal_pipes,
+                        run_id=run_id, observer=port_observe,
+                        prep_deadline=work_deadline,
+                        work_deadline=work_deadline,
+                        final_deadline=port_final_deadline,
+                        hard_deadline=port_hard_deadline)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            child_pids["O"] = o_pid
+            port_reads = {"o_initial", "o_pre_proof", "o_final_proof"}
+            port_parent_fds = {
+                port_pipes[name][0] for name in port_reads
+            } | {
+                port_pipes[name][1] for name in port_pipes
+                if name not in port_reads
+            }
+            _split_close_except(port_pipes, port_parent_fds)
+            port_layout_ready = True
+            o_initial = parent_receive(
+                port_pipes, port_parent_fds, "o_initial", "initial", 0,
+                None, work_deadline, pid=o_pid, expected={"role": "O"})
+            require(o_initial is not None, "port_helper_initial_unavailable")
+            o_witness = o_initial["witness"]
+            child_witnesses["O"] = o_witness
+            s_o_pid = os.fork()
+            if s_o_pid == 0:
+                try:
+                    child_code = _split_signal_child(
+                        signal_pipes,
+                        inherited_split_fds=(core_parent_fds
+                                             | receipt_parent_fds
+                                             | port_parent_fds),
+                        run_id=run_id, target_role="O",
+                        target_witness=o_witness,
+                        initial_reader=signal_initial_witness
+                        or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=work_deadline,
+                        cleanup_deadline=port_cleanup_deadline,
+                        hard_deadline=port_hard_deadline)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids["O"] = s_o_pid
+            s_o_parent_fds = {
+                signal_pipes[f"s_o_{edge}"][0]
+                for edge in ("initial", "term_result", "kill_result")
+            } | {
+                signal_pipes[f"s_o_{edge}"][1]
+                for edge in ("term", "kill")
+            }
+            signal_parent_fds.difference_update(
+                fd for name, pair in signal_pipes.items()
+                if name.startswith("s_o_") for fd in pair)
+            signal_parent_fds.update(s_o_parent_fds)
+            _split_close_except(signal_pipes, signal_parent_fds)
+            s_o_initial_fd = signal_pipes["s_o_initial"][0]
+            try:
+                s_o_initial = _split_receive(
+                    s_o_initial_fd, work_deadline, phase="initial",
+                    run_id=run_id, seq=0, pid=s_o_pid, role="S_O")
+            finally:
+                _fake_close(s_o_initial_fd)
+                signal_parent_fds.discard(s_o_initial_fd)
+            require(s_o_initial is not None,
+                    "signal_helper_initial_unavailable")
+            signal_witnesses["O"] = s_o_initial["witness"]
+            daemon_port = bound["daemon"]["port"]
+            require(parent_send(port_pipes, port_parent_fds, "o_pre",
+                                "o_pre", 1, o_witness, work_deadline,
+                                daemon_port=daemon_port),
+                    "port_pre_unavailable")
+            pre_proof = parent_receive(
+                port_pipes, port_parent_fds, "o_pre_proof",
+                "o_pre_proof", 1, o_witness, work_deadline,
+                expected={"daemon_port": daemon_port,
+                          "runner_port": None, "runner_vacant": None})
+            require(pre_proof is not None, "port_pre_unavailable")
+            pre_shared_sha = pre_proof["shared_11434_sha256"]
+            result["port_pre_sha256"] = pre_proof["port_sha256"]
+            require(pre_proof["daemon_vacant"] is True,
+                    "port_pre_not_vacant")
         require(parent_send(core, core_parent_fds, "w_go", "w_go", 0,
                             w_witness, work_deadline),
                 "worker_go_unavailable")
@@ -3708,6 +4032,17 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
                     and _split_same(fields["worker"],
                                     _split_worker_from_witness(w_witness)),
                     "worker_request_invalid")
+            if v2 and ordinal in (5, 6):
+                if ordinal == 5:
+                    runner_port_candidate = fields["port"]
+                    require(_port(runner_port_candidate)
+                            and runner_port_candidate
+                                != bound["daemon"]["port"],
+                            "runner_port_unavailable")
+                else:
+                    require(fields["port"] == runner_port_candidate,
+                            "runner_port_unavailable")
+                    runner_port_verified = True
             # D itself also rejects moving on while the previous operation's
             # on_wire state is unknown. P cannot mint a grant independently.
             result["reserved"] = result["granted"] = "unknown"
@@ -3868,6 +4203,94 @@ def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
             if result["d_stop"] != "normal_exit" or result["w_stop"] != "normal_exit":
                 result["status"] = "fake_seven_process_unproven"
                 result["failure_code"] = "cleanup_unavailable"
+        if v2:
+            try:
+                if (pre_shared_sha is not None
+                        and runner_port_candidate is not None
+                        and runner_port_verified
+                        and "O" in child_witnesses
+                        and child_pids["O"] is not None):
+                    o_witness = child_witnesses["O"]
+                    daemon_port = bound["daemon"]["port"]
+                    sent = parent_send(
+                        port_pipes, port_parent_fds, "o_final", "o_final",
+                        2, o_witness, port_final_deadline,
+                        daemon_port=daemon_port,
+                        runner_port=runner_port_candidate)
+                    proof = (parent_receive(
+                        port_pipes, port_parent_fds, "o_final_proof",
+                        "o_final_proof", 2, o_witness, port_final_deadline,
+                        expected={"daemon_port": daemon_port,
+                                  "runner_port": runner_port_candidate})
+                             if sent else None)
+                    if proof is None:
+                        if result["status"] == "fake_seven_process_pending_receipt":
+                            result["failure_code"] = "port_final_unavailable"
+                    else:
+                        result["port_post_sha256"] = proof["port_sha256"]
+                        result["daemon_port_vacant_after"] = proof[
+                            "daemon_vacant"]
+                        result["runner_port_vacant_after"] = proof[
+                            "runner_vacant"]
+                        result["shared_11434_unchanged"] = (
+                            proof["shared_11434_sha256"] == pre_shared_sha)
+                        if result["status"] == "fake_seven_process_pending_receipt":
+                            if (proof["daemon_vacant"] is not True
+                                    or proof["runner_vacant"] is not True):
+                                result["failure_code"] = "port_final_occupied"
+                            elif not result["shared_11434_unchanged"]:
+                                result["failure_code"] = "shared_11434_changed"
+                elif result["status"] == "fake_seven_process_pending_receipt":
+                    result["failure_code"] = "runner_port_unavailable"
+            except Exception:
+                if result["status"] == "fake_seven_process_pending_receipt":
+                    result["failure_code"] = "port_final_unavailable"
+            finally:
+                _fake_close(*port_parent_fds)
+                if not port_layout_ready:
+                    for pair in port_pipes.values():
+                        _fake_close(*pair)
+            if (result["port_post_sha256"] is not None
+                    and child_pids["O"] is not None):
+                # A proof precedes O's normal exit by a few instructions.
+                # Give that exit a tiny bounded reap window before any
+                # witness-gated TERM; a successful fake run should not race
+                # its own observer shutdown.
+                _fake_wait_reap(child_pids["O"], min(
+                    port_final_deadline, time.monotonic() + 0.05), statuses)
+            try:
+                _split_cleanup_children(
+                    result=result, statuses=statuses, roles=("O",),
+                    child_pids={"O": child_pids["O"]},
+                    child_witnesses=child_witnesses,
+                    signal_pids=signal_pids,
+                    signal_witnesses=signal_witnesses,
+                    signal_pipes=signal_pipes,
+                    signal_parent_fds=signal_parent_fds,
+                    run_id=run_id, work_deadline=port_final_deadline,
+                    cleanup_deadline=port_cleanup_deadline,
+                    hard_deadline=port_hard_deadline,
+                    term_grace_seconds=term_grace_seconds)
+            except Exception:
+                result["o_stop"] = "unproven"
+                if result["status"] == "fake_seven_process_pending_receipt":
+                    result["failure_code"] = "port_cleanup_unavailable"
+            result["port_gate_proven"] = bool(
+                _valid_sha(result["port_pre_sha256"])
+                and _valid_sha(result["port_post_sha256"])
+                and all(result[key] is True for key in (
+                    "daemon_port_vacant_after", "runner_port_vacant_after",
+                    "shared_11434_unchanged"))
+                and result["d_reaped"] and result["w_reaped"]
+                and result["d_stop"] != "unproven"
+                and result["w_stop"] != "unproven"
+                and result["o_reaped"] and result["o_stop"] == "normal_exit"
+                and result["s_o_normal_exit"])
+            if (result["status"] == "fake_seven_process_pending_receipt"
+                    and not result["port_gate_proven"]):
+                result["status"] = "fake_seven_process_unproven"
+                if result["failure_code"] == "none":
+                    result["failure_code"] = "port_cleanup_unavailable"
         try:
             if (result["receipt_preflight_accepted"]
                     and child_pids["R"] is not None

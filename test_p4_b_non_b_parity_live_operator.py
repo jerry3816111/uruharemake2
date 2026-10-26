@@ -2847,6 +2847,494 @@ def test_fake_seven_w_does_not_close_reused_callback_fd(
     assert (tmp_path / "w-held").exists()
 
 
+def _fake_seven_port_snapshot(*, phase, daemon_port, runner_port,
+                              shared_sha=None):
+    """Injected fake OS observation, not an actual lsof or live-port proof."""
+    assert daemon_port == 11455
+    assert runner_port == (None if phase == "pre" else 55132)
+    return {
+        "schema": "fake_port_snapshot_v1",
+        "phase": phase,
+        "daemon_port": daemon_port,
+        "daemon_vacant": True,
+        "runner_port": runner_port,
+        "runner_vacant": None if phase == "pre" else True,
+        "shared_11434": {
+            "state": "listener",
+            "listener_sha256": shared_sha or hashlib.sha256(
+                b"synthetic pre-existing shared listener").hexdigest(),
+        },
+    }
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_orders_observer_and_receipts_without_live_http(
+        monkeypatch, tmp_path):
+    """A v1 URL check is insufficient for the frozen port-vacancy gate."""
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    pre_marker = tmp_path / "port-pre-seen"
+    calls_marker = tmp_path / "fake-calls-seen"
+
+    def port_observe(phase, daemon_port, runner_port):
+        if phase == "pre":
+            assert not calls_marker.exists()
+            pre_marker.write_text("pre")
+        else:
+            assert pre_marker.read_text() == "pre"
+            assert calls_marker.read_text() == "7"
+        return _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+
+    def counted_fake_http(method, url, payload, remaining, grant):
+        assert pre_marker.read_text() == "pre"
+        calls_marker.write_text(str(grant["ordinal"]))
+        return fake_http(method, url, payload, remaining, grant)
+
+    run_dir = tmp_path / "seven-port-v2"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=counted_fake_http,
+        port_observe=port_observe, work_seconds=2.0)
+    assert result["receipt_durable_proven"] is True, json.dumps(result)
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert result["schema"] == "fake_seven_process_result_v2"
+    assert result["status"] == "fake_seven_process_pass"
+    assert result["port_gate_proven"] is True
+    assert result["fd_endpoints_reserved"] == 246
+    assert result["http_calls"] == 7
+    assert result["identity_checks"] == 6
+    assert result["receipt_durable_proven"] is True
+    assert result["o_stop"] == "normal_exit"
+    assert result["o_term"] == "not_attempted"
+    assert result["o_kill"] == "not_attempted"
+    assert result["s_o_normal_exit"] is True
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v2"
+    assert receipt["port_gate_proven"] is True
+    for key in ("port_pre_sha256", "port_post_sha256"):
+        assert len(result[key]) == 64
+        assert receipt[key] == result[key]
+    for key in ("daemon_port_vacant_after", "runner_port_vacant_after",
+                "shared_11434_unchanged"):
+        assert result[key] is True
+        assert receipt[key] is True
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert CANARY not in json.dumps(result)
+    assert CANARY not in receipt_path.read_text()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["pre_occupied", "pre_unknown_shared",
+                                     "pre_runner_fabricated",
+                                     "post_daemon_occupied",
+                                     "post_runner_occupied",
+                                     "post_shared_drift", "post_wrong_runner"])
+def test_fake_seven_port_v2_rejects_occupied_drift_or_wrong_binding(
+        monkeypatch, tmp_path, variant):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    calls_marker = tmp_path / "fake-http-was-called"
+
+    def counted_fake_http(*args):
+        calls_marker.write_text("yes")
+        return fake_http(*args)
+
+    def port_observe(phase, daemon_port, runner_port):
+        value = _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+        if variant == "pre_occupied" and phase == "pre":
+            value["daemon_vacant"] = False
+        elif variant == "pre_unknown_shared" and phase == "pre":
+            value["shared_11434"] = {"state": "unknown",
+                                     "listener_sha256": None}
+        elif variant == "pre_runner_fabricated" and phase == "pre":
+            value["runner_port"] = 55132
+            value["runner_vacant"] = True
+        elif variant == "post_daemon_occupied" and phase == "post":
+            value["daemon_vacant"] = False
+        elif variant == "post_runner_occupied" and phase == "post":
+            value["runner_vacant"] = False
+        elif variant == "post_shared_drift" and phase == "post":
+            value["shared_11434"]["listener_sha256"] = hashlib.sha256(
+                b"different shared listener").hexdigest()
+        elif variant == "post_wrong_runner" and phase == "post":
+            value["runner_port"] += 1
+        return value
+
+    run_dir = tmp_path / f"seven-port-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=counted_fake_http,
+        port_observe=port_observe, work_seconds=2.0)
+    assert result["schema"] == "fake_seven_process_result_v2"
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["port_gate_proven"] is False
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert result["receipt_durable_proven"] is True
+    receipt = json.loads((run_dir / "receipt.json").read_bytes())
+    assert receipt["schema"] == "fake_seven_process_receipt_v2"
+    assert receipt["port_gate_proven"] is False
+    assert receipt["b_send_authorized"] is False
+    if variant.startswith("pre_"):
+        assert result["http_calls"] in (0, "unknown")
+        assert not calls_marker.exists()
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_accepts_explicit_vacant_shared_11434(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+
+    def port_observe(phase, daemon_port, runner_port):
+        value = _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+        value["shared_11434"] = {"state": "vacant", "listener_sha256": None}
+        return value
+
+    result = live._supervise_fake_seven_once(
+        run_dir=tmp_path / "seven-shared-vacant", binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=port_observe, work_seconds=2.0)
+    assert result["status"] == "fake_seven_process_pass", result
+    assert result["port_gate_proven"] is True
+    assert result["shared_11434_unchanged"] is True
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("phase", ["pre", "post"])
+def test_fake_seven_port_v2_blocked_observer_keeps_parent_bounded_and_r_independent(
+        monkeypatch, tmp_path, phase):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+
+    def port_observe(current, daemon_port, runner_port):
+        if current == phase:
+            time.sleep(10)
+        return _fake_seven_port_snapshot(
+            phase=current, daemon_port=daemon_port, runner_port=runner_port)
+
+    run_dir = tmp_path / f"seven-port-block-{phase}"
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=port_observe, work_seconds=0.5,
+        preparation_seconds=0.5, cleanup_seconds=0.5)
+    assert time.monotonic() - started < 3.0
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["port_gate_proven"] is False
+    assert result["receipt_durable_proven"] is True
+    assert result["o_term"] != "not_attempted" or result["o_kill"] != "not_attempted"
+    receipt = json.loads((run_dir / "receipt.json").read_bytes())
+    assert receipt["schema"] == "fake_seven_process_receipt_v2"
+    assert receipt["port_gate_proven"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["observer_crash", "final_crash",
+                                     "raw_extra_field"])
+def test_fake_seven_port_v2_rejects_callback_failure_without_raw_leak(
+        monkeypatch, tmp_path, variant):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+
+    def port_observe(phase, daemon_port, runner_port):
+        if ((phase == "pre" and variant == "observer_crash")
+                or (phase == "post" and variant == "final_crash")):
+            raise RuntimeError(CANARY)
+        value = _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+        if phase == "pre" and variant == "raw_extra_field":
+            value["raw_lsof"] = CANARY
+        return value
+
+    run_dir = tmp_path / f"seven-port-raw-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=port_observe, work_seconds=2.0)
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["port_gate_proven"] is False
+    assert result["receipt_durable_proven"] is True
+    receipt_path = run_dir / "receipt.json"
+    assert CANARY not in json.dumps(result)
+    assert CANARY not in receipt_path.read_text()
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_observer_stdio_is_not_public(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+
+    def port_observe(phase, daemon_port, runner_port):
+        # The injected callback is untrusted for output privacy: stdout and
+        # stderr must not remain attached to the parent terminal/capture.
+        assert os.path.samestat(os.fstat(1), os.stat(os.devnull))
+        assert os.path.samestat(os.fstat(2), os.stat(os.devnull))
+        os.write(1, CANARY.encode())
+        os.write(2, CANARY.encode())
+        return _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+
+    result = live._supervise_fake_seven_once(
+        run_dir=tmp_path / "seven-port-stdio", binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=port_observe, work_seconds=2.0)
+    assert result["status"] == "fake_seven_process_pass", result
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_blocked_fresh_cleanup_witness_is_bounded(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    blocked_pid = tmp_path / "blocked-o-pid"
+
+    def port_observe(phase, daemon_port, runner_port):
+        if phase == "post":
+            blocked_pid.write_text(str(os.getpid()))
+            time.sleep(10)
+        return _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port, runner_port=runner_port)
+
+    def cleanup_observe(pid):
+        if blocked_pid.exists() and str(pid) == blocked_pid.read_text():
+            time.sleep(10)
+        return live._fake_os_witness(pid)
+
+    run_dir = tmp_path / "seven-port-cleanup-observer-blocked"
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=port_observe, cleanup_observe=cleanup_observe,
+        work_seconds=0.5, preparation_seconds=0.5,
+        cleanup_seconds=0.5)
+    assert time.monotonic() - started < 3.0
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["port_gate_proven"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["receipt_durable_proven"] is True, json.dumps(result)
+    assert json.loads((run_dir / "receipt.json").read_bytes())[
+        "port_gate_proven"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant", ["o_initial_missing", "s_o_initial_missing",
+                                     "o_abnormal_exit", "s_o_abnormal_exit"])
+def test_fake_seven_port_v2_initial_and_exit_proofs_are_required(
+        monkeypatch, tmp_path, variant):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    original_send = live._seven_child_send
+    original_o = live._seven_o_child
+    original_signal = live._split_signal_child
+    port_callback_marker = tmp_path / "port-callback-started"
+
+    def port_observe(phase, daemon_port, runner_port):
+        port_callback_marker.write_text(phase)
+        return _fake_seven_port_snapshot(
+            phase=phase, daemon_port=daemon_port,
+            runner_port=runner_port)
+
+    if variant == "o_initial_missing":
+        def no_o_initial(*args, **kwargs):
+            if args[1] == "o_initial":
+                return False
+            return original_send(*args, **kwargs)
+        monkeypatch.setattr(live, "_seven_child_send", no_o_initial)
+    elif variant == "s_o_initial_missing":
+        def no_s_o_initial(*args, **kwargs):
+            if kwargs.get("target_role") == "O":
+                return 125
+            return original_signal(*args, **kwargs)
+        monkeypatch.setattr(live, "_split_signal_child", no_s_o_initial)
+    elif variant == "o_abnormal_exit":
+        def bad_o_exit(*args, **kwargs):
+            code = original_o(*args, **kwargs)
+            return 121 if code == 0 else code
+        monkeypatch.setattr(live, "_seven_o_child", bad_o_exit)
+    else:
+        def bad_s_o_exit(*args, **kwargs):
+            code = original_signal(*args, **kwargs)
+            return 121 if kwargs.get("target_role") == "O" else code
+        monkeypatch.setattr(live, "_split_signal_child", bad_s_o_exit)
+
+    run_dir = tmp_path / f"seven-port-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=port_observe,
+        work_seconds=1.0)
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["port_gate_proven"] is False
+    assert result["receipt_durable_proven"] is True
+    assert json.loads((run_dir / "receipt.json").read_bytes())[
+        "port_gate_proven"] is False
+    if variant in ("o_initial_missing", "s_o_initial_missing"):
+        assert not port_callback_marker.exists()
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_rejects_runner_port_change_between_ops_5_and_6(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    original = live._seven_frame
+
+    def wrong_runner_port(run_id, phase, seq, witness, **extra):
+        frame = original(run_id, phase, seq, witness, **extra)
+        if phase == "request" and seq == 6:
+            frame["fields"]["port"] += 1
+        return frame
+
+    monkeypatch.setattr(live, "_seven_frame", wrong_runner_port)
+    run_dir = tmp_path / "seven-runner-port-drift"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=lambda phase, daemon_port, runner_port:
+            _fake_seven_port_snapshot(phase=phase,
+                                      daemon_port=daemon_port,
+                                      runner_port=runner_port),
+        work_seconds=1.0)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "runner_port_unavailable"
+    assert result["port_gate_proven"] is False
+    assert result["receipt_durable_proven"] is True
+    assert json.loads((run_dir / "receipt.json").read_bytes())[
+        "failure_code"] == "runner_port_unavailable"
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_does_not_claim_gate_when_dw_stop_is_unproven(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    original_d = live._seven_d_child
+
+    def bad_d_exit(*args, **kwargs):
+        code = original_d(*args, **kwargs)
+        return 121 if code == 0 else code
+
+    monkeypatch.setattr(live, "_seven_d_child", bad_d_exit)
+    run_dir = tmp_path / "seven-d-stop-unproven"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=lambda phase, daemon_port, runner_port:
+            _fake_seven_port_snapshot(phase=phase,
+                                      daemon_port=daemon_port,
+                                      runner_port=runner_port),
+        work_seconds=1.0)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["d_stop"] == "unproven"
+    assert result["port_post_sha256"] is not None
+    assert result["port_gate_proven"] is False
+    assert result["receipt_durable_proven"] is True
+    receipt = json.loads((run_dir / "receipt.json").read_bytes())
+    assert receipt["port_gate_proven"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_trailing_o_proof_is_not_one_frame(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    original = live._seven_send
+
+    def extra_byte(fd, value, deadline, **validation):
+        sent = original(fd, value, deadline, **validation)
+        if sent and value["phase"] == "o_pre_proof":
+            os.write(fd, b"x")
+        return sent
+
+    monkeypatch.setattr(live, "_seven_send", extra_byte)
+    run_dir = tmp_path / "seven-port-trailing"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=lambda phase, daemon_port, runner_port:
+            _fake_seven_port_snapshot(phase=phase, daemon_port=daemon_port,
+                                      runner_port=runner_port),
+        work_seconds=1.0)
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["failure_code"] == "port_pre_unavailable"
+    assert result["receipt_durable_proven"] is True
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("phase,variant", [
+    ("o_pre_proof", "duplicate"), ("o_pre_proof", "partial"),
+    ("o_pre_proof", "stale"), ("o_final_proof", "duplicate"),
+    ("o_final_proof", "partial"), ("o_final_proof", "stale"),
+])
+def test_fake_seven_port_v2_rejects_duplicate_partial_or_stale_o_proof(
+        monkeypatch, tmp_path, phase, variant):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    original = live._seven_send
+
+    def malformed(fd, value, deadline, **validation):
+        if value["phase"] != phase:
+            return original(fd, value, deadline, **validation)
+        if variant == "duplicate":
+            sent = original(fd, value, deadline, **validation)
+            if sent:
+                os.write(fd, live.encode_frame(value))
+            return sent
+        if variant == "partial":
+            os.write(fd, b"\0\0\0\x10abc")
+            return True
+        stale = {**value, "run_id": "stale-port-proof"}
+        os.write(fd, live.encode_frame(stale))
+        return True
+
+    monkeypatch.setattr(live, "_seven_send", malformed)
+    run_dir = tmp_path / f"seven-port-{phase}-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=lambda current, daemon_port, runner_port:
+            _fake_seven_port_snapshot(phase=current,
+                                      daemon_port=daemon_port,
+                                      runner_port=runner_port),
+        work_seconds=1.0)
+    assert result["status"] != "fake_seven_process_pass"
+    assert result["failure_code"] == (
+        "port_pre_unavailable" if phase == "o_pre_proof"
+        else "port_final_unavailable")
+    assert result["port_gate_proven"] is False
+    assert result["receipt_durable_proven"] is True
+
+
+@_DARWIN_FORK
+def test_fake_seven_port_v2_fd_cap_fails_before_journal_or_work(
+        monkeypatch, tmp_path):
+    binding, observe_identity, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path)
+    monkeypatch.setattr(live.resource, "getrlimit", lambda _kind: (245, 245))
+    run_dir = tmp_path / "seven-port-fd-cap"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observe_identity, fake_http=fake_http,
+        port_observe=lambda phase, daemon_port, runner_port:
+            _fake_seven_port_snapshot(phase=phase, daemon_port=daemon_port,
+                                      runner_port=runner_port))
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "fake_seven_fd_reservation_unavailable"
+    assert result["fd_endpoints_reserved"] == 0
+    assert not run_dir.exists()
+
+
 @_DARWIN_FORK
 def test_fake_split_receipt_signal_helper_bad_initial_prevents_d_go(
         monkeypatch, tmp_path):
