@@ -1006,7 +1006,8 @@ def _fake_close(*fds: int) -> None:
             pass
 
 
-def _fake_read_bounded(fd: int, deadline: float, *, framed: bool) -> Any:
+def _fake_read_bounded(fd: int, deadline: float, *, framed: bool,
+                       keys: set[str] | None = None) -> Any:
     """Parent-side nonblocking read; no effect callback runs on this path."""
     raw = bytearray()
     limit = FRAME_LIMIT + 4 if framed else 1
@@ -1030,7 +1031,7 @@ def _fake_read_bounded(fd: int, deadline: float, *, framed: bool) -> Any:
                 return None
             if len(raw) == size + 4:
                 try:
-                    return decode_frame(bytes(raw), keys={"witness"})
+                    return decode_frame(bytes(raw), keys=keys or {"witness"})
                 except LiveOperatorError:
                     return None
     return None
@@ -1050,6 +1051,14 @@ def _fake_reap_nonblocking(pid: int, statuses: dict[int, int] | None = None) -> 
     return True
 
 
+def _fake_journal_proof_valid(value: Any) -> bool:
+    """Only hashes and the exact grant allowlist may cross this fake IPC."""
+    return (type(value) is dict
+            and set(value) == {"grant", "journal_sha256"}
+            and _grant_valid(value["grant"], nonce_required=True)
+            and _valid_sha(value["journal_sha256"]))
+
+
 def _fake_wait_reap(pid: int, deadline: float,
                     statuses: dict[int, int] | None = None) -> bool:
     while time.monotonic() < deadline:
@@ -1061,6 +1070,7 @@ def _fake_wait_reap(pid: int, deadline: float,
 
 def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                                   signal_initial_witness=None,
+                                  journal_proof: bool = False,
                                   preparation_seconds: float = 0.15,
                                   work_seconds: float = 0.10,
                                   term_grace_seconds: float = 0.04,
@@ -1075,7 +1085,8 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
     durable journal/receipt, private port or shared-port proofs here, so
     `supervise_once` remains fail-closed.
     """
-    if (not callable(work) or (observe is not None and not callable(observe))
+    if (not callable(work) or type(journal_proof) is not bool
+            or (observe is not None and not callable(observe))
             or (initial_witness is not None and not callable(initial_witness))
             or (signal_initial_witness is not None
                 and not callable(signal_initial_witness))):
@@ -1108,8 +1119,10 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
             _fake_close(ww)
             if os.read(cr, 1) != b"G":
                 os._exit(0)
-            work()
-            os.write(dw, b"D")
+            work_result = work()
+            if journal_proof and not _fake_journal_proof_valid(work_result):
+                os._exit(125)
+            os.write(dw, encode_frame(work_result) if journal_proof else b"D")
             os._exit(0)
         except BaseException:
             os._exit(125)
@@ -1202,9 +1215,15 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                       "signal_reaped": False, "term": term_code,
                       "kill": kill_code, "full_gate_pass": False}
             return result
-        work_done = _fake_read_bounded(dr, t0 + work_seconds, framed=False)
+        work_done = _fake_read_bounded(
+            dr, t0 + work_seconds, framed=journal_proof,
+            keys={"grant", "journal_sha256"} if journal_proof else None)
+        if journal_proof and not _fake_journal_proof_valid(work_done):
+            work_done = None
         worker_reaped = _fake_reap_nonblocking(worker_pid, exit_statuses)
-        if work_done == b"D" and not worker_reaped:
+        work_reported = (type(work_done) is dict if journal_proof
+                         else work_done == b"D")
+        if work_reported and not worker_reaped:
             worker_reaped = _fake_wait_reap(worker_pid,
                                            time.monotonic() + 0.02,
                                            exit_statuses)
@@ -1247,7 +1266,7 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                   and os.WTERMSIG(worker_status) == signal.SIGTERM)
                  or (kill_code == "signal_sent"
                      and os.WTERMSIG(worker_status) == signal.SIGKILL)))
-        if work_done == b"D" and worker_reaped and completed_normally:
+        if work_reported and worker_reaped and completed_normally:
             status = "fake_partial_work_exited"
         elif worker_reaped and stopped_by_witnessed_signal:
             status = "fake_partial_witnessed_child_reaped"
@@ -1258,6 +1277,9 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                 "worker_reaped": worker_reaped,
                 "signal_reaped": False, "term": term_code,
                 "kill": kill_code, "full_gate_pass": False}
+        if status == "fake_partial_work_exited" and journal_proof:
+            result["work_result"] = work_done
+            result["worker_initial_witness"] = initial
         return result
     finally:
         _fake_close(wr, cw, dr)
@@ -1276,3 +1298,90 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
         if result is not None:
             result["worker_reaped"] = worker_reaped
             result["signal_reaped"] = signal_reaped or signal_pid is None
+
+
+def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
+                                     crash_after_commit: bool = False,
+                                     work_seconds: float = 0.4) -> dict:
+    """Fake-only bounded durability probe; not the frozen two-ACK protocol.
+
+    A witnessed ephemeral child performs both zero-journal creation and one
+    reservation. The parent receives a single proof only after *all* journal
+    commits return and the child exits normally. In particular, there is no
+    parent ACK barrier between the zero state and op1, no separate worker
+    delivery and no live receipt. This only isolates blocking disk effects
+    from the parent watchdog; ``supervise_once`` stays fail-closed.
+    """
+    if (type(grant_without_worker) is not dict
+            or set(grant_without_worker) != _GRANT_FIELDS - {"worker"}
+            or grant_without_worker.get("ordinal") != 1
+            or not _grant_valid({**grant_without_worker,
+                                 "worker": {"pid": 1, "ppid": 1,
+                                            "start_sec": 0, "start_usec": 0}},
+                                nonce_required=False)
+            or type(crash_after_commit) is not bool):
+        _fail("fake_journal_spec_invalid")
+    spec = _plain_copy(grant_without_worker, "fake_journal_spec_invalid")
+    directory = Path(run_dir)
+
+    def durable_work() -> dict:
+        witness = _fake_os_witness(os.getpid())
+        generation = witness["raw_generation"]
+        worker = {"pid": generation[0], "ppid": generation[1],
+                  "start_sec": generation[2], "start_usec": generation[3]}
+        journal = DurableJournal.create(directory, spec["run_id"])
+        grant = journal.reserve({**spec, "worker": worker}, ack=lambda _grant: None)
+        state = journal.snapshot()
+        # The helper, never the parent watchdog, performs the post-commit
+        # readback. A blocked read is subject to the same process deadline.
+        with open(journal.path, "rb") as handle:
+            disk = handle.read(FRAME_LIMIT + 1)
+        if (len(disk) > FRAME_LIMIT
+                or disk != _canonical(state, "fake_journal_readback_invalid")
+                or state["reserved"] != 1 or state["granted"] != 1
+                or state["ack_callback_returned"] != 1
+                or state["worker_issued"] != 0
+                or state["operations"][0]["on_wire"] != "unknown"):
+            _fail("fake_journal_readback_invalid")
+        if crash_after_commit:
+            os._exit(121)  # injected lost proof after durable commit
+        return {"grant": grant, "journal_sha256": _sha(disk)}
+
+    watched = _supervise_fake_callback_once(
+        work=durable_work,
+        journal_proof=True,
+        work_seconds=work_seconds)
+    base = {"schema": "fake_process_journal_partial_v1",
+            "status": "fake_partial_journal_unproven",
+            "watchdog_status": watched["status"],
+            "worker_reaped": watched["worker_reaped"],
+            "signal_reaped": watched["signal_reaped"],
+            "go_issued": watched["go_issued"],
+            "term": watched["term"], "kill": watched["kill"],
+            "full_gate_pass": False}
+    if (watched["status"] != "fake_partial_work_exited"
+            or not watched["signal_reaped"]):
+        return base
+    proof = watched.get("work_result")
+    initial = watched.get("worker_initial_witness")
+    if (type(proof) is not dict
+            or set(proof) != {"grant", "journal_sha256"}
+            or not _valid_sha(proof["journal_sha256"])
+            or not _fake_witness_valid(initial, initial.get("pid", -1)
+                                       if type(initial) is dict else -1)):
+        return base
+    generation = initial["raw_generation"]
+    expected_worker = {"pid": generation[0], "ppid": generation[1],
+                       "start_sec": generation[2], "start_usec": generation[3]}
+    grant = proof["grant"]
+    if (not _grant_valid(grant, nonce_required=True)
+            or _canonical({key: grant[key] for key in _GRANT_FIELDS - {"worker"}},
+                          "fake_journal_proof_invalid") != _canonical(
+                              spec, "fake_journal_proof_invalid")
+            or grant["worker"] != expected_worker):
+        return base
+    return {**base, "status": "fake_partial_op1_durable_proof",
+            "journal_sha256": proof["journal_sha256"],
+            "grant_sha256": _sha(_canonical(grant, "fake_journal_proof_invalid")),
+            "reserved": 1, "granted": 1, "worker_issued": 0,
+            "on_wire": "unknown"}

@@ -1185,3 +1185,196 @@ def test_fake_process_noop_signal_cannot_masquerade_as_stopped(monkeypatch):
     finally:
         os.close(marker_r)
         os.close(marker_w)
+
+
+def _op1_without_worker():
+    fields = _grant_fields(1)
+    fields.pop("worker")
+    fields["expires_at"] = time.monotonic() + 10
+    return fields
+
+
+@_DARWIN_FORK
+def test_fake_journal_op1_is_child_durable_before_parent_proof(tmp_path):
+    run_dir = tmp_path / "isolated-run"
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_op1_durable_proof"
+    assert result["worker_reaped"] is True
+    assert result["signal_reaped"] is True
+    assert result["full_gate_pass"] is False
+    assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
+    journal_path, disk = _read_only_journal(run_dir)
+    assert hashlib.sha256(journal_path.read_bytes()).hexdigest() == result["journal_sha256"]
+    assert disk["reserved"] == disk["granted"] == 1
+    assert disk["ack_callback_returned"] == 1  # local callback, not worker delivery
+    assert disk["worker_issued"] == disk["completion_attempt_spent"] == 0
+    assert disk["operations"][0]["on_wire"] == "unknown"
+    assert disk["operations"][0]["worker"]["pid"] > 0
+    assert result["on_wire"] == "unknown"
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("blocked_effect", ["create_fsync", "create_dir_fsync",
+                                             "reserve_fsync", "replace",
+                                             "directory_fsync", "post_ack_fsync",
+                                             "post_ack_dir_fsync"])
+def test_fake_journal_blocked_durability_keeps_parent_bounded_and_no_proof(
+        monkeypatch, tmp_path, blocked_effect):
+    original_fsync = os.fsync
+    original_replace = os.replace
+    fsync_calls = 0
+
+    def maybe_block_fsync(fd):
+        nonlocal fsync_calls
+        fsync_calls += 1
+        if ((blocked_effect == "create_fsync" and fsync_calls == 1)
+                or (blocked_effect == "create_dir_fsync" and fsync_calls == 2)
+                or (blocked_effect == "reserve_fsync" and fsync_calls == 3)
+                or (blocked_effect == "directory_fsync" and fsync_calls == 4)
+                or (blocked_effect == "post_ack_fsync" and fsync_calls == 5)
+                or (blocked_effect == "post_ack_dir_fsync" and fsync_calls == 6)):
+            time.sleep(20)
+        return original_fsync(fd)
+
+    def maybe_block_replace(*args):
+        if blocked_effect == "replace":
+            time.sleep(20)
+        return original_replace(*args)
+
+    monkeypatch.setattr(live.os, "fsync", maybe_block_fsync)
+    monkeypatch.setattr(live.os, "replace", maybe_block_replace)
+    started = time.monotonic()
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=tmp_path / "blocked-run", grant_without_worker=_op1_without_worker(),
+        work_seconds=0.15)
+    elapsed = time.monotonic() - started
+    assert elapsed < 2
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert result["full_gate_pass"] is False
+    assert result["worker_reaped"] is True
+    assert result["signal_reaped"] is True
+    assert "journal_sha256" not in result
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+def test_fake_journal_post_replace_failure_and_lost_proof_do_not_refund(
+        monkeypatch, tmp_path):
+    original_sync_directory = live.DurableJournal._sync_directory
+    calls = 0
+
+    def fail_second_directory_sync(directory):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            raise RuntimeError(CANARY)
+        return original_sync_directory(directory)
+
+    monkeypatch.setattr(live.DurableJournal, "_sync_directory",
+                        staticmethod(fail_second_directory_sync))
+    failed_run = tmp_path / "failed-run"
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=failed_run, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert "journal_sha256" not in result
+    _, disk = _read_only_journal(failed_run)
+    assert disk["reserved"] == disk["granted"] == 1
+    assert disk["operations"][0]["on_wire"] == "unknown"
+    assert CANARY not in json.dumps(result)
+
+    monkeypatch.setattr(live.DurableJournal, "_sync_directory",
+                        staticmethod(original_sync_directory))
+    lost_run = tmp_path / "lost-proof-run"
+    lost = live._supervise_fake_journal_op1_once(
+        run_dir=lost_run, grant_without_worker=_op1_without_worker(),
+        crash_after_commit=True)
+    assert lost["status"] == "fake_partial_journal_unproven"
+    assert "journal_sha256" not in lost
+    _, lost_disk = _read_only_journal(lost_run)
+    assert lost_disk["reserved"] == lost_disk["granted"] == 1
+    assert lost_disk["ack_callback_returned"] == 1
+    before_retry = (lost_run / "journal.json").read_bytes()
+    refused = live._supervise_fake_journal_op1_once(
+        run_dir=lost_run, grant_without_worker=_op1_without_worker())
+    assert refused["status"] == "fake_partial_journal_unproven"
+    assert (lost_run / "journal.json").read_bytes() == before_retry
+
+
+@_DARWIN_FORK
+def test_fake_journal_existing_run_is_terminal_without_reuse(tmp_path):
+    run_dir = tmp_path / "existing-run"
+    live.DurableJournal.create(run_dir, "synthetic-run")
+    original = (run_dir / "journal.json").read_bytes()
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert "journal_sha256" not in result
+    assert (run_dir / "journal.json").read_bytes() == original
+
+
+@_DARWIN_FORK
+def test_fake_journal_worker_grant_must_match_initial_os_witness(
+        monkeypatch, tmp_path):
+    original_reserve = live.DurableJournal.reserve
+
+    def mint_wrong_worker(self, fields, *, ack):
+        altered = deepcopy(fields)
+        altered["worker"]["pid"] += 1
+        return original_reserve(self, altered, ack=ack)
+
+    monkeypatch.setattr(live.DurableJournal, "reserve", mint_wrong_worker)
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=tmp_path / "wrong-worker", grant_without_worker=_op1_without_worker())
+    assert result["watchdog_status"] == "fake_partial_work_exited"
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert "journal_sha256" not in result
+
+
+@_DARWIN_FORK
+def test_fake_journal_grant_expiry_must_be_canonical_byte_equal(
+        monkeypatch, tmp_path):
+    original_reserve = live.DurableJournal.reserve
+
+    def mint_type_drift(self, fields, *, ack):
+        altered = deepcopy(fields)
+        altered["expires_at"] = 100
+        return original_reserve(self, altered, ack=ack)
+
+    monkeypatch.setattr(live.DurableJournal, "reserve", mint_type_drift)
+    fields = _op1_without_worker()
+    fields["expires_at"] = 100.0  # Python equality would hide this type drift.
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=tmp_path / "expiry-type-drift", grant_without_worker=fields)
+    assert result["watchdog_status"] == "fake_partial_work_exited"
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert "journal_sha256" not in result
+
+
+@_DARWIN_FORK
+def test_fake_journal_proof_ipc_rejects_nested_raw_before_writing_frame():
+    result = live._supervise_fake_callback_once(
+        work=lambda: {"grant": {"raw": CANARY},
+                      "journal_sha256": hashlib.sha256(b"x").hexdigest()},
+        journal_proof=True, work_seconds=0.1)
+    assert result["status"] != "fake_partial_work_exited"
+    assert result["worker_reaped"] is True
+    assert result["signal_reaped"] is True
+    assert "work_result" not in result
+    assert CANARY not in json.dumps(result)
+
+
+def test_fake_journal_cannot_claim_proof_with_unreaped_signal_helper(
+        monkeypatch, tmp_path):
+    def missing_reap(**_kwargs):
+        return {"status": "fake_partial_work_exited", "worker_reaped": True,
+                "signal_reaped": False, "go_issued": True,
+                "term": "not_attempted", "kill": "not_attempted"}
+
+    monkeypatch.setattr(live, "_supervise_fake_callback_once", missing_reap)
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=tmp_path / "unused", grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert result["signal_reaped"] is False
+    assert "journal_sha256" not in result
