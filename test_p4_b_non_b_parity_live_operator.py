@@ -1,7 +1,7 @@
 """Fake-only contract for the one-use non-B parity live operator.
 
-No test in this module starts Ollama, opens HTTP, signals an OS process, or
-uses a real model. All worker and supervisor effects are injected fakes.
+No test starts Ollama, opens HTTP or uses a real model. The process-watchdog
+slice signals only its own short-lived synthetic fork children.
 """
 
 from __future__ import annotations
@@ -9,8 +9,13 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path
+import select
+import signal
 import stat
+import sys
+import time
 
 import pytest
 
@@ -37,6 +42,12 @@ OPERATIONS = (
     ("POST", "/v1/chat/completions"),
 )
 WORKER = {"pid": 202, "ppid": 101, "start_sec": 1000, "start_usec": 12}
+
+
+_DARWIN_FORK = pytest.mark.skipif(
+    sys.platform != "darwin" or not hasattr(os, "fork"),
+    reason="the synthetic raw-generation watcher uses macOS libproc/fork",
+)
 
 
 def _canonical(value):
@@ -868,3 +879,309 @@ def test_thread_only_or_unknown_witness_cannot_be_reported_as_physical_stop(
     assert str(caught.value) == "process_supervisor_not_implemented"
     assert effects.calls == 0
     assert not run_dir.exists()
+
+
+def _pipe_has_byte(fd):
+    ready, _, _ = select.select([fd], [], [], 0)
+    return bool(ready and os.read(fd, 1))
+
+
+@_DARWIN_FORK
+def test_fake_process_wrong_but_well_shaped_initial_witness_never_starts_work():
+    marker_r, marker_w = os.pipe()
+    try:
+        def work():
+            os.write(marker_w, b"W")
+
+        def wrong_witness(pid):
+            value = live._fake_os_witness(pid)
+            value["pgid"] += 1
+            return value
+
+        result = live._supervise_fake_callback_once(
+            work=work, initial_witness=wrong_witness,
+            preparation_seconds=0.05, work_seconds=0.05,
+            term_grace_seconds=0.02, cleanup_seconds=0.06)
+        assert result == {
+            "schema": "fake_process_watchdog_partial_v1",
+            "status": "fake_partial_initial_witness_unavailable",
+            "go_issued": False, "worker_reaped": True,
+            "signal_reaped": True, "term": "not_attempted",
+            "kill": "not_attempted", "full_gate_pass": False,
+        }
+        assert not _pipe_has_byte(marker_r)
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_blocked_initial_witness_is_bounded_and_no_callback():
+    marker_r, marker_w = os.pipe()
+    try:
+        def work():
+            os.write(marker_w, b"W")
+
+        started = time.monotonic()
+        result = live._supervise_fake_callback_once(
+            work=work, initial_witness=lambda _pid: time.sleep(2),
+            preparation_seconds=0.05, work_seconds=0.05,
+            term_grace_seconds=0.02, cleanup_seconds=0.06)
+        elapsed = time.monotonic() - started
+        assert elapsed < 1.5
+        assert result["status"] == "fake_partial_initial_witness_unavailable"
+        assert result["go_issued"] is False
+        assert result["worker_reaped"] is True
+        assert result["term"] == "not_attempted"
+        assert result["full_gate_pass"] is False
+        assert not _pipe_has_byte(marker_r)
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_blocked_work_is_stopped_by_separate_signal_helper():
+    marker_r, marker_w = os.pipe()
+    try:
+        def blocked_work():
+            os.write(marker_w, b"W")
+            time.sleep(2)
+
+        started = time.monotonic()
+        result = live._supervise_fake_callback_once(
+            work=blocked_work, preparation_seconds=0.08,
+            work_seconds=0.15, term_grace_seconds=0.03,
+            cleanup_seconds=0.15)
+        assert time.monotonic() - started < 1.5
+        assert _pipe_has_byte(marker_r)  # callback really entered
+        assert result["go_issued"] is True
+        assert result["term"] == "signal_sent"
+        assert result["worker_reaped"] is True
+        assert result["signal_reaped"] is True
+        assert result["status"] == "fake_partial_witnessed_child_reaped"
+        assert result["full_gate_pass"] is False
+        assert CANARY not in json.dumps(result)
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_final_observer_drift_does_not_signal(monkeypatch):
+    signal_r, signal_w = os.pipe()
+    original_kill = os.kill
+
+    def recorded_kill(pid, signum):
+        os.write(signal_w, b"S")
+        return original_kill(pid, signum)
+
+    monkeypatch.setattr(live.os, "kill", recorded_kill)
+    observations = 0
+
+    def drift_on_final(pid):
+        nonlocal observations
+        observations += 1
+        value = live._fake_os_witness(pid)
+        if observations == 2:
+            value["pgid"] += 1
+        return value
+
+    try:
+        result = live._supervise_fake_callback_once(
+            work=lambda: time.sleep(2), observe=drift_on_final,
+            preparation_seconds=0.06, work_seconds=0.05,
+            term_grace_seconds=0.02, cleanup_seconds=0.07)
+        assert result["term"] == "identity_changed_no_signal"
+        assert result["kill"] == "not_attempted"
+        assert result["status"] == "fake_partial_physical_stop_unproven"
+        assert result["full_gate_pass"] is False
+        assert result["worker_reaped"] is True  # self-timeout, not stop proof
+        assert result["signal_reaped"] is True
+        assert not _pipe_has_byte(signal_r)
+    finally:
+        os.close(signal_r)
+        os.close(signal_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_blocked_cleanup_observer_is_bounded_and_no_signal(
+        monkeypatch):
+    signal_r, signal_w = os.pipe()
+    original_kill = os.kill
+
+    def recorded_kill(pid, signum):
+        os.write(signal_w, b"S")
+        return original_kill(pid, signum)
+
+    monkeypatch.setattr(live.os, "kill", recorded_kill)
+    try:
+        started = time.monotonic()
+        result = live._supervise_fake_callback_once(
+            work=lambda: time.sleep(2), observe=lambda _pid: time.sleep(2),
+            preparation_seconds=0.06, work_seconds=0.05,
+            term_grace_seconds=0.02, cleanup_seconds=0.07)
+        assert time.monotonic() - started < 1.5
+        assert result["term"] == "cleanup_observer_timeout"
+        assert result["kill"] == "not_attempted"
+        assert result["status"] == "fake_partial_physical_stop_unproven"
+        assert result["full_gate_pass"] is False
+        assert result["worker_reaped"] is True  # child alarm, after gate failure
+        assert result["signal_reaped"] is True
+        assert not _pipe_has_byte(signal_r)
+    finally:
+        os.close(signal_r)
+        os.close(signal_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_term_ignored_requires_exact_kill_and_reap():
+    def armed_initial_witness(pid):
+        # Install the disposition before initial ACK/GO. Otherwise a busy
+        # machine may send TERM before the work callback can install it.
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        return live._fake_os_witness(pid)
+
+    result = live._supervise_fake_callback_once(
+        work=lambda: time.sleep(2), initial_witness=armed_initial_witness,
+        preparation_seconds=0.08,
+        work_seconds=0.06, term_grace_seconds=0.03,
+        cleanup_seconds=0.16)
+    assert result["term"] == "signal_sent"
+    assert result["kill"] == "signal_sent"
+    assert result["worker_reaped"] is True
+    assert result["signal_reaped"] is True
+    assert result["status"] == "fake_partial_witnessed_child_reaped"
+    assert result["full_gate_pass"] is False
+
+
+def test_fake_process_missing_waitable_child_is_not_exit_proof(monkeypatch):
+    def missing(_pid, _flags):
+        raise ChildProcessError("not waitable")
+
+    monkeypatch.setattr(live.os, "waitpid", missing)
+    assert live._fake_reap_nonblocking(123456) is False
+
+
+def test_fake_process_equal_python_values_are_not_equal_identity(monkeypatch):
+    initial = {"pid": 123456, "ppid": 1,
+               "raw_generation": [123456, 1, 1000, 0], "pgid": 123456}
+    signaled = []
+    monkeypatch.setattr(live, "_fake_os_witness", lambda _pid: deepcopy(initial))
+    monkeypatch.setattr(live.os, "kill",
+                        lambda pid, signum: signaled.append((pid, signum)))
+
+    def equal_but_wrong(_pid):
+        result = deepcopy(initial)
+        result["ppid"] = True  # Python equality would accept True == 1.
+        return result
+
+    assert live._fake_exact_signal_transaction(
+        initial, equal_but_wrong, signal.SIGTERM) == "identity_changed_no_signal"
+    assert signaled == []
+
+
+@_DARWIN_FORK
+def test_fake_process_blocked_signal_helper_initial_witness_never_sends_go():
+    marker_r, marker_w = os.pipe()
+    try:
+        def work():
+            os.write(marker_w, b"W")
+
+        result = live._supervise_fake_callback_once(
+            work=work, signal_initial_witness=lambda _pid: time.sleep(2),
+            preparation_seconds=0.05, work_seconds=0.05,
+            term_grace_seconds=0.02, cleanup_seconds=0.06)
+        assert result["status"] == "fake_partial_signal_helper_witness_unavailable"
+        assert result["go_issued"] is False
+        assert result["worker_reaped"] is True
+        assert result["signal_reaped"] is True
+        assert result["term"] == "not_attempted"
+        assert not _pipe_has_byte(marker_r)
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_broken_cleanup_command_is_fixed_fail(monkeypatch):
+    original_write = os.write
+
+    def break_term(fd, data):
+        if data == b"T":
+            raise BrokenPipeError("synthetic pipe close")
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", break_term)
+    result = live._supervise_fake_callback_once(
+        work=lambda: time.sleep(2), preparation_seconds=0.06,
+        work_seconds=0.05, term_grace_seconds=0.02,
+        cleanup_seconds=0.07)
+    assert result["go_issued"] is True
+    assert result["term"] == "cleanup_command_unavailable"
+    assert result["kill"] == "not_attempted"
+    assert result["status"] == "fake_partial_physical_stop_unproven"
+    assert result["worker_reaped"] is True  # later self-timeout only
+    assert result["signal_reaped"] is True
+    assert "synthetic pipe close" not in json.dumps(result)
+
+
+@_DARWIN_FORK
+def test_fake_process_broken_go_is_fixed_fail_without_callback(monkeypatch):
+    original_write = os.write
+    marker_r, marker_w = os.pipe()
+
+    def break_go(fd, data):
+        if data == b"G":
+            raise BrokenPipeError("synthetic GO pipe close")
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", break_go)
+    try:
+        def work():
+            os.write(marker_w, b"W")
+
+        result = live._supervise_fake_callback_once(
+            work=work, preparation_seconds=0.06,
+            work_seconds=0.05, term_grace_seconds=0.02,
+            cleanup_seconds=0.07)
+        assert result["status"] == "fake_partial_go_unavailable"
+        assert result["go_issued"] is False
+        assert result["worker_reaped"] is True
+        assert result["signal_reaped"] is True
+        assert result["term"] == "not_attempted"
+        assert result["full_gate_pass"] is False
+        assert not _pipe_has_byte(marker_r)
+        assert "synthetic GO pipe close" not in json.dumps(result)
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)
+
+
+@_DARWIN_FORK
+def test_fake_process_noop_signal_cannot_masquerade_as_stopped(monkeypatch):
+    # An injected os.kill that merely returns cannot prove that it stopped
+    # the child. The exact waitpid status must be SIGTERM/SIGKILL, not the
+    # worker's later self-timeout exit 124.
+    monkeypatch.setattr(live.os, "kill", lambda _pid, _signum: None)
+    marker_r, marker_w = os.pipe()
+    try:
+        def blocked_work():
+            os.write(marker_w, b"W")
+            time.sleep(2)
+
+        result = live._supervise_fake_callback_once(
+            work=blocked_work, preparation_seconds=0.06,
+            work_seconds=0.15, term_grace_seconds=0.02,
+            cleanup_seconds=0.07)
+        assert _pipe_has_byte(marker_r)
+        assert result["go_issued"] is True
+        assert result["term"] == "signal_sent"  # call returned; no effect
+        assert result["kill"] == "signal_sent"  # call returned; no effect
+        assert result["worker_reaped"] is True
+        assert result["signal_reaped"] is True
+        assert result["status"] == "fake_partial_physical_stop_unproven"
+        assert result["full_gate_pass"] is False
+    finally:
+        os.close(marker_r)
+        os.close(marker_w)

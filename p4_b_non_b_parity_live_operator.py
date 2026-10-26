@@ -16,6 +16,8 @@ import os
 from pathlib import Path
 import re
 import secrets
+import select
+import signal
 import struct
 import threading
 import time
@@ -26,6 +28,7 @@ from p4_b_isolated_ollama_identity_probe import (
     GGUF_SHA256, MODEL, SYSTEM_SHA256, TEMPLATE_SHA256, VERSION,
 )
 from p4_b_non_b_usage_parity import fixed_transformed_request
+from uruha_p4_b_child_local_identity import raw_generation
 
 
 FRAME_LIMIT = 4096
@@ -928,3 +931,348 @@ def supervise_once(*, run_dir, model_root, clock, effects) -> dict:
     misstate the exact freeze.  This entry performs no callbacks or writes.
     """
     _fail("process_supervisor_not_implemented")
+
+
+def _fake_os_witness(pid: int) -> dict:
+    """Small *partial* OS witness for an ephemeral test child, never Ollama.
+
+    The live freeze additionally requires argv, binary, listener, source and
+    model witnesses; this function does not provide or imply those proofs.
+    """
+    first = raw_generation(pid)
+    pgid = os.getpgid(pid)
+    second = raw_generation(pid)
+    if first != second or first[0] != pid or pgid <= 0:
+        _fail("fake_witness_unavailable")
+    return {"pid": pid, "ppid": first[1], "raw_generation": list(first),
+            "pgid": pgid}
+
+
+def _fake_witness_valid(value: Any, pid: int) -> bool:
+    return (type(value) is dict
+            and set(value) == {"pid", "ppid", "raw_generation", "pgid"}
+            and value["pid"] == pid and type(value["pid"]) is int
+            and type(value["ppid"]) is int and value["ppid"] > 0
+            and _generation(value["raw_generation"], pid, value["ppid"])
+            and type(value["pgid"]) is int and value["pgid"] > 0)
+
+
+def _fake_exact_signal_transaction(initial: dict, observe, signum: int) -> str:
+    """Check identity and signal in one *separate* short-lived process.
+
+    The injected observer exists to exercise cleanup stalls/drift. Even if
+    it lies, both bracketing OS observations must match the initial witness.
+    This retains the documented final-check-to-os.kill PID-reuse residual.
+    """
+    pid = initial["pid"]
+    try:
+        if not _fake_witness_valid(initial, pid):
+            return "identity_changed_no_signal"
+        expected = _canonical(initial, "fake_witness_unavailable")
+        first = _fake_os_witness(pid)
+        injected_first = observe(pid)
+        injected_final = observe(pid)
+        final = _fake_os_witness(pid)
+        if not all(_fake_witness_valid(item, pid)
+                   and _canonical(item, "fake_witness_unavailable") == expected
+                   for item in (first, injected_first, injected_final, final)):
+            return "identity_changed_no_signal"
+        os.kill(pid, signum)  # exact initial PID; never killpg
+    except Exception:
+        return "witness_or_signal_unavailable"
+    return "signal_sent"
+
+
+def _fake_child_alarm(_signum, _frame) -> None:
+    # A synthetic callback or injected observer may never return. This is a
+    # backstop for test-owned children, not evidence for the live stop gate.
+    os._exit(124)
+
+
+def _fake_child_lifetime(absolute_deadline: float) -> None:
+    # Use the parent's monotonic deadline, not a new interval starting only
+    # after fork/set-up. Otherwise slow child startup can outlive the
+    # parent's bounded reap window and leave a test child behind.
+    signal.signal(signal.SIGALRM, _fake_child_alarm)
+    signal.setitimer(signal.ITIMER_REAL,
+                     max(0.001, absolute_deadline - time.monotonic()))
+
+
+def _fake_close(*fds: int) -> None:
+    for fd in fds:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+
+
+def _fake_read_bounded(fd: int, deadline: float, *, framed: bool) -> Any:
+    """Parent-side nonblocking read; no effect callback runs on this path."""
+    raw = bytearray()
+    limit = FRAME_LIMIT + 4 if framed else 1
+    while time.monotonic() < deadline and len(raw) < limit:
+        readable, _, _ = select.select([fd], [], [],
+                                       min(0.005, max(0, deadline - time.monotonic())))
+        if not readable:
+            continue
+        try:
+            part = os.read(fd, limit - len(raw))
+        except BlockingIOError:
+            continue
+        if not part:
+            return None
+        raw.extend(part)
+        if not framed and raw:
+            return bytes(raw)
+        if len(raw) >= 4:
+            size = struct.unpack(">I", raw[:4])[0]
+            if size == 0 or size > FRAME_LIMIT:
+                return None
+            if len(raw) == size + 4:
+                try:
+                    return decode_frame(bytes(raw), keys={"witness"})
+                except LiveOperatorError:
+                    return None
+    return None
+
+
+def _fake_reap_nonblocking(pid: int, statuses: dict[int, int] | None = None) -> bool:
+    try:
+        seen_pid, wait_status = os.waitpid(pid, os.WNOHANG)
+    except ChildProcessError:
+        # A missing waitable child is not an exit/reap witness. Callers keep
+        # an explicit flag only after an exact waitpid result.
+        return False
+    if seen_pid != pid:
+        return False
+    if statuses is not None:
+        statuses[pid] = wait_status
+    return True
+
+
+def _fake_wait_reap(pid: int, deadline: float,
+                    statuses: dict[int, int] | None = None) -> bool:
+    while time.monotonic() < deadline:
+        if _fake_reap_nonblocking(pid, statuses):
+            return True
+        time.sleep(min(0.003, max(0, deadline - time.monotonic())))
+    return _fake_reap_nonblocking(pid, statuses)
+
+
+def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
+                                  signal_initial_witness=None,
+                                  preparation_seconds: float = 0.15,
+                                  work_seconds: float = 0.10,
+                                  term_grace_seconds: float = 0.04,
+                                  cleanup_seconds: float = 0.25) -> dict:
+    """Explicitly fake-only process watchdog slice, **not** a live receipt.
+
+    `work` and the observer run only in ephemeral forked children. The
+    parent waits for bounded initial witness ACKs before issuing GO,
+    and never executes these callbacks or `raw_generation` itself. Missing
+    witness means no callback and no ownership/signal claim. All returned
+    fields are fixed-code, raw-free test evidence. There are no HTTP grants,
+    durable journal/receipt, private port or shared-port proofs here, so
+    `supervise_once` remains fail-closed.
+    """
+    if (not callable(work) or (observe is not None and not callable(observe))
+            or (initial_witness is not None and not callable(initial_witness))
+            or (signal_initial_witness is not None
+                and not callable(signal_initial_witness))):
+        _fail("fake_effects_invalid")
+    limits = (preparation_seconds, work_seconds, term_grace_seconds,
+              cleanup_seconds)
+    if any(type(value) not in (int, float) or not math.isfinite(value)
+           or not 0.01 <= value <= 5.0 for value in limits):
+        _fail("fake_limits_invalid")
+    observer = observe or _fake_os_witness
+    initial_reader = initial_witness or _fake_os_witness
+    signal_initial_reader = signal_initial_witness or _fake_os_witness
+    prep_start = time.monotonic()
+    hard_life = sum(limits) + preparation_seconds + 0.20
+    hard_deadline = prep_start + hard_life
+    wr, ww = os.pipe()       # worker initial witness
+    cr, cw = os.pipe()       # parent -> worker GO
+    dr, dw = os.pipe()       # worker fixed result
+    worker_pid = os.fork()
+    if worker_pid == 0:
+        _fake_close(wr, cw, dr)
+        try:
+            os.setsid()
+            _fake_child_lifetime(hard_deadline)
+            actual = _fake_os_witness(os.getpid())
+            witness = initial_reader(os.getpid())
+            if witness != actual:
+                os._exit(126)
+            os.write(ww, encode_frame({"witness": witness}))
+            _fake_close(ww)
+            if os.read(cr, 1) != b"G":
+                os._exit(0)
+            work()
+            os.write(dw, b"D")
+            os._exit(0)
+        except BaseException:
+            os._exit(125)
+    _fake_close(ww, cr, dw)
+    signal_pid = None
+    sr = sc = rr = None
+    worker_reaped = False
+    signal_reaped = False
+    exit_statuses: dict[int, int] = {}
+    term_code = "not_attempted"
+    kill_code = "not_attempted"
+    status = "fake_partial_initial_witness_unavailable"
+    t0 = None
+    result = None
+    try:
+        initial_msg = _fake_read_bounded(wr, prep_start + preparation_seconds,
+                                         framed=True)
+        initial = initial_msg.get("witness") if initial_msg else None
+        if not _fake_witness_valid(initial, worker_pid):
+            worker_reaped = _fake_wait_reap(worker_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            result = {"schema": "fake_process_watchdog_partial_v1",
+                    "status": status, "go_issued": False,
+                    "worker_reaped": worker_reaped,
+                    "signal_reaped": True, "term": term_code,
+                    "kill": kill_code, "full_gate_pass": False}
+            return result
+
+        # Prestart a separate cleanup transaction process while work is
+        # still behind the GO barrier. Its own initial ACK is mandatory.
+        sr, sw = os.pipe()
+        sc_read, sc = os.pipe()
+        rr, rw = os.pipe()
+        signal_pid = os.fork()
+        if signal_pid == 0:
+            _fake_close(sr, sc, rr, wr, cw, dr)
+            try:
+                os.setsid()
+                _fake_child_lifetime(hard_deadline)
+                actual_own = _fake_os_witness(os.getpid())
+                own = signal_initial_reader(os.getpid())
+                if own != actual_own:
+                    os._exit(126)
+                os.write(sw, encode_frame({"witness": own}))
+                _fake_close(sw)
+                while True:
+                    command = os.read(sc_read, 1)
+                    if command not in (b"T", b"K"):
+                        os._exit(0)
+                    signum = signal.SIGTERM if command == b"T" else signal.SIGKILL
+                    code = _fake_exact_signal_transaction(initial, observer,
+                                                          signum)
+                    os.write(rw, {"signal_sent": b"S",
+                                  "identity_changed_no_signal": b"D",
+                                  "witness_or_signal_unavailable": b"U"}[code])
+            except BaseException:
+                os._exit(125)
+        _fake_close(sw, sc_read, rw)
+        signal_msg = _fake_read_bounded(sr, time.monotonic() + preparation_seconds,
+                                        framed=True)
+        signal_own = signal_msg.get("witness") if signal_msg else None
+        if not _fake_witness_valid(signal_own, signal_pid):
+            status = "fake_partial_signal_helper_witness_unavailable"
+            worker_reaped = _fake_wait_reap(worker_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            signal_reaped = _fake_wait_reap(signal_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            result = {"schema": "fake_process_watchdog_partial_v1",
+                    "status": status, "go_issued": False,
+                    "worker_reaped": worker_reaped,
+                    "signal_reaped": signal_reaped,
+                    "term": term_code, "kill": kill_code,
+                    "full_gate_pass": False}
+            return result
+
+        os.set_blocking(cw, False)
+        t0 = time.monotonic()
+        try:
+            if os.write(cw, b"G") != 1:
+                raise OSError("short GO")
+        except OSError:
+            # An ACKed child can still disappear before GO. No callback
+            # start is claimed and no raw pipe exception escapes.
+            _fake_close(cw)
+            worker_reaped = _fake_wait_reap(worker_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            result = {"schema": "fake_process_watchdog_partial_v1",
+                      "status": "fake_partial_go_unavailable",
+                      "go_issued": False, "worker_reaped": worker_reaped,
+                      "signal_reaped": False, "term": term_code,
+                      "kill": kill_code, "full_gate_pass": False}
+            return result
+        work_done = _fake_read_bounded(dr, t0 + work_seconds, framed=False)
+        worker_reaped = _fake_reap_nonblocking(worker_pid, exit_statuses)
+        if work_done == b"D" and not worker_reaped:
+            worker_reaped = _fake_wait_reap(worker_pid,
+                                           time.monotonic() + 0.02,
+                                           exit_statuses)
+        if not worker_reaped:
+            os.set_blocking(sc, False)
+            try:
+                os.write(sc, b"T")
+            except OSError:
+                term_code = "cleanup_command_unavailable"
+            else:
+                response = _fake_read_bounded(
+                    rr, t0 + work_seconds + cleanup_seconds, framed=False)
+                term_code = {b"S": "signal_sent", b"D": "identity_changed_no_signal",
+                             b"U": "witness_or_signal_unavailable"}.get(
+                                 response, "cleanup_observer_timeout")
+            grace_end = t0 + work_seconds + term_grace_seconds
+            worker_reaped = _fake_wait_reap(worker_pid, grace_end,
+                                            exit_statuses)
+            if not worker_reaped and term_code == "signal_sent":
+                try:
+                    os.write(sc, b"K")
+                except OSError:
+                    kill_code = "cleanup_command_unavailable"
+                else:
+                    response = _fake_read_bounded(rr, t0 + work_seconds +
+                                                  cleanup_seconds, framed=False)
+                    kill_code = {b"S": "signal_sent",
+                                 b"D": "identity_changed_no_signal",
+                                 b"U": "witness_or_signal_unavailable"}.get(
+                                     response, "cleanup_observer_timeout")
+            worker_reaped = worker_reaped or _fake_wait_reap(
+                worker_pid, t0 + work_seconds + cleanup_seconds, exit_statuses)
+        worker_status = exit_statuses.get(worker_pid)
+        completed_normally = (worker_status is not None
+                              and os.WIFEXITED(worker_status)
+                              and os.WEXITSTATUS(worker_status) == 0)
+        stopped_by_witnessed_signal = (
+            worker_status is not None and os.WIFSIGNALED(worker_status)
+            and ((term_code == "signal_sent"
+                  and os.WTERMSIG(worker_status) == signal.SIGTERM)
+                 or (kill_code == "signal_sent"
+                     and os.WTERMSIG(worker_status) == signal.SIGKILL)))
+        if work_done == b"D" and worker_reaped and completed_normally:
+            status = "fake_partial_work_exited"
+        elif worker_reaped and stopped_by_witnessed_signal:
+            status = "fake_partial_witnessed_child_reaped"
+        else:
+            status = "fake_partial_physical_stop_unproven"
+        result = {"schema": "fake_process_watchdog_partial_v1",
+                "status": status, "go_issued": True,
+                "worker_reaped": worker_reaped,
+                "signal_reaped": False, "term": term_code,
+                "kill": kill_code, "full_gate_pass": False}
+        return result
+    finally:
+        _fake_close(wr, cw, dr)
+        if sc is not None:
+            try:
+                os.write(sc, b"Q")
+            except (OSError, BrokenPipeError):
+                pass
+            _fake_close(sr, sc, rr)
+        if signal_pid is not None and not signal_reaped:
+            signal_reaped = _fake_wait_reap(signal_pid,
+                             hard_deadline + 0.35, exit_statuses)
+        if not worker_reaped:
+            worker_reaped = _fake_wait_reap(worker_pid,
+                             hard_deadline + 0.35, exit_statuses)
+        if result is not None:
+            result["worker_reaped"] = worker_reaped
+            result["signal_reaped"] = signal_reaped or signal_pid is None
