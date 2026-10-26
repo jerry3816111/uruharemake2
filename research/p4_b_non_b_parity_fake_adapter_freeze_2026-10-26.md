@@ -60,8 +60,9 @@ physical supervisor. The seven permitted fake HTTP operations in order:
    minus client `timeout` and no debug flag. This is the sole normal
    completion attempt. Reject missing/malformed usage; exact integer
    `prompt_tokens>0`, `completion_tokens>0`,
-   `total_tokens=prompt_tokens+completion_tokens`; a returned choice is
-   required, but its raw text is not exposed. Δ is provider prompt tokens
+   `total_tokens=prompt_tokens+completion_tokens`; a returned choice with
+   nonempty string `message.content` is required, but its raw text is not
+   exposed. Δ is provider prompt tokens
    minus the shared token-list length. Only Δ=0 with all gates clear is a
    non-B fake parity PASS; otherwise retain a fixed-code negative result.
 
@@ -89,6 +90,13 @@ must match the constants from `p4_b_isolated_ollama_identity_probe`.
 This is injected fake authority for mechanical tests, **not** a real-run
 certificate. No caller-provided runner URL is trusted; construct that
 URL from the later observed, validated runner port.
+
+The positive unit fake may patch only the adapter's expected template/system
+digests to hashes of synthetic short strings returned by fake `/api/show`;
+the actual frozen digest preimages are not copied into this test. An
+unpatched test must assert the production defaults equal the source probe's
+frozen constants and that mismatched show data fail. Report this as a
+mechanism test under synthetic hashes, never a live-model identity pass.
 
 `observe_identity(stage)` is fake-injected OS-only evidence called at
 **exactly six named stages** in this order: `before_metadata`,
@@ -151,7 +159,8 @@ set B authorization true.
 
 Red tests first: exact fixture/env drift; request mutation; wrong/shared
 host, proxy, redirect, status or model; metadata/template/system mismatch;
-malformed/oversized/deep JSON; malformed render; tokenize IDs mismatch;
+malformed/oversized/deep JSON (including nonfinite numbers, ambiguous
+duplicate keys and invalid Unicode); malformed render; tokenize IDs mismatch;
 runner missing/rotated, raw generation/argv/port/context/BOS drift;
 context too small; bad clock/deadline; HTTP eighth or second completion;
 usage missing/bool/negative or total mismatch; raw canary in exception
