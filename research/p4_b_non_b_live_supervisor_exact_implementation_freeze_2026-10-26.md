@@ -344,6 +344,73 @@ T0+90 cleanup or provider parity. Those retain the unchanged release gates
 below. A small red test and affected regressions precede any fake source
 implementation; an independent patch review follows it.
 
+### Prospective fake port/11434 witness amendment (2026-10-26)
+
+Status: **design-reviewed for a fake-only implementation, not a live release**.
+The seven-operation process loop is retained as the v1 historical partial
+result. Its URL/grant checks do not prove listener vacancy or that the user's
+shared 11434 listener was unchanged. This amendment changes only that
+missing fake OS-witness gate; it does not change the seven requests, source
+predicates, model, question, gold, score or T0+90 live claim.
+
+Add an independent, initially witnessed, OS-only port-observer child `O` and
+its separately initially witnessed exact-PID signal child `S_O`. Keep `R`
+separate and available to persist a raw-free failure receipt when `O` blocks.
+Reserve five one-shot O pipes (initial, pre command/proof, final
+command/proof) and five S_O pipes before any work GO. The complete fake
+layout becomes 123 pipes / 246 endpoints; require unique descriptors and
+`max(fd) < RLIMIT_NOFILE`, otherwise fail closed before work. Every forked
+child closes unowned inherited ends. A blocked initial witness starts no
+port callback; a blocked pre/final callback cannot block the parent event
+loop or prevent an attempted witnessed O cleanup and independent R receipt.
+
+Order: durable D zero ACK -> R zero-journal preflight ACK -> O and S_O
+initial identity ACKs -> O pre command and
+bounded canonical proof that the bound daemon private port is vacant, with
+an explicit shared-11434 state/fingerprint digest -> W GO. The runner port
+is **not** invented at preflight: it is first available in W's validated
+ordinal-5 runner request and must agree with ordinal 6. This W spec is only
+a port candidate, not independent runner PID/identity proof. After D/W
+cleanup, O receives that candidate and makes a fresh final OS-only
+observation: both bound private ports vacant and the shared-11434
+state/fingerprint byte-identical to pre. Missing candidate, occupied port,
+changed/unknown shared state, malformed/late/duplicate proof, O crash or
+blocked callback is FAIL/unknown, never a positive vacancy claim. A v2
+positive run requires O and S_O normal exits as well as the pre/post verdict;
+the S_O witnessed-stop path is failure cleanup only. R remains available
+to write the failure receipt after a blocked pre/final observation. No
+signal may target the shared 11434 owner.
+
+The injected fake port observer returns a strict phase-tagged, bounded
+allowlist: `schema=fake_port_snapshot_v1`, pre/post phase, bound numeric
+daemon port, `runner_port=null`/`runner_vacant=null` in pre, bound numeric
+runner port and vacancy boolean in post, and shared 11434 state
+(`vacant` with null fingerprint, or `listener` with a deterministic
+OS-fingerprint SHA). A real `listener` fingerprint must cover at least the
+observed owner PID, raw process generation and exact 11434 listener
+endpoint/identity in a canonical OS observation; a caller-chosen arbitrary
+digest is not live proof. Injected fake snapshots only test the contract.
+An unknown state or malformed fingerprint fails. O
+commands/proofs and public projection may expose only those two bound
+numeric ports plus fixed booleans/codes/hashes, never raw lsof output,
+callback strings, unrelated addresses, traceback, request or model content.
+The v2 fake path is explicit opt-in; absent a `port_observe` callback the
+original v1 result/receipt/status and tests remain unchanged, not silently
+upgraded. Positive v2 fake results and R receipts use **v2 schemas**, with pre/post proof
+hashes, vacancy/unchanged verdicts and O/S_O cleanup status. v1 schemas and
+their old evidence remain unchanged. Even v2 positive keeps
+`physical_stop_unproven=true`, `full_gate_pass=false`, and
+`b_send_authorized=false`; fake injected observations do not establish a
+real OS port proof, real HTTP, T0+90, installed identity or live authority.
+
+Before source edits, add a red v2 contract test. Acceptance requires the
+ordered positive gate and negative controls for pre occupied/unknown,
+post occupied daemon or runner, 11434 drift, wrong runner port, pre/final
+observer block or crash, O/S_O abnormal exit, duplicate/partial/stale IPC,
+FD cap and raw canary. Preserve the previous 7/7 v1 regression, run the
+affected suite and independent read-only patch review. No real daemon,
+runner, HTTP, Safari or B Send is authorized by this amendment.
+
 Focused fake controls must prove a positive seven unique grants/sends,
 six OS-only observations, op7 spent **before** ACK, two private ports
 vacant/11434 unchanged, no raw leakage, a durable initial zero-count journal
