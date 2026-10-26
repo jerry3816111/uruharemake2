@@ -35,6 +35,20 @@ source/effect closure, 20-second delivery, A author ratings and the full
 product B release remain **NO-GO**. Earlier real/sandbox failures and the
 previous partial report are not reclassified.
 
+## Committed-source check
+
+Scoped commit `b280b6a76db0651cccef7adbb09336782720b31a` was pushed to
+open PR #435 with an exact remote head. A single read-only committed-HEAD
+source snapshot passed **239/239 files** in `0.862276s`; gate SHA-256 was
+`51dc6297175da6590b64250a51f9419f5aab89ca991af0e914f1e9aa5e9eea2f`,
+ledger SHA-256 was
+`ee48cf025443ac78d69a61b549bdae3d5f1d0fe08d6904476d31119eec5189e2`,
+Brain SHA-256 was
+`c1833a55ecb9c690decca66d1b90a6bdf075780db83066a5b9c6ea47bc0e7fff`,
+and Web SHA-256 was
+`2b541d6f3a1062ae3972df33676597fb42f60b8f19c9610338595f04fc90167a`.
+This cached source check is not product response latency or B Send safety.
+
 ## Next necessary gate
 
 Before any fourth true Ollama retry or Safari B Send, separately establish a
