@@ -1513,6 +1513,8 @@ def test_fake_split_op1_requires_both_witnesses_zero_and_worker_received(tmp_pat
     assert result["grant_proven"] is True
     assert result["worker_received_proven"] is True
     assert result["durable_reserved"] == 1
+    assert result["d_stop"] == result["w_stop"] == "normal_exit"
+    assert result["s_d_reaped"] is result["s_w_reaped"] is True
     assert result["on_wire"] == "unknown"
     assert result["full_gate_pass"] is False
     journal, disk = _read_only_journal(run_dir)
@@ -1765,3 +1767,237 @@ def test_fake_split_raw_canary_in_worker_request_is_rejected_before_ipc(
     assert CANARY not in json.dumps(result)
     _, disk = _read_only_journal(run_dir)
     assert disk["reserved"] == 0
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("blocked", ["D", "W"])
+def test_fake_split_blocked_child_requires_witnessed_exact_signal_stop(
+        monkeypatch, tmp_path, blocked):
+    if blocked == "D":
+        original = live.DurableJournal.create.__func__
+
+        def stall_create(cls, *args, **kwargs):
+            time.sleep(20)
+            return original(cls, *args, **kwargs)
+
+        monkeypatch.setattr(live.DurableJournal, "create", classmethod(stall_create))
+    else:
+        original = live._split_worker_request
+
+        def stall_request(*args):
+            time.sleep(20)
+            return original(*args)
+
+        monkeypatch.setattr(live, "_split_worker_request", stall_request)
+    start = time.monotonic()
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / f"split-signal-{blocked}",
+        grant_without_worker=_op1_without_worker(), work_seconds=0.12)
+    assert time.monotonic() - start < 2
+    assert result[f"{blocked.lower()}_term"] == "signal_sent"
+    assert result[f"{blocked.lower()}_stop"] == "witnessed_term"
+    assert result[f"{blocked.lower()}_reaped"] is True
+    assert result["physical_stop_unproven"] is True  # no real port/receipt gate
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_signal_helper_initial_ack_is_prework_barrier(tmp_path):
+    def bad_initial(pid):
+        witness = live._fake_os_witness(pid)
+        witness["pgid"] += 1
+        return witness
+
+    run_dir = tmp_path / "split-bad-signal-initial"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        signal_initial_witness=bad_initial)
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["failure_code"] == "signal_helper_initial_unavailable"
+    assert result["zero_ack_received"] is False
+    assert not (run_dir / "journal.json").exists()
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("failure", ["blocked_observer", "drift", "noop_signal"])
+def test_fake_split_cleanup_uncertainty_never_becomes_witnessed_stop(
+        monkeypatch, tmp_path, failure):
+    original_create = live.DurableJournal.create.__func__
+
+    def stall_create(cls, *args, **kwargs):
+        time.sleep(20)
+        return original_create(cls, *args, **kwargs)
+
+    monkeypatch.setattr(live.DurableJournal, "create", classmethod(stall_create))
+    if failure == "blocked_observer":
+        def observe(_pid):
+            time.sleep(20)
+            return None
+    elif failure == "drift":
+        calls = {}
+
+        def observe(pid):
+            witness = live._fake_os_witness(pid)
+            calls[pid] = calls.get(pid, 0) + 1
+            if calls[pid] % 2 == 0:
+                witness["pgid"] += 1
+            return witness
+    else:
+        observe = live._fake_os_witness
+        monkeypatch.setattr(live.os, "kill", lambda _pid, _sig: None)
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / f"split-{failure}",
+        grant_without_worker=_op1_without_worker(),
+        cleanup_observe=observe, work_seconds=0.12)
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["d_stop"] != "witnessed_term"
+    assert result["d_stop"] != "witnessed_kill"
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_kill_requires_fresh_witness_and_actual_waitpid(
+        monkeypatch, tmp_path):
+    original_create = live.DurableJournal.create.__func__
+    original_kill = os.kill
+
+    def stall_create(cls, *args, **kwargs):
+        time.sleep(20)
+        return original_create(cls, *args, **kwargs)
+
+    def ignore_term(pid, signum):
+        if signum != signal.SIGTERM:
+            return original_kill(pid, signum)
+
+    monkeypatch.setattr(live.DurableJournal, "create", classmethod(stall_create))
+    monkeypatch.setattr(live.os, "kill", ignore_term)
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-kill", grant_without_worker=_op1_without_worker(),
+        work_seconds=0.12)
+    assert result["d_term"] == result["d_kill"] == "signal_sent"
+    assert result["d_stop"] == "witnessed_kill"
+    assert result["d_reaped"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("lost", ["command", "response"])
+def test_fake_split_cleanup_ipc_loss_cannot_prove_signal_stop(
+        monkeypatch, tmp_path, lost):
+    original_create = live.DurableJournal.create.__func__
+    original_write = os.write
+
+    def stall_create(cls, *args, **kwargs):
+        time.sleep(20)
+        return original_create(cls, *args, **kwargs)
+
+    def lose_signal_frame(fd, data):
+        phase = b'"phase":"signal_term"' if lost == "command" else b'"phase":"signal_result"'
+        if phase in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.DurableJournal, "create", classmethod(stall_create))
+    monkeypatch.setattr(live.os, "write", lose_signal_frame)
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / f"split-cleanup-lost-{lost}",
+        grant_without_worker=_op1_without_worker(), work_seconds=0.12)
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["d_term"] == "cleanup_response_unavailable"
+    assert result["d_stop"] == "unproven"
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_blocked_signal_helper_initial_never_starts_d(tmp_path):
+    run_dir = tmp_path / "split-blocked-signal-initial"
+    result = live._supervise_fake_split_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        signal_initial_witness=lambda _pid: time.sleep(20),
+        preparation_seconds=0.12, work_seconds=0.12)
+    assert result["failure_code"] == "signal_helper_initial_unavailable"
+    assert result["zero_ack_received"] is False
+    assert not (run_dir / "journal.json").exists()
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+def test_fake_split_early_failure_starts_w_cleanup_before_work_deadline(
+        monkeypatch, tmp_path):
+    original_w = live._split_w_child
+
+    def linger_after_closed_delivery(*args, **kwargs):
+        code = original_w(*args, **kwargs)
+        time.sleep(20)
+        return code
+
+    monkeypatch.setattr(live, "_split_w_child", linger_after_closed_delivery)
+    started = time.monotonic()
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-early-failure",
+        grant_without_worker=_op1_without_worker(),
+        fault="d_after_commit", work_seconds=0.8)
+    elapsed = time.monotonic() - started
+    assert elapsed < 0.65  # old cleanup deferred TERM until ~0.8 s
+    assert result["durable_reserved"] == "unknown"
+    assert result["worker_received_proven"] is False
+    assert result["w_term"] == "signal_sent"
+    assert result["w_stop"] == "witnessed_term"
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_blocked_d_cleanup_observer_does_not_hide_w_stop(
+        monkeypatch, tmp_path):
+    original_create = live.DurableJournal.create.__func__
+    original_w = live._split_w_child
+    original_signal_child = live._split_signal_child
+
+    def stall_create(cls, *args, **kwargs):
+        time.sleep(20)
+        return original_create(cls, *args, **kwargs)
+
+    def linger_after_w_go(*args, **kwargs):
+        code = original_w(*args, **kwargs)
+        time.sleep(20)
+        return code
+
+    def d_observer_stalls(*args, **kwargs):
+        if kwargs["target_role"] == "D":
+            kwargs["observer"] = lambda _pid: time.sleep(20)
+        return original_signal_child(*args, **kwargs)
+
+    monkeypatch.setattr(live.DurableJournal, "create", classmethod(stall_create))
+    monkeypatch.setattr(live, "_split_w_child", linger_after_w_go)
+    monkeypatch.setattr(live, "_split_signal_child", d_observer_stalls)
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-independent-stop",
+        grant_without_worker=_op1_without_worker(), work_seconds=0.12)
+    assert result["d_stop"] == "unproven"
+    assert result["w_term"] == "signal_sent"
+    assert result["w_stop"] == "witnessed_term"
+    assert result["w_reaped"] is True
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_split_parent_cleanup_error_is_fixed_code_and_reaps(
+        monkeypatch, tmp_path):
+    def broken_cleanup(**_kwargs):
+        raise OSError("RAW_CANARY_cleanup_exception")
+
+    monkeypatch.setattr(live, "_split_cleanup_children", broken_cleanup)
+    result = live._supervise_fake_split_op1_once(
+        run_dir=tmp_path / "split-parent-cleanup-error",
+        grant_without_worker=_op1_without_worker())
+    assert result["status"] == "fake_partial_split_unproven"
+    assert result["failure_code"] == "cleanup_unavailable"
+    assert result["d_stop"] == result["w_stop"] == "unproven"
+    assert result["s_d_reaped"] is result["s_w_reaped"] is True
+    assert "RAW_CANARY" not in json.dumps(result)
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False

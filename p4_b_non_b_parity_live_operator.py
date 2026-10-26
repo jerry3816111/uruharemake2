@@ -1494,8 +1494,14 @@ _SPLIT_EXTRA = {
     "grant_proof": frozenset({"grant", "journal_sha256"}),
     "grant_delivery": frozenset({"grant", "journal_sha256"}),
     "received": frozenset({"grant_sha256"}),
+    "signal_term": frozenset({"target_role", "target_witness"}),
+    "signal_kill": frozenset({"target_role", "target_witness"}),
+    "signal_result": frozenset({"target_role", "signal_name", "code"}),
 }
 _SPLIT_BASE = frozenset({"schema", "run_id", "phase", "seq", "witness"})
+_SPLIT_SIGNAL_CODES = frozenset({
+    "signal_sent", "identity_changed_no_signal", "witness_or_signal_unavailable",
+})
 
 
 def _split_zero_state(run_id: str) -> dict:
@@ -1554,7 +1560,10 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
                        role: str | None = None, spec: dict | None = None,
                        worker_witness: dict | None = None,
                        fields: dict | None = None, grant: dict | None = None,
-                       journal_sha256: str | None = None) -> bool:
+                       journal_sha256: str | None = None,
+                       target_role: str | None = None,
+                       target_witness: dict | None = None,
+                       signal_name: str | None = None) -> bool:
     """Exact schema and semantic allowlist before encode/after decode."""
     if (type(value) is not dict or phase not in _SPLIT_EXTRA
             or set(value) != _SPLIT_BASE | _SPLIT_EXTRA[phase]
@@ -1580,7 +1589,18 @@ def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
     elif not _split_same(got_witness, witness):
         return False
     if phase == "initial":
-        return value["role"] == role and role in ("D", "W")
+        return value["role"] == role and role in ("D", "W", "S_D", "S_W")
+    if phase in ("signal_term", "signal_kill"):
+        return (target_role in ("D", "W")
+                and value["target_role"] == target_role
+                and target_witness is not None
+                and _split_same(value["target_witness"], target_witness))
+    if phase == "signal_result":
+        return (target_role in ("D", "W")
+                and value["target_role"] == target_role
+                and signal_name in ("term", "kill")
+                and value["signal_name"] == signal_name
+                and value["code"] in _SPLIT_SIGNAL_CODES)
     if phase == "zero":
         return (journal_sha256 is not None
                 and value["journal_sha256"] == journal_sha256
@@ -1780,10 +1800,248 @@ def _split_w_child(pipes: dict[str, tuple[int, int]], *, spec: dict,
         _fake_close(*owned)
 
 
+def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
+                        inherited_split_fds: set[int],
+                        run_id: str, target_role: str, target_witness: dict,
+                        initial_reader, observer, prep_deadline: float,
+                        cleanup_deadline: float, hard_deadline: float) -> int:
+    """Pre-witnessed, independent exact-PID transaction child for D or W."""
+    prefix = f"s_{target_role.lower()}"
+    owned = (signal_pipes[f"{prefix}_initial"][1],
+             signal_pipes[f"{prefix}_term"][0],
+             signal_pipes[f"{prefix}_term_result"][1],
+             signal_pipes[f"{prefix}_kill"][0],
+             signal_pipes[f"{prefix}_kill_result"][1])
+    # S inherits the original ten pipes from P. Closing every unowned end is
+    # necessary: one stray writer would suppress D/W's frame+EOF proof.
+    _fake_close(*inherited_split_fds)
+    _split_close_except(signal_pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        actual = _fake_os_witness(os.getpid())
+        own = initial_reader(os.getpid())
+        if not _split_same(actual, own):
+            return 126
+        initial = _split_frame(run_id, "initial", 0, own,
+                               role=f"S_{target_role}")
+        if not _split_send(owned[0], initial, prep_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own,
+                           role=f"S_{target_role}"):
+            return 125
+        _fake_close(owned[0])
+        for name, seq, signum, command_fd, reply_fd in (
+                ("term", 1, signal.SIGTERM, owned[1], owned[2]),
+                ("kill", 2, signal.SIGKILL, owned[3], owned[4])):
+            command = _split_receive(
+                command_fd, cleanup_deadline, phase=f"signal_{name}",
+                run_id=run_id, seq=seq, witness=own,
+                target_role=target_role, target_witness=target_witness)
+            _fake_close(command_fd)
+            if command is None:
+                return 0  # P did not request this transaction or pipe broke.
+            code = _fake_exact_signal_transaction(target_witness, observer,
+                                                  signum)
+            reply = _split_frame(run_id, "signal_result", seq, own,
+                                 target_role=target_role,
+                                 signal_name=name, code=code)
+            if not _split_send(reply_fd, reply, cleanup_deadline,
+                               run_id=run_id, phase="signal_result", seq=seq,
+                               witness=own, target_role=target_role,
+                               signal_name=name):
+                return 125
+            _fake_close(reply_fd)
+        return 0
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
+                            child_pids: dict[str, int | None],
+                            child_witnesses: dict[str, dict],
+                            signal_pids: dict[str, int],
+                            signal_witnesses: dict[str, dict],
+                            signal_pipes: dict[str, tuple[int, int]],
+                            signal_parent_fds: set[int], run_id: str,
+                            work_deadline: float, cleanup_deadline: float,
+                            hard_deadline: float,
+                            term_grace_seconds: float) -> None:
+    """Bounded P-side D/W cleanup; no parent OS observation or killpg."""
+    roles = ("D", "W")
+
+    def close_parent(fd: int) -> None:
+        _fake_close(fd)
+        signal_parent_fds.discard(fd)
+
+    def command(role: str, name: str) -> bool:
+        fd = signal_pipes[f"s_{role.lower()}_{name}"][1]
+        try:
+            frame = _split_frame(run_id, f"signal_{name}",
+                                 1 if name == "term" else 2,
+                                 signal_witnesses[role], target_role=role,
+                                 target_witness=child_witnesses[role])
+            return _split_send(
+                fd, frame, cleanup_deadline, run_id=run_id,
+                phase=f"signal_{name}", seq=1 if name == "term" else 2,
+                witness=signal_witnesses[role], target_role=role,
+                target_witness=child_witnesses[role])
+        finally:
+            close_parent(fd)
+
+    def responses(pending: list[str], name: str,
+                  deadline: float) -> dict[str, str]:
+        """Read both one-shot replies together so one stalled S cannot hide the other."""
+        codes = {role: "cleanup_response_unavailable" for role in pending}
+        readers = {
+            signal_pipes[f"s_{role.lower()}_{name}_result"][0]: role
+            for role in pending
+        }
+        raw = {fd: bytearray() for fd in readers}
+        try:
+            for fd in readers:
+                os.set_blocking(fd, False)
+            while readers and time.monotonic() < deadline:
+                try:
+                    ready, _, _ = select.select(
+                        list(readers), [], [],
+                        min(0.003, max(0, deadline - time.monotonic())))
+                except OSError:
+                    break
+                for fd in ready:
+                    role = readers[fd]
+                    try:
+                        part = os.read(fd, FRAME_LIMIT + 5)
+                    except BlockingIOError:
+                        continue
+                    except OSError:
+                        part = None
+                    if part:
+                        raw[fd].extend(part)
+                        if len(raw[fd]) <= FRAME_LIMIT + 4:
+                            continue
+                    elif part == b"" and len(raw[fd]) >= 4:
+                        size = struct.unpack(">I", raw[fd][:4])[0]
+                        if 0 < size <= FRAME_LIMIT and len(raw[fd]) == size + 4:
+                            try:
+                                value = decode_frame(
+                                    bytes(raw[fd]),
+                                    keys=set(_SPLIT_BASE | _SPLIT_EXTRA[
+                                        "signal_result"]))
+                                if _split_frame_valid(
+                                        value, run_id=run_id,
+                                        phase="signal_result",
+                                        seq=1 if name == "term" else 2,
+                                        witness=signal_witnesses[role],
+                                        target_role=role, signal_name=name):
+                                    codes[role] = value["code"]
+                            except Exception:
+                                pass
+                    close_parent(fd)
+                    del readers[fd]
+        finally:
+            for fd in readers:
+                close_parent(fd)
+        return codes
+
+    owned = (all(role in child_witnesses and role in signal_witnesses
+                 and role in signal_pids for role in roles))
+    for role in roles:
+        pid = child_pids[role]
+        if pid is not None and pid not in statuses:
+            _fake_reap_nonblocking(pid, statuses)
+    if owned and any(child_pids[r] not in statuses for r in roles):
+        # A completed or failed work phase starts cleanup *now*. The work
+        # deadline is only an upper bound, never a reason to defer TERM.
+        cleanup_started = time.monotonic()
+        phase_deadline = min(cleanup_deadline,
+                             cleanup_started + cleanup_deadline - work_deadline)
+        pending = []
+        for role in roles:
+            pid = child_pids[role]
+            if pid not in statuses and not _fake_reap_nonblocking(pid, statuses):
+                result[f"{role.lower()}_term"] = (
+                    "command_sent" if command(role, "term")
+                    else "cleanup_command_unavailable")
+                if result[f"{role.lower()}_term"] == "command_sent":
+                    pending.append(role)
+            else:
+                close_parent(signal_pipes[f"s_{role.lower()}_term"][1])
+        # Both commands are written before either reply is awaited: a blocked
+        # D observer cannot prevent W's independently witnessed transaction.
+        term_reply_deadline = min(phase_deadline,
+                                  cleanup_started + max(0.04,
+                                      (phase_deadline - cleanup_started) * 0.4))
+        for role, code in responses(pending, "term", term_reply_deadline).items():
+            result[f"{role.lower()}_term"] = code
+        grace = min(phase_deadline, cleanup_started + term_grace_seconds)
+        while time.monotonic() < grace:
+            for role in roles:
+                pid = child_pids[role]
+                if pid not in statuses:
+                    _fake_reap_nonblocking(pid, statuses)
+            time.sleep(min(0.003, max(0, grace - time.monotonic())))
+        pending = []
+        for role in roles:
+            pid = child_pids[role]
+            if pid not in statuses and not _fake_reap_nonblocking(pid, statuses):
+                result[f"{role.lower()}_kill"] = (
+                    "command_sent" if command(role, "kill")
+                    else "cleanup_command_unavailable")
+                if result[f"{role.lower()}_kill"] == "command_sent":
+                    pending.append(role)
+            else:
+                close_parent(signal_pipes[f"s_{role.lower()}_kill"][1])
+        for role, code in responses(pending, "kill", phase_deadline).items():
+            result[f"{role.lower()}_kill"] = code
+    for role in roles:
+        for name in ("term", "kill"):
+            if f"s_{role.lower()}_{name}" in signal_pipes:
+                close_parent(signal_pipes[f"s_{role.lower()}_{name}"][1])
+    for role in roles:
+        pid = child_pids[role]
+        if pid is not None and pid not in statuses:
+            _fake_wait_reap(pid, hard_deadline + 0.1, statuses)
+        status = statuses.get(pid)
+        result[f"{role.lower()}_reaped"] = status is not None
+        if status is not None and os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0:
+            stop = "normal_exit"
+        elif status is not None and os.WIFSIGNALED(status) and (
+                (os.WTERMSIG(status) == signal.SIGTERM
+                 and result[f"{role.lower()}_term"] == "signal_sent") or
+                (os.WTERMSIG(status) == signal.SIGKILL
+                 and result[f"{role.lower()}_kill"] == "signal_sent")):
+            stop = ("witnessed_term" if os.WTERMSIG(status) == signal.SIGTERM
+                    else "witnessed_kill")
+        else:
+            stop = "unproven"
+        result[f"{role.lower()}_stop"] = stop
+    for role in roles:
+        pid = signal_pids.get(role)
+        if pid is not None:
+            helper_statuses: dict[int, int] = {}
+            _fake_wait_reap(pid, hard_deadline + 0.1, helper_statuses)
+            helper_status = helper_statuses.get(pid)
+            result[f"s_{role.lower()}_reaped"] = helper_status is not None
+            if (helper_status is None or not os.WIFEXITED(helper_status)
+                    or os.WEXITSTATUS(helper_status) != 0):
+                if result["status"] == "fake_partial_op1_worker_received":
+                    result["status"] = "fake_partial_split_unproven"
+                    result["failure_code"] = "signal_helper_exit_unavailable"
+    # This remains a fake D/W-only slice: no real receipt, private ports,
+    # shared-11434 proof, or frozen T0+90 evidence.
+    result["physical_stop_unproven"] = True
+
+
 def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
                                    work_seconds: float = 0.4,
                                    preparation_seconds: float = 0.2,
-                                   fault: str | None = None) -> dict:
+                                   fault: str | None = None,
+                                   cleanup_observe=None,
+                                   signal_initial_witness=None,
+                                   term_grace_seconds: float = 0.05,
+                                   cleanup_seconds: float = 0.25) -> dict:
     """Fake-only P+D+W zero→request→durable op1→received-ACK probe.
 
     W performs no HTTP. `worker_received_proven=False` means no valid received
@@ -1801,9 +2059,13 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
             or grant_without_worker["ordinal"] != 1
             or fault not in (None, "d_after_zero", "d_after_commit",
                              "w_after_request")
+            or (cleanup_observe is not None and not callable(cleanup_observe))
+            or (signal_initial_witness is not None
+                and not callable(signal_initial_witness))
             or any(type(value) not in (int, float) or not math.isfinite(value)
                    or not 0.05 <= value <= 5.0
-                   for value in (work_seconds, preparation_seconds))):
+                   for value in (work_seconds, preparation_seconds,
+                                 term_grace_seconds, cleanup_seconds))):
         _fail("fake_split_spec_invalid")
     spec = _plain_copy(grant_without_worker, "fake_split_spec_invalid")
     run_id = spec["run_id"]
@@ -1813,16 +2075,27 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
               "grant_proven": False, "worker_received_proven": False,
               "durable_reserved": "unknown", "on_wire": "unknown",
               "d_reaped": False, "w_reaped": False,
+              "s_d_reaped": False, "s_w_reaped": False,
+              "d_term": "not_attempted", "d_kill": "not_attempted",
+              "w_term": "not_attempted", "w_kill": "not_attempted",
+              "d_stop": "unproven", "w_stop": "unproven",
               "physical_stop_unproven": True, "full_gate_pass": False}
     started = time.monotonic()
     prep_deadline = started + preparation_seconds
     work_deadline = prep_deadline + work_seconds
-    hard_deadline = work_deadline + 0.25
+    cleanup_deadline = work_deadline + cleanup_seconds
+    hard_deadline = cleanup_deadline + 0.10
     pipes: dict[str, tuple[int, int]] = {}
     d_pid = w_pid = None
     parent_fds: set[int] = set()
     parent_layout_ready = False
     statuses: dict[int, int] = {}
+    child_witnesses: dict[str, dict] = {}
+    signal_pipes: dict[str, tuple[int, int]] = {}
+    signal_pids: dict[str, int] = {}
+    signal_witnesses: dict[str, dict] = {}
+    signal_parent_fds: set[int] = set()
+    signal_layout_ready = False
     try:
         for name in _SPLIT_EDGES:
             pipes[name] = os.pipe()
@@ -1889,6 +2162,52 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
             return result
         d_witness = d_initial_frame["witness"]
         w_witness = w_initial_frame["witness"]
+        child_witnesses = {"D": d_witness, "W": w_witness}
+        for role in ("D", "W"):
+            prefix = f"s_{role.lower()}"
+            for edge in ("initial", "term", "term_result", "kill",
+                         "kill_result"):
+                signal_pipes[f"{prefix}_{edge}"] = os.pipe()
+        for role, target in (("D", d_witness), ("W", w_witness)):
+            pid = os.fork()
+            if pid == 0:
+                try:
+                    child_code = _split_signal_child(
+                        signal_pipes, inherited_split_fds=parent_fds,
+                        run_id=run_id,
+                        target_role=role, target_witness=target,
+                        initial_reader=signal_initial_witness or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=prep_deadline,
+                        cleanup_deadline=cleanup_deadline,
+                        hard_deadline=hard_deadline)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids[role] = pid
+        signal_parent_fds = {
+            signal_pipes[f"s_{role.lower()}_{edge}"][0]
+            for role in ("D", "W")
+            for edge in ("initial", "term_result", "kill_result")
+        } | {
+            signal_pipes[f"s_{role.lower()}_{edge}"][1]
+            for role in ("D", "W") for edge in ("term", "kill")
+        }
+        _split_close_except(signal_pipes, signal_parent_fds)
+        signal_layout_ready = True
+        for role in ("D", "W"):
+            fd = signal_pipes[f"s_{role.lower()}_initial"][0]
+            try:
+                initial = _split_receive(
+                    fd, prep_deadline, phase="initial", run_id=run_id,
+                    seq=0, pid=signal_pids[role], role=f"S_{role}")
+            finally:
+                _fake_close(fd)
+                signal_parent_fds.discard(fd)
+            if initial is None:
+                result["failure_code"] = "signal_helper_initial_unavailable"
+                return result
+            signal_witnesses[role] = initial["witness"]
         result["failure_code"] = "zero_ack_unavailable"
         if not send("d_go", "d_go", 1, d_witness):
             return result
@@ -1955,13 +2274,47 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
         result["failure_code"] = "ipc_or_spawn_unavailable"
         return result
     finally:
-        # No killpg and no un-witnessed signal. Child self-alarms are only a
-        # test containment backstop and never count as physical stop proof.
         _fake_close(*parent_fds)
         if not parent_layout_ready:  # a pipe/fork failed before FD layout
             for read_fd, write_fd in pipes.values():
                 _fake_close(read_fd, write_fd)
-        for pid, key in ((d_pid, "d_reaped"), (w_pid, "w_reaped")):
-            if pid is not None and pid > 0 and not result[key]:
-                result[key] = _fake_wait_reap(pid, hard_deadline + 0.25,
-                                               statuses)
+        cleanup_failed = False
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses,
+                child_pids={"D": d_pid, "W": w_pid},
+                child_witnesses=child_witnesses, signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses, signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds, run_id=run_id,
+                work_deadline=work_deadline, cleanup_deadline=cleanup_deadline,
+                hard_deadline=hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            # A failed cleanup cannot leak a raw OS exception or preserve a
+            # positive status. Test-child alarms are containment, not proof.
+            cleanup_failed = True
+            result["status"] = "fake_partial_split_unproven"
+            result["failure_code"] = "cleanup_unavailable"
+            result["physical_stop_unproven"] = True
+            result["d_stop"] = result["w_stop"] = "unproven"
+        finally:
+            _fake_close(*signal_parent_fds)
+            if not signal_layout_ready:
+                for read_fd, write_fd in signal_pipes.values():
+                    _fake_close(read_fd, write_fd)
+        if cleanup_failed:
+            for role, pid in (("D", d_pid), ("W", w_pid),
+                              ("S_D", signal_pids.get("D")),
+                              ("S_W", signal_pids.get("W"))):
+                if pid is None or pid <= 0:
+                    continue
+                try:
+                    if role in ("D", "W"):
+                        reaped = pid in statuses or _fake_wait_reap(
+                            pid, hard_deadline + 0.1, statuses)
+                    else:
+                        reaped = result[f"{role.lower()}_reaped"] or _fake_wait_reap(
+                            pid, hard_deadline + 0.1)
+                    result[f"{role.lower()}_reaped"] = bool(reaped)
+                except Exception:
+                    result[f"{role.lower()}_reaped"] = False
