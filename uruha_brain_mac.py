@@ -1779,11 +1779,14 @@ class LeftBrain:
         persona_policy_provider=None,
         compute_ledger=None,
         native_semantic_verifier_url=None,
+        p4_b_private_mode=False,
     ):
         self.client_logic = client_logic
         self.persona_policy_provider = persona_policy_provider
         self.compute_ledger = compute_ledger
         self.native_semantic_verifier_url = native_semantic_verifier_url
+        # Constructor-authorized B identity must survive a mutable gate drift.
+        self.p4_b_private_mode = p4_b_private_mode
         self._social_reasoning_frame_cache = {}
 
     def _attach_persona_policy(self, plan, current_psyche):
@@ -9967,6 +9970,11 @@ Return ONLY valid JSON with this structure:
             print(Fore.MAGENTA + f"  [Bayes] {selected.get('bayes_candidates')}")
             return selected
         except Exception as e:
+            if (getattr(self, "p4_b_private_mode", False)
+                    or getattr(self.compute_ledger, "p4_b_resource_gate", None) is not None):
+                # A private/gated M21 error is a failed turn, never an ordinary
+                # fallback plan. Do not print potentially private error text.
+                raise
             print(Fore.RED + f"⚠️ Ollama Left Brain Error: {e}")
             slow_path_elapsed = time.perf_counter() - slow_path_started
             timeout_like = (
@@ -16173,6 +16181,7 @@ class UruhaBrainV4_Mac:
         }
         if private_target is not None:
             left_brain_kwargs["native_semantic_verifier_url"] = private_target.native_url
+            left_brain_kwargs["p4_b_private_mode"] = True
         self.left_brain = LeftBrain(self.client_logic, **left_brain_kwargs)
         self.right_brain = RightBrain(
             load_model=_resolve_right_brain_model_loading(load_right_brain_model),

@@ -130,6 +130,7 @@ def test_private_constructor_uses_real_sdk_only_at_private_models_path_without_p
         assert observed["memory_ledgers"] == [ledger]
         assert observed["left"][0][1]["compute_ledger"] is ledger
         assert observed["left"][0][1]["native_semantic_verifier_url"] == target.native_url
+        assert observed["left"][0][1]["p4_b_private_mode"] is True
         assert observed["right"][0]["compute_ledger"] is ledger
         assert created.compute_ledger is ledger
         assert created.p4_b_private_target is target

@@ -4748,9 +4748,11 @@ def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started,
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("尚無本輪知識流。"), _empty_html("State Diff", "尚無本輪狀態變化。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
         return
 
+    b_private_text = _P4_B_PRIVATE_BOOT_STATE is not None
     pending_history = _append_history(history, "user", user_text)
-    pending_history = _append_history(pending_history, "assistant", "...")
-    yield pending_history, pending_history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
+    if not b_private_text:
+        pending_history = _append_history(pending_history, "assistant", "...")
+    yield pending_history, pending_history, message if b_private_text else "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("思考中。"), _empty_html("State Diff", "等待本輪狀態完成。"), gr.update(value={}), _thinking_status("thinking"), gr.skip(), gr.skip(), gr.skip()
 
     admission_kwargs = {"admission_token": admission_token} if admission_token else {}
     try:
@@ -4764,25 +4766,35 @@ def _submit_text_impl(message, history, auto_tts, frontend_enqueue_started,
             **admission_kwargs,
         )
     except Exception as exc:
-        if not arm:
-            raise
-        from uruha_source_event_exact_input_capability_p4 import ExactInputCapabilityError
+        if arm:
+            from uruha_source_event_exact_input_capability_p4 import ExactInputCapabilityError
 
-        if not isinstance(exc, ExactInputCapabilityError):
-            raise
-        pre_turn_safe = getattr(exc, "pre_turn_safe", False)
-        yield _exact_input_text_rejection(
-            history, exc.reason, pre_turn_safe=pre_turn_safe,
-        )
-        return (
-            "exact_input_rejected" if pre_turn_safe
-            else "exact_input_aborted_after_cognition"
-        )
+            if isinstance(exc, ExactInputCapabilityError):
+                pre_turn_safe = getattr(exc, "pre_turn_safe", False)
+                yield _exact_input_text_rejection(
+                    history, exc.reason, pre_turn_safe=pre_turn_safe,
+                )
+                return (
+                    "exact_input_rejected" if pre_turn_safe
+                    else "exact_input_aborted_after_cognition"
+                )
+        if b_private_text:
+            note = "本輪處理未完成，未送出角色回覆；請確認環境狀態後重試。"
+            yield (
+                history, history, message, None, gr.update(value={}), gr.update(value={}),
+                _empty_flow_html(note), _empty_html("State Diff", note),
+                gr.update(value={}), note, gr.skip(), gr.skip(), gr.skip(),
+            )
+            return "error"
+        raise
     if result is None:
         yield history, history, "", None, gr.update(value={}), gr.update(value={}), _empty_flow_html("本輪未產生結果。"), _empty_html("State Diff", "本輪未產生結果。"), gr.update(value={}), _status_markdown(), gr.skip(), gr.skip(), gr.skip()
         return
     streamed_history = list(pending_history)
-    streamed_history[-1] = {"role": "assistant", "content": ""}
+    if b_private_text:
+        streamed_history.append({"role": "assistant", "content": ""})
+    else:
+        streamed_history[-1] = {"role": "assistant", "content": ""}
     debug_payload = dict(result["debug"])
     surface_started = time.perf_counter()
     lightweight_updates = 1
