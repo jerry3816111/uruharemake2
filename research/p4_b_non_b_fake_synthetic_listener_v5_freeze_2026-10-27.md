@@ -33,6 +33,16 @@ alone is not readiness. A ready listener and correct installed source are
 distinct hypotheses: neither proves the other. V5 does not authenticate
 Ollama binary, argv, GGUF, source revision or the 4.4 GiB model store.
 
+The fake-only Python entry adds explicit `fake_listener: bool = False` and
+optional test-only `fake_listener_hook=None`. When `fake_listener is False`,
+all v1–v4 selection/behavior remains unchanged and the hook must be None.
+When `fake_listener is True`, require v4 `fake_prehash is True`, the v3
+injected opener factory, the v2 injected port observer and `fake_http is
+None`. A wrong opt-in type, missing v5 dependency, hook without v5 or
+supplied non-callable hook is rejected before journal/fork. The hook's
+return value is ignored and cannot supply bytes, owner or ready status.
+No public or default path turns on v5.
+
 Allowed after design GO only: the fake-only operator, its test, this
 freeze, one concise result, and `CURRENT_TASK.md`. The public
 `supervise_once()` remains fail-closed. No model, provider HTTP, real
