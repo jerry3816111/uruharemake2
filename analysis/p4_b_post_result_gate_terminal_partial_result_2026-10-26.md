@@ -44,3 +44,14 @@ the missing-usage scenario reaches one fake provider call, is stopped before
 visible reply/episode, and produces the private failure receipt. Production
 token-bound proof, true daemon/runner identity, source/effect closure,
 20-second Safari and A author ratings remain separate NO-GO gates.
+
+## Committed-source check
+
+Partial seam/failure-preserving commit
+`009e98bc81119c059697a449248cf9d6970b0c90` was pushed to open PR #435
+with an exact remote head. A single read-only committed-HEAD source snapshot
+passed **239/239 files** in `0.868546s`; ledger SHA-256 was
+`ee48cf025443ac78d69a61b549bdae3d5f1d0fe08d6904476d31119eec5189e2`
+and resource-gate SHA-256 was
+`07d55932629cd69f706356cf9596799b26c67688e63fc77ff3ba9ec78d68fa17`.
+This is cached source closure, not B Send safety or response latency.
