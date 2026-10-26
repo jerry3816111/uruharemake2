@@ -493,6 +493,164 @@ B Send. Public `supervise_once()` remains fail-closed; a separately reviewed
 live opener, actual private-loopback observation and all other exact-freeze
 gates are still mandatory before one real attempt.
 
+### Prospective O-owned synthetic pre-hash amendment (2026-10-27)
+
+Status: **independently design-reviewed GO only for v4 fake-only red tests,
+source and tests; NO-GO for live HTTP/model/daemon/runner, Safari or B Send**.
+Patch review, committed-source audit and separate live-release decision remain
+pending. At committed `2bc453a`, v3 takes a
+pre-supplied binding with hash-shaped strings but never reads a source/model
+file. The exact live freeze requires supervised full SHA before daemon
+startup, one pre and one post `_model_store` validation, and blocked-hash
+watchdog controls. V4 changes one fake-only variable: a small, real
+filesystem SHA-256 must be computed by a supervised child and verified by P
+**before W_GO**. It does not claim the actual 4.4 GiB model-store calls,
+source/binary conformance, true daemon-startup order or T0+90 stop.
+
+The initially reviewed D is explicitly *durability-only* and must remain so.
+Do not hash in D before `d_zero`: R would not complete its zero-journal
+preflight, and a blocked hash would lose the otherwise available failure
+receipt. Instead, v4 explicitly extends the existing O from fake OS-only
+port observer to fake OS/filesystem evidence helper. Preserve the order
+`D_ZERO -> R preflight ACK -> O initial witness -> S_O initial witness ->
+O synthetic hash -> O existing pre-port observation -> P combined proof ->
+W_GO`. The synthetic hash is not daemon startup; no daemon/runner is launched.
+O and S_O are already in the v2/v3 eight-child graph. Reuse `o_pre` and
+`o_pre_proof`, with exactly one v4 composite pre-proof frame and EOF; do not
+add pipes or processes. The frozen peak remains 123 reserved pipes / 246 IPC
+endpoints, subject to explicit FD-cap tests. O opens at most two transient
+read-only FDs (fixture directory then leaf) after closing unowned ends and
+closes both before the port observer callback. Record O's actual peak open
+FDs separately from the 246 reserved IPC endpoints; do not silently raise
+the macOS soft limit. O's hard deadline and S_O exact-witness cleanup
+remain active during the hash; a self alarm alone is not witnessed stop.
+
+V4 is a separate explicit opt-in on top of v3 (`fake_opener_factory` and
+`port_observe` remain required; old `fake_http` is forbidden). The one
+positive fixture is exactly ASCII `URUHA_P4B_FAKE_HASH_V4\n` (23 bytes),
+pre-implementation SHA-256
+`2d2078a1d31c931402d626a1321b74731099a9144b32d6aa37e6718c968e95a7`.
+It is synthetic developer data, never a model or holdout. **No caller may
+select a fixture file or expected digest.** Before reserving IPC endpoints,
+P creates a unique 0700 directory with `tempfile.mkdtemp` under the
+canonical local OS temp base, rejects a base inside the repository or
+attempt `run_dir`, and creates only the fixed direct-child
+`synthetic-prehash-v4.bin` with `O_EXCL|O_NOFOLLOW`, 0600, and exactly the
+literal 23 bytes above. It fsyncs and closes this tiny fixture before the
+attempt; it never reads a caller-provided model or production file. The
+directory/path is absolute/canonical, neither leaf nor ancestor is a
+symlink, and the leaf is same-UID, single-link regular. P records directory
+and file `(st_dev, st_ino, st_uid, st_mode, st_nlink, st_size)` metadata
+and the independent **literal** expected SHA/count, without hashing file
+contents itself. If the canonical OS temp base cannot be shown disjoint
+from the repository and run directory, fail before fixture creation. This
+is a cooperative synthetic fixture confinement check, not a general
+production-data allowlist. Retain the operator-created fixture until O/S_O
+are reaped or safely proven stopped; do not delete it while they might
+still access it. In tests, a v4-only injected hook runs in O at an explicit
+`before_open` or `before_first_read` seam; it may stall, raise or mutate
+**only this operator-owned fixture**, never return bytes/digest/success,
+and its return value is ignored. The read hook fires once after safe open
+and identity checks. Invalid v4 configuration is rejected before journal/
+fork, without changing v1-v3 defaults. A fixture changed after pinning is
+a run failure with an R receipt when R remains available.
+No default private model path, real opener, socket or real daemon is added.
+O rejects symlinks, hardlinks, wrong owner/mode, nonregular files, changed
+path/device/inode, short or overlong read, wrong size, unavailable read and
+files above 1 MiB. It opens the pinned fixture directory with no-follow/
+directory/close-on-exec flags, then opens the fixed leaf relative to that
+directory FD using `O_RDONLY|O_NOFOLLOW|O_NONBLOCK|O_CLOEXEC`. It matches
+the pinned directory and leaf identity against `lstat`/`fstat` before
+reading, rechecks path and FDs afterward, then closes both FDs before the
+port callback. It reads in at most
+64 KiB chunks, hashes the bytes actually read, and returns only digest and
+exact count in IPC. This is a cooperative local file check, not protection
+against every path race or malicious filesystem. Neither path nor file bytes may enter P's result,
+R receipt, journal, public stdout/stderr or Web. P compares O's digest and
+count to the independently pinned expectation, and checks the unchanged
+port proof, canonical frame/EOF and initial witness before W_GO. A returned
+digest alone is never source provenance or adversarial attestation.
+
+Use strict distinct v4 result and R 0600 receipt schemas while retaining the
+existing `fake_seven_process_ipc_v1` outer frame. On the existing `o_pre`
+edge, v4 phase `o_pre_hash_port` has exactly the standard run/seq=1/O-witness
+envelope plus `daemon_port`; path and pinned identity are inherited by O at
+fork, never sent in IPC. On the existing `o_pre_proof` edge, v4 phase
+`o_pre_hash_port_proof` has exactly the same envelope plus the six prior
+pre-port proof fields (`port_sha256`, `daemon_port`, `daemon_vacant`,
+`runner_port=null`, `runner_vacant=null`, `shared_11434_sha256`) and
+`prehash_sha256` (lowercase 64 hex) plus `prehash_logical_bytes` (exact
+non-bool int 0..1 MiB). Canonical frame <=4096 bytes and EOF are mandatory;
+extra/missing/duplicated/trailing fields, wrong phase/seq/run/witness and
+malformed digest/count are terminal at this barrier. O remains alive for the
+later final port observation; its eventual abnormal exit makes the overall
+v4 run unproven, without retroactively inventing a different hash result. A v2/v3
+`o_pre_proof` never satisfies v4, and a v4 proof never satisfies v2/v3.
+O isolates both descriptor-level and Python-stream stdout/stderr before
+any injected hook or observer callback; raw canary never reaches parent,
+receipt or test capture.
+
+The v4 result/receipt extend v3 with exactly `prehash_gate_proven` (bool),
+`prehash_sha256` (pinned SHA only after the *entire* SHA/count pair matches,
+else null), `prehash_logical_bytes` (pinned count only after that same match,
+else null), and `pre_stage_failure_code` (fixed enum `none`,
+`pre_stage_unavailable`, `pre_stage_mismatch`, `port_pre_not_vacant`,
+`port_helper_initial_unavailable`, `signal_helper_initial_unavailable`).
+No raw path/bytes or test marker is allowed. V1/v2/v3 schemas and default
+bytes remain unchanged. P first validates the exact frame and EOF; only
+then checks the hash/count against independent frozen literals and marks
+`prehash_gate_proven=true` with matching SHA/count. Thus `true` requires
+both non-null matching values, and `false` requires both null; it may remain
+true if a **later** port/W/R failure occurs. P then checks unchanged
+daemon-port/vacancy/shared-11434 preproof before W_GO. A valid hash with
+`daemon_vacant=false` keeps the prehash subverdict but uses existing
+`port_pre_not_vacant`; a well-formed wrong hash/count or wrong expected
+port uses `pre_stage_mismatch`. A missing/malformed/duplicate/trailing
+composite proof cannot distinguish hash stall, port-observer stall or lost
+IPC; use `pre_stage_unavailable`, never `hash_timeout`. No W_GO, grant or
+fake HTTP follows any pre-stage failure; D zero-count journal and R's
+available raw-free failure receipt are retained. Test-only markers may
+attribute an injected block, not public receipt-level cause.
+
+`pre_stage_failure_code` retains the first pre-stage failure. The top-level
+`failure_code` reports the dominant final gate **after R preflight has
+accepted** in order: unproven R receipt or R exit ->
+`receipt_unavailable_review_required`; else an O/S_O initial witness
+refusal **before the v4 command** keeps its specific existing initial code;
+else unproven O/S_O/D/W cleanup or abnormal S_O exit **after the v4 command**
+-> `cleanup_review_required`; else a non-`none` pre-stage code; else the
+later existing port-final/W/transport/signal failure code. Initial-refusal
+cleanup uncertainty remains
+visible in per-PID stop/exit fields and never becomes a pass. Failures before
+R preflight retain their prior specific code and never enter v4 hash work.
+The per-PID `*_stop` and S_* exit fields
+remain separate. A durable R receipt snapshots the state before its own
+final exit and cannot predict that exit: its pre-stage fields equal the
+parent's validated values, but its top-level status/failure_code may differ
+from the final parent result if R then fails. Any such case remains strict
+FAIL with `receipt_durable_proven=false`. If O/S_O initial witness fails,
+map its specific code into `pre_stage_failure_code` and never call hash or
+port observer.
+`physical_stop_unproven=true`, `full_gate_pass=false` and
+`b_send_authorized=false` remain permanent. V4 must not allow a pass when
+O/S_O has not exited normally and R receipt is not durably proven.
+
+Before implementation: add a red integrated v4 test proving no current
+hash-before-W_GO path, then use the existing v3 seven-operation path with
+one tiny fixture. Positive controls verify the exact digest/count, O hash
+before unchanged port observation, seven unique fake requests, six OS-only
+worker observations, op7 spent, 0700/0600 artifacts and no extra process or
+pipe. Negative controls cover blocked/raising read hook; wrong digest/count;
+symlink, replacement and >1 MiB file; missing/corrupt/duplicate/trailing
+composite proof; O/S_O initial-witness refusal; blocked cleanup witness or
+ineffective signal; raw printed canary; and FD exhaustion. Blocked hash
+must leave P bounded, the port observer uncalled, zero grants/HTTP, and a
+0600 raw-free R failure receipt if R is available. Preserve v1-v3 tests,
+run focused and affected regression, independent patch review, then only
+scoped commit/push/PR exact-head check. Test output is synthetic mechanism
+evidence; it cannot satisfy real pre/post SHA, actual model/source identity,
+readiness, production/Safari or a live release.
+
 Focused fake controls must prove a positive seven unique grants/sends,
 six OS-only observations, op7 spent **before** ACK, two private ports
 vacant/11434 unchanged, no raw leakage, a durable initial zero-count journal
