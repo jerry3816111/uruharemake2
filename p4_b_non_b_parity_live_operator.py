@@ -1000,6 +1000,8 @@ def _fake_child_lifetime(absolute_deadline: float) -> None:
 
 def _fake_close(*fds: int) -> None:
     for fd in fds:
+        if fd is None:
+            continue
         try:
             os.close(fd)
         except OSError:
@@ -1008,9 +1010,14 @@ def _fake_close(*fds: int) -> None:
 
 def _fake_read_bounded(fd: int, deadline: float, *, framed: bool,
                        keys: set[str] | None = None) -> Any:
-    """Parent-side nonblocking read; no effect callback runs on this path."""
+    """Parent-side bounded read; framed messages require exact bytes and EOF.
+
+    Each framed sender closes its write end after one frame. Waiting for EOF
+    before accepting prevents a second/trailing frame from racing the next
+    command. Single-byte cleanup replies use the non-EOF mode.
+    """
     raw = bytearray()
-    limit = FRAME_LIMIT + 4 if framed else 1
+    limit = FRAME_LIMIT + 5 if framed else 1
     while time.monotonic() < deadline and len(raw) < limit:
         readable, _, _ = select.select([fd], [], [],
                                        min(0.005, max(0, deadline - time.monotonic())))
@@ -1021,6 +1028,13 @@ def _fake_read_bounded(fd: int, deadline: float, *, framed: bool,
         except BlockingIOError:
             continue
         if not part:
+            if framed and len(raw) >= 4:
+                size = struct.unpack(">I", raw[:4])[0]
+                if 0 < size <= FRAME_LIMIT and len(raw) == size + 4:
+                    try:
+                        return decode_frame(bytes(raw), keys=keys or {"witness"})
+                    except LiveOperatorError:
+                        return None
             return None
         raw.extend(part)
         if not framed and raw:
@@ -1029,11 +1043,8 @@ def _fake_read_bounded(fd: int, deadline: float, *, framed: bool,
             size = struct.unpack(">I", raw[:4])[0]
             if size == 0 or size > FRAME_LIMIT:
                 return None
-            if len(raw) == size + 4:
-                try:
-                    return decode_frame(bytes(raw), keys=keys or {"witness"})
-                except LiveOperatorError:
-                    return None
+            if len(raw) > size + 4:
+                return None
     return None
 
 
@@ -1059,6 +1070,24 @@ def _fake_journal_proof_valid(value: Any) -> bool:
             and _valid_sha(value["journal_sha256"]))
 
 
+def _fake_zero_journal_proof_valid(value: Any, run_id: str) -> bool:
+    return (type(value) is dict
+            and set(value) == {"phase", "seq", "run_id", "journal_sha256",
+                               "reserved", "granted", "completion_attempt_spent"}
+            and value["phase"] == "zero" and type(value["seq"]) is int
+            and value["seq"] == 1 and value["run_id"] == run_id
+            and _valid_sha(value["journal_sha256"])
+            and all(type(value[key]) is int and value[key] == 0
+                    for key in ("reserved", "granted", "completion_attempt_spent")))
+
+
+def _fake_staged_op1_proof_valid(value: Any) -> bool:
+    return (type(value) is dict and set(value) == {"seq", "grant", "journal_sha256"}
+            and type(value["seq"]) is int and value["seq"] == 2
+            and _fake_journal_proof_valid(
+                {"grant": value["grant"], "journal_sha256": value["journal_sha256"]}))
+
+
 def _fake_wait_reap(pid: int, deadline: float,
                     statuses: dict[int, int] | None = None) -> bool:
     while time.monotonic() < deadline:
@@ -1071,6 +1100,7 @@ def _fake_wait_reap(pid: int, deadline: float,
 def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                                   signal_initial_witness=None,
                                   journal_proof: bool = False,
+                                  staged_journal_run_id: str | None = None,
                                   preparation_seconds: float = 0.15,
                                   work_seconds: float = 0.10,
                                   term_grace_seconds: float = 0.04,
@@ -1086,6 +1116,9 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
     `supervise_once` remains fail-closed.
     """
     if (not callable(work) or type(journal_proof) is not bool
+            or (staged_journal_run_id is not None
+                and (journal_proof or type(staged_journal_run_id) is not str
+                     or _RUN.fullmatch(staged_journal_run_id) is None))
             or (observe is not None and not callable(observe))
             or (initial_witness is not None and not callable(initial_witness))
             or (signal_initial_witness is not None
@@ -1105,9 +1138,10 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
     wr, ww = os.pipe()       # worker initial witness
     cr, cw = os.pipe()       # parent -> worker GO
     dr, dw = os.pipe()       # worker fixed result
+    zr, zw = os.pipe() if staged_journal_run_id is not None else (None, None)
     worker_pid = os.fork()
     if worker_pid == 0:
-        _fake_close(wr, cw, dr)
+        _fake_close(wr, cw, dr, zr)
         try:
             os.setsid()
             _fake_child_lifetime(hard_deadline)
@@ -1119,14 +1153,30 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
             _fake_close(ww)
             if os.read(cr, 1) != b"G":
                 os._exit(0)
-            work_result = work()
-            if journal_proof and not _fake_journal_proof_valid(work_result):
+            if staged_journal_run_id is not None:
+                stages = iter(work(actual))
+                zero = next(stages)
+                if not _fake_zero_journal_proof_valid(zero, staged_journal_run_id):
+                    os._exit(125)
+                os.write(zw, encode_frame(zero))
+                _fake_close(zw)
+                if os.read(cr, 1) != b"R":
+                    os._exit(0)
+                work_result = next(stages)
+            else:
+                work_result = work()
+            if (journal_proof and not _fake_journal_proof_valid(work_result)):
                 os._exit(125)
-            os.write(dw, encode_frame(work_result) if journal_proof else b"D")
+            if (staged_journal_run_id is not None
+                    and not _fake_staged_op1_proof_valid(work_result)):
+                os._exit(125)
+            os.write(dw, (encode_frame(work_result)
+                          if journal_proof or staged_journal_run_id is not None
+                          else b"D"))
             os._exit(0)
         except BaseException:
             os._exit(125)
-    _fake_close(ww, cr, dw)
+    _fake_close(ww, cr, dw, zw)
     signal_pid = None
     sr = sc = rr = None
     worker_reaped = False
@@ -1158,7 +1208,7 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
         rr, rw = os.pipe()
         signal_pid = os.fork()
         if signal_pid == 0:
-            _fake_close(sr, sc, rr, wr, cw, dr)
+            _fake_close(sr, sc, rr, wr, cw, dr, zr)
             try:
                 os.setsid()
                 _fake_child_lifetime(hard_deadline)
@@ -1215,13 +1265,34 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                       "signal_reaped": False, "term": term_code,
                       "kill": kill_code, "full_gate_pass": False}
             return result
+        zero_ack_received = False
+        reserve_command_issued = False
+        if staged_journal_run_id is not None:
+            zero_msg = _fake_read_bounded(
+                zr, t0 + work_seconds, framed=True,
+                keys={"phase", "seq", "run_id", "journal_sha256", "reserved",
+                      "granted", "completion_attempt_spent"})
+            zero_ack_received = _fake_zero_journal_proof_valid(
+                zero_msg, staged_journal_run_id)
+            if zero_ack_received and time.monotonic() < t0 + work_seconds:
+                try:
+                    reserve_command_issued = os.write(cw, b"R") == 1
+                except OSError:
+                    reserve_command_issued = False
         work_done = _fake_read_bounded(
-            dr, t0 + work_seconds, framed=journal_proof,
-            keys={"grant", "journal_sha256"} if journal_proof else None)
-        if journal_proof and not _fake_journal_proof_valid(work_done):
+            dr, t0 + work_seconds,
+            framed=journal_proof or staged_journal_run_id is not None,
+            keys=({"seq", "grant", "journal_sha256"}
+                  if staged_journal_run_id is not None else
+                  {"grant", "journal_sha256"} if journal_proof else None))
+        if (journal_proof and not _fake_journal_proof_valid(work_done)):
+            work_done = None
+        if (staged_journal_run_id is not None
+                and not _fake_staged_op1_proof_valid(work_done)):
             work_done = None
         worker_reaped = _fake_reap_nonblocking(worker_pid, exit_statuses)
-        work_reported = (type(work_done) is dict if journal_proof
+        work_reported = (type(work_done) is dict
+                         if journal_proof or staged_journal_run_id is not None
                          else work_done == b"D")
         if work_reported and not worker_reaped:
             worker_reaped = _fake_wait_reap(worker_pid,
@@ -1266,7 +1337,8 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                   and os.WTERMSIG(worker_status) == signal.SIGTERM)
                  or (kill_code == "signal_sent"
                      and os.WTERMSIG(worker_status) == signal.SIGKILL)))
-        if work_reported and worker_reaped and completed_normally:
+        if (work_reported and worker_reaped and completed_normally
+                and (staged_journal_run_id is None or reserve_command_issued)):
             status = "fake_partial_work_exited"
         elif worker_reaped and stopped_by_witnessed_signal:
             status = "fake_partial_witnessed_child_reaped"
@@ -1277,12 +1349,16 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
                 "worker_reaped": worker_reaped,
                 "signal_reaped": False, "term": term_code,
                 "kill": kill_code, "full_gate_pass": False}
-        if status == "fake_partial_work_exited" and journal_proof:
+        if staged_journal_run_id is not None:
+            result["zero_ack_received"] = zero_ack_received
+            result["reserve_command_issued"] = reserve_command_issued
+        if (status == "fake_partial_work_exited"
+                and (journal_proof or staged_journal_run_id is not None)):
             result["work_result"] = work_done
             result["worker_initial_witness"] = initial
         return result
     finally:
-        _fake_close(wr, cw, dr)
+        _fake_close(wr, cw, dr, zr)
         if sc is not None:
             try:
                 os.write(sc, b"Q")
@@ -1303,14 +1379,13 @@ def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
 def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
                                      crash_after_commit: bool = False,
                                      work_seconds: float = 0.4) -> dict:
-    """Fake-only bounded durability probe; not the frozen two-ACK protocol.
+    """Fake-only bounded zero-ACK -> op1 durability probe.
 
-    A witnessed ephemeral child performs both zero-journal creation and one
-    reservation. The parent receives a single proof only after *all* journal
-    commits return and the child exits normally. In particular, there is no
-    parent ACK barrier between the zero state and op1, no separate worker
-    delivery and no live receipt. This only isolates blocking disk effects
-    from the parent watchdog; ``supervise_once`` stays fail-closed.
+    One witnessed ephemeral child first creates/readbacks the zero journal.
+    The parent issues the op1 command only after validating its bounded zero
+    ACK. The same child then reserves op1 and emits a final proof after all
+    commits return. This is still *not* a separate durability helper plus
+    worker or a worker-delivered grant; ``supervise_once`` stays fail-closed.
     """
     if (type(grant_without_worker) is not dict
             or set(grant_without_worker) != _GRANT_FIELDS - {"worker"}
@@ -1324,12 +1399,24 @@ def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
     spec = _plain_copy(grant_without_worker, "fake_journal_spec_invalid")
     directory = Path(run_dir)
 
-    def durable_work() -> dict:
-        witness = _fake_os_witness(os.getpid())
-        generation = witness["raw_generation"]
+    def durable_work(initial):
+        generation = initial["raw_generation"]
         worker = {"pid": generation[0], "ppid": generation[1],
                   "start_sec": generation[2], "start_usec": generation[3]}
         journal = DurableJournal.create(directory, spec["run_id"])
+        zero_state = journal.snapshot()
+        with open(journal.path, "rb") as handle:
+            zero_disk = handle.read(FRAME_LIMIT + 1)
+        if (len(zero_disk) > FRAME_LIMIT
+                or zero_disk != _canonical(zero_state,
+                                           "fake_journal_readback_invalid")
+                or zero_state["reserved"] != 0 or zero_state["granted"] != 0
+                or zero_state["completion_attempt_spent"] != 0
+                or zero_state["operations"] != []):
+            _fail("fake_journal_readback_invalid")
+        yield {"phase": "zero", "seq": 1, "run_id": spec["run_id"],
+               "journal_sha256": _sha(zero_disk), "reserved": 0,
+               "granted": 0, "completion_attempt_spent": 0}
         grant = journal.reserve({**spec, "worker": worker}, ack=lambda _grant: None)
         state = journal.snapshot()
         # The helper, never the parent watchdog, performs the post-commit
@@ -1345,11 +1432,11 @@ def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
             _fail("fake_journal_readback_invalid")
         if crash_after_commit:
             os._exit(121)  # injected lost proof after durable commit
-        return {"grant": grant, "journal_sha256": _sha(disk)}
+        yield {"seq": 2, "grant": grant, "journal_sha256": _sha(disk)}
 
     watched = _supervise_fake_callback_once(
         work=durable_work,
-        journal_proof=True,
+        staged_journal_run_id=spec["run_id"],
         work_seconds=work_seconds)
     base = {"schema": "fake_process_journal_partial_v1",
             "status": "fake_partial_journal_unproven",
@@ -1358,15 +1445,17 @@ def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
             "signal_reaped": watched["signal_reaped"],
             "go_issued": watched["go_issued"],
             "term": watched["term"], "kill": watched["kill"],
+            "zero_ack_received": watched.get("zero_ack_received", False),
+            "reserve_command_issued": watched.get("reserve_command_issued", False),
             "full_gate_pass": False}
     if (watched["status"] != "fake_partial_work_exited"
-            or not watched["signal_reaped"]):
+            or not watched["signal_reaped"]
+            or not watched.get("zero_ack_received")
+            or not watched.get("reserve_command_issued")):
         return base
     proof = watched.get("work_result")
     initial = watched.get("worker_initial_witness")
-    if (type(proof) is not dict
-            or set(proof) != {"grant", "journal_sha256"}
-            or not _valid_sha(proof["journal_sha256"])
+    if (not _fake_staged_op1_proof_valid(proof)
             or not _fake_witness_valid(initial, initial.get("pid", -1)
                                        if type(initial) is dict else -1)):
         return base

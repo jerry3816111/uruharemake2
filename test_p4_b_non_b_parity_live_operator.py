@@ -244,6 +244,25 @@ def test_frame_rejects_unknown_field_even_if_canonical():
                           keys={"run_id"})
 
 
+def test_bounded_pipe_reader_accepts_exact_max_frame_only_after_eof():
+    value = {"a": "x" * (live.FRAME_LIMIT - len(_canonical({"a": ""})))}
+    frame = live.encode_frame(value)
+    assert len(frame) == live.FRAME_LIMIT + 4
+    for trailing, expected in ((b"", value), (b"x", None)):
+        read_fd, write_fd = os.pipe()
+        try:
+            os.write(write_fd, frame + trailing)
+            os.close(write_fd)
+            write_fd = -1
+            observed = live._fake_read_bounded(
+                read_fd, time.monotonic() + 0.2, framed=True, keys={"a"})
+            assert observed == expected
+        finally:
+            os.close(read_fd)
+            if write_fd >= 0:
+                os.close(write_fd)
+
+
 def test_initial_journal_is_exclusive_durable_zero_count_and_0600(tmp_path):
     run_dir = tmp_path / "new-run"
     assert not run_dir.exists()
@@ -1202,6 +1221,8 @@ def test_fake_journal_op1_is_child_durable_before_parent_proof(tmp_path):
     assert result["status"] == "fake_partial_op1_durable_proof"
     assert result["worker_reaped"] is True
     assert result["signal_reaped"] is True
+    assert result["zero_ack_received"] is True
+    assert result["reserve_command_issued"] is True
     assert result["full_gate_pass"] is False
     assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
     journal_path, disk = _read_only_journal(run_dir)
@@ -1378,3 +1399,103 @@ def test_fake_journal_cannot_claim_proof_with_unreaped_signal_helper(
     assert result["status"] == "fake_partial_journal_unproven"
     assert result["signal_reaped"] is False
     assert "journal_sha256" not in result
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("broken_zero", ["wrong_run", "wrong_seq", "duplicate",
+                                           "split_duplicate", "lost"])
+def test_fake_journal_zero_ack_must_validate_before_op1_command(
+        monkeypatch, tmp_path, broken_zero):
+    original_encode = live.encode_frame
+    original_write = os.write
+    original_read = os.read
+
+    def break_zero_frame(value):
+        if type(value) is dict and value.get("phase") == "zero":
+            changed = deepcopy(value)
+            if broken_zero == "wrong_run":
+                changed["run_id"] = "another-run"
+            elif broken_zero == "wrong_seq":
+                changed["seq"] = 2
+            elif broken_zero in ("duplicate", "split_duplicate"):
+                frame = original_encode(value)
+                return frame + frame
+            return original_encode(changed)
+        return original_encode(value)
+
+    def lose_zero_frame(fd, data):
+        if broken_zero == "lost" and b'"phase":"zero"' in data:
+            return len(data)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live, "encode_frame", break_zero_frame)
+    monkeypatch.setattr(live.os, "write", lose_zero_frame)
+    if broken_zero == "split_duplicate":
+        monkeypatch.setattr(live.os, "read",
+                            lambda fd, length: original_read(fd, min(length, 32)))
+    run_dir = tmp_path / f"bad-zero-{broken_zero}"
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        work_seconds=0.15)
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert result["zero_ack_received"] is False
+    assert result["reserve_command_issued"] is False
+    assert "journal_sha256" not in result
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == 0
+    assert disk["operations"] == []
+
+
+@_DARWIN_FORK
+def test_fake_journal_broken_op1_command_keeps_zero_state(
+        monkeypatch, tmp_path):
+    original_write = os.write
+
+    def break_reserve_command(fd, data):
+        if data == b"R":
+            raise BrokenPipeError(CANARY)
+        return original_write(fd, data)
+
+    monkeypatch.setattr(live.os, "write", break_reserve_command)
+    run_dir = tmp_path / "broken-reserve-command"
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker(),
+        work_seconds=0.15)
+    assert result["zero_ack_received"] is True
+    assert result["reserve_command_issued"] is False
+    assert result["status"] == "fake_partial_journal_unproven"
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == 0
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("bad_final", ["wrong_seq", "split_duplicate"])
+def test_fake_journal_bad_final_frame_keeps_spent_disk_but_no_proof(
+        monkeypatch, tmp_path, bad_final):
+    original_encode = live.encode_frame
+    original_read = os.read
+
+    def stale_final_frame(value):
+        if type(value) is dict and value.get("seq") == 2 and "grant" in value:
+            if bad_final == "split_duplicate":
+                frame = original_encode(value)
+                return frame + frame
+            changed = deepcopy(value)
+            changed["seq"] = 1
+            return original_encode(changed)
+        return original_encode(value)
+
+    monkeypatch.setattr(live, "encode_frame", stale_final_frame)
+    if bad_final == "split_duplicate":
+        monkeypatch.setattr(live.os, "read",
+                            lambda fd, length: original_read(fd, min(length, 32)))
+    run_dir = tmp_path / f"bad-final-{bad_final}"
+    result = live._supervise_fake_journal_op1_once(
+        run_dir=run_dir, grant_without_worker=_op1_without_worker())
+    assert result["zero_ack_received"] is True
+    assert result["reserve_command_issued"] is True
+    assert result["status"] == "fake_partial_journal_unproven"
+    assert "journal_sha256" not in result
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == disk["granted"] == 1
