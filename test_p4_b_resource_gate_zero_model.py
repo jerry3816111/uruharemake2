@@ -49,6 +49,50 @@ def _m21_request():
     }
 
 
+@pytest.mark.parametrize("prefix", [
+    "You are the Left Brain Planner for a dual-brain character system.",
+    "\nYou are the Left Brain Planner for a dual-brain character system.",
+])
+def test_exact_m21_system_prefix_reaches_one_fake_provider_unchanged(prefix):
+    observed = []
+
+    def bound(request):
+        observed.append(request["messages"][0]["content"])
+        return 1200
+
+    gate = P4BResourceGate(prompt_token_upper_bound=bound)
+    ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
+    client, target = _client(ledger)
+    request = _m21_request()
+    request["messages"][0]["content"] = prefix + " Private constraints"
+    with ledger.stage("leftbrain_general_plan"):
+        client.chat.completions.create(**request)
+    assert observed == [request["messages"][0]["content"]]
+    assert target.calls == 1
+    assert target.last_request["messages"][0]["content"] == observed[0]
+    assert gate.snapshot()["attempted_provider_calls"] == 1
+
+
+@pytest.mark.parametrize("prefix", [
+    "\n\nYou are the Left Brain Planner for a dual-brain character system.",
+    " You are the Left Brain Planner for a dual-brain character system.",
+    "\r\nYou are the Left Brain Planner for a dual-brain character system.",
+    "banner\nYou are the Left Brain Planner for a dual-brain character system.",
+    "\nYou are the Left Brain Planner for a dual-brain character system?",
+])
+def test_other_m21_system_prefixes_are_denied_before_fake_provider(prefix):
+    gate = P4BResourceGate(prompt_token_upper_bound=lambda request: 1200)
+    ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)
+    client, target = _client(ledger)
+    request = _m21_request()
+    request["messages"][0]["content"] = prefix + " Private constraints"
+    with ledger.stage("leftbrain_general_plan"):
+        with pytest.raises(P4BResourceGateError, match="m21_request_drift"):
+            client.chat.completions.create(**request)
+    assert target.calls == 0
+    assert ledger.snapshot()["call_count"] == 0
+
+
 def test_only_first_m21_attempt_reaches_provider_and_gate_is_atomic():
     gate = P4BResourceGate(prompt_token_upper_bound=lambda request: 1200)
     ledger = ucl.ComputeLedger(p4_b_resource_gate=gate)

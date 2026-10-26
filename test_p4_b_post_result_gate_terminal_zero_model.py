@@ -76,7 +76,6 @@ def _isolated_b_brain(monkeypatch):
     return brain, ledger, gate, provider
 
 
-@pytest.mark.xfail(strict=True, reason="actual compact M21 prompt begins with newline; B gate rejects before SDK")
 def test_missing_usage_fails_closed_after_one_fake_compact_provider_call(monkeypatch):
     brain, ledger, gate, provider = _isolated_b_brain(monkeypatch)
     with pytest.raises(P4BResourceGateError, match="missing_provider_usage"):
@@ -95,7 +94,6 @@ def test_missing_usage_fails_closed_after_one_fake_compact_provider_call(monkeyp
     assert brain.runtime.last_reply in (None, "")
 
 
-@pytest.mark.xfail(strict=True, reason="actual compact M21 prompt begins with newline; B gate rejects before SDK")
 def test_missing_usage_web_failure_receipt_records_physical_call_without_reply(
         monkeypatch, tmp_path):
     log_dir = _private_web_log(monkeypatch, tmp_path)
@@ -122,27 +120,28 @@ def test_missing_usage_web_failure_receipt_records_physical_call_without_reply(
     assert brain.memory.saved_episodes == []
 
 
-def test_actual_compact_m21_prefix_drift_blocks_fake_provider_before_result(monkeypatch):
+def test_actual_compact_m21_single_newline_prefix_is_admitted_unchanged(monkeypatch):
     brain, ledger, gate, provider = _isolated_b_brain(monkeypatch)
     observed = {}
     original_admit = gate.admit_openai
 
     def admit(stage, request):
         observed["stage"] = stage
-        observed["prefix"] = request["messages"][0]["content"][:68]
+        observed["system"] = request["messages"][0]["content"]
         observed["format_type"] = request["response_format"]["type"]
         return original_admit(stage, request)
 
     monkeypatch.setattr(gate, "admit_openai", admit)
-    with pytest.raises(P4BResourceGateError, match="m21_request_drift"):
+    with pytest.raises(P4BResourceGateError, match="missing_provider_usage"):
         with _compact_call():
             brain.run_turn_debug(INPUT)
     assert observed["stage"] == "leftbrain_general_plan"
-    assert observed["prefix"].startswith(
+    assert observed["system"].startswith(
         "\nYou are the Left Brain Planner for a dual-brain character system."
     )
     assert observed["format_type"] == "json_schema"
-    assert provider.calls == 0
-    assert ledger.snapshot()["call_count"] == 0
-    assert gate.snapshot()["terminal_reason"] == "m21_request_drift"
+    assert provider.calls == 1
+    assert provider.last_request["messages"][0]["content"] == observed["system"]
+    assert ledger.snapshot()["call_count"] == 1
+    assert gate.snapshot()["terminal_reason"] == "missing_provider_usage"
     assert brain.memory.saved_episodes == []

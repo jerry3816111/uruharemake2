@@ -76,9 +76,10 @@ class P4BResourceGate:
                 or messages[0].get("role") != "system"
                 or messages[1].get("role") != "user"
                 or not isinstance(messages[0].get("content"), str)
-                or not messages[0]["content"].startswith(
-                    "You are the Left Brain Planner for a dual-brain character system."
-                )
+                or not messages[0]["content"].startswith((
+                    "You are the Left Brain Planner for a dual-brain character system.",
+                    "\nYou are the Left Brain Planner for a dual-brain character system.",
+                ))
                 or not isinstance(messages[1].get("content"), str)
                 or not messages[1]["content"].startswith("User Input: ")
             ):
