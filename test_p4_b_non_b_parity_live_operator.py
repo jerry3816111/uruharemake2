@@ -2242,6 +2242,611 @@ def test_fake_split_receipt_initial_witness_failure_prevents_d_go(tmp_path):
     assert result["full_gate_pass"] is False
 
 
+def _seven_fake_inputs(monkeypatch, tmp_path, on_call=None):
+    seed = tmp_path / "seven-seed"
+    seed.mkdir()
+    kwargs, _, _, _ = _worker_harness(monkeypatch, seed)
+    binding = deepcopy(kwargs["binding"])
+    template = "synthetic template, not a private model blob"
+    system = "synthetic system, not a private model blob"
+
+    def fake_http(method, url, payload, remaining, grant):
+        assert 0 < remaining <= 2.5
+        ordinal = grant["ordinal"]
+        if on_call is not None:
+            on_call(ordinal)
+        if ordinal == 1:
+            body = {"version": "0.34.4"}
+        elif ordinal == 2:
+            body = {"models": [{"name": "qwen2.5:7b",
+                                "digest": FROZEN_MANIFEST_SHA256}]}
+        elif ordinal == 3:
+            body = {"template": template, "system": system}
+        elif ordinal == 4:
+            request = parity.fixed_transformed_request()
+            rendered = ("<|im_start|>system\n" + request["messages"][0]["content"]
+                        + "<|im_end|>\n<|im_start|>user\n"
+                        + request["messages"][1]["content"]
+                        + "<|im_end|>\n<|im_start|>assistant\n")
+            body = {"model": "qwen2.5:7b",
+                    "_debug_info": {"rendered_template": rendered},
+                    "usage": {"prompt_tokens": 0, "completion_tokens": 0,
+                              "total_tokens": 0},
+                    "choices": [{"message": {"content": ""}}]}
+        elif ordinal in (5, 6):
+            body = {"tokens": [1, 2, 3]}
+        elif ordinal == 7:
+            body = {"model": "qwen2.5:7b",
+                    "usage": {"prompt_tokens": 3, "completion_tokens": 2,
+                              "total_tokens": 5},
+                    "choices": [{"message": {"content": CANARY}}]}
+        else:
+            pytest.fail("eighth injected operation")
+        return {"requested_url": url, "effective_url": url,
+                "proxy_used": False, "redirected": False, "status": 200,
+                "body": _canonical(body)}
+
+    return binding, kwargs["observe_identity"], fake_http
+
+
+@_DARWIN_FORK
+def test_fake_seven_process_loop_commits_every_stage_before_next_grant(
+        monkeypatch, tmp_path):
+    """A process-backed W/D/R run, not merely worker_once in one process."""
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+
+    run_dir = tmp_path / "seven"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=2.0)
+    journal_path, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_pass"
+    assert result["receipt_durable_proven"] is True
+    assert [op["ordinal"] for op in disk["operations"]] == list(range(1, 8))
+    assert disk["reserved"] == disk["granted"] == disk["worker_issued"] == 7
+    assert disk["completion_attempt_spent"] == 1
+    assert all(op["on_wire"] == "yes" for op in disk["operations"])
+    assert result["http_calls"] == 7 and result["identity_checks"] == 6
+    receipt_path = run_dir / "receipt.json"
+    receipt = json.loads(receipt_path.read_bytes())
+    assert stat.S_IMODE(run_dir.stat().st_mode) == 0o700
+    assert stat.S_IMODE(receipt_path.stat().st_mode) == 0o600
+    assert receipt["schema"] == "fake_seven_process_receipt_v1"
+    assert receipt["status"] == "fake_seven_process_pending_receipt"
+    assert [receipt[key] for key in (
+        "reserved", "granted", "worker_issued", "on_wire_yes",
+        "http_calls")] == [7] * 5
+    assert receipt["identity_checks"] == 6
+    assert receipt["completion_attempt_spent"] == 1
+    assert receipt["journal_sha256"] == hashlib.sha256(
+        journal_path.read_bytes()).hexdigest()
+    assert receipt["physical_stop_unproven"] is True
+    assert receipt["full_gate_pass"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert CANARY not in json.dumps(result)
+    assert CANARY not in receipt_path.read_text()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("stage", ["reserve", "issue", "wire"])
+def test_fake_seven_durable_stage_crash_never_refunds_or_grants_next(
+        monkeypatch, tmp_path, stage):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / f"seven-d-{stage}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        fault=f"d_after_{stage}_3", work_seconds=0.6)
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["full_gate_pass"] is False
+    assert disk["reserved"] == disk["granted"] == 3
+    assert disk["worker_issued"] == (2 if stage == "reserve" else 3)
+    assert [op["on_wire"] for op in disk["operations"]] == (
+        ["yes", "yes", "yes" if stage == "wire" else "unknown"])
+    assert disk["completion_attempt_spent"] == 0
+    assert not any(op["ordinal"] > 3 for op in disk["operations"])
+    assert CANARY not in json.dumps(result)
+
+
+@_DARWIN_FORK
+def test_fake_seven_op7_spent_before_lost_grant_proof(monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-op7-spent"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        fault="d_after_reserve_7", work_seconds=0.8)
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert disk["reserved"] == 7 and disk["worker_issued"] == 6
+    assert disk["completion_attempt_spent"] == 1
+    assert disk["operations"][6]["on_wire"] == "unknown"
+    assert result["completion_attempt_spent"] == "unknown"
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("blocked_ordinal", range(1, 8))
+def test_fake_seven_blocked_callback_is_bounded_and_not_false_wire(
+        monkeypatch, tmp_path, blocked_ordinal):
+    def block_on_call(ordinal):
+        if ordinal == blocked_ordinal:
+            time.sleep(20)
+
+    binding, observer, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path, on_call=block_on_call)
+    run_dir = tmp_path / f"seven-blocked-{blocked_ordinal}"
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.55, cleanup_seconds=0.25)
+    assert time.monotonic() - started < 3.0
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert disk["reserved"] == disk["worker_issued"] == blocked_ordinal
+    assert disk["operations"][-1]["on_wire"] == "unknown"
+    assert sum(op["on_wire"] == "yes" for op in disk["operations"]) == (
+        blocked_ordinal - 1)
+    assert disk["completion_attempt_spent"] == int(blocked_ordinal == 7)
+    assert result["w_stop"] in ("witnessed_term", "witnessed_kill")
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+def test_fake_seven_source_failure_before_op7_keeps_completion_unspent(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    binding["source"]["model_num_ctx"] = 8193
+    run_dir = tmp_path / "seven-source-failure"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.8)
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert disk["reserved"] == disk["worker_issued"] == 6
+    assert all(op["on_wire"] == "yes" for op in disk["operations"])
+    assert disk["completion_attempt_spent"] == 0
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_wrong_worker_grant_is_rejected_before_callback(
+        monkeypatch, tmp_path):
+    original = live._seven_child_receive
+    called = tmp_path / "callback-called"
+
+    def tamper(pipes, name, *args, **kwargs):
+        value = original(pipes, name, *args, **kwargs)
+        if name == "w_grant_1" and value is not None:
+            value["grant"]["port"] += 1
+        return value
+
+    monkeypatch.setattr(live, "_seven_child_receive", tamper)
+    binding, observer, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path, on_call=lambda _: called.write_text("called"))
+    run_dir = tmp_path / "seven-tamper"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.5)
+    _, disk = _read_only_journal(run_dir)
+    assert not called.exists()
+    assert result["status"] == "fake_seven_process_unproven"
+    assert disk["reserved"] == 1 and disk["worker_issued"] == 0
+    assert disk["operations"][0]["on_wire"] == "unknown"
+
+
+@_DARWIN_FORK
+def test_fake_seven_lost_result_ack_retains_wire_and_never_grants_next(
+        monkeypatch, tmp_path):
+    original = live._seven_send
+
+    def lose_ack(fd, value, deadline, **validation):
+        if value["phase"] == "result_ack" and value["seq"] == 2:
+            return False
+        return original(fd, value, deadline, **validation)
+
+    monkeypatch.setattr(live, "_seven_send", lose_ack)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-lost-result-ack"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.6)
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert disk["reserved"] == disk["worker_issued"] == 2
+    assert [op["on_wire"] for op in disk["operations"]] == ["yes", "yes"]
+    assert disk["completion_attempt_spent"] == 0
+
+
+@_DARWIN_FORK
+def test_fake_seven_duplicate_child_frame_is_not_accepted_as_one_proof(
+        monkeypatch, tmp_path):
+    original = live._seven_send
+
+    def duplicate_request(fd, value, deadline, **validation):
+        if value["phase"] == "request" and value["seq"] == 1:
+            frame = live.encode_frame(value)
+            return os.write(fd, frame + frame) == len(frame) * 2
+        return original(fd, value, deadline, **validation)
+
+    monkeypatch.setattr(live, "_seven_send", duplicate_request)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-duplicate"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.5)
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "worker_request_unavailable"
+    assert disk["reserved"] == 0
+
+
+@_DARWIN_FORK
+def test_fake_seven_fd_reservation_failure_never_starts_journal(
+        monkeypatch, tmp_path):
+    original = live.resource.getrlimit
+    monkeypatch.setattr(
+        live.resource, "getrlimit",
+        lambda _: (10, original(live.resource.RLIMIT_NOFILE)[1]))
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-fd-refused"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "fake_seven_fd_reservation_unavailable"
+    assert result["fd_endpoints_reserved"] == 0
+    assert not run_dir.exists()
+
+
+@_DARWIN_FORK
+def test_fake_seven_summary_raw_canary_is_not_sent_or_receipted(
+        monkeypatch, tmp_path):
+    original = live.worker_once
+
+    def poisoned_summary(**kwargs):
+        value = original(**kwargs)
+        value["source_evidence"]["branch"] = CANARY
+        return value
+
+    monkeypatch.setattr(live, "worker_once", poisoned_summary)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-raw-summary"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.8)
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 7 and disk["worker_issued"] == 7
+    assert result["status"] == "fake_seven_process_unproven"
+    assert CANARY not in json.dumps(result)
+    receipt = run_dir / "receipt.json"
+    if receipt.exists():
+        assert CANARY not in receipt.read_text()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("variant,ordinal", [
+    ("wrong_method", 1), ("wrong_port", 1), ("wrong_role", 1),
+    ("wrong_path", 1), ("wrong_nonce", 1), ("wrong_worker", 1),
+    ("expired", 1), ("wrong_payload", 3),
+])
+def test_fake_seven_w_local_gate_rejects_tamper_before_fake_callback(
+        monkeypatch, tmp_path, variant, ordinal):
+    original_worker = live.worker_once
+    markers = tmp_path / "fake-callbacks"
+    markers.mkdir()
+
+    def corrupted_worker(**kwargs):
+        original_http = kwargs["http_call"]
+        calls = {"count": 0}
+
+        def corrupt(method, url, payload, remaining, grant):
+            calls["count"] += 1
+            if calls["count"] == ordinal:
+                if variant == "wrong_method":
+                    method = "POST"
+                elif variant == "wrong_port":
+                    url = url.replace(":11455", ":11456")
+                elif variant == "wrong_role":
+                    grant["target_role"] = "runner"
+                elif variant == "wrong_path":
+                    grant["path"] = "/api/tags"
+                elif variant == "wrong_nonce":
+                    grant["nonce"] = "0" * 32
+                elif variant == "wrong_worker":
+                    grant["worker"]["pid"] += 1
+                elif variant == "expired":
+                    grant["expires_at"] = time.monotonic() - 1
+                elif variant == "wrong_payload":
+                    payload = {"model": "wrong"}
+            return original_http(method, url, payload, remaining, grant)
+
+        kwargs["http_call"] = corrupt
+        return original_worker(**kwargs)
+
+    monkeypatch.setattr(live, "worker_once", corrupted_worker)
+    binding, observer, fake_http = _seven_fake_inputs(
+        monkeypatch, tmp_path,
+        on_call=lambda n: (markers / str(n)).write_text("called"))
+    run_dir = tmp_path / f"seven-gate-{variant}"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.8)
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert not (markers / str(ordinal)).exists()
+    assert disk["reserved"] == ordinal
+    assert disk["worker_issued"] == ordinal - 1
+    assert disk["operations"][-1]["on_wire"] == "unknown"
+    assert result["physical_stop_unproven"] is True
+
+
+@_DARWIN_FORK
+def test_fake_seven_existing_run_is_terminal_without_resume_or_mutation(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-existing"
+    run_dir.mkdir()
+    marker = run_dir / "keep.txt"
+    marker.write_text("preexisting")
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.5)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["zero_ack_received"] is False
+    assert marker.read_text() == "preexisting"
+    assert not (run_dir / "journal.json").exists()
+
+
+@_DARWIN_FORK
+def test_fake_seven_bad_r_initial_witness_prevents_d_go(monkeypatch, tmp_path):
+    def wrong(pid):
+        observed = live._fake_os_witness(pid)
+        observed["pgid"] += 1
+        return observed
+
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-bad-r-initial"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        receipt_initial_witness=wrong, work_seconds=0.5)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["zero_ack_received"] is False
+    assert not (run_dir / "journal.json").exists()
+
+
+@_DARWIN_FORK
+def test_fake_seven_blocked_d_commit_keeps_parent_bounded(monkeypatch, tmp_path):
+    original = live.DurableJournal._commit
+
+    def stall_third_reserve(self, state):
+        if (state["reserved"] == 3 and state["worker_issued"] == 2
+                and state["operations"][-1]["on_wire"] == "unknown"):
+            time.sleep(20)
+        return original(self, state)
+
+    monkeypatch.setattr(live.DurableJournal, "_commit", stall_third_reserve)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-d-commit-stall"
+    started = time.monotonic()
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.55, cleanup_seconds=0.25)
+    assert time.monotonic() - started < 3.0
+    _, disk = _read_only_journal(run_dir)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["d_stop"] in ("witnessed_term", "witnessed_kill")
+    assert disk["reserved"] == 2
+    assert disk["worker_issued"] == 2
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_raw_extra_field_never_crosses_request_ipc(
+        monkeypatch, tmp_path):
+    original = live._seven_frame
+
+    def add_raw(run_id, phase, seq, witness, **extra):
+        frame = original(run_id, phase, seq, witness, **extra)
+        if phase == "request" and seq == 1:
+            frame["raw"] = CANARY
+        return frame
+
+    monkeypatch.setattr(live, "_seven_frame", add_raw)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-raw-request"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.5)
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 0
+    assert result["status"] == "fake_seven_process_unproven"
+    assert CANARY not in json.dumps(result)
+    receipt = run_dir / "receipt.json"
+    if receipt.exists():
+        assert CANARY not in receipt.read_text()
+
+
+@_DARWIN_FORK
+def test_fake_seven_injected_raw_exception_cannot_become_public_code(
+        monkeypatch, tmp_path):
+    original = live._seven_send
+
+    def raw_error(fd, value, deadline, **validation):
+        if value["phase"] == "d_go":
+            raise live.LiveOperatorError(CANARY)
+        return original(fd, value, deadline, **validation)
+
+    monkeypatch.setattr(live, "_seven_send", raw_error)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-raw-exception"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http,
+        work_seconds=0.5)
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "ipc_or_spawn_unavailable"
+    assert CANARY not in json.dumps(result)
+    assert not run_dir.exists()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("role", ["D", "W", "R"])
+def test_fake_seven_signal_helper_nonzero_exit_cannot_be_positive(
+        monkeypatch, tmp_path, role):
+    original = live._split_signal_child
+
+    def exit_nonzero_after_cleanup(*args, **kwargs):
+        code = original(*args, **kwargs)
+        if kwargs["target_role"] == role and code == 0:
+            return 121
+        return code
+
+    monkeypatch.setattr(live, "_split_signal_child",
+                        exit_nonzero_after_cleanup)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / f"seven-s-{role.lower()}-nonzero"
+    result = live._supervise_fake_seven_once(
+        run_dir=run_dir, binding_template=binding,
+        observe_identity=observer, fake_http=fake_http)
+    _, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 7 and disk["worker_issued"] == 7
+    assert result["status"] == "fake_seven_process_unproven"
+    assert result["failure_code"] == "signal_helper_exit_unavailable"
+    assert result[f"s_{role.lower()}_reaped"] is True
+    assert result[f"s_{role.lower()}_normal_exit"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+
+
+@_DARWIN_FORK
+def test_fake_seven_restrictive_umask_still_commits_exact_0600(
+        monkeypatch, tmp_path):
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    run_dir = tmp_path / "seven-umask"
+    previous = os.umask(0o777)
+    try:
+        result = live._supervise_fake_seven_once(
+            run_dir=run_dir, binding_template=binding,
+            observe_identity=observer, fake_http=fake_http)
+    finally:
+        os.umask(previous)
+    assert result["status"] == "fake_seven_process_pass"
+    journal, disk = _read_only_journal(run_dir)
+    assert disk["reserved"] == 7
+    assert stat.S_IMODE(journal.stat().st_mode) == 0o600
+    assert stat.S_IMODE((run_dir / "receipt.json").stat().st_mode) == 0o600
+
+
+@_DARWIN_FORK
+def test_fake_seven_parent_does_not_close_reused_core_fd(
+        monkeypatch, tmp_path):
+    original = live._seven_send
+    original_layout = live._seven_pipe_layout
+    core_numbers = set()
+    held = []
+
+    def capture_layout():
+        layout = original_layout()
+        core_numbers.update(fd for pair in layout[0].values() for fd in pair)
+        return layout
+
+    def hold_after_last_ack(fd, value, deadline, **validation):
+        sent = original(fd, value, deadline, **validation)
+        if sent and value["phase"] == "result_ack" and value["seq"] == 7:
+            held.append(os.open(tmp_path / "parent-held", os.O_WRONLY
+                                | os.O_CREAT | os.O_EXCL, 0o600))
+        return sent
+
+    monkeypatch.setattr(live, "_seven_send", hold_after_last_ack)
+    monkeypatch.setattr(live, "_seven_pipe_layout", capture_layout)
+    binding, observer, fake_http = _seven_fake_inputs(monkeypatch, tmp_path)
+    try:
+        result = live._supervise_fake_seven_once(
+            run_dir=tmp_path / "seven-parent-fd", binding_template=binding,
+            observe_identity=observer, fake_http=fake_http)
+        assert result["status"] == "fake_seven_process_pass"
+        assert len(held) == 1
+        assert held[0] in core_numbers
+        assert stat.S_ISREG(os.fstat(held[0]).st_mode)
+    finally:
+        for fd in held:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
+@_DARWIN_FORK
+def test_fake_seven_w_does_not_close_reused_callback_fd(
+        monkeypatch, tmp_path):
+    original_w = live._seven_w_child
+    held = {}
+
+    def check_after_child_returns(*args, **kwargs):
+        pipes = args[0]
+        held["owned_numbers"] = {
+            pipes["w_initial"][1], pipes["w_summary"][1],
+            pipes["w_go"][0], pipes["w_finish"][0],
+        } | {
+            pipes[f"{edge}_{n}"][1] for n in range(1, 8)
+            for edge in ("w_request", "w_issue", "w_result")
+        } | {
+            pipes[f"{edge}_{n}"][0] for n in range(1, 8)
+            for edge in ("w_grant", "w_issue_ack", "w_result_ack")
+        }
+        code = original_w(*args, **kwargs)
+        if code == 0:
+            try:
+                if held["fd"] not in held["owned_numbers"]:
+                    return 121
+                os.fstat(held["fd"])
+            except (KeyError, OSError):
+                return 121
+        return code
+
+    monkeypatch.setattr(live, "_seven_w_child", check_after_child_returns)
+    binding, observer, base_http = _seven_fake_inputs(monkeypatch, tmp_path)
+
+    def fake_http(method, url, payload, remaining, grant):
+        if grant["ordinal"] == 7:
+            opened = os.open(tmp_path / "w-held", os.O_WRONLY
+                             | os.O_CREAT | os.O_EXCL, 0o600)
+            target = opened
+            if opened not in held["owned_numbers"]:
+                for candidate in sorted(held["owned_numbers"]):
+                    try:
+                        os.fstat(candidate)
+                    except OSError:
+                        target = candidate
+                        break
+                if target != opened:
+                    os.dup2(opened, target)
+                    os.close(opened)
+            held["fd"] = target
+        return base_http(method, url, payload, remaining, grant)
+
+    result = live._supervise_fake_seven_once(
+        run_dir=tmp_path / "seven-w-fd", binding_template=binding,
+        observe_identity=observer, fake_http=fake_http)
+    assert result["status"] == "fake_seven_process_pass"
+    assert (tmp_path / "w-held").exists()
+
+
 @_DARWIN_FORK
 def test_fake_split_receipt_signal_helper_bad_initial_prevents_d_go(
         monkeypatch, tmp_path):

@@ -15,6 +15,7 @@ import math
 import os
 from pathlib import Path
 import re
+import resource
 import secrets
 import select
 import signal
@@ -295,6 +296,7 @@ class DurableJournal:
         failed = False
         try:
             fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.fchmod(fd, 0o600)
             raw = _canonical(state, "journal_create_failed")
             if os.write(fd, raw) != len(raw):
                 raise OSError("short write")
@@ -327,6 +329,7 @@ class DurableJournal:
         failed = False
         try:
             fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.fchmod(fd, 0o600)
             raw = _canonical(state, "journal_commit_failed")
             if os.write(fd, raw) != len(raw):
                 raise OSError("short write")
@@ -1784,9 +1787,15 @@ def _split_receive(fd: int, deadline: float, *, phase: str, **validation) -> dic
 
 
 def _split_disk_readback(journal: DurableJournal, state: dict) -> bytes:
-    with open(journal.path, "rb") as handle:
-        disk = handle.read(FRAME_LIMIT + 1)
-    if (len(disk) > FRAME_LIMIT
+    fd = os.open(journal.path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(fd)
+        disk = os.read(fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(fd)
+    if (not stat.S_ISREG(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or len(disk) > FRAME_LIMIT
             or disk != _canonical(state, "fake_journal_readback_invalid")):
         _fail("fake_journal_readback_invalid")
     return disk
@@ -2249,10 +2258,18 @@ def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
             _fake_wait_reap(pid, hard_deadline + 0.1, helper_statuses)
             helper_status = helper_statuses.get(pid)
             result[f"s_{role.lower()}_reaped"] = helper_status is not None
+            if f"s_{role.lower()}_normal_exit" in result:
+                result[f"s_{role.lower()}_normal_exit"] = bool(
+                    helper_status is not None
+                    and os.WIFEXITED(helper_status)
+                    and os.WEXITSTATUS(helper_status) == 0)
             if (helper_status is None or not os.WIFEXITED(helper_status)
                     or os.WEXITSTATUS(helper_status) != 0):
                 if result["status"] == "fake_partial_op1_worker_received":
                     result["status"] = "fake_partial_split_unproven"
+                    result["failure_code"] = "signal_helper_exit_unavailable"
+                elif result["status"] == "fake_seven_process_pending_receipt":
+                    result["status"] = "fake_seven_process_unproven"
                     result["failure_code"] = "signal_helper_exit_unavailable"
     # This remains a fake D/W-only slice: no real receipt, private ports,
     # shared-11434 proof, or frozen T0+90 evidence.
@@ -2714,3 +2731,1208 @@ def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
             # result cannot retain a positive status without durable receipt.
             result["status"] = "fake_partial_split_unproven"
             result["failure_code"] = "receipt_unavailable_review_required"
+
+
+# The following is a second, deliberately fake-only topology.  The old op1
+# protocol and public fail-closed entry above remain unchanged.
+_SEVEN_SCHEMA = "fake_seven_process_ipc_v1"
+_SEVEN_BASE = frozenset({"schema", "run_id", "phase", "seq", "witness"})
+_SEVEN_EXTRA = {
+    "initial": frozenset({"role"}),
+    "d_go": frozenset({"worker_witness"}), "w_go": frozenset(),
+    "zero": frozenset({"journal_sha256"}),
+    "request": frozenset({"fields"}),
+    "reserve": frozenset({"fields"}),
+    "grant_proof": frozenset({"grant", "journal_sha256", "reserved",
+                              "completion_attempt_spent"}),
+    "grant_delivery": frozenset({"grant", "journal_sha256"}),
+    "issue_entry": frozenset({"grant_sha256"}),
+    "mark_issue": frozenset({"nonce"}),
+    "issue_proof": frozenset({"journal_sha256", "worker_issued"}),
+    "issue_ack": frozenset({"journal_sha256"}),
+    "result_entry": frozenset({"grant_sha256", "response_sha256",
+                               "response_bytes"}),
+    "mark_wire": frozenset({"nonce"}),
+    "wire_proof": frozenset({"journal_sha256", "on_wire_yes"}),
+    "result_ack": frozenset({"journal_sha256"}),
+    "d_finish": frozenset(), "w_finish": frozenset(),
+    "d_final": frozenset({"journal_sha256", "reserved", "worker_issued",
+                           "on_wire_yes", "completion_attempt_spent"}),
+    "w_summary": frozenset({"summary"}),
+    "r_preflight": frozenset(), "r_preflight_ack": frozenset(),
+    "r_write": frozenset({"receipt"}),
+    "r_proof": frozenset({"receipt_sha256", "receipt_bytes"}),
+}
+_SEVEN_ORDINAL_EDGES = (
+    "w_request", "d_reserve", "d_grant", "w_grant", "w_issue",
+    "d_issue", "d_issue_proof", "w_issue_ack", "w_result",
+    "d_wire", "d_wire_proof", "w_result_ack",
+)
+_SEVEN_BASE_EDGES = (
+    "d_initial", "w_initial", "d_go", "d_zero", "w_go",
+    "d_finish", "d_final", "w_finish", "w_summary",
+)
+_SEVEN_RECEIPT_EDGES = (
+    "r_initial", "r_preflight", "r_preflight_ack", "r_write", "r_proof",
+)
+_SEVEN_RECEIPT_FIELDS = frozenset({
+    "schema", "run_id", "snapshot_phase", "status", "failure_code",
+    "zero_ack_received", "receipt_preflight_accepted", "reserved",
+    "granted", "worker_issued", "on_wire_yes",
+    "completion_attempt_spent", "http_calls", "identity_checks",
+    "journal_sha256", "summary_sha256", "d_reaped", "w_reaped",
+    "d_stop", "w_stop", "physical_stop_unproven", "full_gate_pass",
+    "b_upper_bound_proven", "b_send_authorized",
+})
+_SEVEN_SUMMARY_FIELDS = frozenset({
+    "schema", "status", "request_sha256", "request_utf8_bytes",
+    "rendered_prompt_sha256", "rendered_prompt_utf8_bytes",
+    "identity_observation_sha256", "source_evidence",
+    "runner_token_count_parse_special_true",
+    "runner_token_count_parse_special_default", "provider_usage",
+    "signed_delta", "http_calls", "identity_checks",
+    "external_completion_attempts", "internal_runner_generations",
+    "elapsed_seconds", "b_upper_bound_proven", "b_send_authorized",
+})
+_SEVEN_SOURCE_EVIDENCE_FIELDS = frozenset({
+    "source_revision", "version", "branch", "bos_strip_applied",
+    "context_total", "parallel", "effective_num_ctx", "request_num_ctx",
+    "rendered_utf8_below_num_ctx", "daemon_argv_sha256",
+    "runner_argv_sha256",
+})
+_SEVEN_FAILURE_CODES = frozenset({
+    "none", "initial_unavailable", "receipt_helper_initial_unavailable",
+    "signal_helper_initial_unavailable", "zero_ack_unavailable",
+    "receipt_preflight_unavailable", "worker_go_unavailable",
+    "worker_request_unavailable", "worker_request_invalid",
+    "grant_proof_unavailable", "grant_delivery_unavailable",
+    "issue_entry_unavailable", "issue_proof_unavailable",
+    "issue_ack_unavailable", "fake_result_unavailable",
+    "wire_proof_unavailable", "result_ack_unavailable",
+    "d_final_unavailable", "w_summary_unavailable",
+    "normal_exit_unavailable", "cleanup_unavailable",
+    "signal_helper_exit_unavailable",
+    "receipt_unavailable_review_required", "ipc_or_spawn_unavailable",
+    "fake_seven_fd_reservation_unavailable",
+})
+
+
+def _seven_frame(run_id: str, phase: str, seq: int, witness: dict,
+                 **extra) -> dict:
+    return {"schema": _SEVEN_SCHEMA, "run_id": run_id, "phase": phase,
+            "seq": seq, "witness": witness, **extra}
+
+
+def _seven_summary_valid(value: Any) -> bool:
+    if (type(value) is not dict or set(value) != _SEVEN_SUMMARY_FIELDS
+            or value["schema"] != "fake_non_b_worker_v1"
+            or value["status"] not in (
+                "fake_non_b_parity_pass", "fake_non_b_parity_mismatch")
+            or value["http_calls"] != 7 or value["identity_checks"] != 6
+            or value["external_completion_attempts"] != 1
+            or value["internal_runner_generations"] != "unknown"
+            or value["b_upper_bound_proven"] is not False
+            or value["b_send_authorized"] is not False
+            or any(not _valid_sha(value[key]) for key in (
+                "request_sha256", "rendered_prompt_sha256",
+                "identity_observation_sha256"))):
+        return False
+    source = value["source_evidence"]
+    if (type(source) is not dict or set(source) != _SEVEN_SOURCE_EVIDENCE_FIELDS
+            or source["source_revision"] != "v0.34.4"
+            or source["version"] != VERSION
+            or source["branch"] != "go_rendered_chat"
+            or source["bos_strip_applied"] is not False
+            or source["rendered_utf8_below_num_ctx"] is not True
+            or any(not _valid_sha(source[key]) for key in (
+                "daemon_argv_sha256", "runner_argv_sha256"))
+            or any(type(source[key]) is not int or source[key] <= 0
+                   for key in ("context_total", "parallel",
+                               "effective_num_ctx", "request_num_ctx"))
+            or source["effective_num_ctx"] != source["request_num_ctx"]):
+        return False
+    usage = value["provider_usage"]
+    if (type(usage) is not dict
+            or set(usage) != {"prompt_tokens", "completion_tokens", "total_tokens"}
+            or any(type(usage[key]) is not int or usage[key] < 0
+                   for key in usage)
+            or usage["total_tokens"] != (
+                usage["prompt_tokens"] + usage["completion_tokens"])):
+        return False
+    if (any(type(value[key]) is not int or value[key] <= 0
+            for key in ("request_utf8_bytes", "rendered_prompt_utf8_bytes",
+                        "runner_token_count_parse_special_true",
+                        "runner_token_count_parse_special_default"))
+            or value["request_utf8_bytes"] != 1833
+            or value["runner_token_count_parse_special_true"]
+               != value["runner_token_count_parse_special_default"]
+            or type(value["signed_delta"]) is not int
+            or value["signed_delta"] != (
+                usage["prompt_tokens"]
+                - value["runner_token_count_parse_special_true"])
+            or (value["status"] == "fake_non_b_parity_pass")
+               != (value["signed_delta"] == 0)
+            or not _finite_number(value["elapsed_seconds"])):
+        return False
+    return True
+
+
+def _seven_receipt_valid(value: Any, run_id: str) -> bool:
+    if (type(value) is not dict or set(value) != _SEVEN_RECEIPT_FIELDS
+            or value["schema"] != "fake_seven_process_receipt_v1"
+            or value["run_id"] != run_id
+            or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
+            or value["status"] not in (
+                "fake_seven_process_pending_receipt", "fake_seven_process_unproven")
+            or value["failure_code"] not in _SEVEN_FAILURE_CODES
+            or any(type(value[key]) is not bool for key in (
+                "zero_ack_received", "receipt_preflight_accepted",
+                "d_reaped", "w_reaped"))
+            or any(value[key] is not expected for key, expected in (
+                ("physical_stop_unproven", True), ("full_gate_pass", False),
+                ("b_upper_bound_proven", False),
+                ("b_send_authorized", False)))
+            or any(value[key] not in _SPLIT_STOP_CODES
+                   for key in ("d_stop", "w_stop"))
+            or any(value[key] is not None and not _valid_sha(value[key])
+                   for key in ("journal_sha256", "summary_sha256"))):
+        return False
+    for key in ("reserved", "granted", "worker_issued", "on_wire_yes",
+                "completion_attempt_spent", "http_calls", "identity_checks"):
+        item = value[key]
+        if item != "unknown" and (type(item) is not int or not 0 <= item <= 7):
+            return False
+    if value["status"] == "fake_seven_process_pending_receipt":
+        return (value["failure_code"] == "none"
+                and all(value[key] == 7 for key in (
+                    "reserved", "granted", "worker_issued", "on_wire_yes",
+                    "http_calls")) and value["identity_checks"] == 6
+                and value["completion_attempt_spent"] == 1
+                and _valid_sha(value["journal_sha256"])
+                and _valid_sha(value["summary_sha256"])
+                and value["d_reaped"] and value["w_reaped"]
+                and value["d_stop"] == value["w_stop"] == "normal_exit")
+    return True
+
+
+def _seven_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
+                       witness: dict | None = None, pid: int | None = None,
+                       expected: dict | None = None) -> bool:
+    if (type(value) is not dict or phase not in _SEVEN_EXTRA
+            or set(value) != _SEVEN_BASE | _SEVEN_EXTRA[phase]
+            or value["schema"] != _SEVEN_SCHEMA or value["run_id"] != run_id
+            or value["phase"] != phase or type(value["seq"]) is not int
+            or value["seq"] != seq):
+        return False
+    got = value["witness"]
+    if (type(got) is not dict
+            or not _fake_witness_valid(got, got.get("pid", -1))):
+        return False
+    if witness is None:
+        if (phase != "initial" or pid is None
+                or not _fake_witness_valid(got, pid)
+                or got["ppid"] != os.getpid() or got["pgid"] != pid):
+            return False
+    elif not _split_same(got, witness):
+        return False
+    if expected is not None:
+        if any(key not in value or not _split_same(value[key], item)
+               for key, item in expected.items()):
+            return False
+    if phase == "initial":
+        return value["role"] in ("D", "W", "R")
+    if "fields" in value and not _grant_valid(value["fields"], nonce_required=False):
+        return False
+    if "worker_witness" in value:
+        worker_witness = value["worker_witness"]
+        if (type(worker_witness) is not dict
+                or not _fake_witness_valid(worker_witness,
+                                           worker_witness.get("pid", -1))):
+            return False
+    if "grant" in value and not _grant_valid(value["grant"], nonce_required=True):
+        return False
+    if "nonce" in value and (type(value["nonce"]) is not str
+                             or _NONCE.fullmatch(value["nonce"]) is None):
+        return False
+    for key in ("journal_sha256", "grant_sha256", "response_sha256",
+                "receipt_sha256"):
+        if key in value and not _valid_sha(value[key]):
+            return False
+    for key in ("reserved", "worker_issued", "on_wire_yes",
+                "completion_attempt_spent", "response_bytes", "receipt_bytes"):
+        if key in value and (type(value[key]) is not int or value[key] < 0
+                             or value[key] > (RESPONSE_LIMIT if key == "response_bytes"
+                                               else FRAME_LIMIT if key == "receipt_bytes"
+                                               else 7)):
+            return False
+    if "summary" in value and not _seven_summary_valid(value["summary"]):
+        return False
+    if "receipt" in value and not _seven_receipt_valid(value["receipt"], run_id):
+        return False
+    return True
+
+
+def _seven_send(fd: int, value: dict, deadline: float, **validation) -> bool:
+    try:
+        if not _seven_frame_valid(value, **validation):
+            return False
+        frame = encode_frame(value)
+        if not _seven_frame_valid(decode_frame(
+                frame, keys=set(value)), **validation):
+            return False
+        os.set_blocking(fd, False)
+        offset = 0
+        while offset < len(frame) and time.monotonic() < deadline:
+            _, ready, _ = select.select([], [fd], [], min(
+                0.005, max(0, deadline - time.monotonic())))
+            if not ready:
+                continue
+            try:
+                size = os.write(fd, frame[offset:])
+            except BlockingIOError:
+                continue
+            if size <= 0:
+                return False
+            offset += size
+        return offset == len(frame)
+    except Exception:
+        return False
+
+
+def _seven_receive(fd: int, deadline: float, **validation) -> dict | None:
+    phase = validation["phase"]
+    value = _fake_read_bounded(
+        fd, deadline, framed=True,
+        keys=set(_SEVEN_BASE | _SEVEN_EXTRA[phase]))
+    return value if _seven_frame_valid(value, **validation) else None
+
+
+def _seven_edge(name: str, ordinal: int) -> str:
+    return f"{name}_{ordinal}"
+
+
+def _seven_child_send(pipes: dict[str, tuple[int, int]], name: str,
+                      run_id: str, phase: str, seq: int, own: dict,
+                      deadline: float, **extra) -> bool:
+    fd = pipes[name][1]
+    try:
+        value = _seven_frame(run_id, phase, seq, own, **extra)
+        return _seven_send(fd, value, deadline, run_id=run_id, phase=phase,
+                           seq=seq, witness=own)
+    finally:
+        _fake_close(fd)
+
+
+def _seven_child_receive(pipes: dict[str, tuple[int, int]], name: str,
+                         run_id: str, phase: str, seq: int, own: dict,
+                         deadline: float, expected: dict | None = None) -> dict | None:
+    fd = pipes[name][0]
+    try:
+        return _seven_receive(fd, deadline, run_id=run_id, phase=phase,
+                              seq=seq, witness=own, expected=expected)
+    finally:
+        _fake_close(fd)
+
+
+def _seven_d_child(pipes: dict[str, tuple[int, int]], *, run_dir: Path,
+                   run_id: str, hard_deadline: float,
+                   work_deadline: float, fault: str | None) -> int:
+    writes = {"d_initial", "d_zero", "d_final"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("d_grant", "d_issue_proof", "d_wire_proof")}
+    reads = {"d_go", "d_finish"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("d_reserve", "d_issue", "d_wire")}
+    owned = {pipes[name][1] for name in writes} | {
+        pipes[name][0] for name in reads}
+    _split_close_except(pipes, owned)
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "d_initial", run_id, "initial", 0,
+                                 own, work_deadline, role="D"):
+            return 125
+        go = _seven_child_receive(pipes, "d_go", run_id, "d_go", 0,
+                                  own, work_deadline)
+        if go is None:
+            return 125
+        worker_witness = go["worker_witness"]
+        journal = DurableJournal.create(run_dir, run_id)
+        zero = journal.snapshot()
+        if not _split_same(zero, _split_zero_state(run_id)):
+            return 125
+        zero_sha = _sha(_split_disk_readback(journal, zero))
+        if not _seven_child_send(pipes, "d_zero", run_id, "zero", 0,
+                                 own, work_deadline, journal_sha256=zero_sha):
+            return 125
+        for ordinal in range(1, 8):
+            state = journal.snapshot()
+            if (state["reserved"] != ordinal - 1
+                    or (ordinal > 1 and state["operations"][-1]["on_wire"] != "yes")):
+                return 125
+            reserve = _seven_child_receive(
+                pipes, _seven_edge("d_reserve", ordinal), run_id, "reserve",
+                ordinal, own, work_deadline)
+            if reserve is None:
+                return 125
+            fields = reserve["fields"]
+            if (fields["run_id"] != run_id or fields["ordinal"] != ordinal
+                    or not _split_same(fields["worker"],
+                                       _split_worker_from_witness(worker_witness))):
+                return 125
+            grant = journal.reserve(fields, ack=lambda _grant: None)
+            state = journal.snapshot()
+            disk_sha = _sha(_split_disk_readback(journal, state))
+            if (state["reserved"] != ordinal or state["granted"] != ordinal
+                    or state["worker_issued"] != ordinal - 1
+                    or state["operations"][-1]["on_wire"] != "unknown"
+                    or state["completion_attempt_spent"] != int(ordinal == 7)):
+                return 125
+            if fault == f"d_after_reserve_{ordinal}":
+                return 121
+            if not _seven_child_send(
+                    pipes, _seven_edge("d_grant", ordinal), run_id,
+                    "grant_proof", ordinal, own, work_deadline,
+                    grant=grant, journal_sha256=disk_sha,
+                    reserved=ordinal,
+                    completion_attempt_spent=int(ordinal == 7)):
+                return 125
+            issue = _seven_child_receive(
+                pipes, _seven_edge("d_issue", ordinal), run_id,
+                "mark_issue", ordinal, own, work_deadline,
+                expected={"nonce": grant["nonce"]})
+            if issue is None:
+                return 125
+            journal.mark_worker_issued(ordinal, grant["nonce"])
+            state = journal.snapshot()
+            disk_sha = _sha(_split_disk_readback(journal, state))
+            if state["worker_issued"] != ordinal:
+                return 125
+            if fault == f"d_after_issue_{ordinal}":
+                return 121
+            if not _seven_child_send(
+                    pipes, _seven_edge("d_issue_proof", ordinal), run_id,
+                    "issue_proof", ordinal, own, work_deadline,
+                    journal_sha256=disk_sha, worker_issued=ordinal):
+                return 125
+            wire = _seven_child_receive(
+                pipes, _seven_edge("d_wire", ordinal), run_id,
+                "mark_wire", ordinal, own, work_deadline,
+                expected={"nonce": grant["nonce"]})
+            if wire is None:
+                return 125
+            journal.mark_on_wire(ordinal, grant["nonce"])
+            state = journal.snapshot()
+            disk_sha = _sha(_split_disk_readback(journal, state))
+            if (sum(op["on_wire"] == "yes" for op in state["operations"])
+                    != ordinal):
+                return 125
+            if fault == f"d_after_wire_{ordinal}":
+                return 121
+            if not _seven_child_send(
+                    pipes, _seven_edge("d_wire_proof", ordinal), run_id,
+                    "wire_proof", ordinal, own, work_deadline,
+                    journal_sha256=disk_sha, on_wire_yes=ordinal):
+                return 125
+        if _seven_child_receive(pipes, "d_finish", run_id, "d_finish", 8,
+                                own, work_deadline) is None:
+            return 125
+        state = journal.snapshot()
+        disk_sha = _sha(_split_disk_readback(journal, state))
+        if (state["reserved"] != 7 or state["granted"] != 7
+                or state["worker_issued"] != 7
+                or state["completion_attempt_spent"] != 1
+                or any(op["on_wire"] != "yes" for op in state["operations"])):
+            return 125
+        return (0 if _seven_child_send(
+            pipes, "d_final", run_id, "d_final", 8, own, work_deadline,
+            journal_sha256=disk_sha, reserved=7, worker_issued=7,
+            on_wire_yes=7, completion_attempt_spent=1) else 125)
+    except BaseException:
+        return 125
+    # Its sole caller immediately os._exit()s. Remaining owned descriptors
+    # close at process exit; re-closing consumed numeric FDs could close a
+    # different callback FD that reused the number.
+
+
+def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
+                   observe_identity, fake_http, run_id: str,
+                   hard_deadline: float, work_deadline: float,
+                   fault: str | None) -> int:
+    writes = {"w_initial", "w_summary"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("w_request", "w_issue", "w_result")}
+    reads = {"w_go", "w_finish"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("w_grant", "w_issue_ack", "w_result_ack")}
+    owned = {pipes[name][1] for name in writes} | {
+        pipes[name][0] for name in reads}
+    _split_close_except(pipes, owned)
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "w_initial", run_id, "initial", 0,
+                                 own, work_deadline, role="W"):
+            return 125
+        if _seven_child_receive(pipes, "w_go", run_id, "w_go", 0,
+                                own, work_deadline) is None:
+            return 125
+        binding = deepcopy(binding_template)
+        binding["worker"] = _split_worker_from_witness(own)
+        # worker_once's existing binding contract fixes work_stop_at=t0+80.
+        # For this shortened synthetic attempt, anchor that nominal T0 to
+        # the parent's *absolute* work stop instead of granting W a fresh
+        # 80 real seconds. This is not a real T0 timing claim.
+        binding["t0"] = work_deadline - 80.0
+        binding["work_stop_at"] = work_deadline
+        pending: dict[int, tuple[dict, dict]] = {}
+        used: set[str] = set()
+        callback_count = 0
+
+        def authorize_call(spec: dict) -> dict:
+            ordinal = spec["ordinal"]
+            if (ordinal != len(pending) + 1 or not _grant_valid(
+                    spec, nonce_required=False)
+                    or spec["run_id"] != run_id
+                    or not _split_same(spec["worker"], binding["worker"])):
+                _fail("fake_seven_request_invalid")
+            if not _seven_child_send(
+                    pipes, _seven_edge("w_request", ordinal), run_id,
+                    "request", ordinal, own, work_deadline, fields=spec):
+                _fail("fake_seven_request_unavailable")
+            delivery = _seven_child_receive(
+                pipes, _seven_edge("w_grant", ordinal), run_id,
+                "grant_delivery", ordinal, own, work_deadline)
+            if (delivery is None or not _split_grant_valid(
+                    delivery["grant"], spec)):
+                _fail("fake_seven_grant_unavailable")
+            grant = delivery["grant"]
+            if grant["nonce"] in used:
+                _fail("fake_seven_nonce_replay")
+            pending[ordinal] = (deepcopy(spec), deepcopy(grant))
+            return grant
+
+        def http_call(method, url, payload, remaining, grant):
+            nonlocal callback_count
+            ordinal = callback_count + 1
+            pair = pending.get(ordinal)
+            if pair is None:
+                _fail("fake_seven_no_pending")
+            spec, original = pair
+            payload_raw = None if payload is None else _canonical(
+                payload, "request_invalid")
+            expected_url = (f"http://127.0.0.1:{spec['port']}"
+                            f"{spec['path']}")
+            # This is the W-local, one-use *fake* transport entrance.  No
+            # parent or D receives a body, completion or rendered prompt.
+            if (not _split_same(grant, original)
+                    or not _split_grant_valid(grant, spec)
+                    or url != expected_url or method != spec["method"]
+                    or (None if payload_raw is None else _sha(payload_raw))
+                       != spec["payload_sha256"]
+                    or not _split_same(grant["worker"], binding["worker"])
+                    or grant["nonce"] in used
+                    or not _finite_number(remaining) or remaining <= 0
+                    or time.monotonic() >= grant["expires_at"]):
+                _fail("fake_seven_transport_gate_invalid")
+            used.add(grant["nonce"])
+            grant_sha = _sha(_canonical(grant, "grant_invalid"))
+            if not _seven_child_send(
+                    pipes, _seven_edge("w_issue", ordinal), run_id,
+                    "issue_entry", ordinal, own, work_deadline,
+                    grant_sha256=grant_sha):
+                _fail("fake_seven_issue_unavailable")
+            issue_ack = _seven_child_receive(
+                pipes, _seven_edge("w_issue_ack", ordinal), run_id,
+                "issue_ack", ordinal, own, work_deadline)
+            if issue_ack is None:
+                _fail("fake_seven_issue_ack_unavailable")
+            if fault == f"w_after_issue_{ordinal}":
+                return None  # worker_once rejects it; no fake send occurred.
+            value = fake_http(method, url, payload, remaining, deepcopy(grant))
+            callback_count += 1
+            if (type(value) is not dict or set(value) != _HTTP_FIELDS
+                    or value["requested_url"] != expected_url
+                    or value["effective_url"] != expected_url
+                    or value["proxy_used"] is not False
+                    or value["redirected"] is not False
+                    or type(value["status"]) is not int
+                    or value["status"] != 200 or type(value["body"]) is not bytes
+                    or len(value["body"]) > RESPONSE_LIMIT):
+                _fail("fake_seven_transport_failed")
+            if not _seven_child_send(
+                    pipes, _seven_edge("w_result", ordinal), run_id,
+                    "result_entry", ordinal, own, work_deadline,
+                    grant_sha256=grant_sha,
+                    response_sha256=_sha(value["body"]),
+                    response_bytes=len(value["body"])):
+                _fail("fake_seven_result_unavailable")
+            if _seven_child_receive(
+                    pipes, _seven_edge("w_result_ack", ordinal), run_id,
+                    "result_ack", ordinal, own, work_deadline) is None:
+                _fail("fake_seven_result_ack_unavailable")
+            return value
+
+        summary = worker_once(
+            binding=binding, clock=time.monotonic,
+            observe_identity=observe_identity,
+            authorize_call=authorize_call, http_call=http_call)
+        if (not _seven_summary_valid(summary) or callback_count != 7
+                or len(used) != 7):
+            return 125
+        if _seven_child_receive(pipes, "w_finish", run_id, "w_finish", 8,
+                                own, work_deadline) is None:
+            return 125
+        return (0 if _seven_child_send(
+            pipes, "w_summary", run_id, "w_summary", 8, own,
+            work_deadline, summary=summary) else 125)
+    except BaseException:
+        return 125
+    # The fork wrapper immediately os._exit()s; do not double-close used
+    # one-shot numeric FDs after injected callback code may have reused them.
+
+
+def _seven_write_receipt(run_dir: Path, receipt: dict,
+                         run_id: str) -> tuple[str, int]:
+    """R-only 0600 O_EXCL fake receipt, never a live wire/stop receipt."""
+    if not _seven_receipt_valid(receipt, run_id):
+        _fail("fake_seven_receipt_invalid")
+    directory = Path(run_dir)
+    metadata = os.lstat(directory)
+    if (not stat.S_ISDIR(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o700):
+        _fail("fake_seven_receipt_directory_invalid")
+    raw = _canonical(receipt, "fake_seven_receipt_invalid")
+    if len(raw) > FRAME_LIMIT:
+        _fail("fake_seven_receipt_oversize")
+    path = directory / RECEIPT_NAME
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                 | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        os.fchmod(fd, 0o600)
+        if os.write(fd, raw) != len(raw):
+            _fail("fake_seven_receipt_short_write")
+        os.fsync(fd)
+    finally:
+        _fake_close(fd)
+    DurableJournal._sync_directory(directory)
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(fd)
+        readback = os.read(fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(fd)
+    if (not stat.S_ISREG(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or readback != raw):
+        _fail("fake_seven_receipt_readback_invalid")
+    return _sha(raw), len(raw)
+
+
+def _seven_r_child(pipes: dict[str, tuple[int, int]], *,
+                   inherited_core_fds: set[int],
+                   inherited_signal_pipes: dict[str, tuple[int, int]],
+                   run_dir: Path, run_id: str,
+                   hard_deadline: float, prep_deadline: float,
+                   preflight_deadline: float, receipt_deadline: float,
+                   initial_reader=None) -> int:
+    owned = {pipes[name][1] for name in (
+        "r_initial", "r_preflight_ack", "r_proof")} | {
+        pipes[name][0] for name in ("r_preflight", "r_write")}
+    _fake_close(*inherited_core_fds)
+    _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(pipes, owned)
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        actual = _fake_os_witness(os.getpid())
+        own = (initial_reader or _fake_os_witness)(os.getpid())
+        if not _split_same(actual, own):
+            return 126
+        if not _seven_child_send(pipes, "r_initial", run_id, "initial", 0,
+                                 own, prep_deadline, role="R"):
+            return 125
+        if _seven_child_receive(pipes, "r_preflight", run_id,
+                                "r_preflight", 1, own,
+                                preflight_deadline) is None:
+            return 0
+        if not _split_receipt_preflight(run_dir, run_id):
+            return 125
+        if not _seven_child_send(pipes, "r_preflight_ack", run_id,
+                                 "r_preflight_ack", 1, own,
+                                 preflight_deadline):
+            return 125
+        command = _seven_child_receive(pipes, "r_write", run_id, "r_write",
+                                       2, own, receipt_deadline)
+        if command is None:
+            return 0
+        receipt = command["receipt"]
+        sha, length = _seven_write_receipt(run_dir, receipt, run_id)
+        return (0 if _seven_child_send(pipes, "r_proof", run_id, "r_proof",
+                                       2, own, receipt_deadline,
+                                       receipt_sha256=sha,
+                                       receipt_bytes=length) else 125)
+    except BaseException:
+        return 125
+    # The fork wrapper immediately os._exit()s and owns any unused ends.
+
+
+def _seven_receipt_payload(result: dict, run_id: str) -> dict:
+    status = ("fake_seven_process_pending_receipt"
+              if result["status"] == "fake_seven_process_pending_receipt"
+              else "fake_seven_process_unproven")
+    return {
+        "schema": "fake_seven_process_receipt_v1", "run_id": run_id,
+        "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
+        "status": status, "failure_code": result["failure_code"],
+        "zero_ack_received": result["zero_ack_received"],
+        "receipt_preflight_accepted": result["receipt_preflight_accepted"],
+        **{key: result[key] for key in (
+            "reserved", "granted", "worker_issued", "on_wire_yes",
+            "completion_attempt_spent", "http_calls", "identity_checks",
+            "d_reaped", "w_reaped", "d_stop", "w_stop")},
+        "journal_sha256": result.get("journal_sha256"),
+        "summary_sha256": result.get("summary_sha256"),
+        "physical_stop_unproven": True, "full_gate_pass": False,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+    }
+
+
+def _seven_pipe_layout() -> tuple[dict[str, tuple[int, int]],
+                                  dict[str, tuple[int, int]],
+                                  dict[str, tuple[int, int]]]:
+    """Reserve every fake IPC edge before any D/W/R/S child is work-GOed."""
+    core: dict[str, tuple[int, int]] = {}
+    receipt: dict[str, tuple[int, int]] = {}
+    signals: dict[str, tuple[int, int]] = {}
+    try:
+        for name in _SEVEN_BASE_EDGES:
+            core[name] = os.pipe()
+        for ordinal in range(1, 8):
+            for edge in _SEVEN_ORDINAL_EDGES:
+                core[_seven_edge(edge, ordinal)] = os.pipe()
+        for name in _SEVEN_RECEIPT_EDGES:
+            receipt[name] = os.pipe()
+        for role in ("D", "W", "R"):
+            prefix = f"s_{role.lower()}"
+            for edge in ("initial", "term", "term_result", "kill",
+                         "kill_result"):
+                signals[f"{prefix}_{edge}"] = os.pipe()
+        all_fds = [fd for mapping in (core, receipt, signals)
+                   for pair in mapping.values() for fd in pair]
+        soft_limit, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+        if (len(all_fds) != 226 or len(set(all_fds)) != len(all_fds)
+                or max(all_fds) >= soft_limit):
+            _fail("fake_seven_fd_reservation_unavailable")
+        return core, receipt, signals
+    except BaseException:
+        for mapping in (core, receipt, signals):
+            for pair in mapping.values():
+                _fake_close(*pair)
+        raise
+
+
+def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
+                               observe_identity, fake_http,
+                               work_seconds: float = 2.0,
+                               preparation_seconds: float = 0.5,
+                               cleanup_seconds: float = 0.5,
+                               term_grace_seconds: float = 0.05,
+                               fault: str | None = None,
+                               cleanup_observe=None,
+                               signal_initial_witness=None,
+                               receipt_initial_witness=None) -> dict:
+    """Synthetic P+D/W/R seven-operation proof; never a live provider path.
+
+    All seven W responses are injected locally. P handles bounded canonical
+    frames and waitpid only; D exclusively owns the journal, R the receipt.
+    The public ``supervise_once`` remains fail-closed.
+    """
+    if (type(binding_template) is not dict
+            or not callable(observe_identity) or not callable(fake_http)
+            or (cleanup_observe is not None and not callable(cleanup_observe))
+            or (signal_initial_witness is not None
+                and not callable(signal_initial_witness))
+            or (receipt_initial_witness is not None
+                and not callable(receipt_initial_witness))
+            or any(type(value) not in (int, float) or not math.isfinite(value)
+                   or not 0.05 <= value <= 5.0 for value in (
+                       work_seconds, preparation_seconds, cleanup_seconds,
+                       term_grace_seconds))
+            or (fault is not None and re.fullmatch(
+                r"(?:d_after_(?:reserve|issue|wire)|w_after_issue)_[1-7]",
+                fault) is None)):
+        _fail("fake_seven_configuration_invalid")
+    bound, _ = _validate_binding(binding_template)
+    run_id = bound["run_id"]
+    result = {
+        "schema": "fake_seven_process_result_v1",
+        "status": "fake_seven_process_unproven",
+        "failure_code": "initial_unavailable",
+        "zero_ack_received": False,
+        "receipt_preflight_accepted": False,
+        "receipt_durable_proven": False,
+        "reserved": "unknown", "granted": "unknown",
+        "worker_issued": "unknown", "on_wire_yes": "unknown",
+        "completion_attempt_spent": "unknown",
+        "http_calls": "unknown", "identity_checks": "unknown",
+        "fd_endpoints_reserved": 0,
+        "d_reaped": False, "w_reaped": False, "r_reaped": False,
+        "s_d_reaped": False, "s_w_reaped": False, "s_r_reaped": False,
+        "s_d_normal_exit": False, "s_w_normal_exit": False,
+        "s_r_normal_exit": False,
+        "d_term": "not_attempted", "d_kill": "not_attempted",
+        "w_term": "not_attempted", "w_kill": "not_attempted",
+        "r_term": "not_attempted", "r_kill": "not_attempted",
+        "d_stop": "unproven", "w_stop": "unproven", "r_stop": "unproven",
+        "physical_stop_unproven": True, "full_gate_pass": False,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+    }
+    started = time.monotonic()
+    prep_deadline = started + preparation_seconds
+    work_deadline = prep_deadline + work_seconds
+    cleanup_deadline = work_deadline + cleanup_seconds
+    hard_deadline = cleanup_deadline + 0.10
+    receipt_deadline = hard_deadline + 0.45
+    receipt_cleanup_deadline = receipt_deadline + 0.15
+    receipt_hard_deadline = receipt_cleanup_deadline + 0.10
+    core: dict[str, tuple[int, int]] = {}
+    receipt_pipes: dict[str, tuple[int, int]] = {}
+    signal_pipes: dict[str, tuple[int, int]] = {}
+    core_parent_fds: set[int] = set()
+    receipt_parent_fds: set[int] = set()
+    signal_parent_fds: set[int] = set()
+    core_layout_ready = False
+    receipt_layout_ready = False
+    signal_layout_ready = False
+    child_pids: dict[str, int | None] = {"D": None, "W": None, "R": None}
+    child_witnesses: dict[str, dict] = {}
+    signal_pids: dict[str, int] = {}
+    signal_witnesses: dict[str, dict] = {}
+    statuses: dict[int, int] = {}
+
+    def require(value, code: str) -> None:
+        if not value:
+            _fail(code)
+
+    def parent_receive(mapping, owned: set[int], name: str,
+                       phase: str, seq: int, witness: dict | None,
+                       deadline: float, *, pid: int | None = None,
+                       expected: dict | None = None):
+        fd = mapping[name][0]
+        try:
+            return _seven_receive(fd, deadline, run_id=run_id,
+                                  phase=phase, seq=seq, witness=witness,
+                                  pid=pid, expected=expected)
+        finally:
+            _fake_close(fd)
+            owned.discard(fd)
+
+    def parent_send(mapping, owned: set[int], name: str, phase: str,
+                    seq: int, witness: dict, deadline: float,
+                    **extra) -> bool:
+        fd = mapping[name][1]
+        try:
+            frame = _seven_frame(run_id, phase, seq, witness, **extra)
+            return _seven_send(fd, frame, deadline, run_id=run_id,
+                               phase=phase, seq=seq, witness=witness)
+        finally:
+            _fake_close(fd)
+            owned.discard(fd)
+
+    try:
+        core, receipt_pipes, signal_pipes = _seven_pipe_layout()
+        result["fd_endpoints_reserved"] = 226
+        d_pid = os.fork()
+        if d_pid == 0:
+            try:
+                _split_close_except(receipt_pipes, set())
+                _split_close_except(signal_pipes, set())
+                child_code = _seven_d_child(
+                    core, run_dir=Path(run_dir), run_id=run_id,
+                    hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        child_pids["D"] = d_pid
+        w_pid = os.fork()
+        if w_pid == 0:
+            try:
+                _split_close_except(receipt_pipes, set())
+                _split_close_except(signal_pipes, set())
+                child_code = _seven_w_child(
+                    core, binding_template=bound,
+                    observe_identity=observe_identity, fake_http=fake_http,
+                    run_id=run_id, hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        child_pids["W"] = w_pid
+        core_reads = {"d_initial", "w_initial", "d_zero", "d_final",
+                      "w_summary"} | {
+            _seven_edge(edge, n) for n in range(1, 8)
+            for edge in ("w_request", "d_grant", "w_issue",
+                         "d_issue_proof", "w_result", "d_wire_proof")}
+        core_parent_fds = {core[name][0] for name in core_reads} | {
+            core[name][1] for name in core if name not in core_reads}
+        _split_close_except(core, core_parent_fds)
+        core_layout_ready = True
+
+        d_initial = parent_receive(core, core_parent_fds, "d_initial",
+                                   "initial", 0, None, prep_deadline,
+                                   pid=d_pid, expected={"role": "D"})
+        w_initial = parent_receive(core, core_parent_fds, "w_initial",
+                                   "initial", 0, None, prep_deadline,
+                                   pid=w_pid, expected={"role": "W"})
+        require(d_initial is not None and w_initial is not None,
+                "initial_unavailable")
+        d_witness = d_initial["witness"]
+        w_witness = w_initial["witness"]
+        child_witnesses.update({"D": d_witness, "W": w_witness})
+
+        # R and all three exact-PID signal helpers are initially witnessed
+        # before either D or W receives work GO.
+        r_pid = os.fork()
+        if r_pid == 0:
+            try:
+                child_code = _seven_r_child(
+                    receipt_pipes, inherited_core_fds=core_parent_fds,
+                    inherited_signal_pipes=signal_pipes,
+                    run_dir=Path(run_dir), run_id=run_id,
+                    hard_deadline=receipt_hard_deadline,
+                    prep_deadline=prep_deadline,
+                    preflight_deadline=work_deadline,
+                    receipt_deadline=receipt_deadline,
+                    initial_reader=receipt_initial_witness)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        child_pids["R"] = r_pid
+        receipt_reads = {"r_initial", "r_preflight_ack", "r_proof"}
+        receipt_parent_fds = {receipt_pipes[name][0] for name in receipt_reads} | {
+            receipt_pipes[name][1] for name in receipt_pipes
+            if name not in receipt_reads}
+        _split_close_except(receipt_pipes, receipt_parent_fds)
+        receipt_layout_ready = True
+        r_initial = parent_receive(receipt_pipes, receipt_parent_fds,
+                                   "r_initial", "initial", 0, None,
+                                   prep_deadline, pid=r_pid,
+                                   expected={"role": "R"})
+        require(r_initial is not None, "receipt_helper_initial_unavailable")
+        r_witness = r_initial["witness"]
+        child_witnesses["R"] = r_witness
+        for role, target in (("D", d_witness), ("W", w_witness),
+                             ("R", r_witness)):
+            pid = os.fork()
+            if pid == 0:
+                try:
+                    child_code = _split_signal_child(
+                        signal_pipes,
+                        inherited_split_fds=core_parent_fds
+                        | receipt_parent_fds,
+                        run_id=run_id, target_role=role,
+                        target_witness=target,
+                        initial_reader=signal_initial_witness
+                        or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=prep_deadline,
+                        cleanup_deadline=(receipt_cleanup_deadline
+                                          if role == "R" else cleanup_deadline),
+                        hard_deadline=(receipt_hard_deadline
+                                       if role == "R" else hard_deadline))
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids[role] = pid
+        signal_parent_fds = {
+            signal_pipes[f"s_{role.lower()}_{edge}"][0]
+            for role in ("D", "W", "R")
+            for edge in ("initial", "term_result", "kill_result")
+        } | {
+            signal_pipes[f"s_{role.lower()}_{edge}"][1]
+            for role in ("D", "W", "R")
+            for edge in ("term", "kill")
+        }
+        _split_close_except(signal_pipes, signal_parent_fds)
+        signal_layout_ready = True
+        for role in ("D", "W", "R"):
+            fd = signal_pipes[f"s_{role.lower()}_initial"][0]
+            try:
+                initial = _split_receive(
+                    fd, prep_deadline, phase="initial", run_id=run_id,
+                    seq=0, pid=signal_pids[role], role=f"S_{role}")
+            finally:
+                _fake_close(fd)
+                signal_parent_fds.discard(fd)
+            require(initial is not None, "signal_helper_initial_unavailable")
+            signal_witnesses[role] = initial["witness"]
+
+        require(parent_send(core, core_parent_fds, "d_go", "d_go", 0,
+                            d_witness, work_deadline,
+                            worker_witness=w_witness), "zero_ack_unavailable")
+        zero_sha = _sha(_canonical(_split_zero_state(run_id), "ipc_invalid"))
+        zero = parent_receive(core, core_parent_fds, "d_zero", "zero", 0,
+                              d_witness, work_deadline,
+                              expected={"journal_sha256": zero_sha})
+        require(zero is not None, "zero_ack_unavailable")
+        result.update({"zero_ack_received": True, "reserved": 0,
+                       "granted": 0, "worker_issued": 0,
+                       "on_wire_yes": 0, "completion_attempt_spent": 0,
+                       "journal_sha256": zero_sha})
+        require(parent_send(receipt_pipes, receipt_parent_fds,
+                            "r_preflight", "r_preflight", 1,
+                            r_witness, work_deadline),
+                "receipt_preflight_unavailable")
+        preflight = parent_receive(receipt_pipes, receipt_parent_fds,
+                                   "r_preflight_ack", "r_preflight_ack",
+                                   1, r_witness, work_deadline)
+        require(preflight is not None, "receipt_preflight_unavailable")
+        result["receipt_preflight_accepted"] = True
+        require(parent_send(core, core_parent_fds, "w_go", "w_go", 0,
+                            w_witness, work_deadline),
+                "worker_go_unavailable")
+
+        for ordinal in range(1, 8):
+            request = parent_receive(core, core_parent_fds,
+                                     _seven_edge("w_request", ordinal),
+                                     "request", ordinal, w_witness,
+                                     work_deadline)
+            require(request is not None, "worker_request_unavailable")
+            fields = request["fields"]
+            require(fields["ordinal"] == ordinal
+                    and fields["run_id"] == run_id
+                    and _split_same(fields["worker"],
+                                    _split_worker_from_witness(w_witness)),
+                    "worker_request_invalid")
+            # D itself also rejects moving on while the previous operation's
+            # on_wire state is unknown. P cannot mint a grant independently.
+            result["reserved"] = result["granted"] = "unknown"
+            if ordinal == 7:
+                result["completion_attempt_spent"] = "unknown"
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("d_reserve", ordinal),
+                                "reserve", ordinal, d_witness,
+                                work_deadline, fields=fields),
+                    "grant_proof_unavailable")
+            proof = parent_receive(core, core_parent_fds,
+                                   _seven_edge("d_grant", ordinal),
+                                   "grant_proof", ordinal, d_witness,
+                                   work_deadline,
+                                   expected={
+                                       "reserved": ordinal,
+                                       "completion_attempt_spent":
+                                       int(ordinal == 7)})
+            require(proof is not None and _split_grant_valid(
+                        proof["grant"], fields),
+                    "grant_proof_unavailable")
+            grant = proof["grant"]
+            grant_sha = _sha(_canonical(grant, "grant_invalid"))
+            result.update({"reserved": ordinal, "granted": ordinal,
+                           "completion_attempt_spent": int(ordinal == 7),
+                           "journal_sha256": proof["journal_sha256"]})
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("w_grant", ordinal),
+                                "grant_delivery", ordinal, w_witness,
+                                work_deadline, grant=grant,
+                                journal_sha256=proof["journal_sha256"]),
+                    "grant_delivery_unavailable")
+            issue = parent_receive(core, core_parent_fds,
+                                   _seven_edge("w_issue", ordinal),
+                                   "issue_entry", ordinal, w_witness,
+                                   work_deadline,
+                                   expected={"grant_sha256": grant_sha})
+            require(issue is not None, "issue_entry_unavailable")
+            result["worker_issued"] = "unknown"
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("d_issue", ordinal),
+                                "mark_issue", ordinal, d_witness,
+                                work_deadline, nonce=grant["nonce"]),
+                    "issue_proof_unavailable")
+            issue_proof = parent_receive(core, core_parent_fds,
+                                         _seven_edge("d_issue_proof", ordinal),
+                                         "issue_proof", ordinal, d_witness,
+                                         work_deadline,
+                                         expected={"worker_issued": ordinal})
+            require(issue_proof is not None, "issue_proof_unavailable")
+            result.update({"worker_issued": ordinal,
+                           "journal_sha256": issue_proof["journal_sha256"]})
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("w_issue_ack", ordinal),
+                                "issue_ack", ordinal, w_witness,
+                                work_deadline,
+                                journal_sha256=issue_proof["journal_sha256"]),
+                    "issue_ack_unavailable")
+            fake_result = parent_receive(
+                core, core_parent_fds, _seven_edge("w_result", ordinal),
+                "result_entry", ordinal, w_witness, work_deadline,
+                expected={"grant_sha256": grant_sha})
+            require(fake_result is not None, "fake_result_unavailable")
+            result["on_wire_yes"] = "unknown"
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("d_wire", ordinal),
+                                "mark_wire", ordinal, d_witness,
+                                work_deadline, nonce=grant["nonce"]),
+                    "wire_proof_unavailable")
+            wire_proof = parent_receive(core, core_parent_fds,
+                                        _seven_edge("d_wire_proof", ordinal),
+                                        "wire_proof", ordinal, d_witness,
+                                        work_deadline,
+                                        expected={"on_wire_yes": ordinal})
+            require(wire_proof is not None, "wire_proof_unavailable")
+            result.update({"on_wire_yes": ordinal,
+                           "journal_sha256": wire_proof["journal_sha256"]})
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("w_result_ack", ordinal),
+                                "result_ack", ordinal, w_witness,
+                                work_deadline,
+                                journal_sha256=wire_proof["journal_sha256"]),
+                    "result_ack_unavailable")
+
+        require(parent_send(core, core_parent_fds, "d_finish", "d_finish",
+                            8, d_witness, work_deadline),
+                "d_final_unavailable")
+        require(parent_send(core, core_parent_fds, "w_finish", "w_finish",
+                            8, w_witness, work_deadline),
+                "w_summary_unavailable")
+        final = parent_receive(core, core_parent_fds, "d_final", "d_final",
+                               8, d_witness, work_deadline,
+                               expected={
+                                   "journal_sha256": result["journal_sha256"],
+                                   "reserved": 7, "worker_issued": 7,
+                                   "on_wire_yes": 7,
+                                   "completion_attempt_spent": 1})
+        require(final is not None, "d_final_unavailable")
+        summary_frame = parent_receive(core, core_parent_fds, "w_summary",
+                                       "w_summary", 8, w_witness,
+                                       work_deadline)
+        require(summary_frame is not None, "w_summary_unavailable")
+        summary = summary_frame["summary"]
+        require(_fake_wait_reap(d_pid, work_deadline, statuses)
+                and _fake_wait_reap(w_pid, work_deadline, statuses)
+                and all(os.WIFEXITED(statuses[pid])
+                        and os.WEXITSTATUS(statuses[pid]) == 0
+                        for pid in (d_pid, w_pid)), "normal_exit_unavailable")
+        result.update({"d_reaped": True, "w_reaped": True,
+                       "d_stop": "normal_exit", "w_stop": "normal_exit",
+                       "http_calls": summary["http_calls"],
+                       "identity_checks": summary["identity_checks"],
+                       "worker_status": summary["status"],
+                       "signed_delta": summary["signed_delta"],
+                       "summary_sha256": _sha(_canonical(
+                           summary, "fake_seven_summary_invalid")),
+                       "status": "fake_seven_process_pending_receipt",
+                       "failure_code": "none"})
+    except LiveOperatorError as exc:
+        # An injected helper may raise this same exception type with raw
+        # contents. Never let its message become a public result/receipt.
+        code = str(exc)
+        result["failure_code"] = (code if code in _SEVEN_FAILURE_CODES
+                                  else "ipc_or_spawn_unavailable")
+    except Exception:
+        result["failure_code"] = "ipc_or_spawn_unavailable"
+    finally:
+        _fake_close(*core_parent_fds)
+        if not core_layout_ready:
+            # Before parent ownership is established all allocated ends are
+            # still owned here; afterward only core_parent_fds is authoritative.
+            for pair in core.values():
+                _fake_close(*pair)
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses, roles=("D", "W"),
+                child_pids={key: child_pids[key] for key in ("D", "W")},
+                child_witnesses=child_witnesses,
+                signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses,
+                signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds,
+                run_id=run_id, work_deadline=work_deadline,
+                cleanup_deadline=cleanup_deadline,
+                hard_deadline=hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            result["status"] = "fake_seven_process_unproven"
+            result["failure_code"] = "cleanup_unavailable"
+            result["d_stop"] = result["w_stop"] = "unproven"
+        if (result["status"] == "fake_seven_process_pending_receipt"
+                and not all(result[key] for key in (
+                    "d_reaped", "w_reaped", "s_d_normal_exit",
+                    "s_w_normal_exit"))):
+            result["status"] = "fake_seven_process_unproven"
+            result["failure_code"] = "cleanup_unavailable"
+        if result["status"] == "fake_seven_process_pending_receipt":
+            if result["d_stop"] != "normal_exit" or result["w_stop"] != "normal_exit":
+                result["status"] = "fake_seven_process_unproven"
+                result["failure_code"] = "cleanup_unavailable"
+        try:
+            if (result["receipt_preflight_accepted"]
+                    and child_pids["R"] is not None
+                    and "R" in child_witnesses
+                    and "R" in signal_witnesses):
+                r_witness = child_witnesses["R"]
+                receipt = _seven_receipt_payload(result, run_id)
+                if not _seven_receipt_valid(receipt, run_id):
+                    _fail("fake_seven_receipt_invalid")
+                sent = parent_send(receipt_pipes, receipt_parent_fds,
+                                   "r_write", "r_write", 2, r_witness,
+                                   receipt_deadline, receipt=receipt)
+                if sent:
+                    proof = parent_receive(
+                        receipt_pipes, receipt_parent_fds, "r_proof",
+                        "r_proof", 2, r_witness, receipt_deadline,
+                        expected={
+                            "receipt_sha256": _sha(_canonical(
+                                receipt, "fake_seven_receipt_invalid")),
+                            "receipt_bytes": len(_canonical(
+                                receipt, "fake_seven_receipt_invalid"))})
+                    if (proof is not None and _fake_wait_reap(
+                            child_pids["R"], receipt_deadline, statuses)):
+                        status = statuses[child_pids["R"]]
+                        if os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0:
+                            result["receipt_durable_proven"] = True
+                            result["receipt_sha256"] = proof["receipt_sha256"]
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result.pop("receipt_sha256", None)
+        finally:
+            _fake_close(*receipt_parent_fds)
+            if not receipt_layout_ready:
+                for pair in receipt_pipes.values():
+                    _fake_close(*pair)
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses, roles=("R",),
+                child_pids={"R": child_pids["R"]},
+                child_witnesses=child_witnesses,
+                signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses,
+                signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds,
+                run_id=run_id, work_deadline=receipt_deadline,
+                cleanup_deadline=receipt_cleanup_deadline,
+                hard_deadline=receipt_hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result["r_stop"] = "unproven"
+        finally:
+            _fake_close(*signal_parent_fds)
+            if not signal_layout_ready:
+                for pair in signal_pipes.values():
+                    _fake_close(*pair)
+        if result["status"] == "fake_seven_process_pending_receipt":
+            if (result["receipt_durable_proven"]
+                    and result["r_stop"] == "normal_exit"
+                    and result["s_r_normal_exit"]):
+                result["status"] = (
+                    "fake_seven_process_pass"
+                    if result["worker_status"] == "fake_non_b_parity_pass"
+                    else "fake_seven_process_mismatch")
+            else:
+                result["status"] = "fake_seven_process_unproven"
+                result["failure_code"] = "receipt_unavailable_review_required"
+    return result
