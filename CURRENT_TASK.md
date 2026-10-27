@@ -1,5 +1,7 @@
 # 目前任務卡
 
+續接 P4-B early-A-death 負控（2026-10-27，**prospective test-only；real/live NO-GO**）：在已推送的只讀 orphan window 審查 `c68b4af` 後，先凍結 `research/p4_b_non_b_early_a_death_negative_freeze_2026-10-27.md`。單一變因為測試側在已 OS 見證一個 exact `/bin/cat`、但 P 尚未得 runner 身分時殺死其 unreaped 直屬 A；測試私有見證不交給 operator。首跑對 unchanged source 記 before，要求固定拒絕、原 cat PID/start generation 消失、11 直屬回收、FD 恢復、零 run/model I/O；存活才可在斷言失敗後用新鮮 exact generation 作測試兜底清理，不許盲殺。只准 test／freeze／result／本卡；先 focused 再相鄰 runner，source 若需修正另做前瞻審查。這即使 PASS 也只是 cooperative cat controlled interleaving，**不放行 real Ollama／HTTP／Safari／T0+90／B Send**。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。以下舊段「下一步」均為歷史。
+
 註：以下 `3fc07fe` 的「PR exact head」是 fake-only gate 收尾時的核對紀錄；本只讀審查若另行提交推送，應以新的 PR head 再核，不把歷史 hash 當現值。
 
 續接 P4-B non-B runner 收尾與 orphan 審查（2026-10-27，**fake-only PASS；real/live NO-GO**）：`3fc07fe`（direct-Bash runner source／19/19 focused、30/30 正向、六 fault、operator 423/423）已推既有分支並核 PR #435 exact head `3fc07fe`；原始 dirty checkout、正式 DB、無關 `output/graduate_application_report/` 未碰。下一依賴的只讀審查找到 `known_runners` 在 first OS 身分前為空，cleanup 的 `all(empty)` 不證明 A 早死後未知孤兒消失；macOS `NOTE_FORK` 不交付 child PID、舊追蹤旗標不支援。詳 `analysis/p4_b_non_b_early_a_death_orphan_window_review_2026-10-27.md`。**唯一下一步**先前瞻凍結隔離、零模型的「A fork 後、operator 辨識 runner 前死亡」負控（test-side 獨立見證並兜底清理），記 before、再做 test-only／必要最小 source 修正與受影響回歸；該結果即使 PASS 仍不能替代 real run-wide containment／真 Ollama、HTTP、Safari 或 T0+90 物理停止。若無可證的 real containment，維持 `REVIEW_REQUIRED`，改做獨立產品工作，不無限重試支援項。以下舊段「下一動作」均為歷史。
