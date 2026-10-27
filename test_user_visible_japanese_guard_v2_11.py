@@ -82,6 +82,35 @@ class UserVisibleJapaneseGuardV211Tests(unittest.TestCase):
         self.assertEqual(trace["repair_action"], "safe_japanese_persona_fallback")
         self.assertEqual(trace["final_rejection_reasons"], [])
 
+    def test_han_only_chinese_surface_is_not_certified_as_japanese(self):
+        source = "桌上有兩本筆記本，我現在只想先整理一件東西。你會叫我先做什麼？"
+        final, trace = self.guard(
+            "整理筆記本",
+            source,
+            {"scene": "casual", "core_message_jp": "整理筆記本"},
+        )
+
+        self.assertIn("han_only_japanese_unverified", trace["initial_rejection_reasons"])
+        self.assertNotEqual(final, "整理筆記本")
+        self.assertEqual(trace["repair_action"], "safe_japanese_persona_fallback")
+        self.assertEqual(trace["final_rejection_reasons"], [])
+        self.assertRegex(final, r"[ぁ-んァ-ヶー]")
+
+    def test_han_only_output_from_english_source_is_unverified_too(self):
+        final, trace = self.guard(
+            "整理筆記本", "Which notebook should I organize first?", {"scene": "casual"}
+        )
+        self.assertIn("han_only_japanese_unverified", trace["initial_rejection_reasons"])
+        self.assertNotEqual(final, "整理筆記本")
+
+    def test_valid_all_kanji_japanese_is_conservatively_unverified(self):
+        # A script-only boundary cannot distinguish this real Japanese word
+        # from a Chinese Han-only answer; record the false-rejection cost.
+        self.assertFalse(has_bad_language("継続"))
+        final, trace = self.guard("継続", "続ける？", {"scene": "casual"})
+        self.assertIn("han_only_japanese_unverified", trace["initial_rejection_reasons"])
+        self.assertNotEqual(final, "継続")
+
     def test_f5_simplified_chinese_residue_is_rejected_before_user_surface(self):
         raw = "頑張ったね。頑張り继续！そのくらいでいいだろ。"
         self.assertTrue(has_bad_language(raw))

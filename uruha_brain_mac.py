@@ -10737,6 +10737,11 @@ class RightBrain:
             return ["empty"]
         if not re.search(r"[ぁ-んァ-ヶー一-龠]", reply):
             reasons.append("missing_japanese_surface")
+        # Han is shared by Japanese and Chinese.  A Han-only answer does not
+        # itself prove a natural Japanese surface, even if finite Chinese
+        # residue lists do not recognize its particular words.
+        if re.search(r"[一-龠々]", reply) and not re.search(r"[ぁ-んァ-ヶ]", reply):
+            reasons.append("han_only_japanese_unverified")
         if CHINESE_SPECIFIC_RE.search(reply) or AUDITED_CHINESE_SPECIFIC_RE.search(reply):
             reasons.append("cjk_language_leak")
         if NONSTANDARD_CJK_RE.search(reply) or AUDITED_NONSTANDARD_CJK_RE.search(reply):
@@ -17032,6 +17037,7 @@ class UruhaBrainV4_Mac:
         core = str(logic.get("core_message_jp") or "").strip()
         language_reasons = {
             "missing_japanese_surface",
+            "han_only_japanese_unverified",
             "cjk_language_leak",
             "nonstandard_cjk_surface",
             "foreign_script_leak",

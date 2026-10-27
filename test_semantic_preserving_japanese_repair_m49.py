@@ -149,6 +149,76 @@ def test_rejected_authorization_keeps_fail_closed_language_fallback():
     assert logic["visible_language_guard"]["final_rejection_reasons"] == []
 
 
+def test_han_only_candidate_requests_source_first_repair_then_fails_closed():
+    source = "桌上有兩本筆記本，我現在只想先整理一件東西。你會叫我先做什麼？"
+    brain = _brain(accepted=False)
+    logic = _logic("整理筆記本")
+    candidate, trace = brain._repair_user_visible_semantics_m49(
+        "整理筆記本", logic, source, memory_data={}
+    )
+    visible = brain.right_brain.enforce_user_visible_japanese(
+        candidate, logic, user_input=source, memory_data={}
+    )
+
+    assert "han_only_japanese_unverified" in trace["initial_language_reasons"]
+    assert trace["status"] == "semantic_repair_rejected"
+    assert trace["model_call_attempted"] is True
+    assert trace["surface_authority"] is False
+    assert len(brain.left_brain.calls) == 1
+    assert "han_only_japanese_unverified" in logic["visible_language_guard"]["initial_rejection_reasons"]
+    assert visible != "整理筆記本"
+    assert "筆記本" not in visible
+
+
+def test_authorizer_cannot_relabel_han_only_candidate_as_japanese():
+    class HanOnlyAuthorizer(FakeAuthorizer):
+        def authorize_literal_topic_m31(self, user_input, projection):
+            self.calls.append((user_input, deepcopy(projection)))
+            candidate = "整理筆記本"
+            return {"core_message_jp": candidate}, {
+                "status": "semantically_authorized",
+                "surface_authority": True,
+                "model_call_completed": True,
+                "response_jp": candidate,
+                "surface_anchors_jp": ["筆記本"],
+            }
+
+    source = "桌上有兩本筆記本，我現在只想先整理一件東西。你會叫我先做什麼？"
+    brain = _brain()
+    brain.left_brain = HanOnlyAuthorizer()
+    logic = _logic("整理筆記本")
+    candidate, trace = brain._repair_user_visible_semantics_m49(
+        "整理筆記本", logic, source, memory_data={}
+    )
+    visible = brain.right_brain.enforce_user_visible_japanese(
+        candidate, logic, user_input=source, memory_data={}
+    )
+
+    assert trace["status"] == "semantic_repair_rejected"
+    assert trace["candidate_language_reasons"] == ["han_only_japanese_unverified"]
+    assert trace["surface_authority"] is False
+    assert len(brain.left_brain.calls) == 1
+    assert visible != "整理筆記本"
+
+
+def test_protected_han_only_candidate_skips_authorizer_but_not_final_guard():
+    source = "我現在只想先整理一件東西。"
+    brain = _brain()
+    logic = {**_logic("整理筆記本"), "scene": "support"}
+    candidate, trace = brain._repair_user_visible_semantics_m49(
+        "整理筆記本", logic, source, memory_data={}
+    )
+    visible = brain.right_brain.enforce_user_visible_japanese(
+        candidate, logic, user_input=source, memory_data={}
+    )
+
+    assert trace["status"] == "protected_route_not_repaired"
+    assert trace["model_call_attempted"] is False
+    assert brain.left_brain.calls == []
+    assert logic["visible_language_guard"]["repair_action"] == "safe_japanese_persona_fallback"
+    assert visible != "整理筆記本"
+
+
 def test_neutral_translation_cannot_erase_observable_complaint_act():
     class NeutralAuthorizer(FakeAuthorizer):
         def authorize_literal_topic_m31(self, user_input, projection):
