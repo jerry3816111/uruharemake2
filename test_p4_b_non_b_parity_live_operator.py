@@ -1014,6 +1014,150 @@ def test_thread_only_or_unknown_witness_cannot_be_reported_as_physical_stop(
     assert not run_dir.exists()
 
 
+def _record_synthetic_role_graph_forks(monkeypatch):
+    """Keep test-owned direct children inspectable even on a failed probe."""
+    children = []
+    real_fork = live.os.fork
+
+    def record_fork():
+        pid = real_fork()
+        if pid > 0:
+            children.append(pid)
+        return pid
+
+    monkeypatch.setattr(live.os, "fork", record_fork)
+    return children
+
+
+def _assert_synthetic_role_graph_children_reaped(children):
+    """Emergency cleanup is test hygiene, never a product stop witness."""
+    not_reaped = []
+    for pid in children:
+        try:
+            seen, _ = os.waitpid(pid, os.WNOHANG)
+        except ChildProcessError:
+            continue
+        not_reaped.append(pid)
+        if seen == 0:
+            # This remains our direct, unreaped child; its PID cannot have
+            # been reused. A leaking implementation must still fail below.
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+            deadline = time.monotonic() + 2.0
+            while time.monotonic() < deadline:
+                try:
+                    seen, _ = os.waitpid(pid, os.WNOHANG)
+                except ChildProcessError:
+                    break
+                if seen == pid:
+                    break
+                time.sleep(0.01)
+    assert not_reaped == [], f"probe left direct children unreaped: {not_reaped}"
+
+
+@_DARWIN_FORK
+def test_synthetic_role_graph_public_preflight_is_fake_and_normal_only(
+        monkeypatch, tmp_path):
+    """New 11-role graph must remain below the installed/live evidence line."""
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    try:
+        result = live.supervise_once(
+            run_dir=run_dir, model_root=model_root, clock=time.monotonic,
+            effects={"schema": "synthetic_role_graph_probe_v1", "fault": None},
+        )
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+
+    assert len(children) == 11
+    assert not run_dir.exists() and not model_root.exists()
+    assert result["schema"] == "fake_role_graph_preflight_v1"
+    assert result["status"] == "fake_topology_partial"
+    assert result["initial_role_count"] == 11
+    assert result["normal_reap_count"] == 11
+    assert result["control_pipe_count"] == 22
+    assert result["control_endpoint_count"] == 44
+    assert result["extra_exec_pipe_count"] == 1
+    samples = result["fd_samples"]
+    assert type(samples) is list and len(samples) >= 34  # 23 allocations + 11 closes.
+    assert all(type(row) is dict and type(row.get("phase")) is str
+               and row["phase"] and type(row.get("count")) is int
+               and type(row.get("soft")) is int
+               and 0 <= row["count"] < row["soft"] for row in samples)
+    assert result["work_grants"] == 0
+    assert result["http_calls"] == 0
+    assert result["model_bytes_read"] == 0
+    assert result["a_exec_observed"] is False
+    assert result["installed_identity_proven"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+
+
+class _ProbeDictSubclass(dict):
+    """A lookalike marker is not the exact frozen opt-in type."""
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("effects", [
+    {"schema": "synthetic_role_graph_probe_v1", "fault": None,
+     "installed_identity_proven": True},
+    {"schema": "synthetic_role_graph_probe_v1", "fault": "not-frozen"},
+    {"schema": "synthetic_role_graph_probe_v1"},
+    _ProbeDictSubclass({
+        "schema": "synthetic_role_graph_probe_v1", "fault": None}),
+])
+def test_synthetic_role_graph_marker_must_be_exact_and_remain_closed(
+        tmp_path, effects):
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    with pytest.raises(live.LiveOperatorError, match="^process_supervisor_not_implemented$"):
+        live.supervise_once(run_dir=run_dir, model_root=model_root,
+                            clock=time.monotonic, effects=effects)
+    assert not run_dir.exists() and not model_root.exists()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("fault", [
+    "pipe_allocation_after_7", "omit_o_initial_ack", "retain_o_nonrole_fd",
+])
+def test_synthetic_role_graph_faults_fail_closed_without_owned_child_leak(
+        monkeypatch, tmp_path, fault):
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    started = time.monotonic()
+    try:
+        try:
+            result = live.supervise_once(
+                run_dir=run_dir, model_root=model_root, clock=time.monotonic,
+                effects={"schema": "synthetic_role_graph_probe_v1", "fault": fault},
+            )
+        except live.LiveOperatorError as caught:
+            assert str(caught) != "process_supervisor_not_implemented"
+            assert CANARY not in str(caught)
+        else:
+            assert result["schema"] == "fake_role_graph_preflight_v1"
+            assert result["status"] != "fake_topology_partial"
+            assert result["work_grants"] == 0
+            assert result["installed_identity_proven"] is False
+            assert result["full_gate_pass"] is False
+            assert result["b_send_authorized"] is False
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+    assert time.monotonic() - started < 15.0
+    assert not run_dir.exists() and not model_root.exists()
+    if fault == "pipe_allocation_after_7":
+        assert children == []
+        assert len(os.listdir("/dev/fd")) == before_fds
+    else:
+        assert 0 < len(children) <= 11
+
+
 def _pipe_has_byte(fd):
     ready, _, _ = select.select([fd], [], [], 0)
     return bool(ready and os.read(fd, 1))
