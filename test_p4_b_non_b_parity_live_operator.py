@@ -1174,6 +1174,121 @@ def test_synthetic_role_graph_faults_fail_closed_without_owned_child_leak(
         assert 0 < len(children) <= 11
 
 
+def _synthetic_a_exec_effects(fault=None):
+    return {"schema": "synthetic_a_exec_probe_v1", "fault": fault}
+
+
+def _synthetic_a_exec_forbidden_clock():
+    raise AssertionError("synthetic A exec probe must ignore caller clock")
+
+
+@_DARWIN_FORK
+def test_synthetic_a_exec_public_preflight_requires_live_image_and_fd_witness(
+        monkeypatch, tmp_path):
+    """EOF alone must never promote a held child to a fake exec success."""
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    try:
+        result = live.supervise_once(
+            run_dir=run_dir, model_root=model_root,
+            clock=_synthetic_a_exec_forbidden_clock,
+            effects=_synthetic_a_exec_effects(),
+        )
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+
+    assert len(children) == 11
+    assert not run_dir.exists() and not model_root.exists()
+    assert len(os.listdir("/dev/fd")) == before_fds
+    assert result["schema"] == "fake_a_exec_preflight_v1"
+    assert result["status"] == "fake_transition_partial"
+    assert result["initial_role_count"] == 11
+    assert result["normal_reap_count"] == 11
+    assert result["control_pipe_count"] == 22
+    assert result["control_endpoint_count"] == 44
+    assert result["extra_exec_pipe_count"] == 1
+    assert result["private_stdin_pipe_count"] == 1
+    assert result["synthetic_exec_observed"] is True
+    samples = result["fd_samples"]
+    expected_phases = (["before_allocation"]
+                       + [f"allocated_{number}" for number in range(1, 23)]
+                       + ["allocated_exec_status", "allocated_private_stdin"]
+                       + [f"fork_closed_{role}" for role in (
+                           "D", "W", "R", "O", "A", "S_D", "S_W", "S_R",
+                           "S_O", "S_A", "S_runner")]
+                       + ["after_cleanup"])
+    assert type(samples) is list
+    assert [row["phase"] for row in samples] == expected_phases
+    assert all(type(row["count"]) is int and type(row["soft"]) is int
+               and 0 <= row["count"] < row["soft"] for row in samples)
+    assert samples[-1]["count"] == samples[0]["count"]
+    assert result["fd_sampled_min_margin"] == min(
+        row["soft"] - row["count"] for row in samples)
+    assert result["work_grants"] == 0
+    assert result["http_calls"] == 0
+    assert result["model_bytes_read"] == 0
+    assert result["installed_identity_proven"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("fault", [
+    "missing_exec_grant", "duplicate_exec_grant", "death_before_exec",
+    "close_status_without_exec", "wrong_exec_argv", "retain_control_fd",
+])
+def test_synthetic_a_exec_faults_fail_closed_and_reap_owned_children(
+        monkeypatch, tmp_path, fault):
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    started = time.monotonic()
+    try:
+        with pytest.raises(live.LiveOperatorError) as caught:
+            live.supervise_once(
+                run_dir=run_dir, model_root=model_root,
+                clock=_synthetic_a_exec_forbidden_clock,
+                effects=_synthetic_a_exec_effects(fault),
+            )
+        assert str(caught.value).startswith("fake_a_exec_")
+        assert CANARY not in str(caught.value)
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+    assert len(children) == 11
+    assert time.monotonic() - started < 25.0
+    assert len(os.listdir("/dev/fd")) == before_fds
+    assert not run_dir.exists() and not model_root.exists()
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("effects", [
+    {"schema": "synthetic_a_exec_probe_v1", "fault": None,
+     "installed_identity_proven": True},
+    {"schema": "synthetic_a_exec_probe_v1", "fault": "unfrozen"},
+    {"schema": "synthetic_a_exec_probe_v1"},
+    _ProbeDictSubclass(_synthetic_a_exec_effects()),
+])
+def test_synthetic_a_exec_marker_must_be_exact_and_remain_closed(
+        monkeypatch, tmp_path, effects):
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    try:
+        with pytest.raises(live.LiveOperatorError,
+                           match="^process_supervisor_not_implemented$"):
+            live.supervise_once(
+                run_dir=run_dir, model_root=model_root,
+                clock=_synthetic_a_exec_forbidden_clock, effects=effects)
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+    assert children == []
+    assert not run_dir.exists() and not model_root.exists()
+
+
 def _pipe_has_byte(fd):
     ready, _, _ = select.select([fd], [], [], 0)
     return bool(ready and os.read(fd, 1))
