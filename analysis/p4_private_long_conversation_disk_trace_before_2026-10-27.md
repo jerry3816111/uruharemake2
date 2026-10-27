@@ -1,9 +1,38 @@
 # P4 private long-conversation trace storage: read-only before audit
 
-Status: **problem and dependencies located; no storage code, compression
-ratio, Safari acceptance, or product improvement yet**. This is independent
+Status: **problem and dependencies located; no storage code, codec acceptance,
+new Safari turn, or product improvement yet**. This is independent
 of the P4-B real runner containment NO-GO. It serves the local-PC long-chat
 and reloadable node-graph product requirement; it is not a new research M.
+
+## Same-day correction: existing multi-turn product evidence
+
+The single-row extrapolation below was insufficient to decide priority.
+After that first audit, a read-only check found the existing 2026-10-21
+**real isolated Safari D0–D10 log** (not formal user data) still present in
+its owner-only root. Its 11-row file is **51,242,729 bytes**, and its SHA-256
+matches the frozen report's
+`1284bc9fc0d2eac1c2202c2d3f18fe84b0d1e8dadace1f4cdeee8adf6ce31529`
+(`analysis/p4_current_decision_ack_fresh_product_probe_result_2026-10-21.md`).
+No dialogue text was printed. Byte lengths of rows 1, 6 and 11 are
+1,151,988 / 5,338,909 / 6,716,958. Their `cognition_trace` JSON sizes are
+1,033,817 / 5,150,405 / 6,485,316 bytes. By row 11,
+`runtime_state.recent_turn_traces` alone is 4,574,844 bytes; the snapshot
+duplicates bounded recent traces into each new row. This is a measured
+11-turn growth pattern, **not proof of what a fresh 50-turn run would do**.
+
+A read-only fixed candidate calculation (UTF-8 trace JSON, zlib level 6,
+base64, version/length/SHA envelope; no writes) gave an estimated total of
+**9,133,562 bytes** for those exact 11 logical rows, versus 51,242,729 raw
+bytes: about **82.2% smaller**. The row-11 trace by itself compressed from
+6,485,316 to 643,804 zlib bytes before base64/envelope. This is development
+sample feasibility only: no codec is implemented, no new row has been written,
+and decode correctness, CPU, browser graph and offline readers are untested.
+It does make the storage-format gate materially more justified than the
+earlier 1 MB/turn extrapolation. The browser latest-row hard cap is 16 MiB;
+the observed 6.72 MB final row has not crossed it, but accumulated traces
+could make future rows fail closed. Do not silently relabel this as a
+50-turn or production failure.
 
 ## Measured problem versus extrapolation
 
@@ -17,8 +46,9 @@ and reloadable node-graph product requirement; it is not a new research M.
   **That is an extrapolation, not a measured 50-turn product session**; real
   row size, RSS, reload latency and disk growth could vary.
 - The prior 50-turn zero-model test proved scoped ledger calls retire from
-  RAM. It did **not** compress the append-only private JSONL. This audit did
-  not reopen a representative private row or measure a new compression ratio.
+  RAM. It did **not** compress the append-only private JSONL. The initial
+  audit had no representative raw row; the same-day correction above adds
+  the existing isolated 11-turn size and a read-only codec estimate.
 
 ## Why deleting trace fields would lose evidence
 
