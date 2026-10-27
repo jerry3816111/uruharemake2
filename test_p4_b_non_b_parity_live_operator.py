@@ -1738,7 +1738,7 @@ def test_synthetic_runner_lifecycle_public_preflight_requires_o_and_s_runner(
     a_shell = [snapshot for snapshot in observed
                if snapshot.pid == a_pid
                and snapshot.executable == "/bin/bash"
-               and snapshot.argv == ("/bin/sh", "-c", _RUNNER_SHELL_NORMAL)]
+               and snapshot.argv == ("/bin/bash", "-c", _RUNNER_SHELL_NORMAL)]
     assert len(a_shell) >= 2
     runners = _runner_snapshots(observed, a_pid)
     assert len({snapshot.pid for snapshot in runners}) == 1
@@ -1856,7 +1856,7 @@ def test_synthetic_runner_lifecycle_named_fault_fails_after_its_os_condition(
     a_pid = children[4]
     assert any(snapshot.pid == a_pid
                and snapshot.executable == "/bin/bash"
-               and snapshot.argv == ("/bin/sh", "-c", expected_script)
+               and snapshot.argv == ("/bin/bash", "-c", expected_script)
                for snapshot in observed)
     runner_pids = {snapshot.pid for snapshot in _runner_snapshots(observed, a_pid)}
     assert len(runner_pids) == min_runners
