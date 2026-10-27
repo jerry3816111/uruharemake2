@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import ctypes
+import errno
 import hashlib
 import json
 import math
@@ -974,6 +975,19 @@ def supervise_once(*, run_dir, model_root, clock, effects) -> dict:
                          "death_before_exec", "close_status_without_exec",
                          "wrong_exec_argv", "retain_control_fd")))):
         return _synthetic_a_exec_preflight_once(effects["fault"])
+    if (type(effects) is dict
+            and len(effects) == 2
+            and all(type(key) is str for key in effects)
+            and set(effects) == {"schema", "fault"}
+            and type(effects["schema"]) is str
+            and effects["schema"] == "synthetic_runner_lifecycle_probe_v1"
+            and (effects["fault"] is None
+                 or (type(effects["fault"]) is str
+                     and effects["fault"] in (
+                         "runner_exited_before_enumeration", "duplicate_runner",
+                         "o_wrong_runner_pid", "watch_registration_missing",
+                         "wrong_exit_event", "retain_private_hold_fd_in_runner")))):
+        return _synthetic_runner_lifecycle_preflight_once(effects["fault"])
     _fail("process_supervisor_not_implemented")
 
 
@@ -984,6 +998,13 @@ _ROLE_GRAPH_ROLES = (
 _ROLE_GRAPH_PIPE_FD_TYPE = 6       # sys/proc_info.h PROX_FDTYPE_PIPE
 _ROLE_GRAPH_CLOEXEC = 2            # sys/proc_info.h PROC_FP_CLEXEC
 _SYNTHETIC_A_NATIVE_TARGET = "/bin/cat"
+_SYNTHETIC_RUNNER_SHELL = "/bin/bash"
+_SYNTHETIC_RUNNER_SHELL_IMAGE = "/bin/bash"
+_SYNTHETIC_RUNNER_SCRIPT = "/bin/cat <&0 3<&- & wait; read _ <&3; exit 0"
+_SYNTHETIC_RUNNER_DUPLICATE_SCRIPT = (
+    "/bin/cat <&0 3<&- & /bin/cat <&0 3<&- & wait; read _ <&3; exit 0"
+)
+_SYNTHETIC_RUNNER_RETAIN_SCRIPT = "/bin/cat <&0 & wait; read _ <&3; exit 0"
 
 
 class _RoleGraphProcFileInfo(ctypes.Structure):
@@ -1861,6 +1882,768 @@ def _synthetic_a_exec_preflight_once(fault: str | None) -> dict:
         samples.append(after)
         if not cleaned or after["count"] != samples[0]["count"]:
             _fail("fake_a_exec_cleanup_failed")
+
+
+def _synthetic_runner_target(fault: str | None) -> tuple[str, tuple[str, ...]]:
+    """A fixed no-network native shell; two exact scripts are negative-only."""
+    path = _SYNTHETIC_RUNNER_SHELL
+    try:
+        info = os.stat(path, follow_symlinks=False)
+        if (os.path.realpath(path) != path or not stat.S_ISREG(info.st_mode)
+                or not (info.st_mode & 0o111)):
+            _fail("fake_runner_target_unavailable")
+    except Exception:
+        _fail("fake_runner_target_unavailable")
+    script = _SYNTHETIC_RUNNER_SCRIPT
+    if fault == "duplicate_runner":
+        script = _SYNTHETIC_RUNNER_DUPLICATE_SCRIPT
+    elif fault == "retain_private_hold_fd_in_runner":
+        script = _SYNTHETIC_RUNNER_RETAIN_SCRIPT
+    return path, (path, "-c", script)
+
+
+def _synthetic_runner_a_child(pipes: dict, exec_pipe: tuple[int, int],
+                               stdin_pipe: tuple[int, int],
+                               hold_pipe: tuple[int, int],
+                               inherited: tuple[int, ...], deadline: float,
+                               path: str, argv: tuple[str, ...]) -> None:
+    """Held A changes image once; fd3 is a private hold, not role control."""
+    command_fd = pipes["A"]["command"][0]
+    proof_fd = pipes["A"]["proof"][1]
+    status_fd = exec_pipe[1]
+    hold_fd = hold_pipe[0]
+    keep = {command_fd, proof_fd, status_fd, hold_fd}
+    try:
+        _fake_child_lifetime(deadline)
+        os.dup2(stdin_pipe[0], 0, inheritable=True)
+        for fd in inherited:
+            if fd > 2 and fd not in keep:
+                _fake_close(fd)
+        if (any(os.get_inheritable(fd) for fd in keep)
+                or not os.get_inheritable(0)):
+            os._exit(125)
+        pid = os.getpid()
+        generation = raw_generation(pid)
+        first = {"phase": "initial", "role": "A", "pid": pid,
+                 "ppid": generation[1], "raw_generation": list(generation),
+                 "pgid": os.getpgid(pid)}
+        frame = encode_frame(first)
+        if os.write(proof_fd, frame) != len(frame):
+            os._exit(125)
+        grant = _role_graph_read_frame(command_fd, deadline,
+                                       {"phase", "role"})
+        if grant != {"phase": "exec", "role": "A"}:
+            os._exit(126)
+        # fd3 can be the old role command/proof number. Only remap after
+        # the grant has been consumed and both role endpoints are closed.
+        _fake_close(proof_fd, command_fd)
+        os.dup2(hold_fd, 3, inheritable=True)
+        if hold_fd != 3:
+            _fake_close(hold_fd)
+        if (not os.get_inheritable(3)
+                or os.get_inheritable(status_fd)):
+            os._exit(125)
+        os.execve(path, argv, {})
+    except BaseException:
+        os._exit(127)
+
+
+def _synthetic_runner_children(lib, a_pid: int) -> tuple[int, ...]:
+    """Complete proc_listchildpids result; the API returns PID count."""
+    values = (ctypes.c_int * 64)()
+    fn = lib.proc_listchildpids
+    fn.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
+    fn.restype = ctypes.c_int
+    try:
+        count = fn(a_pid, values, ctypes.sizeof(values))
+    except Exception:
+        _fail("fake_runner_enumeration_unavailable")
+    if count < 0 or count >= len(values):
+        _fail("fake_runner_enumeration_unavailable")
+    result = tuple(int(value) for value in values[:count])
+    if any(value <= 0 for value in result) or len(set(result)) != len(result):
+        _fail("fake_runner_enumeration_unavailable")
+    return result
+
+
+def _synthetic_runner_cat_witness(lib, runner_pid: int,
+                                   a_pid: int, stdin_handle: int,
+                                   stdio_types: dict[int, int],
+                                   stdio_handles: dict[int, int],
+                                   *, require_stdio_only: bool = True) -> dict:
+    """Fresh OS identity, exact native argv, and full FD/pipe-handle map."""
+    try:
+        before = raw_generation(runner_pid)
+        image = observe_process(runner_pid)
+        pgid = os.getpgid(runner_pid)
+        fd_map = _synthetic_a_exec_fd_snapshot(lib, runner_pid)
+        after = raw_generation(runner_pid)
+    except Exception:
+        _fail("fake_runner_witness_unavailable")
+    if (before != after or fd_map[0] != before or before[1] != a_pid
+            or (image.pid, image.ppid, image.start_sec,
+                image.start_usec) != before
+            or image.executable != "/bin/cat"
+            or image.argv != ("/bin/cat",) or pgid <= 0):
+        _fail("fake_runner_witness_unavailable")
+    expected_types = dict(stdio_types)
+    expected_types[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+    expected_handles = dict(stdio_handles)
+    expected_handles[0] = stdin_handle
+    kinds, handles = fd_map[1], fd_map[2]
+    if (any(kinds.get(fd) != kind for fd, kind in expected_types.items())
+            or any(handles.get(fd, (None,))[0] != handle
+                   for fd, handle in expected_handles.items())):
+        _fail("fake_runner_fd_witness_unavailable")
+    if require_stdio_only and set(kinds) != {0, 1, 2}:
+        _fail("fake_runner_fd_witness_unavailable")
+    return {"pid": runner_pid, "generation": list(before), "pgid": pgid}
+
+
+def _synthetic_runner_generation_gone(runner_generation: tuple[int, ...]) -> bool:
+    try:
+        current = raw_generation(runner_generation[0])
+        # PPID is not part of stable process identity: a still-live runner
+        # can be reparented if A dies. Only PID reuse with a different
+        # start time proves the original generation has disappeared.
+        return ((current[0], current[2], current[3])
+                != (runner_generation[0], runner_generation[2],
+                    runner_generation[3]))
+    except ProbeError:
+        # A libproc failure is not evidence of exit. Only the kernel's
+        # explicit ESRCH for this PID can establish absence; a live or
+        # unobservable PID keeps the cleanup gate closed.
+        try:
+            os.kill(runner_generation[0], 0)
+        except OSError as error:
+            return error.errno == errno.ESRCH
+        return False
+
+
+def _synthetic_runner_wait_gone(lib, a_pid: int, a_generation: tuple[int, ...],
+                                 runner_generation: tuple[int, ...],
+                                 deadline: float) -> bool:
+    while time.monotonic() < deadline:
+        try:
+            if (raw_generation(a_pid) == a_generation
+                    and _synthetic_runner_generation_gone(runner_generation)
+                    and _synthetic_runner_children(lib, a_pid) == ()):
+                return True
+        except Exception:
+            return False
+        time.sleep(min(0.01, max(0, deadline - time.monotonic())))
+    return False
+
+
+def _synthetic_runner_observer_bootstrap(role: str, pipes: dict,
+                                          inherited: tuple[int, ...],
+                                          deadline: float) -> tuple[int, int]:
+    command_fd = pipes[role]["command"][0]
+    proof_fd = pipes[role]["proof"][1]
+    keep = {command_fd, proof_fd}
+    _fake_child_lifetime(deadline)
+    for fd in inherited:
+        if fd > 2 and fd not in keep:
+            _fake_close(fd)
+    if any(os.get_inheritable(fd) for fd in keep):
+        os._exit(125)
+    pid = os.getpid()
+    generation = raw_generation(pid)
+    frame = encode_frame({"phase": "initial", "role": role, "pid": pid,
+                          "ppid": generation[1],
+                          "raw_generation": list(generation),
+                          "pgid": os.getpgid(pid)})
+    if os.write(proof_fd, frame) != len(frame):
+        os._exit(125)
+    return command_fd, proof_fd
+
+
+def _synthetic_runner_send(fd: int, value: dict) -> None:
+    frame = encode_frame(value)
+    if os.write(fd, frame) != len(frame):
+        os._exit(126)
+
+
+def _synthetic_runner_observer_release(role: str, command_fd: int,
+                                        proof_fd: int, deadline: float) -> None:
+    command = _role_graph_read_frame(command_fd, deadline, {"phase", "role"})
+    if command != {"phase": "release", "role": role}:
+        os._exit(126)
+    _synthetic_runner_send(proof_fd, {"phase": "released", "role": role,
+                                       "pid": os.getpid()})
+    os._exit(0)
+
+
+def _synthetic_runner_o_child(pipes: dict, inherited: tuple[int, ...],
+                               deadline: float) -> None:
+    try:
+        command_fd, proof_fd = _synthetic_runner_observer_bootstrap(
+            "O", pipes, inherited, deadline)
+        command = _role_graph_read_frame(command_fd, deadline, {
+            "phase", "role", "a_pid", "a_generation", "stdin_handle",
+            "stdio_types", "stdio_handles", "fault"})
+        if command is None or command["phase"] != "enumerate" or command["role"] != "O":
+            os._exit(126)
+        a_pid = command["a_pid"]
+        a_generation = tuple(command["a_generation"])
+        lib = _role_graph_libproc()
+        try:
+            first_a = raw_generation(a_pid)
+            first = _synthetic_runner_children(lib, a_pid)
+            middle_a = raw_generation(a_pid)
+            second = _synthetic_runner_children(lib, a_pid)
+            final_a = raw_generation(a_pid)
+        except Exception:
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": "unavailable",
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        if (first_a != a_generation or middle_a != a_generation
+                or final_a != a_generation or set(first) != set(second)):
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": "unavailable",
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        if len(first) != 1:
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": "child_count_invalid",
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        runner_pid = first[0]
+        stdio_types = {int(key): value for key, value in command["stdio_types"].items()}
+        stdio_handles = {int(key): value for key, value in command["stdio_handles"].items()}
+        try:
+            runner = _synthetic_runner_cat_witness(
+                lib, runner_pid, a_pid, command["stdin_handle"],
+                stdio_types, stdio_handles)
+        except LiveOperatorError as error:
+            status = ("fd_witness_unavailable" if
+                      str(error) == "fake_runner_fd_witness_unavailable"
+                      else "witness_unavailable")
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": status,
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        if command["fault"] == "o_wrong_runner_pid":
+            runner = dict(runner)
+            runner["pid"] += 1  # Negative-only false frame; OS generation remains exact.
+        _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                           "status": "ok", "enumerations": 2,
+                                           "runner": runner})
+        verify = _role_graph_read_frame(command_fd, deadline, {
+            "phase", "role", "a_pid", "a_generation", "runner_generation"})
+        if verify is None or verify["phase"] != "verify_exit" or verify["role"] != "O":
+            os._exit(126)
+        valid = _synthetic_runner_wait_gone(
+            lib, a_pid, a_generation, tuple(verify["runner_generation"]), deadline)
+        _synthetic_runner_send(proof_fd, {"phase": "exit_verified", "role": "O",
+                                           "ok": valid})
+        if not valid:
+            os._exit(126)
+        _synthetic_runner_observer_release("O", command_fd, proof_fd, deadline)
+    except BaseException:
+        os._exit(127)
+
+
+def _synthetic_runner_s_child(pipes: dict, inherited: tuple[int, ...],
+                               deadline: float) -> None:
+    watcher = None
+    try:
+        command_fd, proof_fd = _synthetic_runner_observer_bootstrap(
+            "S_runner", pipes, inherited, deadline)
+        command = _role_graph_read_frame(command_fd, deadline, {
+            "phase", "role", "a_pid", "a_generation", "runner",
+            "stdin_handle", "stdio_types", "stdio_handles", "fault"})
+        if (command is None or command["phase"] != "watch"
+                or command["role"] != "S_runner"):
+            os._exit(126)
+        a_pid = command["a_pid"]
+        a_generation = tuple(command["a_generation"])
+        expected_runner = command["runner"]
+        runner_pid = expected_runner["pid"]
+        runner_generation = tuple(expected_runner["generation"])
+        lib = _role_graph_libproc()
+        stdio_types = {int(key): value for key, value in command["stdio_types"].items()}
+        stdio_handles = {int(key): value for key, value in command["stdio_handles"].items()}
+        if raw_generation(a_pid) != a_generation:
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        try:
+            observed = _synthetic_runner_cat_witness(
+                lib, runner_pid, a_pid, command["stdin_handle"],
+                stdio_types, stdio_handles)
+        except LiveOperatorError:
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        if observed != expected_runner or command["fault"] == "watch_registration_missing":
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        try:
+            watcher = select.kqueue()
+            watcher.control([select.kevent(
+                runner_pid, filter=select.KQ_FILTER_PROC,
+                flags=select.KQ_EV_ADD | select.KQ_EV_ENABLE,
+                fflags=select.KQ_NOTE_EXIT)], 0, 0)
+            if (raw_generation(runner_pid) != runner_generation
+                    or _role_graph_fd_list(lib, os.getpid()).get(watcher.fileno()) != 5):
+                raise OSError("watcher witness unavailable")
+        except Exception:
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        _synthetic_runner_send(proof_fd, {"phase": "registered",
+                                           "role": "S_runner", "pid": runner_pid,
+                                           "generation": list(runner_generation),
+                                           "kqueue_fd": watcher.fileno()})
+        try:
+            events = watcher.control(None, 1,
+                                     max(0, deadline - time.monotonic()))
+        except Exception:
+            events = []
+        if len(events) != 1:
+            _synthetic_runner_send(proof_fd, {"phase": "event_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        event = events[0]
+        gone = _synthetic_runner_wait_gone(
+            lib, a_pid, a_generation, runner_generation, deadline)
+        fields = {"phase": "exit_event", "role": "S_runner",
+                  "ident": int(event.ident), "filter": int(event.filter),
+                  "fflags": int(event.fflags), "flags": int(event.flags),
+                  "gone": gone}
+        if command["fault"] == "wrong_exit_event":
+            fields["ident"] += 1
+        _synthetic_runner_send(proof_fd, fields)
+        if not gone:
+            os._exit(126)
+        watcher.close()
+        watcher = None
+        _synthetic_runner_observer_release("S_runner", command_fd, proof_fd,
+                                            deadline)
+    except BaseException:
+        os._exit(127)
+    finally:
+        if watcher is not None:
+            watcher.close()
+
+
+def _synthetic_runner_lifecycle_preflight_once(fault: str | None) -> dict:
+    """Fake-only, OS-witnessed runner lifecycle; never a real Send grant."""
+    lib = _role_graph_libproc()
+    path, argv = _synthetic_runner_target(fault)
+    try:
+        held_image = observe_process(os.getpid())
+    except Exception:
+        _fail("fake_runner_initial_image_unavailable")
+    stdio_types = {fd: kind for fd, kind in
+                   _role_graph_fd_list(lib, os.getpid()).items() if fd <= 2}
+    if set(stdio_types) != {0, 1, 2}:
+        _fail("fake_runner_fd_witness_unavailable")
+    stdio_handles = {
+        fd: _role_graph_pipe_identity(lib, os.getpid(), fd)[0]
+        for fd, kind in stdio_types.items()
+        if kind == _ROLE_GRAPH_PIPE_FD_TYPE
+    }
+    pipes: dict[str, dict[str, tuple[int, int]]] = {}
+    all_fds: set[int] = set()
+    children: list[int] = []
+    reaped: set[int] = set()
+    known_runners: set[tuple[int, ...]] = set()
+    samples = [_role_graph_fd_sample("before_allocation")]
+    stdin_pipe = None
+    hold_pipe = None
+    deadline = None
+    try:
+        allocation = 0
+        for role in _ROLE_GRAPH_ROLES:
+            pipes[role] = {}
+            for edge in ("command", "proof"):
+                pair = os.pipe()
+                pipes[role][edge] = pair
+                all_fds.update(pair)
+                allocation += 1
+                samples.append(_role_graph_fd_sample(f"allocated_{allocation}"))
+        exec_pipe = os.pipe()
+        all_fds.update(exec_pipe)
+        samples.append(_role_graph_fd_sample("allocated_exec_status"))
+        stdin_pipe = os.pipe()
+        all_fds.update(stdin_pipe)
+        samples.append(_role_graph_fd_sample("allocated_private_stdin"))
+        hold_pipe = os.pipe()
+        all_fds.update(hold_pipe)
+        samples.append(_role_graph_fd_sample("allocated_private_a_hold"))
+        if allocation != 22 or len(all_fds) != 50:
+            _fail("fake_runner_pipe_allocation_failed")
+        pipe_handles = {}
+        for fd in all_fds:
+            handle, flags = _role_graph_pipe_identity(lib, os.getpid(), fd)
+            if not flags & _ROLE_GRAPH_CLOEXEC:
+                _fail("fake_runner_fd_witness_unavailable")
+            pipe_handles[fd] = handle
+        deadline = time.monotonic() + 5.0
+        child_deadline = deadline + 3.0
+        parent_pid = os.getpid()
+        initial_a = None
+        initials: dict[str, dict] = {}
+        for role in _ROLE_GRAPH_ROLES:
+            inherited = tuple(int(name) for name in os.listdir("/dev/fd")
+                              if name.isdecimal())
+            pid = os.fork()
+            if pid == 0:
+                if role == "A":
+                    _synthetic_runner_a_child(
+                        pipes, exec_pipe, stdin_pipe, hold_pipe,
+                        inherited, child_deadline, path, argv)
+                elif role == "O":
+                    _synthetic_runner_o_child(pipes, inherited, child_deadline)
+                elif role == "S_runner":
+                    _synthetic_runner_s_child(pipes, inherited, child_deadline)
+                else:
+                    _role_graph_child(role, pipes, exec_pipe, inherited,
+                                      None, child_deadline)
+                os._exit(127)
+            children.append(pid)
+            command_read = pipes[role]["command"][0]
+            proof_write = pipes[role]["proof"][1]
+            _fake_close(command_read, proof_write)
+            all_fds.difference_update((command_read, proof_write))
+            if role == "A":
+                _fake_close(exec_pipe[1], stdin_pipe[0], hold_pipe[0])
+                all_fds.difference_update((exec_pipe[1], stdin_pipe[0],
+                                           hold_pipe[0]))
+            samples.append(_role_graph_fd_sample(f"fork_closed_{role}"))
+            initial = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid", "ppid", "raw_generation", "pgid"})
+            try:
+                observed = _fake_os_witness(pid)
+            except Exception:
+                _fail("fake_runner_initial_witness_unavailable")
+            if (initial is None or initial.get("phase") != "initial"
+                    or initial.get("role") != role
+                    or initial.get("pid") != pid
+                    or initial.get("ppid") != parent_pid
+                    or {key: initial.get(key) for key in observed} != observed):
+                _fail("fake_runner_initial_witness_unavailable")
+            initials[role] = observed
+            expected = {command_read, proof_write}
+            child_stdio = dict(stdio_types)
+            child_handles = dict(stdio_handles)
+            if role == "A":
+                expected.update((exec_pipe[1], hold_pipe[0]))
+                child_stdio[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+                child_handles[0] = pipe_handles[stdin_pipe[0]]
+                initial_a = observed
+                try:
+                    held = observe_process(pid)
+                except Exception:
+                    _fail("fake_runner_initial_image_unavailable")
+                if (held.executable != held_image.executable
+                        or held.argv != held_image.argv
+                        or (held.pid, held.ppid, held.start_sec,
+                            held.start_usec) != tuple(initial["raw_generation"])):
+                    _fail("fake_runner_initial_image_unavailable")
+            _role_graph_attest_child_fds(
+                lib, pid, expected, pipe_handles, child_stdio, child_handles)
+            if role == "A":
+                _, flags = _role_graph_pipe_identity(lib, pid, 0)
+                if flags & _ROLE_GRAPH_CLOEXEC:
+                    _fail("fake_runner_fd_witness_unavailable")
+            if select.select([pipes[role]["proof"][0]], [], [], 0)[0]:
+                _fail("fake_runner_initial_witness_unavailable")
+        if initial_a is None or len(initials) != len(_ROLE_GRAPH_ROLES):
+            _fail("fake_runner_initial_witness_unavailable")
+        a_pid = children[_ROLE_GRAPH_ROLES.index("A")]
+        a_generation = tuple(initial_a["raw_generation"])
+        _synthetic_runner_send(pipes["A"]["command"][1],
+                               {"phase": "exec", "role": "A"})
+        if _synthetic_a_exec_status_event(exec_pipe[0], deadline) != "eof":
+            _fail("fake_runner_exec_status_unavailable")
+        a_stdio = dict(stdio_types)
+        a_stdio[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+        a_stdio[3] = _ROLE_GRAPH_PIPE_FD_TYPE
+        a_handles = dict(stdio_handles)
+        a_handles[0] = pipe_handles[stdin_pipe[0]]
+        a_handles[3] = pipe_handles[hold_pipe[0]]
+        postexec = _synthetic_a_exec_post_witness(
+            lib, a_pid, initial_a, _SYNTHETIC_RUNNER_SHELL_IMAGE,
+            argv, pipe_handles[stdin_pipe[0]], a_stdio, a_handles,
+            reaped, deadline)
+
+        # P's bounded spawn presence is a prerequisite, never O's receipt.
+        spawn_started = time.monotonic()
+        previous_start = None
+        spawn_attempts = []
+        runner_generations: list[tuple[int, ...]] = []
+        wanted = 2 if fault == "duplicate_runner" else 1
+        while len(spawn_attempts) < 512:
+            if previous_start is not None:
+                next_start = previous_start + 0.012
+                remaining = min(next_start, deadline) - time.monotonic()
+                if remaining > 0:
+                    time.sleep(remaining)
+            started = time.monotonic()
+            if started >= deadline:
+                break
+            previous_start = started
+            try:
+                if raw_generation(a_pid) != a_generation:
+                    _fail("fake_runner_spawn_unavailable")
+                first = _synthetic_runner_children(lib, a_pid)
+                middle = raw_generation(a_pid)
+                second = _synthetic_runner_children(lib, a_pid)
+                final = raw_generation(a_pid)
+            except LiveOperatorError:
+                raise
+            except Exception:
+                _fail("fake_runner_spawn_unavailable")
+            if middle != a_generation or final != a_generation:
+                _fail("fake_runner_spawn_unavailable")
+            row = {"elapsed_ms": int((started - spawn_started) * 1000),
+                   "child_count": len(second), "classification": "pending"}
+            spawn_attempts.append(row)
+            if set(first) != set(second):
+                continue
+            if len(second) == 0:
+                continue
+            if len(second) != wanted:
+                _fail("fake_runner_child_count_invalid")
+            witnessed = []
+            for child_pid in second:
+                # This parent-side OS call also makes the independent test
+                # spy see actual cat images, never only our claimed frame.
+                try:
+                    cat = observe_process(child_pid)
+                except Exception:
+                    _fail("fake_runner_spawn_unavailable")
+                if (cat.executable != "/bin/cat"
+                        or cat.argv != ("/bin/cat",)
+                        or cat.ppid != a_pid):
+                    _fail("fake_runner_spawn_unavailable")
+                generation = (cat.pid, cat.ppid, cat.start_sec, cat.start_usec)
+                known_runners.add(generation)
+                try:
+                    witness = _synthetic_runner_cat_witness(
+                        lib, child_pid, a_pid, pipe_handles[stdin_pipe[0]],
+                        stdio_types, stdio_handles,
+                        require_stdio_only=(fault != "retain_private_hold_fd_in_runner"))
+                except LiveOperatorError:
+                    raise
+                if tuple(witness["generation"]) != generation:
+                    _fail("fake_runner_spawn_unavailable")
+                if fault == "retain_private_hold_fd_in_runner":
+                    kinds = _role_graph_fd_list(lib, child_pid)
+                    handle, flags = _role_graph_pipe_identity(lib, child_pid, 3)
+                    if (kinds.get(3) != _ROLE_GRAPH_PIPE_FD_TYPE
+                            or handle != pipe_handles[hold_pipe[0]]
+                            or flags & _ROLE_GRAPH_CLOEXEC):
+                        _fail("fake_runner_fd_witness_unavailable")
+                witnessed.append(generation)
+            if (set(_synthetic_runner_children(lib, a_pid))
+                    != {generation[0] for generation in witnessed}
+                    or any(raw_generation(generation[0]) != generation
+                           for generation in witnessed)):
+                _fail("fake_runner_spawn_unavailable")
+            row["classification"] = "exact"
+            runner_generations = witnessed
+            break
+        if not runner_generations:
+            _fail("fake_runner_spawn_unavailable")
+        spawn_observation = {"attempts": spawn_attempts,
+                             "attempt_count": len(spawn_attempts),
+                             "elapsed_ms": int((time.monotonic() - spawn_started) * 1000)}
+
+        if fault == "runner_exited_before_enumeration":
+            _fake_close(stdin_pipe[1])
+            all_fds.discard(stdin_pipe[1])
+            if not _synthetic_runner_wait_gone(
+                    lib, a_pid, a_generation, runner_generations[0], deadline):
+                _fail("fake_runner_exit_unavailable")
+        o_command = {"phase": "enumerate", "role": "O", "a_pid": a_pid,
+                     "a_generation": list(a_generation),
+                     "stdin_handle": pipe_handles[stdin_pipe[0]],
+                     "stdio_types": {str(k): v for k, v in stdio_types.items()},
+                     "stdio_handles": {str(k): v for k, v in stdio_handles.items()},
+                     "fault": fault}
+        _synthetic_runner_send(pipes["O"]["command"][1], o_command)
+        o_frame = _role_graph_read_frame(pipes["O"]["proof"][0], deadline, None)
+        if (o_frame is None or set(o_frame) != {
+                "phase", "role", "status", "enumerations", "runner"}
+                or o_frame.get("phase") != "enumerated"
+                or o_frame.get("role") != "O"
+                or o_frame.get("enumerations") != 2):
+            _fail("fake_runner_o_witness_mismatch")
+        if o_frame["status"] == "child_count_invalid":
+            _fail("fake_runner_child_count_invalid")
+        if o_frame["status"] == "fd_witness_unavailable":
+            _fail("fake_runner_fd_witness_unavailable")
+        if o_frame["status"] != "ok" or type(o_frame["runner"]) is not dict:
+            _fail("fake_runner_o_witness_mismatch")
+        runner = o_frame["runner"]
+        if (set(runner) != {"pid", "generation", "pgid"}
+                or type(runner["pid"]) is not int
+                or runner["pid"] != runner_generations[0][0]
+                or tuple(runner["generation"]) != runner_generations[0]
+                or type(runner["pgid"]) is not int):
+            _fail("fake_runner_o_witness_mismatch")
+        try:
+            parent_spotcheck = _synthetic_runner_cat_witness(
+                lib, runner["pid"], a_pid, pipe_handles[stdin_pipe[0]],
+                stdio_types, stdio_handles)
+        except LiveOperatorError:
+            _fail("fake_runner_o_witness_mismatch")
+        if parent_spotcheck != runner:
+            _fail("fake_runner_o_witness_mismatch")
+
+        watch_command = {"phase": "watch", "role": "S_runner",
+                         "a_pid": a_pid, "a_generation": list(a_generation),
+                         "runner": runner,
+                         "stdin_handle": pipe_handles[stdin_pipe[0]],
+                         "stdio_types": {str(k): v for k, v in stdio_types.items()},
+                         "stdio_handles": {str(k): v for k, v in stdio_handles.items()},
+                         "fault": fault}
+        _synthetic_runner_send(pipes["S_runner"]["command"][1], watch_command)
+        s_frame = _role_graph_read_frame(
+            pipes["S_runner"]["proof"][0], deadline, None)
+        if (s_frame is None or set(s_frame) != {
+                "phase", "role", "pid", "generation", "kqueue_fd"}
+                or s_frame.get("phase") != "registered"
+                or s_frame.get("role") != "S_runner"
+                or s_frame.get("pid") != runner["pid"]
+                or s_frame.get("generation") != runner["generation"]
+                or type(s_frame.get("kqueue_fd")) is not int):
+            _fail("fake_runner_watch_unregistered")
+        s_pid = children[_ROLE_GRAPH_ROLES.index("S_runner")]
+        try:
+            if (raw_generation(s_pid) != tuple(initials["S_runner"]["raw_generation"])
+                    or _role_graph_fd_list(lib, s_pid).get(s_frame["kqueue_fd"]) != 5
+                    or raw_generation(a_pid) != a_generation
+                    or raw_generation(runner["pid"]) != tuple(runner["generation"])):
+                _fail("fake_runner_watch_unregistered")
+        except LiveOperatorError:
+            raise
+        except Exception:
+            _fail("fake_runner_watch_unregistered")
+        try:
+            os.waitpid(runner["pid"], os.WNOHANG)
+        except ChildProcessError:
+            nonparent_waitpid_rejected = True
+        else:
+            _fail("fake_runner_nonparent_waitpid_not_rejected")
+        _fake_close(stdin_pipe[1])
+        all_fds.discard(stdin_pipe[1])
+        event = _role_graph_read_frame(pipes["S_runner"]["proof"][0],
+                                       deadline, None)
+        if (event is None or set(event) != {
+                "phase", "role", "ident", "filter", "fflags", "flags", "gone"}
+                or event.get("phase") != "exit_event"
+                or event.get("role") != "S_runner"
+                or event.get("ident") != runner["pid"]
+                or event.get("filter") != select.KQ_FILTER_PROC
+                or type(event.get("fflags")) is not int
+                or not event["fflags"] & select.KQ_NOTE_EXIT
+                or type(event.get("flags")) is not int
+                or event["flags"] & select.KQ_EV_ERROR
+                or event.get("gone") is not True):
+            _fail("fake_runner_exit_event_invalid")
+        _synthetic_runner_send(pipes["O"]["command"][1], {
+            "phase": "verify_exit", "role": "O", "a_pid": a_pid,
+            "a_generation": list(a_generation),
+            "runner_generation": runner["generation"]})
+        exit_frame = _role_graph_read_frame(
+            pipes["O"]["proof"][0], deadline,
+            {"phase", "role", "ok"})
+        if (exit_frame != {"phase": "exit_verified", "role": "O", "ok": True}
+                or not _synthetic_runner_wait_gone(
+                    lib, a_pid, a_generation, tuple(runner["generation"]), deadline)):
+            _fail("fake_runner_exit_verification_failed")
+        # O and S_runner are still held here; only now may A leave.
+        _fake_close(hold_pipe[1])
+        all_fds.discard(hold_pipe[1])
+        statuses: dict[int, int] = {}
+        if not _fake_wait_reap(a_pid, deadline, statuses):
+            _fail("fake_runner_a_exit_failed")
+        reaped.add(a_pid)
+        status = statuses[a_pid]
+        if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+            _fail("fake_runner_a_exit_failed")
+        for role in _ROLE_GRAPH_ROLES:
+            if role == "A":
+                continue
+            _synthetic_runner_send(pipes[role]["command"][1],
+                                   {"phase": "release", "role": role})
+        for role, pid in zip(_ROLE_GRAPH_ROLES, children):
+            if role == "A":
+                continue
+            reply = _role_graph_read_frame(pipes[role]["proof"][0], deadline,
+                                           {"phase", "role", "pid"})
+            if reply != {"phase": "released", "role": role, "pid": pid}:
+                _fail("fake_runner_release_failed")
+            statuses = {}
+            if not _fake_wait_reap(pid, deadline, statuses):
+                _fail("fake_runner_release_failed")
+            reaped.add(pid)
+            status = statuses[pid]
+            if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+                _fail("fake_runner_release_failed")
+        if fault is not None:
+            _fail("fake_runner_fault_not_observed")
+        return {
+            "schema": "fake_runner_lifecycle_preflight_v1",
+            "status": "fake_runner_partial",
+            "initial_role_count": len(children),
+            "normal_reap_count": len(reaped),
+            "control_pipe_count": 22, "control_endpoint_count": 44,
+            "extra_exec_pipe_count": 1,
+            "private_runner_stdin_pipe_count": 1,
+            "private_a_hold_pipe_count": 1,
+            "private_runner_stdin_bytes_written": 0,
+            "runner_exit_observed": True,
+            "runner_reaped_by_parent": "not_applicable",
+            "nonparent_waitpid_rejected": nonparent_waitpid_rejected,
+            "o_enumeration_count": 2,
+            "s_runner_independent_reobservation": True,
+            "s_runner_registration_observed": True,
+            "s_runner_event_ident_matched": True,
+            "s_runner_event_filter": event["filter"],
+            "s_runner_event_note_exit": True,
+            "s_runner_event_error": False,
+            "runner_spawn_observation": spawn_observation,
+            "a_postexec_observation": postexec,
+            "fd_samples": samples,
+            "fd_sampled_min_margin": min(row["soft"] - row["count"]
+                                           for row in samples),
+            "work_grants": 0, "http_calls": 0, "model_bytes_read": 0,
+            "installed_identity_proven": False,
+            "physical_stop_unproven": True,
+            "full_gate_pass": False, "b_send_authorized": False,
+        }
+    except LiveOperatorError:
+        raise
+    except BaseException:
+        _fail("fake_runner_preflight_failed")
+    finally:
+        # Close-only release first: the cat belongs to A and P cannot reap it.
+        if stdin_pipe is not None:
+            _fake_close(stdin_pipe[1])
+            all_fds.discard(stdin_pipe[1])
+        if hold_pipe is not None:
+            _fake_close(hold_pipe[1])
+            all_fds.discard(hold_pipe[1])
+        cleaned = _role_graph_cleanup(children, reaped, all_fds)
+        after = _role_graph_fd_sample("after_cleanup")
+        samples.append(after)
+        gone = all(_synthetic_runner_generation_gone(generation)
+                   for generation in known_runners)
+        if not cleaned or not gone or after["count"] != samples[0]["count"]:
+            _fail("fake_runner_cleanup_failed")
 
 
 def _fake_os_witness(pid: int) -> dict:

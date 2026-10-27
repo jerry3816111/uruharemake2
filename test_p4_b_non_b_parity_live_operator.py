@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import ctypes
+import errno
 import hashlib
 import json
 import mmap
@@ -1695,8 +1696,68 @@ def _runner_generations_disappeared(observed, a_pid):
         try:
             current = raw_generation(snapshot.pid)
         except live.ProbeError:
+            try:
+                os.kill(snapshot.pid, 0)
+            except OSError as error:
+                assert error.errno == errno.ESRCH, (
+                    "runner PID absence not established by OS")
+            else:
+                pytest.fail("known synthetic runner still has a live PID")
             continue
-        assert current != expected, "original synthetic runner still exists"
+        assert ((current[0], current[2], current[3])
+                != (expected[0], expected[2], expected[3])), (
+                    "original synthetic runner still exists")
+
+
+@pytest.mark.parametrize("probe_code", [
+    "bsd_info_unavailable", "process_generation_unavailable",
+    "bsd_info_invalid",
+])
+def test_synthetic_runner_live_pid_probe_error_is_not_exit(
+        monkeypatch, probe_code):
+    generation = (os.getpid(), os.getppid(), 1, 1)
+
+    def unavailable(pid):
+        assert pid == generation[0]
+        raise live.ProbeError(probe_code)
+
+    monkeypatch.setattr(live, "raw_generation", unavailable)
+    assert live._synthetic_runner_generation_gone(generation) is False
+
+
+def test_synthetic_runner_reparented_same_start_is_still_live(monkeypatch):
+    generation = (os.getpid(), os.getppid(), 100, 200)
+    monkeypatch.setattr(
+        live, "raw_generation",
+        lambda pid: (pid, 1, generation[2], generation[3]))
+    assert live._synthetic_runner_generation_gone(generation) is False
+
+
+def test_synthetic_runner_reused_pid_new_start_is_old_generation_gone(
+        monkeypatch):
+    generation = (os.getpid(), os.getppid(), 100, 200)
+    monkeypatch.setattr(
+        live, "raw_generation",
+        lambda pid: (pid, 1, generation[2] + 1, generation[3]))
+    assert live._synthetic_runner_generation_gone(generation) is True
+
+
+@pytest.mark.parametrize("kill_errno,expected", [
+    (errno.ESRCH, True), (errno.EPERM, False),
+])
+def test_synthetic_runner_absence_requires_exact_esrch(
+        monkeypatch, kill_errno, expected):
+    generation = (os.getpid(), os.getppid(), 1, 1)
+
+    def unavailable(_pid):
+        raise live.ProbeError("process_generation_unavailable")
+
+    def deny(_pid, _signal):
+        raise OSError(kill_errno, "synthetic OS error")
+
+    monkeypatch.setattr(live, "raw_generation", unavailable)
+    monkeypatch.setattr(live.os, "kill", deny)
+    assert live._synthetic_runner_generation_gone(generation) is expected
 
 
 @_DARWIN_FORK
