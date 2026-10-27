@@ -1709,6 +1709,152 @@ def _runner_generations_disappeared(observed, a_pid):
                     "original synthetic runner still exists")
 
 
+@_DARWIN_FORK
+def test_synthetic_runner_early_a_death_before_operator_identity(
+        monkeypatch):
+    """Test-private cat witness never becomes P's runner identity/stop proof."""
+    class UntouchablePath:
+        def __fspath__(self):
+            raise AssertionError("fake probe accessed caller path")
+
+        def __str__(self):
+            raise AssertionError("fake probe stringified caller path")
+
+        def __getattr__(self, _name):
+            raise AssertionError("fake probe inspected caller path")
+
+    parent_pid = os.getpid()
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    real_children = live._synthetic_runner_children
+    real_observe = live.observe_process
+    operator_cat_observations = []
+    test_witness = {}
+
+    def operator_observe(pid, *args, **kwargs):
+        snapshot = real_observe(pid, *args, **kwargs)
+        if (os.getpid() == parent_pid
+                and snapshot.executable == "/bin/cat"):
+            operator_cat_observations.append(snapshot)
+        return snapshot
+
+    def original_cat_still_present():
+        generation = test_witness.get("generation")
+        if generation is None:
+            return False
+        try:
+            current = raw_generation(generation[0])
+        except live.ProbeError:
+            try:
+                os.kill(generation[0], 0)
+            except OSError as error:
+                return False if error.errno == errno.ESRCH else None
+            return None  # A live PID without start identity is not safe to kill.
+        except Exception:
+            return None
+        return ((current[0], current[2], current[3])
+                == (generation[0], generation[2], generation[3]))
+
+    def hide_and_kill_a(lib, a_pid):
+        if os.getpid() != parent_pid:
+            return real_children(lib, a_pid)
+        if test_witness.get("injected"):
+            return ()
+        actual = real_children(lib, a_pid)
+        if len(actual) != 1:
+            return actual
+        cat_pid = actual[0]
+        try:
+            a_before = raw_generation(a_pid)
+            cat_before = raw_generation(cat_pid)
+            a_image = real_observe(a_pid)
+            cat_image = real_observe(cat_pid)
+            a_kinds = live._role_graph_fd_list(lib, a_pid)
+            cat_kinds = live._role_graph_fd_list(lib, cat_pid)
+            a_stdin, _ = live._role_graph_pipe_identity(lib, a_pid, 0)
+            cat_stdin, _ = live._role_graph_pipe_identity(lib, cat_pid, 0)
+            cat_after = raw_generation(cat_pid)
+            a_after = raw_generation(a_pid)
+        except (live.LiveOperatorError, live.ProbeError, OSError):
+            return ()  # Transient pre-exec observation is not the barrier.
+        if (a_before != a_after or cat_before != cat_after
+                or a_before[1] != parent_pid or cat_before[1] != a_pid
+                or len(children) <= live._ROLE_GRAPH_ROLES.index("A")
+                or children[live._ROLE_GRAPH_ROLES.index("A")] != a_pid
+                or a_image.executable != "/bin/bash"
+                or a_image.argv != ("/bin/bash", "-c", _RUNNER_SHELL_NORMAL)
+                or (a_image.pid, a_image.ppid, a_image.start_sec,
+                    a_image.start_usec) != a_before
+                or cat_image.executable != "/bin/cat"
+                or cat_image.argv != ("/bin/cat",)
+                or (cat_image.pid, cat_image.ppid, cat_image.start_sec,
+                    cat_image.start_usec) != cat_before
+                or a_kinds.get(0) != live._ROLE_GRAPH_PIPE_FD_TYPE
+                or set(cat_kinds) != {0, 1, 2}
+                or cat_kinds[0] != live._ROLE_GRAPH_PIPE_FD_TYPE
+                or a_stdin != cat_stdin):
+            return ()
+        test_witness["generation"] = cat_before
+        test_witness["a_generation"] = a_before
+        test_witness["cat_fd0_handle"] = cat_stdin
+        # Capture first, so even an unexpected A death still leaves a safe
+        # test-only cat identity for the emergency finally path.
+        if os.waitpid(a_pid, os.WNOHANG) != (0, 0):
+            return ()
+        if raw_generation(a_pid) != a_before:
+            return ()
+        os.kill(a_pid, signal.SIGKILL)  # Exact unreaped P child, test only.
+        test_witness["injected"] = True
+        return ()  # P must not receive the test-private cat identity.
+
+    monkeypatch.setattr(live, "observe_process", operator_observe)
+    monkeypatch.setattr(live, "_synthetic_runner_children", hide_and_kill_a)
+    before_fds = len(os.listdir("/dev/fd"))
+    started = time.monotonic()
+    cleanup_identity_unknown = False
+    try:
+        with pytest.raises(live.LiveOperatorError) as caught:
+            live.supervise_once(
+                run_dir=UntouchablePath(), model_root=UntouchablePath(),
+                clock=_synthetic_runner_forbidden_clock,
+                effects=_synthetic_runner_effects(),
+            )
+        assert test_witness.get("injected") is True, (
+            "A-death barrier was not reached; zero-child rejection is not evidence")
+        assert str(caught.value) == "fake_runner_spawn_unavailable"
+        assert len(children) == len(live._ROLE_GRAPH_ROLES) == 11
+        assert operator_cat_observations == []
+        until = time.monotonic() + 2.0
+        while time.monotonic() < until and original_cat_still_present() is True:
+            time.sleep(0.02)
+        assert original_cat_still_present() is False, (
+            "operator returned while test-witnessed cat generation remained")
+        assert time.monotonic() - started < 25.0
+        assert len(os.listdir("/dev/fd")) == before_fds
+    finally:
+        # Emergency test hygiene is deliberately after acceptance checks.
+        # It cannot make a failed product cleanup look green.
+        if test_witness.get("generation") is not None:
+            state = original_cat_still_present()
+            if state is True:
+                # Reverify the stable PID/start identity immediately before
+                # signaling; never signal a reused or unobservable PID.
+                confirmed = original_cat_still_present()
+                if confirmed is True:
+                    try:
+                        os.kill(test_witness["generation"][0], signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    except OSError:
+                        cleanup_identity_unknown = True
+                elif confirmed is None:
+                    cleanup_identity_unknown = True
+            elif state is None:
+                cleanup_identity_unknown = True
+        _assert_synthetic_role_graph_children_reaped(children)
+        if cleanup_identity_unknown:
+            pytest.fail("cat identity unavailable for safe test-side cleanup")
+
+
 @pytest.mark.parametrize("probe_code", [
     "bsd_info_unavailable", "process_generation_unavailable",
     "bsd_info_invalid",

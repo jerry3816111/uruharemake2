@@ -1,5 +1,7 @@
 # 目前任務卡
 
+續接 P4-B early-A-death 負控收尾（2026-10-27，**controlled fake-only PASS；real/live REVIEW_REQUIRED**）：前瞻 test-only freeze `83f1b40` 已推 PR #435 exact head；unchanged source 首跑新負控 **1/1（0.78s）**，相鄰 runner **20/20（2.03s）**。測試私有 OS 見證 exact cat 後殺 unreaped A、對 P 隱藏 cat PID；P 無 cat image、固定 `fake_runner_spawn_unavailable`，原 cat generation 在測試兜底前消失，11 直屬回收、FD 恢復、caller path/clock 哨兵未觸。只增加測試，不改 product source；詳 `analysis/p4_b_non_b_early_a_death_negative_result_2026-10-27.md`。這只證 cooperative `/bin/cat` 受控時序，`known_runners` 空集合仍不能證 real unknown descendant 停止；**真 Ollama／HTTP／Safari／T0+90／B Send NO-GO**。本批下一步 scoped diff review、只提交推 test＋result＋本卡並核 PR head；其後按流程停止無限 fake runner 支援，選一個不依賴 real B 放行的必要產品項。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。以下舊段「下一步」均為歷史。
+
 續接 P4-B early-A-death 負控（2026-10-27，**prospective test-only；real/live NO-GO**）：在已推送的只讀 orphan window 審查 `c68b4af` 後，先凍結 `research/p4_b_non_b_early_a_death_negative_freeze_2026-10-27.md`。單一變因為測試側在已 OS 見證一個 exact `/bin/cat`、但 P 尚未得 runner 身分時殺死其 unreaped 直屬 A；測試私有見證不交給 operator。首跑對 unchanged source 記 before，要求固定拒絕、原 cat PID/start generation 消失、11 直屬回收、FD 恢復、零 run/model I/O；存活才可在斷言失敗後用新鮮 exact generation 作測試兜底清理，不許盲殺。只准 test／freeze／result／本卡；先 focused 再相鄰 runner，source 若需修正另做前瞻審查。這即使 PASS 也只是 cooperative cat controlled interleaving，**不放行 real Ollama／HTTP／Safari／T0+90／B Send**。無關 `output/graduate_application_report/`、原始 dirty checkout、正式 DB 不碰。以下舊段「下一步」均為歷史。
 
 註：以下 `3fc07fe` 的「PR exact head」是 fake-only gate 收尾時的核對紀錄；本只讀審查若另行提交推送，應以新的 PR head 再核，不把歷史 hash 當現值。
