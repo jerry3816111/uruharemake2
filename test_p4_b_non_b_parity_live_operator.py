@@ -1590,6 +1590,362 @@ def test_synthetic_a_exec_v2_late_second_exact_snapshot_cannot_pass(
         "exact", "exact"]
 
 
+_RUNNER_SHELL_NORMAL = "/bin/cat <&0 3<&- & wait; read _ <&3; exit 0"
+_RUNNER_SHELL_DUPLICATE = (
+    "/bin/cat <&0 3<&- & /bin/cat <&0 3<&- & wait; read _ <&3; exit 0"
+)
+_RUNNER_SHELL_RETAIN = "/bin/cat <&0 & wait; read _ <&3; exit 0"
+
+
+def _synthetic_runner_effects(fault=None):
+    return {"schema": "synthetic_runner_lifecycle_probe_v1", "fault": fault}
+
+
+def _synthetic_runner_forbidden_clock():
+    raise AssertionError("runner probe must ignore caller clock")
+
+
+def _record_runner_process_observations(monkeypatch):
+    """Keep actual parent-side macOS snapshots, not claimed result flags."""
+    real_observe = live.observe_process
+    parent_pid = os.getpid()
+    observed = []
+    fd_witnesses = []
+    simultaneous_runner_witnesses = []
+
+    def children_of(lib, pid):
+        try:
+            enumerate_children = lib.proc_listchildpids
+            enumerate_children.argtypes = [ctypes.c_int, ctypes.c_void_p,
+                                           ctypes.c_int]
+            enumerate_children.restype = ctypes.c_int
+            listed = (ctypes.c_int * 16)()
+            count = enumerate_children(pid, listed, ctypes.sizeof(listed))
+        except Exception:
+            return None
+        if not (0 <= count < len(listed)):
+            return None
+        return tuple(int(value) for value in listed[:count])
+
+    def observe(pid, *args, **kwargs):
+        snapshot = real_observe(pid, *args, **kwargs)
+        if os.getpid() == parent_pid and pid != parent_pid:
+            observed.append(snapshot)
+            if snapshot.executable in {"/bin/bash", "/bin/cat"}:
+                # Only test-owned, parent-side OS data. A fleeting process
+                # may disappear while reading; do not fabricate a map.
+                try:
+                    lib = live._role_graph_libproc()
+                    kinds = live._role_graph_fd_list(lib, pid)
+                    handles = {
+                        fd: live._role_graph_pipe_identity(lib, pid, fd)
+                        for fd, kind in kinds.items()
+                        if kind == live._ROLE_GRAPH_PIPE_FD_TYPE
+                    }
+                except live.LiveOperatorError:
+                    pass
+                else:
+                    fd_witnesses.append((snapshot, kinds, handles))
+                    if snapshot.executable == "/bin/cat":
+                        # Two complete OS enumerations with both original
+                        # generations intact prove overlap, not merely two
+                        # sequential sightings of different children.
+                        first = children_of(lib, snapshot.ppid)
+                        if first is not None and len(first) >= 2:
+                            try:
+                                generations = {child: raw_generation(child)
+                                               for child in first}
+                                images = {child: real_observe(child)
+                                          for child in first}
+                                second = children_of(lib, snapshot.ppid)
+                                final = {child: raw_generation(child)
+                                         for child in first}
+                            except Exception:
+                                pass
+                            else:
+                                if (second is not None
+                                        and len(set(first)) == len(first)
+                                        and len(set(second)) == len(second)
+                                        and len(first) == len(second)
+                                        and set(first) == set(second)
+                                        and generations == final
+                                        and all(images[child].ppid == snapshot.ppid
+                                                and images[child].executable == "/bin/cat"
+                                                and images[child].argv == ("/bin/cat",)
+                                                for child in first)):
+                                    simultaneous_runner_witnesses.append(
+                                        (snapshot.ppid, first))
+        return snapshot
+
+    monkeypatch.setattr(live, "observe_process", observe)
+    return observed, fd_witnesses, simultaneous_runner_witnesses
+
+
+def _runner_snapshots(observed, a_pid):
+    return [snapshot for snapshot in observed
+            if snapshot.ppid == a_pid
+            and snapshot.executable == "/bin/cat"
+            and snapshot.argv == ("/bin/cat",)]
+
+
+def _runner_generations_disappeared(observed, a_pid):
+    for snapshot in _runner_snapshots(observed, a_pid):
+        expected = (snapshot.pid, snapshot.ppid,
+                    snapshot.start_sec, snapshot.start_usec)
+        try:
+            current = raw_generation(snapshot.pid)
+        except live.ProbeError:
+            continue
+        assert current != expected, "original synthetic runner still exists"
+
+
+@_DARWIN_FORK
+def test_synthetic_runner_lifecycle_public_preflight_requires_o_and_s_runner(
+        monkeypatch, tmp_path):
+    """P cannot substitute its own watcher for O and S_runner evidence."""
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    observed, fd_witnesses, _ = _record_runner_process_observations(monkeypatch)
+    real_waitpid = os.waitpid
+    parent_pid = os.getpid()
+    nonparent_waitpid_rejections = []
+    active = True
+
+    def waitpid(pid, options):
+        try:
+            return real_waitpid(pid, options)
+        except ChildProcessError:
+            if (active and os.getpid() == parent_pid and pid > 0
+                    and pid not in children):
+                nonparent_waitpid_rejections.append(pid)
+            raise
+
+    monkeypatch.setattr(live.os, "waitpid", waitpid)
+    before_fds = len(os.listdir("/dev/fd"))
+    try:
+        result = live.supervise_once(
+            run_dir=run_dir, model_root=model_root,
+            clock=_synthetic_runner_forbidden_clock,
+            effects=_synthetic_runner_effects(),
+        )
+    finally:
+        active = False
+        _assert_synthetic_role_graph_children_reaped(children)
+
+    assert len(children) == 11
+    a_pid = children[4]
+    a_shell = [snapshot for snapshot in observed
+               if snapshot.pid == a_pid
+               and snapshot.executable == "/bin/bash"
+               and snapshot.argv == ("/bin/sh", "-c", _RUNNER_SHELL_NORMAL)]
+    assert len(a_shell) >= 2
+    runners = _runner_snapshots(observed, a_pid)
+    assert len({snapshot.pid for snapshot in runners}) == 1
+    runner_pid = runners[0].pid
+    a_maps = [(kinds, handles) for snapshot, kinds, handles in fd_witnesses
+              if snapshot.pid == a_pid and set(kinds) == {0, 1, 2, 3}
+              and 0 in handles and 3 in handles]
+    runner_maps = [(kinds, handles) for snapshot, kinds, handles in fd_witnesses
+                   if snapshot.pid == runner_pid and set(kinds) == {0, 1, 2}
+                   and 0 in handles]
+    assert a_maps and runner_maps
+    assert any(a_handles[0][0] == runner_handles[0][0]
+               for _, a_handles in a_maps
+               for _, runner_handles in runner_maps)
+    assert runner_pid in nonparent_waitpid_rejections
+    _runner_generations_disappeared(observed, a_pid)
+    assert len(os.listdir("/dev/fd")) == before_fds
+    assert not run_dir.exists() and not model_root.exists()
+    assert result["schema"] == "fake_runner_lifecycle_preflight_v1"
+    assert result["status"] == "fake_runner_partial"
+    assert result["initial_role_count"] == 11
+    assert result["normal_reap_count"] == 11
+    assert result["control_pipe_count"] == 22
+    assert result["control_endpoint_count"] == 44
+    assert result["extra_exec_pipe_count"] == 1
+    assert result["private_runner_stdin_pipe_count"] == 1
+    assert result["private_a_hold_pipe_count"] == 1
+    assert result["private_runner_stdin_bytes_written"] == 0
+    assert result["runner_exit_observed"] is True
+    assert result["runner_reaped_by_parent"] == "not_applicable"
+    assert result["nonparent_waitpid_rejected"] is True
+    assert result["o_enumeration_count"] == 2
+    assert result["s_runner_independent_reobservation"] is True
+    assert result["s_runner_registration_observed"] is True
+    assert result["s_runner_event_ident_matched"] is True
+    assert result["s_runner_event_filter"] == select.KQ_FILTER_PROC
+    assert result["s_runner_event_note_exit"] is True
+    assert result["s_runner_event_error"] is False
+    spawn = result["runner_spawn_observation"]
+    assert type(spawn["attempts"]) is list
+    assert 1 <= len(spawn["attempts"]) <= 512
+    assert spawn["attempt_count"] == len(spawn["attempts"])
+    assert spawn["attempts"][-1]["child_count"] == 1
+    assert spawn["attempts"][-1]["classification"] == "exact"
+    postexec = result["a_postexec_observation"]
+    assert postexec["attempt_count"] == len(postexec["attempts"])
+    assert 2 <= postexec["attempt_count"] <= 512
+    assert postexec["attempts"][-1]["classification"] == "exact"
+    assert postexec["attempts"][-2]["classification"] == "exact"
+    assert (postexec["attempts"][-1]["elapsed_ms"]
+            - postexec["attempts"][-2]["elapsed_ms"] >= 10)
+    samples = result["fd_samples"]
+    expected_phases = (['before_allocation']
+                       + [f'allocated_{number}' for number in range(1, 23)]
+                       + ['allocated_exec_status', 'allocated_private_stdin',
+                          'allocated_private_a_hold']
+                       + [f'fork_closed_{role}' for role in (
+                           'D', 'W', 'R', 'O', 'A', 'S_D', 'S_W', 'S_R',
+                           'S_O', 'S_A', 'S_runner')]
+                       + ['after_cleanup'])
+    assert [row["phase"] for row in samples] == expected_phases
+    assert all(type(row["count"]) is int and type(row["soft"]) is int
+               and 0 <= row["count"] < row["soft"] for row in samples)
+    assert samples[-1]["count"] == samples[0]["count"]
+    assert result["fd_sampled_min_margin"] == min(
+        row["soft"] - row["count"] for row in samples)
+    for key in ("work_grants", "http_calls", "model_bytes_read"):
+        assert result[key] == 0
+    assert result["installed_identity_proven"] is False
+    assert result["physical_stop_unproven"] is True
+    assert result["full_gate_pass"] is False
+    assert result["b_send_authorized"] is False
+    assert not any(token in str(result).lower() for token in (
+        CANARY.lower(), "pipe_handle", "raw_argv", "source_text"))
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("fault,expected_code,expected_script,min_runners", [
+    ("runner_exited_before_enumeration", "fake_runner_child_count_invalid",
+     _RUNNER_SHELL_NORMAL, 1),
+    ("duplicate_runner", "fake_runner_child_count_invalid",
+     _RUNNER_SHELL_DUPLICATE, 2),
+    ("o_wrong_runner_pid", "fake_runner_o_witness_mismatch",
+     _RUNNER_SHELL_NORMAL, 1),
+    ("watch_registration_missing", "fake_runner_watch_unregistered",
+     _RUNNER_SHELL_NORMAL, 1),
+    ("wrong_exit_event", "fake_runner_exit_event_invalid",
+     _RUNNER_SHELL_NORMAL, 1),
+    ("retain_private_hold_fd_in_runner", "fake_runner_fd_witness_unavailable",
+     _RUNNER_SHELL_RETAIN, 1),
+])
+def test_synthetic_runner_lifecycle_named_fault_fails_after_its_os_condition(
+        monkeypatch, tmp_path, fault, expected_code, expected_script,
+        min_runners):
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    observed, fd_witnesses, simultaneous = _record_runner_process_observations(
+        monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    started = time.monotonic()
+    try:
+        with pytest.raises(live.LiveOperatorError,
+                           match=f"^{expected_code}$") as caught:
+            live.supervise_once(
+                run_dir=run_dir, model_root=model_root,
+                clock=_synthetic_runner_forbidden_clock,
+                effects=_synthetic_runner_effects(fault),
+            )
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+
+    assert str(caught.value) == expected_code
+    assert len(children) == 11
+    a_pid = children[4]
+    assert any(snapshot.pid == a_pid
+               and snapshot.executable == "/bin/bash"
+               and snapshot.argv == ("/bin/sh", "-c", expected_script)
+               for snapshot in observed)
+    runner_pids = {snapshot.pid for snapshot in _runner_snapshots(observed, a_pid)}
+    assert len(runner_pids) == min_runners
+    if fault == "duplicate_runner":
+        assert any(parent == a_pid and len(pids) == 2
+                   and set(pids) == runner_pids
+                   for parent, pids in simultaneous)
+        assert sum(any(snapshot.pid == runner_pid and set(kinds) == {0, 1, 2}
+                       for snapshot, kinds, _ in fd_witnesses)
+                   for runner_pid in runner_pids) >= 2
+    if fault == "retain_private_hold_fd_in_runner":
+        a_hold_handles = {
+            handles[3][0] for snapshot, kinds, handles in fd_witnesses
+            if snapshot.pid == a_pid and kinds.get(3) == live._ROLE_GRAPH_PIPE_FD_TYPE
+            and 3 in handles
+        }
+        leaked_handles = {
+            handles[3][0] for snapshot, kinds, handles in fd_witnesses
+            if snapshot.pid in runner_pids
+            and kinds.get(3) == live._ROLE_GRAPH_PIPE_FD_TYPE
+            and 3 in handles
+        }
+        assert a_hold_handles & leaked_handles
+    _runner_generations_disappeared(observed, a_pid)
+    assert time.monotonic() - started < 25.0
+    assert len(os.listdir("/dev/fd")) == before_fds
+    assert not run_dir.exists() and not model_root.exists()
+    assert CANARY not in str(caught.value)
+
+
+@_DARWIN_FORK
+def test_synthetic_runner_lifecycle_requires_real_s_runner_kqueue_registration(
+        monkeypatch, tmp_path):
+    """A fabricated registration receipt cannot replace a kernel watcher."""
+    parent_pid = os.getpid()
+    real_kqueue = select.kqueue
+
+    def deny_child_kqueue():
+        if os.getpid() != parent_pid:
+            raise OSError("synthetic watcher registration denied")
+        return real_kqueue()
+
+    monkeypatch.setattr(live.select, "kqueue", deny_child_kqueue)
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    observed, _, _ = _record_runner_process_observations(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    started = time.monotonic()
+    try:
+        with pytest.raises(live.LiveOperatorError,
+                           match="^fake_runner_watch_unregistered$"):
+            live.supervise_once(
+                run_dir=tmp_path / "no-run-write",
+                model_root=tmp_path / "no-model-read",
+                clock=_synthetic_runner_forbidden_clock,
+                effects=_synthetic_runner_effects(),
+            )
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+    assert len(children) == 11
+    assert len(_runner_snapshots(observed, children[4])) >= 1
+    _runner_generations_disappeared(observed, children[4])
+    assert time.monotonic() - started < 25.0
+    assert len(os.listdir("/dev/fd")) == before_fds
+
+
+@_DARWIN_FORK
+@pytest.mark.parametrize("effects", [
+    {"schema": "synthetic_runner_lifecycle_probe_v1", "fault": None,
+     "full_gate_pass": True},
+    {"schema": "synthetic_runner_lifecycle_probe_v1", "fault": "unknown"},
+    {"schema": "synthetic_runner_lifecycle_probe_v1"},
+    _ProbeDictSubclass(_synthetic_runner_effects()),
+])
+def test_synthetic_runner_lifecycle_marker_is_exact_and_invalid_is_zero_fork(
+        monkeypatch, tmp_path, effects):
+    run_dir = tmp_path / "no-run-write"
+    model_root = tmp_path / "no-model-read"
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    with pytest.raises(live.LiveOperatorError,
+                       match="^process_supervisor_not_implemented$"):
+        live.supervise_once(
+            run_dir=run_dir, model_root=model_root,
+            clock=_synthetic_runner_forbidden_clock, effects=effects)
+    assert children == []
+    assert len(os.listdir("/dev/fd")) == before_fds
+    assert not run_dir.exists() and not model_root.exists()
+
+
 def _pipe_has_byte(fd):
     ready, _, _ = select.select([fd], [], [], 0)
     return bool(ready and os.read(fd, 1))
