@@ -233,6 +233,76 @@ T0+90. The probe asserted event PID and `NOTE_EXIT`, but not the proposed
 full filter/`EV_ERROR` check; that remains for focused protocol controls.
 Its only authorization is to proceed with design review.
 
+## First source slice: isolated role-graph preflight, not live admission
+
+Before source change, public `supervise_once()` always raises
+`process_supervisor_not_implemented`; V5's 252/256 sampled parent FD count
+belongs to a different fake graph. The first implementation slice changes
+only **the real-path role/IPC topology**, before identity, exec or work.
+The public opt-in is the exact plain dict
+`{"schema":"synthetic_role_graph_probe_v1","fault":null}`. Source must
+require `type(effects) is dict`, exact keys, exact schema and a fixed fault
+enum. The only fault values are `null`, `pipe_allocation_after_7`,
+`omit_o_initial_ack` and `retain_o_nonrole_fd`. All other effects retain
+the public fail-closed error and zero callbacks. The dict is a request
+for a permanently fake diagnostic, **not** an identity or live authority.
+The probe must not read or write caller-supplied `run_dir` or `model_root`;
+tests assert both paths remain absent or byte-equal. It must not spawn
+Ollama, `exec` A, open a network socket, send W_GO or HTTP,
+read model bytes, write production memory, or produce a live verdict.
+
+The probe allocates the candidate 22 control pipes / 44 endpoints plus one
+separately counted exec-status pipe before forking, recording the expected
+pipe handles/FD identities while P still owns both ends. It forks exactly the
+eleven direct P children D/W/R/O/A/S_D/S_W/S_R/S_O/S_A/S_runner in fixed
+order. Each child closes every non-role inherited endpoint immediately,
+retains only its command/proof ends, sets role and exec-status controls
+`FD_CLOEXEC`, and sends one canonical <=4096-byte initial PID/raw-generation/
+PPID/PGID/role frame. P must independently reacquire each child's initial
+raw generation and parentage before considering the graph prepared. For
+this isolated synthetic probe, P also brackets two macOS
+`proc_pidinfo(PROC_PIDLISTFDS)` snapshots of each idle child with raw
+generation, then compares the exact allowed FD number/type/pipe identity
+set for stdio, the role's two control ends and A's exec-status end.
+`proc_pidfdinfo(PROC_PIDFDPIPEINFO)` may supply pipe handles and the
+`PROC_FP_CLEXEC` flag. Missing permission, full/truncated buffer,
+unexpected FD, changed generation/set or failed CLOEXEC check fails
+closed; a child's ACK cannot certify its own FD closure. These APIs are
+only locally feasible so far, not yet proven for all eleven children.
+In the future live path O/S_O must perform blocking OS inspection rather
+than place it on P's watchdog loop. A
+remains **held**; merely checking CLOEXEC flags is not an exec/EOF proof.
+P samples its actual open-FD count at each allocation and fork-close
+barrier, with named phase, soft limit and minimum observed margin; the
+`/dev/fd` enumeration's own transient FD is counted. Samples are not a
+continuous process-wide peak or proof of a future daemon/runner load.
+
+The positive result is `schema=fake_role_graph_preflight_v1`,
+`status=fake_topology_partial`, exact 11 initially witnessed and normally
+released with ACK, exit status zero and P exact `waitpid` for every direct
+child, 22 control pipes and 44 endpoints, one
+extra exec-status pipe, ordered FD samples, `work_grants=0`, `http_calls=0`,
+`model_bytes_read=0`, `a_exec_observed=false`, and permanently
+`installed_identity_proven=false`, `physical_stop_unproven=true`,
+`full_gate_pass=false`, `b_send_authorized=false`. It is a test-only
+mechanical witness, not a 0600 live receipt. No raw data or caller-supplied
+`passed` boolean may control the verdict.
+
+Required negative controls: pipe allocation fails before fork with all
+allocated ends closed and no child; one role omits initial ACK, yielding
+zero work grants, bounded exact-owned-child cleanup and a fake failure;
+O deliberately retains A's not-yet-forked command-read pipe endpoint,
+which must be detected by the OS FD
+set rather than accepted from a well-shaped ACK. The parent must retain
+direct waitable ownership until cleanup; a test-only child alarm, emergency
+exact-PID signal, missing normal release ACK or nonzero exit can only
+produce fake failure, never positive fake topology. Resource/failure
+observations must be recorded without normalizing away the initial red
+failure. After this slice, a separate A synthetic exec/EOF and runner
+topology gate is still necessary before installed identity source or live
+preflight. Success of this slice alone never authorizes real Ollama, model
+SHA, HTTP, Safari or B Send.
+
 ## Required red/negative controls and release boundary
 
 After this exact amendment is reviewed/committed, the next source step is
