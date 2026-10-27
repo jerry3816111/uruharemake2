@@ -1445,7 +1445,7 @@ def test_synthetic_a_exec_v2_persistent_vnode_times_out_without_release(
     started = time.monotonic()
     try:
         with pytest.raises(live.LiveOperatorError,
-                           match="^fake_a_exec_fd_witness_unavailable$"):
+                           match="^fake_a_exec_fd_witness_unavailable$") as caught:
             live.supervise_once(
                 run_dir=tmp_path / "no-run-write",
                 model_root=tmp_path / "no-model-read",
@@ -1459,6 +1459,16 @@ def test_synthetic_a_exec_v2_persistent_vnode_times_out_without_release(
     assert len(calls) >= 2
     assert 4.0 <= elapsed < 25.0
     assert len(os.listdir("/dev/fd")) == before_fds
+    observation = caught.value.post_exec_observation
+    assert observation["attempt_count"] == len(observation["attempts"])
+    assert 2 <= observation["attempt_count"] <= 512
+    assert observation["transient_vnode_attempts"] >= 1
+    assert observation["exact_complete_attempts"] == 0
+    assert observation["elapsed_ms"] >= 4000
+    assert any(row["extra_fd_type_counts"].get("1", 0) >= 1
+               for row in observation["attempts"])
+    assert not any(key in str(observation).lower() for key in (
+        "argv", "handle", "source_text", CANARY.lower()))
 
 
 @_DARWIN_FORK
@@ -1470,7 +1480,7 @@ def test_synthetic_a_exec_v2_extra_pipe_fails_on_first_os_fd_snapshot(
     before_fds = len(os.listdir("/dev/fd"))
     try:
         with pytest.raises(live.LiveOperatorError,
-                           match="^fake_a_exec_fd_witness_unavailable$"):
+                           match="^fake_a_exec_fd_witness_unavailable$") as caught:
             live.supervise_once(
                 run_dir=tmp_path / "no-run-write",
                 model_root=tmp_path / "no-model-read",
@@ -1482,6 +1492,102 @@ def test_synthetic_a_exec_v2_extra_pipe_fails_on_first_os_fd_snapshot(
     assert len(children) == 11
     assert len(calls) == 1
     assert len(os.listdir("/dev/fd")) == before_fds
+    observation = caught.value.post_exec_observation
+    assert observation["attempt_count"] == 1
+    row = observation["attempts"][0]
+    assert row["classification"] == "fail"
+    assert row["extra_fd_type_counts"].get(
+        str(live._ROLE_GRAPH_PIPE_FD_TYPE), 0) == 1
+
+
+@_DARWIN_FORK
+def test_synthetic_a_exec_v2_probe_error_subclass_cannot_be_pending(
+        monkeypatch, tmp_path):
+    """Only the exact OS procargs-unavailable exception is retryable."""
+    class ForgedUnavailable(live.ProbeError):
+        pass
+
+    real_observe = live.observe_process
+    calls = []
+
+    def observe(pid, *args, **kwargs):
+        snapshot = real_observe(pid, *args, **kwargs)
+        if os.getpid() != pid and snapshot.executable == "/bin/cat":
+            calls.append(pid)
+            raise ForgedUnavailable("procargs_unavailable")
+        return snapshot
+
+    monkeypatch.setattr(live, "observe_process", observe)
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    try:
+        with pytest.raises(live.LiveOperatorError,
+                           match="^fake_a_exec_image_unavailable$") as caught:
+            live.supervise_once(
+                run_dir=tmp_path / "no-run-write",
+                model_root=tmp_path / "no-model-read",
+                clock=_synthetic_a_exec_forbidden_clock,
+                effects=_synthetic_a_exec_v2_effects(),
+            )
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+    assert len(children) == 11 and len(calls) == 1
+    assert len(os.listdir("/dev/fd")) == before_fds
+    observation = caught.value.post_exec_observation
+    assert observation["attempt_count"] == 1
+    assert observation["attempts"][0]["classification"] == "fail"
+
+
+@_DARWIN_FORK
+def test_synthetic_a_exec_v2_late_second_exact_snapshot_cannot_pass(
+        monkeypatch, tmp_path):
+    """An OS snapshot obtained before the deadline cannot be accepted late."""
+    real_snapshot = live._synthetic_a_exec_fd_snapshot
+    real_observe = live.observe_process
+    image_matched = False
+    complete_maps = []
+
+    def observed_image(pid, *args, **kwargs):
+        nonlocal image_matched
+        value = real_observe(pid, *args, **kwargs)
+        image_matched = (value.executable == "/bin/cat"
+                         and value.argv == ("/bin/cat",))
+        return value
+
+    def delayed_snapshot(lib, pid):
+        nonlocal image_matched
+        value = real_snapshot(lib, pid)
+        if image_matched and set(value[1]) == {0, 1, 2}:
+            complete_maps.append(value)
+            if len(complete_maps) == 2:
+                time.sleep(5.1)
+        image_matched = False
+        return value
+
+    monkeypatch.setattr(live, "observe_process", observed_image)
+    monkeypatch.setattr(live, "_synthetic_a_exec_fd_snapshot",
+                        delayed_snapshot)
+    children = _record_synthetic_role_graph_forks(monkeypatch)
+    before_fds = len(os.listdir("/dev/fd"))
+    started = time.monotonic()
+    try:
+        with pytest.raises(live.LiveOperatorError,
+                           match="^fake_a_exec_fd_witness_unavailable$") as caught:
+            live.supervise_once(
+                run_dir=tmp_path / "no-run-write",
+                model_root=tmp_path / "no-model-read",
+                clock=_synthetic_a_exec_forbidden_clock,
+                effects=_synthetic_a_exec_v2_effects(),
+            )
+    finally:
+        _assert_synthetic_role_graph_children_reaped(children)
+    assert len(children) == 11 and len(complete_maps) >= 2
+    assert 5.0 <= time.monotonic() - started < 25.0
+    assert len(os.listdir("/dev/fd")) == before_fds
+    observation = caught.value.post_exec_observation
+    assert observation["exact_complete_attempts"] >= 2
+    assert [row["classification"] for row in observation["attempts"][-2:]] == [
+        "exact", "exact"]
 
 
 def _pipe_has_byte(fd):
