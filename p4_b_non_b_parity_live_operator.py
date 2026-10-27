@@ -1,14 +1,16 @@
-"""Inert, injected-effects prototype for one non-B parity attempt.
+"""Fail-closed non-B prototype with an isolated synthetic process probe.
 
-Nothing in this module supplies a process launcher, HTTP client, or CLI.
-Its receipt is deliberately ``fake_*``; it is not authority for a live run,
-the B prompt bound, or Safari Send.  The seven-operation worker contains raw
-request data, while the parent-facing summary and frames are allowlisted.
+The ordinary public live path has no Ollama launcher or HTTP client. Only an
+exact fake diagnostic marker may fork held, local test children; its result
+never authorizes installed identity, the B prompt bound, or Safari Send. The
+seven-operation fake worker contains raw request data, while parent-facing
+summaries and frames are allowlisted.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
+import ctypes
 import hashlib
 import json
 import math
@@ -938,13 +940,427 @@ def worker_once(*, binding: dict, clock, observe_identity, authorize_call,
 
 
 def supervise_once(*, run_dir, model_root, clock, effects) -> dict:
-    """Fail closed until process-witnessed helpers can be reviewed.
+    """Keep live effects closed; allow only a fork-only topology diagnostic.
 
-    A thread-backed fake would not model exact-PID signaling, reaping, or the
-    T0+90 physical-stop receipt.  Exposing such a success path here would
-    misstate the exact freeze.  This entry performs no callbacks or writes.
+    The exact synthetic marker forks held test children but never reads the
+    caller's paths, executes Ollama, sends HTTP, or proves T0+90. All other
+    effects still fail before callbacks, process creation, or path writes.
     """
+    if (type(effects) is dict
+            and len(effects) == 2
+            and all(type(key) is str for key in effects)
+            and set(effects) == {"schema", "fault"}
+            and type(effects["schema"]) is str
+            and effects["schema"] == "synthetic_role_graph_probe_v1"
+            and (effects["fault"] is None
+                 or (type(effects["fault"]) is str
+                     and effects["fault"] in (
+                         "pipe_allocation_after_7", "omit_o_initial_ack",
+                         "retain_o_nonrole_fd")))):
+        # This deliberately ignores run_dir/model_root/clock. It is an
+        # isolated mechanical probe, never an installed/live operator.
+        return _synthetic_role_graph_preflight_once(effects["fault"])
     _fail("process_supervisor_not_implemented")
+
+
+_ROLE_GRAPH_ROLES = (
+    "D", "W", "R", "O", "A", "S_D", "S_W", "S_R", "S_O", "S_A",
+    "S_runner",
+)
+_ROLE_GRAPH_PIPE_FD_TYPE = 6       # sys/proc_info.h PROX_FDTYPE_PIPE
+_ROLE_GRAPH_CLOEXEC = 2            # sys/proc_info.h PROC_FP_CLEXEC
+
+
+class _RoleGraphProcFileInfo(ctypes.Structure):
+    _fields_ = (("fi_openflags", ctypes.c_uint32),
+                ("fi_status", ctypes.c_uint32),
+                ("fi_offset", ctypes.c_int64),
+                ("fi_type", ctypes.c_int32),
+                ("fi_guardflags", ctypes.c_uint32))
+
+
+class _RoleGraphVinfoStat(ctypes.Structure):
+    _fields_ = (("vst_dev", ctypes.c_uint32),
+                ("vst_mode", ctypes.c_uint16),
+                ("vst_nlink", ctypes.c_uint16),
+                ("vst_ino", ctypes.c_uint64),
+                ("vst_uid", ctypes.c_uint32),
+                ("vst_gid", ctypes.c_uint32),
+                ("vst_atime", ctypes.c_int64),
+                ("vst_atimensec", ctypes.c_int64),
+                ("vst_mtime", ctypes.c_int64),
+                ("vst_mtimensec", ctypes.c_int64),
+                ("vst_ctime", ctypes.c_int64),
+                ("vst_ctimensec", ctypes.c_int64),
+                ("vst_birthtime", ctypes.c_int64),
+                ("vst_birthtimensec", ctypes.c_int64),
+                ("vst_size", ctypes.c_int64),
+                ("vst_blocks", ctypes.c_int64),
+                ("vst_blksize", ctypes.c_int32),
+                ("vst_flags", ctypes.c_uint32),
+                ("vst_gen", ctypes.c_uint32),
+                ("vst_rdev", ctypes.c_uint32),
+                ("vst_qspare", ctypes.c_int64 * 2))
+
+
+class _RoleGraphPipeInfo(ctypes.Structure):
+    _fields_ = (("pipe_stat", _RoleGraphVinfoStat),
+                ("pipe_handle", ctypes.c_uint64),
+                ("pipe_peerhandle", ctypes.c_uint64),
+                ("pipe_status", ctypes.c_int32),
+                ("rfu_1", ctypes.c_int32))
+
+
+class _RoleGraphPipeFDInfo(ctypes.Structure):
+    _fields_ = (("pfi", _RoleGraphProcFileInfo),
+                ("pipeinfo", _RoleGraphPipeInfo))
+
+
+class _RoleGraphFDInfo(ctypes.Structure):
+    _fields_ = (("proc_fd", ctypes.c_int32),
+                ("proc_fdtype", ctypes.c_uint32))
+
+
+def _role_graph_libproc():
+    if sys.platform != "darwin" or (ctypes.sizeof(_RoleGraphFDInfo) != 8
+                                    or ctypes.sizeof(_RoleGraphProcFileInfo) != 24
+                                    or ctypes.sizeof(_RoleGraphVinfoStat) != 136
+                                    or ctypes.sizeof(_RoleGraphPipeFDInfo) != 184):
+        _fail("fake_role_graph_os_unavailable")
+    try:
+        lib = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
+        lib.proc_pidinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_uint64,
+                                     ctypes.c_void_p, ctypes.c_int]
+        lib.proc_pidinfo.restype = ctypes.c_int
+        lib.proc_pidfdinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                                       ctypes.c_void_p, ctypes.c_int]
+        lib.proc_pidfdinfo.restype = ctypes.c_int
+        return lib
+    except Exception:
+        _fail("fake_role_graph_os_unavailable")
+
+
+def _role_graph_pipe_identity(lib, pid: int, fd: int) -> tuple[int, int]:
+    value = _RoleGraphPipeFDInfo()
+    size = ctypes.sizeof(value)
+    try:
+        read = lib.proc_pidfdinfo(pid, fd, 6, ctypes.byref(value), size)
+    except Exception:
+        read = -1
+    if read != size or not value.pipeinfo.pipe_handle:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    return int(value.pipeinfo.pipe_handle), int(value.pfi.fi_status)
+
+
+def _role_graph_fd_list(lib, pid: int) -> dict[int, int]:
+    # A full buffer cannot prove that an extra inherited endpoint was absent.
+    entries = (_RoleGraphFDInfo * 512)()
+    capacity = ctypes.sizeof(entries)
+    try:
+        read = lib.proc_pidinfo(pid, 1, 0, ctypes.byref(entries), capacity)
+    except Exception:
+        read = -1
+    if read <= 0 or read >= capacity or read % ctypes.sizeof(_RoleGraphFDInfo):
+        _fail("fake_role_graph_fd_witness_unavailable")
+    result: dict[int, int] = {}
+    for row in entries[:read // ctypes.sizeof(_RoleGraphFDInfo)]:
+        if row.proc_fd < 0 or row.proc_fd in result:
+            _fail("fake_role_graph_fd_witness_unavailable")
+        result[row.proc_fd] = row.proc_fdtype
+    return result
+
+
+def _role_graph_attest_child_fds(lib, pid: int, expected: set[int],
+                                 pipe_handles: dict[int, int],
+                                 stdio_types: dict[int, int],
+                                 stdio_pipe_handles: dict[int, int]) -> None:
+    try:
+        initial = raw_generation(pid)
+        first = _role_graph_fd_list(lib, pid)
+        middle = raw_generation(pid)
+        second = _role_graph_fd_list(lib, pid)
+        final = raw_generation(pid)
+    except Exception:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    if initial != middle or middle != final or first != second:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    if {fd: kind for fd, kind in first.items() if fd <= 2} != stdio_types:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    if {fd for fd in first if fd > 2} != expected:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    for fd, handle_expected in stdio_pipe_handles.items():
+        handle, _ = _role_graph_pipe_identity(lib, pid, fd)
+        if handle != handle_expected:
+            _fail("fake_role_graph_fd_witness_unavailable")
+    for fd in expected:
+        if first.get(fd) != _ROLE_GRAPH_PIPE_FD_TYPE:
+            _fail("fake_role_graph_fd_witness_unavailable")
+        handle, flags = _role_graph_pipe_identity(lib, pid, fd)
+        if (handle != pipe_handles[fd]
+                or not flags & _ROLE_GRAPH_CLOEXEC):
+            _fail("fake_role_graph_fd_witness_unavailable")
+    if raw_generation(pid) != final:
+        _fail("fake_role_graph_fd_witness_unavailable")
+
+
+def _role_graph_read_exact(fd: int, size: int, deadline: float) -> bytes | None:
+    result = bytearray()
+    while len(result) < size and time.monotonic() < deadline:
+        try:
+            readable, _, _ = select.select(
+                [fd], [], [], min(0.01, max(0, deadline - time.monotonic())))
+            if not readable:
+                continue
+            part = os.read(fd, size - len(result))
+        except InterruptedError:
+            continue
+        except Exception:
+            return None
+        if not part:
+            return None
+        result.extend(part)
+    return bytes(result) if len(result) == size else None
+
+
+def _role_graph_read_frame(fd: int, deadline: float,
+                           keys: set[str]) -> dict | None:
+    prefix = _role_graph_read_exact(fd, 4, deadline)
+    if prefix is None:
+        return None
+    size = struct.unpack(">I", prefix)[0]
+    if size == 0 or size > FRAME_LIMIT:
+        return None
+    body = _role_graph_read_exact(fd, size, deadline)
+    if body is None:
+        return None
+    try:
+        return decode_frame(prefix + body, keys=keys)
+    except LiveOperatorError:
+        return None
+
+
+def _role_graph_fd_sample(phase: str) -> dict:
+    try:
+        soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+        fds = [int(name) for name in os.listdir("/dev/fd") if name.isdecimal()]
+        if (type(soft) is not int or soft <= 0 or not fds
+                or len(fds) >= soft or max(fds) >= soft):
+            _fail("fake_role_graph_fd_limit")
+        return {"phase": phase, "count": len(fds), "soft": soft}
+    except Exception:
+        _fail("fake_role_graph_fd_limit")
+
+
+def _role_graph_child(role: str, pipes: dict, exec_pipe: tuple[int, int],
+                      inherited: tuple[int, ...], fault: str | None,
+                      deadline: float) -> None:
+    command_fd = pipes[role]["command"][0]
+    proof_fd = pipes[role]["proof"][1]
+    keep = {command_fd, proof_fd}
+    if role == "A":
+        keep.add(exec_pipe[1])
+    if role == "O" and fault == "retain_o_nonrole_fd":
+        keep.add(pipes["A"]["command"][0])
+    try:
+        _fake_child_lifetime(deadline)
+        for fd in inherited:
+            if fd > 2 and fd not in keep:
+                _fake_close(fd)
+        if any(os.get_inheritable(fd) for fd in keep):
+            os._exit(125)
+        pid = os.getpid()
+        generation = raw_generation(pid)
+        if role != "O" or fault != "omit_o_initial_ack":
+            first = {"phase": "initial", "role": role, "pid": pid,
+                     "ppid": generation[1], "raw_generation": list(generation),
+                     "pgid": os.getpgid(pid)}
+            frame = encode_frame(first)
+            if os.write(proof_fd, frame) != len(frame):
+                os._exit(125)
+        command = _role_graph_read_frame(
+            command_fd, deadline, {"phase", "role"})
+        if command != {"phase": "release", "role": role}:
+            os._exit(126)
+        ack = encode_frame({"phase": "released", "role": role, "pid": pid})
+        if os.write(proof_fd, ack) != len(ack):
+            os._exit(126)
+        os._exit(0)
+    except BaseException:
+        os._exit(127)
+
+
+def _role_graph_cleanup(children: list[int], reaped: set[int],
+                        all_fds: set[int]) -> bool:
+    for fd in all_fds:
+        _fake_close(fd)
+    clean = True
+    for pid in children:
+        if pid in reaped:
+            continue
+        for interval, signum in ((0.20, None), (0.20, signal.SIGTERM),
+                                 (0.60, signal.SIGKILL)):
+            try:
+                seen, _ = os.waitpid(pid, os.WNOHANG)
+            except ChildProcessError:
+                clean = False
+                break
+            if seen == pid:
+                reaped.add(pid)
+                break
+            # P still owns an unreaped direct child. Do not signal an
+            # already-reaped PID or a process discovered by enumeration.
+            if signum is not None:
+                try:
+                    os.kill(pid, signum)
+                except ProcessLookupError:
+                    pass
+            until = time.monotonic() + interval
+            while time.monotonic() < until:
+                try:
+                    seen, _ = os.waitpid(pid, os.WNOHANG)
+                except ChildProcessError:
+                    clean = False
+                    break
+                if seen == pid:
+                    reaped.add(pid)
+                    break
+                time.sleep(0.005)
+            if pid in reaped or not clean:
+                break
+        if pid not in reaped:
+            clean = False
+    return clean
+
+
+def _synthetic_role_graph_preflight_once(fault: str | None) -> dict:
+    """Fork-only IPC/resource probe; permanently false installed/live flags."""
+    lib = _role_graph_libproc()
+    stdio_types = {fd: kind for fd, kind in
+                   _role_graph_fd_list(lib, os.getpid()).items() if fd <= 2}
+    if set(stdio_types) != {0, 1, 2}:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    stdio_pipe_handles = {
+        fd: _role_graph_pipe_identity(lib, os.getpid(), fd)[0]
+        for fd, kind in stdio_types.items()
+        if kind == _ROLE_GRAPH_PIPE_FD_TYPE
+    }
+    pipes: dict[str, dict[str, tuple[int, int]]] = {}
+    all_fds: set[int] = set()
+    children: list[int] = []
+    reaped: set[int] = set()
+    samples = [_role_graph_fd_sample("before_allocation")]
+    exec_pipe = None
+    try:
+        allocation = 0
+        for role in _ROLE_GRAPH_ROLES:
+            pipes[role] = {}
+            for edge in ("command", "proof"):
+                if fault == "pipe_allocation_after_7" and allocation == 7:
+                    _fail("fake_role_graph_pipe_allocation_failed")
+                pair = os.pipe()
+                pipes[role][edge] = pair
+                all_fds.update(pair)
+                allocation += 1
+                samples.append(_role_graph_fd_sample(f"allocated_{allocation}"))
+        exec_pipe = os.pipe()
+        all_fds.update(exec_pipe)
+        samples.append(_role_graph_fd_sample("allocated_exec_status"))
+        if allocation != 22 or len(all_fds) != 46:
+            _fail("fake_role_graph_pipe_allocation_failed")
+        pipe_handles = {}
+        for fd in all_fds:
+            handle, flags = _role_graph_pipe_identity(lib, os.getpid(), fd)
+            if not flags & _ROLE_GRAPH_CLOEXEC:
+                _fail("fake_role_graph_fd_witness_unavailable")
+            pipe_handles[fd] = handle
+        deadline = time.monotonic() + 5.0
+        child_deadline = deadline + 3.0
+        parent_pid = os.getpid()
+        for role in _ROLE_GRAPH_ROLES:
+            inherited = tuple(int(name) for name in os.listdir("/dev/fd")
+                              if name.isdecimal())
+            pid = os.fork()
+            if pid == 0:
+                _role_graph_child(role, pipes, exec_pipe, inherited,
+                                  fault, child_deadline)
+                os._exit(127)
+            children.append(pid)
+            command_read = pipes[role]["command"][0]
+            proof_write = pipes[role]["proof"][1]
+            _fake_close(command_read, proof_write)
+            all_fds.difference_update((command_read, proof_write))
+            if role == "A":
+                _fake_close(exec_pipe[1])
+                all_fds.discard(exec_pipe[1])
+            samples.append(_role_graph_fd_sample(f"fork_closed_{role}"))
+            initial = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid", "ppid", "raw_generation", "pgid"})
+            try:
+                observed = _fake_os_witness(pid)
+            except Exception:
+                _fail("fake_role_graph_initial_witness_unavailable")
+            if (initial is None or initial.get("phase") != "initial"
+                    or initial.get("role") != role
+                    or initial.get("pid") != pid
+                    or initial.get("ppid") != parent_pid
+                    or {key: initial.get(key) for key in observed} != observed):
+                _fail("fake_role_graph_initial_witness_unavailable")
+            expected = {command_read, proof_write}
+            if role == "A":
+                expected.add(exec_pipe[1])
+            _role_graph_attest_child_fds(
+                lib, pid, expected, pipe_handles, stdio_types,
+                stdio_pipe_handles)
+            if select.select([pipes[role]["proof"][0]], [], [], 0)[0]:
+                _fail("fake_role_graph_initial_witness_unavailable")
+        for role in _ROLE_GRAPH_ROLES:
+            frame = encode_frame({"phase": "release", "role": role})
+            if os.write(pipes[role]["command"][1], frame) != len(frame):
+                _fail("fake_role_graph_release_failed")
+        for role, pid in zip(_ROLE_GRAPH_ROLES, children):
+            reply = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid"})
+            if reply != {"phase": "released", "role": role, "pid": pid}:
+                _fail("fake_role_graph_release_failed")
+            statuses: dict[int, int] = {}
+            if not _fake_wait_reap(pid, deadline, statuses):
+                _fail("fake_role_graph_release_failed")
+            reaped.add(pid)
+            status = statuses[pid]
+            if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+                _fail("fake_role_graph_release_failed")
+        summary = {
+            "schema": "fake_role_graph_preflight_v1",
+            "status": "fake_topology_partial",
+            "initial_role_count": len(children),
+            "normal_reap_count": len(reaped),
+            "control_pipe_count": 22,
+            "control_endpoint_count": 44,
+            "extra_exec_pipe_count": 1,
+            "fd_samples": samples,
+            "fd_sampled_min_margin": min(row["soft"] - row["count"]
+                                           for row in samples),
+            "work_grants": 0, "http_calls": 0, "model_bytes_read": 0,
+            "a_exec_observed": False,
+            "installed_identity_proven": False,
+            "physical_stop_unproven": True,
+            "full_gate_pass": False, "b_send_authorized": False,
+        }
+        return summary
+    except LiveOperatorError:
+        raise
+    except BaseException:
+        _fail("fake_role_graph_preflight_failed")
+    finally:
+        cleaned = _role_graph_cleanup(children, reaped, all_fds)
+        after = _role_graph_fd_sample("after_cleanup")
+        samples.append(after)
+        if not cleaned or after["count"] != samples[0]["count"]:
+            # This overrides an earlier fake failure if cleanup itself did
+            # not finish; an unreaped child or leaked P FD is never masked.
+            _fail("fake_role_graph_cleanup_failed")
 
 
 def _fake_os_witness(pid: int) -> dict:

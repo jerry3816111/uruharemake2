@@ -1082,11 +1082,22 @@ def test_synthetic_role_graph_public_preflight_is_fake_and_normal_only(
     assert result["control_endpoint_count"] == 44
     assert result["extra_exec_pipe_count"] == 1
     samples = result["fd_samples"]
-    assert type(samples) is list and len(samples) >= 34  # 23 allocations + 11 closes.
+    expected_phases = (["before_allocation"]
+                       + [f"allocated_{number}" for number in range(1, 23)]
+                       + ["allocated_exec_status"]
+                       + [f"fork_closed_{role}" for role in (
+                           "D", "W", "R", "O", "A", "S_D", "S_W", "S_R",
+                           "S_O", "S_A", "S_runner")]
+                       + ["after_cleanup"])
+    assert type(samples) is list
+    assert [row["phase"] for row in samples] == expected_phases
     assert all(type(row) is dict and type(row.get("phase")) is str
                and row["phase"] and type(row.get("count")) is int
                and type(row.get("soft")) is int
                and 0 <= row["count"] < row["soft"] for row in samples)
+    assert samples[-1]["count"] == samples[0]["count"]
+    assert result["fd_sampled_min_margin"] == min(
+        row["soft"] - row["count"] for row in samples)
     assert result["work_grants"] == 0
     assert result["http_calls"] == 0
     assert result["model_bytes_read"] == 0
@@ -1138,7 +1149,12 @@ def test_synthetic_role_graph_faults_fail_closed_without_owned_child_leak(
                 effects={"schema": "synthetic_role_graph_probe_v1", "fault": fault},
             )
         except live.LiveOperatorError as caught:
-            assert str(caught) != "process_supervisor_not_implemented"
+            expected_error = {
+                "pipe_allocation_after_7": "fake_role_graph_pipe_allocation_failed",
+                "omit_o_initial_ack": "fake_role_graph_initial_witness_unavailable",
+                "retain_o_nonrole_fd": "fake_role_graph_fd_witness_unavailable",
+            }[fault]
+            assert str(caught) == expected_error
             assert CANARY not in str(caught)
         else:
             assert result["schema"] == "fake_role_graph_preflight_v1"
