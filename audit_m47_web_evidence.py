@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+from uruha_web_log_codec import decode_conversation_log_line
 from pathlib import Path
 import re
 
@@ -36,7 +37,7 @@ def japanese_visible(text):
 
 
 def audit(path):
-    rows = [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines()
+    rows = [decode_conversation_log_line(line) for line in Path(path).read_text(encoding="utf-8").splitlines()
             if line.strip()]
     turns = []
     for index, expected in enumerate(EXPECTED):

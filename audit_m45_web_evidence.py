@@ -6,6 +6,7 @@ This script checks the logged backend copies; it cannot prove UI observation.
 import argparse
 import hashlib
 import json
+from uruha_web_log_codec import decode_conversation_log_line
 from pathlib import Path
 
 from uruha_actionable_help_delivery_m45 import LABEL, OUTCOME_LABEL, digest
@@ -16,7 +17,7 @@ def audit(log_path):
     rows = []
     user_sources = {}
     for line in Path(log_path).read_text().splitlines():
-        row = json.loads(line)
+        row = decode_conversation_log_line(line)
         cognition = row.get("cognition_trace") or {}
         runtime = cognition.get("runtime_trace") or {}
         state = cognition.get("runtime_state") or {}

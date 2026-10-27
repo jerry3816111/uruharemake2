@@ -188,6 +188,18 @@ def test_truncated_latest_line_never_revives_previous_positive(private_positive)
     _assert_blank(web._load_browser_graph(private_positive["receipt"]), private_positive)
 
 
+def test_corrupt_encoded_latest_row_never_revives_private_graph(private_positive):
+    path = private_positive["log_path"]
+    disk = json.loads(path.read_text(encoding="utf-8"))
+    assert isinstance(disk["cognition_trace"], str)
+    disk["turn_index"] = 2
+    disk["cognition_trace_codec"]["sha256"] = "0" * 64
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(disk, ensure_ascii=False) + "\n")
+    assert web._latest_private_log_row() is None
+    _assert_blank(web._load_browser_graph(private_positive["receipt"]), private_positive)
+
+
 def test_valid_latest_negative_does_not_revive_prior_ledger(monkeypatch, private_positive):
     latest = {
         "timestamp": "2026-10-21T12:00:00",

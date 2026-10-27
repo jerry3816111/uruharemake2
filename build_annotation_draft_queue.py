@@ -1,5 +1,6 @@
 import json
 import os
+from uruha_web_log_codec import LogCodecError, decode_conversation_log_line
 from collections import Counter
 from datetime import datetime
 
@@ -49,9 +50,10 @@ def _load_jsonl(path):
             if not line:
                 continue
             try:
-                rows.append(json.loads(line))
-            except Exception:
-                continue
+                rows.append(decode_conversation_log_line(line))
+            except LogCodecError as exc:
+                if str(exc) != "invalid_log_json":
+                    raise
     return rows
 
 

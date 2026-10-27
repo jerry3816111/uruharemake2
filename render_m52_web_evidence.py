@@ -1,6 +1,7 @@
 """Render one frozen real-Web M52 turn without rerunning it."""
 from __future__ import annotations
 import argparse, gzip, json
+from uruha_web_log_codec import decode_conversation_log_line
 from html import escape
 from pathlib import Path
 from uruha_candidate_realization_m52 import render_m52
@@ -10,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser(); parser.add_argument("log_gz"); parser.add_argument("--session", required=True)
     parser.add_argument("--turn", type=int, required=True); parser.add_argument("--output", required=True); args = parser.parse_args()
     with gzip.open(args.log_gz, "rt", encoding="utf-8") as handle:
-        rows = [json.loads(line) for line in handle if line.strip()]
+        rows = [decode_conversation_log_line(line) for line in handle if line.strip()]
     row = next(item for item in rows if item.get("session_id") == args.session and item.get("turn_index") == args.turn)
     cognition = row.get("cognition_trace") or {}
     result = {"user_text": row.get("user_text"), "reply": row.get("assistant_reply"), "logic": row.get("logic") or {},

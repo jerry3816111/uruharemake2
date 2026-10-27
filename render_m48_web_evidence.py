@@ -5,6 +5,7 @@ import argparse
 import gzip
 from html import escape
 import json
+from uruha_web_log_codec import decode_conversation_log_line
 from pathlib import Path
 
 from uruha_crosslingual_action_realization_m48 import render_m48
@@ -18,7 +19,7 @@ def main():
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     with gzip.open(args.log_gz, "rt", encoding="utf-8") as handle:
-        rows = [json.loads(line) for line in handle if line.strip()]
+        rows = [decode_conversation_log_line(line) for line in handle if line.strip()]
     row = next(item for item in rows
                if item.get("session_id") == args.session and item.get("turn_index") == args.turn)
     cognition = row.get("cognition_trace") or {}

@@ -83,6 +83,11 @@ from human_feedback_validation import (
 )
 from uruha_brain_mac import UruhaBrainV4_Mac
 from uruha_compute_ledger import ComputeLedger, InstrumentedChromaCollection
+from uruha_web_log_codec import (
+    LogCodecError,
+    decode_conversation_log_line,
+    encode_private_log_record,
+)
 from uruha_memory_observatory import MEMORY_OBSERVATORY_CSS
 from uruha_m38_memory_observatory import (
     render_memory_observatory_m38 as render_memory_observatory,
@@ -2934,9 +2939,10 @@ def _latest_observatory_result():
         return {}
     for line in reversed(lines):
         try:
-            record = json.loads(line)
-        except (TypeError, ValueError):
-            continue
+            record = decode_conversation_log_line(line)
+        except LogCodecError:
+            # A corrupt latest row must not revive a stale private graph.
+            return {}
         result = _observatory_result_from_log_record(record)
         if result.get("runtime_trace", {}).get("blackboard"):
             return result
@@ -3005,9 +3011,7 @@ def _latest_private_log_row():
                 or before.st_ctime_ns != after.st_ctime_ns
             ):
                 return None
-        record = json.loads(raw_row.decode("utf-8"))
-        if not isinstance(record, dict):
-            return None
+        record = decode_conversation_log_line(raw_row)
         return record, raw_row
     except (OSError, UnicodeDecodeError, ValueError, TypeError):
         return None
@@ -4541,7 +4545,8 @@ def _append_conversation_log(input_mode, result):
             )
             if private_log:
                 record["compute_receipt"] = compute_receipt
-        f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        disk_record = encode_private_log_record(record) if private_log else record
+        f.write(json.dumps(disk_record, ensure_ascii=False) + "\n")
     if isinstance(compute_receipt, dict):
         # A successful append is not enough: a previously truncated tail can
         # glue this JSON object to an invalid row. Retire only after the exact

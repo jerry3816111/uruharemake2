@@ -5,6 +5,7 @@ an action is genuinely useful remain separate observations.
 """
 import argparse
 import json
+from uruha_web_log_codec import decode_conversation_log_line
 from pathlib import Path
 
 import uruha_actionable_help_delivery_m45 as m45
@@ -15,7 +16,7 @@ from uruha_memory_observatory import collect_cognitive_graph
 def audit(log_path, session_id=None):
     rows, user_sources = [], {}
     for line in Path(log_path).read_text().splitlines():
-        row = json.loads(line)
+        row = decode_conversation_log_line(line)
         if session_id and row.get("session_id") != session_id:
             continue
         cognition = row.get("cognition_trace") or {}

@@ -11,6 +11,7 @@ from types import SimpleNamespace
 import pytest
 
 import uruha_web_ui as web
+from uruha_web_log_codec import LogCodecError
 from uruha_compute_ledger import ComputeLedger
 
 
@@ -385,8 +386,10 @@ def test_jsonl_failure_does_not_retire_but_txt_failure_after_jsonl_does(monkeypa
 
     with monkeypatch.context() as patch:
         patch.setattr(web.json, "dumps", fail_log_row)
-        with pytest.raises(TypeError, match="injected-jsonl"):
+        with pytest.raises(LogCodecError, match="row_not_json") as failure:
             web._append_conversation_log("text", first)
+    assert isinstance(failure.value.__cause__, TypeError)
+    assert "injected-jsonl" in str(failure.value.__cause__)
     assert len(ledger._calls) == 2
     assert (log_dir / "conversation.jsonl").stat().st_size == 0
 
@@ -448,6 +451,8 @@ def test_unsafe_log_never_persists_full_receipt(monkeypatch, tmp_path, directory
     assert result["compute_ledger_retention_status"] == "held_nonprivate_log"
     assert len(ledger._calls) == 2
     saved = json.loads(log_path.read_text(encoding="utf-8"))
+    assert isinstance(saved["cognition_trace"], dict)
+    assert "cognition_trace_codec" not in saved
     assert "compute_receipt" not in saved
     assert saved["compute_receipt_item_id"] == _graph_cost_payload(result)["item_id"]
 

@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 import uruha_web_ui as web
+from uruha_web_log_codec import decode_conversation_log_line
 from test_p4_typed_act_semantic_ledger import _delivered_graph_result
 
 
@@ -73,7 +74,9 @@ def test_private_log_reload_keeps_witness_but_client_payload_does_not(monkeypatc
     monkeypatch.setattr(web.RUNTIME, "next_turn_meta", lambda: ("isolated-test", 1))
     record = web._append_conversation_log("text", result)
     assert record["episode_doc"] == result["episode_doc"]
-    saved = json.loads((tmp_path / "conversation.jsonl").read_text(encoding="utf-8"))
+    raw_saved = (tmp_path / "conversation.jsonl").read_text(encoding="utf-8")
+    assert isinstance(json.loads(raw_saved)["cognition_trace"], str)
+    saved = decode_conversation_log_line(raw_saved)
     assert saved["episode_doc"] == result["episode_doc"]
     reloaded = web._observatory_result_from_log_record(saved)
     assert reloaded["logic"] == result["logic"]

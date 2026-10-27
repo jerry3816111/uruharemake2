@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import json
+from uruha_web_log_codec import decode_conversation_log_line
 from pathlib import Path
 import re
 
@@ -24,7 +25,7 @@ def _load(path):
     source = Path(path)
     opener = gzip.open if source.suffix == ".gz" else open
     with opener(source, "rt", encoding="utf-8") as handle:
-        return [json.loads(line) for line in handle if line.strip()]
+        return [decode_conversation_log_line(line) for line in handle if line.strip()]
 
 
 def _japanese(text):
