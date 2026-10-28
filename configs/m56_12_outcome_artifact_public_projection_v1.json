@@ -1,0 +1,96 @@
+{
+  "schema": "uruha_m56_outcome_artifact_public_projection_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_any_real_m56_target_outcome_access",
+  "single_changed_variable": "public projection boundary for private outcome-derived scoring artifacts",
+  "public_api": {
+    "functions": {
+      "build_public_scoring_projection": ["run_id"],
+      "build_public_log_record": ["run_id"],
+      "build_public_telemetry_record": ["run_id"],
+      "render_public_dashboard": ["run_id"]
+    },
+    "private_artifact_projection_metric_decision_or_readiness_injection_allowed": false,
+    "raw_run_id_in_public_output_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_10_crash_safe_outcome_join_v1.json": "96037563bbf5e2a67ef20112af847d6880fdefea295e9030aade49a805765715",
+    "m56_10_crash_safe_outcome_join.py": "c085f570e399e3182e79fc2029f5bc243b44b0e5f713a23902a8eeed596d3835",
+    "research/m56_10_crash_safe_outcome_join_implementation_freeze_2026-09-03.json": "c7ea7448ce0ee046148856d3fec0b9df5db4aa7eb8748dde159efcf11bdc7e96",
+    "configs/m56_4_separate_formal_scorer_v1.json": "27dc540f4db7e0ff19368351d0688809e4906a41fabe2bd473804c8ccda96434",
+    "m56_4_separate_formal_scorer.py": "e96474c1242389130651f9ac5279157a1307e730538f78e8fc446ed208ba24a1",
+    "m56_8_durable_release_gated_scoring.py": "824ab1091422c260991e7cdcfe635d42d4b226de218e9a5536f61ea3dea8f47a"
+  },
+  "projection_schema": {
+    "top_level_fields": [
+      "schema",
+      "version",
+      "status",
+      "phase",
+      "state",
+      "public_result_available",
+      "retry_count",
+      "fallback_count",
+      "exposure_policy",
+      "claim_boundary",
+      "projection_hash"
+    ],
+    "state_fields": [
+      "mode_committed",
+      "join_intent_committed",
+      "private_checkpoint_committed",
+      "canonical_private_report_committed",
+      "result_commitment_committed",
+      "terminal_failure_committed"
+    ],
+    "allowed_phases": [
+      "pre_outcome_not_started",
+      "pre_outcome_mode_committed",
+      "private_join_incomplete_unknown_access",
+      "terminal_ambiguous_no_result",
+      "private_checkpoint_committed",
+      "private_report_committed",
+      "formal_result_committed"
+    ]
+  },
+  "forbidden_public_keys": [
+    "run_id",
+    "outcome_key_hash",
+    "split_report_hash",
+    "score_report_hash",
+    "score_checkpoint_hash",
+    "result_commitment_hash",
+    "dataset_hash",
+    "prediction_packet_hash",
+    "submission_hash",
+    "condition_metrics",
+    "primary_comparison",
+    "pairs",
+    "sample_id",
+    "per_label",
+    "reliability_bins",
+    "actual_observed_behavior",
+    "acceptable_behavior_labels",
+    "decision",
+    "source_text",
+    "raw_response",
+    "reasoning_trace"
+  ],
+  "surfaces": {
+    "dashboard_log_and_telemetry_share_exact_projection": true,
+    "public_output_contains_only_allowlisted_state": true,
+    "private_artifact_values_used_only_for_internal_validation": true,
+    "malformed_or_inconsistent_private_state_fails_closed": true,
+    "projection_mutation_fails_closed": true
+  },
+  "authorization": {
+    "current_formal_scoring": false,
+    "current_target_outcome_access": false,
+    "current_formal_result": false,
+    "synthetic_or_forged_fixture_is_human_evidence": false,
+    "os_encryption_or_malicious_host_containment_claimed": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "M56.12 can establish only a cooperative, allowlisted run-specific public projection over internally validated M56.10 state. It cannot prevent direct same-host filesystem or old-API access, prove every future consumer uses the projection, or add human evidence, real outcome access, model performance, Equation V1 validity, solved human-response equation, full-pipeline value or production authorization."
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "uruha_v2_18_fifty_turn_memory_comparison_preregistration",
+  "status": "frozen_before_first_comparison_generation",
+  "frozen_at": "2026-08-14T04:00:00+0900",
+  "single_core_variable": "availability and organization of prior user-state evidence at 50-turn scale",
+  "conditions": {
+    "uruha_memory": {
+      "description": "Actual UruhaBrain checkpoint runtime over an isolated external-memory database; RightBrain local model loading disabled as in V2.17.",
+      "history_access": "bounded working memory plus retrieved episodic/profile memory",
+      "generator_boundary": "qwen2.5:7b planning plus UruhaBrain deterministic surface and guards"
+    },
+    "plain_recent": {
+      "description": "Direct qwen2.5:7b chat with the same visible Uruha persona/output contract and only the previous eight dialogue turns.",
+      "history_access": "recent eight turns, no external memory",
+      "generator_boundary": "single direct model call"
+    },
+    "plain_full": {
+      "description": "Diagnostic direct qwen2.5:7b chat with the same visible Uruha persona/output contract and the complete prior transcript.",
+      "history_access": "complete transcript, no external memory",
+      "generator_boundary": "single direct model call"
+    }
+  },
+  "model": {
+    "provider": "ollama_openai_compatible",
+    "base_url": "http://127.0.0.1:11434/v1",
+    "model": "qwen2.5:7b",
+    "temperature": 0.1,
+    "max_tokens": 64,
+    "seed": null,
+    "rightbrain_model_loaded_for_uruha": false
+  },
+  "invariants": {
+    "turn_count": 50,
+    "recent_window_turns": 8,
+    "primary_recall_turns": [25, 48],
+    "secondary_safety_turns": [49, 50],
+    "same_user_turns": true,
+    "same_replayed_transcript": true,
+    "same_plain_llm_model_and_persona_contract": true,
+    "plain_recent_and_plain_full_differ_only_in_history_window": true,
+    "production_memory_writes": 0,
+    "retain_first_generation_failures": true,
+    "no_post_generation_case_or_scoring_tuning": true
+  },
+  "automatic_metrics": [
+    "primary_current_value_hit",
+    "source_grounded_current_value_hit",
+    "stale_value_revival",
+    "false_memory_assertion",
+    "epistemic_safety_when_source_unavailable",
+    "visible_japanese_contract",
+    "source_trace_available",
+    "latency_seconds",
+    "model_call_count",
+    "prompt_tokens",
+    "completion_tokens"
+  ],
+  "success_criteria": {
+    "uruha_primary_source_grounded_recall_min": 2,
+    "uruha_primary_recall_denominator": 2,
+    "uruha_stale_value_revival_max": 0,
+    "uruha_false_memory_assertion_max": 0,
+    "uruha_visible_japanese_checkpoint_min": 5,
+    "production_memory_writes": 0
+  },
+  "interpretation_rules": [
+    "A correct string is not source-grounded recall unless the condition actually received the source or UruhaBrain trace shows it entered decision.",
+    "If plain_recent lacks the source and explicitly abstains, record epistemic safety rather than hallucination; it may still lack task utility.",
+    "If uruha_memory and plain_full both answer correctly, claim persistence/compression/traceability relative to bounded context, not better reasoning than an LLM.",
+    "If plain_full matches or beats uruha_memory, do not claim answer-quality superiority from external memory.",
+    "Architecture cost is part of the result; this full-system comparison is not token-parity and cannot isolate intelligence.",
+    "Automatic anchors measure factual state tracking only; naturalness, felt understanding, and overall preference require blind human ratings."
+  ],
+  "human_evaluation": {
+    "status": "instrument_to_be_generated_ratings_pending",
+    "blind_pair": ["uruha_memory", "plain_recent"],
+    "dimensions": [
+      "which_answer_is_more_useful_in_this_conversation",
+      "which_answer_feels_more_naturally_understanding",
+      "which_answer_is_more_trustworthy_about_memory",
+      "uruha_public_behavior_fit_A_1_to_5",
+      "uruha_public_behavior_fit_B_1_to_5"
+    ],
+    "automatic_proxy_is_human_preference_evidence": false
+  },
+  "claim_boundary": {
+    "independent_semantic_holdout": false,
+    "reason": "It extends the same preference-revision family used to develop V2.17, while changing values, length, and relational distractors.",
+    "human_preference_evidence": false,
+    "general_llm_superiority": false,
+    "general_long_term_memory": false
+  }
+}

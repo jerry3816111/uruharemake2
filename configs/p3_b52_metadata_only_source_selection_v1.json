@@ -1,0 +1,111 @@
+{
+  "schema": "uruha_p3_b52_metadata_only_source_selection_v1",
+  "version": "1.0.0",
+  "status": "preregistered_before_live_candidate_metadata_retrieval",
+  "research_task": "Task A context-conditioned response-category forecasting",
+  "single_changed_variable": "select one new official public source by content-blind metadata and a deterministic rule before any target-segment or future-response access",
+  "target": {
+    "target_id": "ichinose_uruha_public_persona",
+    "platform": "youtube",
+    "publisher_channel_id": "UC5LyYg6cCA4yHEYvtUsir3g",
+    "official_streams_endpoint": "https://www.youtube.com/channel/UC5LyYg6cCA4yHEYvtUsir3g/streams"
+  },
+  "candidate_window": {
+    "published_on_or_after": "2026-04-01",
+    "published_on_or_before": "2026-09-15",
+    "minimum_duration_seconds": 1800,
+    "maximum_duration_seconds": 43200,
+    "required_availability": "public",
+    "required_live_status": "was_live",
+    "maximum_playlist_entries_requested": 50
+  },
+  "candidate_schema": {
+    "required_keys": [
+      "source_id",
+      "platform",
+      "video_id",
+      "publisher_channel_id",
+      "published_at",
+      "duration_seconds",
+      "availability",
+      "live_status"
+    ],
+    "allowed_keys": [
+      "source_id",
+      "platform",
+      "video_id",
+      "publisher_channel_id",
+      "published_at",
+      "duration_seconds",
+      "availability",
+      "live_status"
+    ],
+    "forbidden_keys": [
+      "title",
+      "description",
+      "fulltitle",
+      "alt_title",
+      "transcript",
+      "captions",
+      "automatic_captions",
+      "comments",
+      "chapters",
+      "categories",
+      "tags",
+      "thumbnails",
+      "view_count",
+      "like_count",
+      "comment_count",
+      "webpage_url"
+    ]
+  },
+  "retrieval_policy": {
+    "tool": "yt-dlp",
+    "playlist_surface": "official channel streams page",
+    "flat_playlist": true,
+    "media_download": false,
+    "caption_or_transcript_access": false,
+    "comment_access": false,
+    "thumbnail_access": false,
+    "raw_response_storage": false,
+    "raw_entry_logging": false,
+    "sanitizer_emits_only_candidate_schema": true,
+    "model_calls": 0,
+    "production_memory_writes": 0
+  },
+  "selection": {
+    "seed": "p3-b52-task-a-source-2026-09-17-v1",
+    "eligibility_order": [
+      "exact target platform and publisher channel",
+      "publication date inside frozen inclusive window",
+      "duration inside frozen inclusive range",
+      "public completed livestream archive",
+      "video_id absent from frozen known-source exclusions"
+    ],
+    "score": "sha256(seed + vertical_bar + video_id + vertical_bar + published_at)",
+    "winner": "lexicographically smallest score",
+    "automatic_retry_after_content_or_outcome_review": false,
+    "empty_eligible_set": "fail_closed"
+  },
+  "bindings": {
+    "known_source_exclusions": {
+      "path": "research/p3_b52_known_source_exclusions_2026-09-17.json",
+      "sha256": "a9ce55a8a7abe49102d759870b28e188cd547c6074ed7648c7ff45643a8757e3"
+    },
+    "temporal_forecast_bridge": {
+      "path": "configs/p3_b51_temporal_forecast_bridge_v1.json",
+      "sha256": "23b1f95a84531692abab4700669153a4881be3574173e61ec0ab3803df6e755d"
+    }
+  },
+  "execution_boundary": {
+    "candidate_metadata_retrieval_authorized_after_clean_freeze": true,
+    "selected_target_segment_access": false,
+    "future_response_access": false,
+    "gold_annotation": false,
+    "model_generation": false,
+    "formal_m56_artifact_change": false,
+    "production_memory_write": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "A successful B52 run proves only deterministic content-blind selection of one new official public source. It does not create a temporal event, prediction, outcome, rating, formal M56 row, or evidence of model advantage."
+}

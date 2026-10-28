@@ -1,0 +1,45 @@
+{
+  "schema": "uruha_p3_b63_schema_enforced_prediction_review_required_v1",
+  "version": "1.0.0",
+  "status": "prediction_not_frozen_after_representation_hit_token_ceiling",
+  "result": {
+    "model_call_count": 1,
+    "call_status": "completed",
+    "prompt_tokens": 1986,
+    "completion_tokens": 256,
+    "num_predict": 256,
+    "failure_stage": "model",
+    "failure_category": "provider_or_schema",
+    "future_outcome_access_count": 0
+  },
+  "supported_hypothesis": "the representation output reached its exact completion ceiling before parse acceptance",
+  "not_observed": "raw response content or exact truncation character",
+  "prediction_correction_batches_consumed": 1,
+  "next_stage": {
+    "id": "P3-B64",
+    "correction_batch_ordinal": 2,
+    "final_prediction_execution_correction": true,
+    "single_changed_variable": "reallocate the unchanged 512 completion-token ceiling from 256+256 to 320 representation + 192 prediction for both conditions",
+    "future_outcome_unlock_authorized": false,
+    "retry_schema_relaxation_or_total_budget_increase_authorized": false
+  },
+  "bindings": {
+    "implementation_freeze": {
+      "path": "research/p3_b63_schema_enforced_real_context_predictions_implementation_freeze_2026-09-20.json",
+      "sha256": "178479e80c22a39ac762d6bd08f62b2199b2e405b5b803bcff444e86a2336af3"
+    },
+    "result": {
+      "path": "analysis/p3_b63_schema_enforced_prediction_result_2026-09-20.json",
+      "sha256": "bd50f6e17f58ce3166a86068818fbcb34300aa886936d2fb6a752dc54e6b682f"
+    },
+    "acceptance": {
+      "path": "analysis/p3_b63_schema_enforced_prediction_acceptance_2026-09-20.md",
+      "sha256": "3008fc3fca326ee7a9113450d4df69668e4990bcbb412ca1c024d30c247f3b2b"
+    },
+    "result_test": {
+      "path": "test_p3_b63_schema_enforced_prediction_result.py",
+      "sha256": "aad72cad236c30ea400887524e6e403786ceff1ee199e817db05868cec0caac7"
+    }
+  },
+  "claim_boundary": "B63 did not freeze a prediction comparison. It supports a bounded execution hypothesis that the first representation hit its token ceiling; future remains locked."
+}

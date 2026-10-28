@@ -1,0 +1,71 @@
+{
+  "schema": "uruha_m56_10_crash_safe_outcome_join_state_evidence_v1",
+  "version": "1.0.0",
+  "status": "isolated_forged_30_row_fixture_only",
+  "real_target_outcome_access_count": 0,
+  "formal_model_call_count": 0,
+  "pre_change": {
+    "path": "M56.9 sanctioned entry",
+    "failure_phase": "after private outcome load before score report",
+    "first_invocation_outcome_loads": 1,
+    "restart_additional_outcome_loads": 1,
+    "total_outcome_loads": 2,
+    "result_completed_on_restart": true
+  },
+  "post_change": {
+    "uninterrupted": {
+      "outcome_loads": 1,
+      "seven_condition_m56_4_report_valid": true,
+      "m56_4_result_commitment_valid": true
+    },
+    "completed_sequential_replay": {
+      "first_invocation_outcome_loads": 1,
+      "second_invocation_additional_outcome_loads": 0,
+      "total_outcome_loads": 1,
+      "result_commitment_hash_identical": true
+    },
+    "checkpointed_crash_before_canonical_result": {
+      "first_invocation_outcome_loads": 1,
+      "durable_checkpoint_exists": true,
+      "canonical_score_report_exists_before_restart": false,
+      "restart_additional_outcome_loads": 0,
+      "result_completed_from_checkpoint": true,
+      "total_outcome_loads": 1
+    },
+    "intent_only_ambiguous_failure": {
+      "first_invocation_outcome_loads_in_injected_fixture": 1,
+      "durable_intent_exists": true,
+      "durable_checkpoint_exists": false,
+      "durable_terminal_failure_exists": true,
+      "restart_additional_outcome_loads": 0,
+      "result_completed": false,
+      "availability_preserved": false
+    },
+    "overlapping_same_run_contender": {
+      "owner_outcome_loads": 1,
+      "contender_additional_outcome_loads": 0,
+      "contender_rejected_before_delegate": true
+    },
+    "mutation_and_retroactive_guards": {
+      "mutated_checkpoint_rejected_before_outcome_reload": true,
+      "checkpoint_without_intent_rejected_before_outcome_reload": true,
+      "canonical_result_without_checkpoint_rejected_before_outcome_reload": true,
+      "preexisting_m56_9_result_not_retroactively_certified": true
+    }
+  },
+  "durable_artifact_order": [
+    "m56_10_mode",
+    "m56_8_gate",
+    "m56_4_prescore_audit",
+    "m56_4_access_receipt",
+    "m56_10_join_intent",
+    "private_outcome_load",
+    "m56_10_private_score_checkpoint",
+    "m56_4_canonical_score_report",
+    "m56_4_result_commitment"
+  ],
+  "focused_tests": "16/16 passed",
+  "m54_through_m56_10_direct_tests": "240/240 passed",
+  "selected_cross_layer_tests": "305/305 passed",
+  "claim_boundary": "All rows are generated from temporary forged engineering fixtures. They establish the sanctioned-path state-machine behavior only and are not human evidence, real M56 outcome access, formal model performance, Equation V1 validity or a solved human-response equation."
+}

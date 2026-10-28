@@ -1,0 +1,31 @@
+{
+  "schema": "p4_reference_probe_evidence_fresh_probe_v1",
+  "created_before_implementation": true,
+  "evidence_level": "developer_authored_fresh_product_probe_not_formal_holdout",
+  "product_user_wait_limit_seconds": 20.0,
+  "no_retry": true,
+  "sessions": [
+    {
+      "session": "A",
+      "turns": [
+        {"id": "A1", "language": "ja", "input": "プラネタリウムの受付で働いてる。", "gold": "ordinary_self_report_not_reference_fragment; no_unwarranted_fact"},
+        {"id": "A2", "language": "ja", "input": "今日は入場券の案内を短くした。", "gold": "ordinary_contextual_statement_not_reference_fragment"},
+        {"id": "A3", "language": "ja", "input": "撮影の予約は何時から？", "gold": "information_question_not_lyric_probe; no_invented_start_time"},
+        {"id": "A4", "language": "ja", "input": "この歌詞は何の曲？", "gold": "explicit_song_reference_stays_eligible; unknown_song_title_not_invented"}
+      ]
+    },
+    {
+      "session": "B_same_db_after_planned_restart",
+      "turns": [
+        {"id": "B1", "language": "ja", "input": "投影幕の置き場、どこ？", "gold": "information_question_not_reference_fragment; no_invented_location"},
+        {"id": "B2", "language": "ja", "input": "夜空", "gold": "true_short_poetic_fragment_reference_route_retained_without_fabricated_source"},
+        {"id": "B3", "language": "ja", "input": "友達が『霧の中に消えた』って言った。", "gold": "third_party_report_not_user_fact_or_automatic_lyric_probe"},
+        {"id": "B4", "language": "en", "input": "Shut up, that meme is stupid.", "gold": "protected_abuse_route_not_replaced_by_reference_probe"}
+      ]
+    }
+  ],
+  "false_reference_admission_turns": ["A1", "A3", "B1", "B3"],
+  "true_reference_control_turns": ["A4", "B2"],
+  "protected_control_turns": ["B4"],
+  "required_product_checks": ["false_reference_admission_blocked_4_of_4", "true_reference_route_retained_2_of_2", "protected_boundary_retained", "exact_raw_graph_bubble_match_8_of_8", "natural_japanese_8_of_8", "no_internal_plan_leak", "no_source_or_private_fact_invention", "distinct_turn_episodes_8_of_8", "empty_profile_digest_t0_to_t8", "each_user_wait_lte_20_seconds", "zero_retry"]
+}

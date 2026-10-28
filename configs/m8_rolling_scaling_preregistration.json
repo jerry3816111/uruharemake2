@@ -1,0 +1,40 @@
+{
+  "schema": "ilhdt_m8_rolling_scaling_preregistration_v1",
+  "milestone": "M8",
+  "registered_before_first_model_call": true,
+  "claim_level": "fresh_synthetic_semantic_rolling_and_scaling_diagnostic",
+  "formal_target_claim": false,
+  "dataset": {"path":"datasets/m8_rolling_semantic_synthetic_fixture_v1.json","sha256":"e5cbab8842587b00f4c8e24698000e03fcf2b93a92bdd6d56bf33e0f1bb62c84"},
+  "m5_result": {"path":"analysis/m5_state_transition_synthetic_first_generation_raw.json","sha256":"61abb11677eedcd9c3824a9a14767b346396bc5b7770d3841a7fdbf5933f1a0c"},
+  "m5_dataset": {"path":"datasets/m5_state_transition_synthetic_fixture_v1.json","sha256":"efd5fc8c251870f00b77c5a849694b26c94ff8262f3ab8c96505153050076f21"},
+  "m6_overlay": {"path":"datasets/m6_behavior_prediction_synthetic_overlay_v1.json","sha256":"e5b504711b6b1a18e6c324fc317a1591a0a6811e447ade23e6f9d258c37bb68e"},
+  "m6_result": {"path":"analysis/m6_behavior_predictor_synthetic_first_generation_raw.json","sha256":"b042011646c16b7fd565f39ed8acab621cbd16fb2a9e910a0e776e5829ea20b4"},
+  "m71_result": {"path":"analysis/m7_1_component_coverage_remediation_result.json","sha256":"24a0f0cfadf946d7a8ae55d27abe50fc3160c1ea6f8882fe621bc7b63cb0f45a"},
+  "model": "qwen3.5:9b",
+  "provider_timeout_seconds": 180,
+  "provider_options": {"temperature":0,"seed":20260815,"num_ctx":16384,"num_predict":768,"think":false},
+  "retry_policy": "no_retry_no_condition_fallback",
+  "rolling_cutoffs": ["E1","E2","E3","E4"],
+  "history_volume_conditions": ["D0_PROFILE_ONLY","D1_LAST_2","D2_LAST_4","D3_LAST_6","D4_LAST_8","D5_LAST_12","D6_LAST_16","D7_ALL_AVAILABLE"],
+  "bootstrap_seeds": [20260811,20260812,20260813,20260814,20260815],
+  "predictor": {"l2_alpha":0.0,"learning_rate":0.2,"epochs":2500,"temperature":0.5},
+  "baselines": ["B0_PRIOR","B1_BASE_LLM","B2_PERSONA_PROMPT","B3_RAG","B4_FULL_HISTORY_SUMMARY","B5_STRUCTURED_HISTORY"],
+  "metrics": {"top_k":3,"ece_bins":5},
+  "engineering_contract": {"event_count":24,"initial_history_count":8,"cutoff_count":4,"test_count_per_cutoff":4,"rolling_test_row_count":16,"feature_extractor_calls":24,"baseline_prediction_rows":96,"baseline_model_calls":84,"total_model_calls":108,"future_leakage_violations":0,"history_volume_count":8,"bootstrap_seed_count":5,"language_realization_performed":false},
+  "falsifiable_diagnostic_hypotheses": {
+    "fresh_semantic_ours_top1_at_least_best_b0_b5": true,
+    "fresh_semantic_ours_brier_below_best_b0_b5": true,
+    "d7_nll_not_worse_than_d0": true,
+    "last_history_increment_nll_gain_not_larger_than_first_increment": true,
+    "rolling_ours_top1_range_at_most": 0.50,
+    "m7_temporal_removal_nll_improvement_replicates": true,
+    "m7_relationship_removal_nll_improvement_replicates": true,
+    "m7_preference_removal_nll_improvement_replicates": true
+  },
+  "non_claims": [
+    "The fixture is fictional and author-designed; it is not evidence of a real person's private state or behavior.",
+    "Fresh text exposure does not make synthetic labels human ground truth.",
+    "Baseline prompts and Ours have different computation graphs; all calls and tokens must be reported.",
+    "A failed hypothesis is retained and cannot be tuned away on these 16 test rows."
+  ]
+}

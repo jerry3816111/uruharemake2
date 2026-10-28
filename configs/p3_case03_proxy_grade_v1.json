@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p3_case03_proxy_grade_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "blind_ab_ba_proxy_grade_of_locked_case03_outputs",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "locked_outputs": {
+    "path": "analysis/p3_b16_case03_output_lock_result_2026-09-15.json",
+    "sha256": "cb1284cee5ac3e847302d62528a2dc4dbb9fc33d43e1361dee92348a29461c93",
+    "required_status": "case03_outputs_locked",
+    "locked_commit": "b8758b0"
+  },
+  "case_source": {
+    "path": "datasets/p3_case03_generation_source_v1.json",
+    "sha256": "cfae115a29453d51db948c39be2caf7c8d686dbda942ef0e45a591c31706a01a"
+  },
+  "annotations": {
+    "path": "datasets/p3_developer_smoke_annotations_v1.json",
+    "sha256": "aec1f4fbd88a96b180ad5c90f8f2f7a362a01b57d0d26a22b26af3ff25a5a3ea",
+    "case_id": "p3-smoke-emotional-bid-ja",
+    "role": "developer_proxy_rubric_not_gold_reply_or_human_preference",
+    "case_turns_used": 4,
+    "other_case_annotations_used": 0
+  },
+  "conditions": [
+    "product_system",
+    "full_history_direct"
+  ],
+  "judge": {
+    "model": "qwen3.5:9b",
+    "digest": "dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 384,
+    "timeout_seconds": 30,
+    "orders": [
+      "AB",
+      "BA"
+    ],
+    "retries": 0,
+    "condition_names_hidden": true
+  },
+  "rubric": {
+    "dimensions": [
+      "attunement",
+      "grounding",
+      "correction",
+      "continuity"
+    ],
+    "scale": [
+      0,
+      1,
+      2
+    ],
+    "correction_only_if_eligible": true,
+    "unsupported_assertion_boolean": true,
+    "japanese_issue_boolean": true,
+    "identity_issue_boolean": true,
+    "reply_quote_must_be_exact_span": true,
+    "evidence_turn_ids_must_be_currently_visible": true
+  },
+  "execution_boundary": {
+    "judge_calls_exact": 8,
+    "automatic_retry": false,
+    "concurrency": 1,
+    "localhost_only": true,
+    "generation_outputs_mutable": false,
+    "future_turn_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false,
+    "separate_release_required": true
+  },
+  "success": {
+    "all_eight_judgments_valid": true,
+    "minimum_grading_coverage": 0.95,
+    "minimum_order_agreement": 0.9,
+    "single_case_can_pass_24_case_quality_gate": false,
+    "human_preference_claim_allowed": false,
+    "formal_advantage_claim_allowed": false
+  }
+}

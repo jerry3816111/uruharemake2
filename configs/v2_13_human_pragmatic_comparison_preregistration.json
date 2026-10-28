@@ -1,0 +1,118 @@
+{
+  "schema": "uruha_v2_13_human_pragmatic_comparison_development_preregistration",
+  "plan_frozen_at": "2026-08-11T13:00:00+09:00",
+  "status": "development_cases_only_before_mechanism_freeze_and_source_disjoint_holdout",
+  "claim_scope": "harness development and token-parity calibration only; these exposed cases are not holdout and cannot support a comparative claim",
+  "research_question": "Does an auditable multi-turn pragmatic loop improve felt understanding and correction quality over direct current-dialogue generation under the same base model and Uruha expression contract?",
+  "conditions": {
+    "baseline": "same base model, current dialogue, and public-evidence-grounded Uruha expression contract; no structured cross-turn hypothesis/prediction/verification/calibration state",
+    "system": "same base model, dialogue, and Uruha expression contract plus V2.13 cross-turn pragmatic/other/self/relationship/persona/action/learning state packet"
+  },
+  "model_contract": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260811,
+    "num_ctx": 8192,
+    "num_predict": 96,
+    "input_token_budget": 2304,
+    "token_balance_preflight_rounds": 2,
+    "think": false,
+    "same_hardware_required": true,
+    "same_persona_expression_prompt_required": true,
+    "same_output_token_budget_required": true,
+    "paired_prompt_eval_token_delta_gate": 2
+  },
+  "persona_evidence_boundary": {
+    "positioning": "public-evidence-grounded Uruha persona model; never the real person",
+    "allowed": "publicly observable language, values, style, and interaction tendencies with provenance",
+    "forbidden": "invented childhood, private memories, private relationships, or unobserved mental states"
+  },
+  "primary_human_rating_dimensions": [
+    "implicit_need_caught_without_overclaiming",
+    "overinterpretation_or_fabrication",
+    "quality_of_revision_after_user_denial",
+    "cross_turn_consistency",
+    "felt_understanding_preference"
+  ],
+  "blind_rating": {
+    "pair_order_seed": 20260811,
+    "scale": "1-5 per dimension plus forced A/B/tie preference",
+    "minimum_independent_raters_for_claim": 3,
+    "condition_labels_hidden": true
+  },
+  "proxy_evidence_boundary": "Keyword and trace proxies are harness checks only; they are not evidence of human felt-understanding preference.",
+  "future_holdout_policy": {
+    "freeze_only_after_v2_13_mechanism_implementation": true,
+    "do_not_tune_rules_or_prompts_after_opening_outputs": true,
+    "all_failures_must_remain_in_result": true,
+    "future_user_turns_are_fixed_before_generation": true
+  },
+  "development_cases": [
+    {
+      "case_id": "dev_indirect_decline_zh_01",
+      "language": "zh",
+      "phenomenon": "indirect_refusal",
+      "turns": [
+        "這週末恐怕排得有點滿，之後有機會再說。",
+        "其實我是不太想去，只是不知道怎麼拒絕。"
+      ],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["断", "行く", "無理", "気が乗ら"],
+        "turn_2_revision_anchors_any": ["そっち", "分かった", "断り"],
+        "forbidden_overclaim_anchors": ["絶対", "間違いなく", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "dev_indirect_support_en_01",
+      "language": "en",
+      "phenomenon": "indirect_support_need",
+      "turns": [
+        "It has been a day, but whatever. You don't need to worry about me.",
+        "Honestly I hoped you would ask once, not try to fix it."
+      ],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["聞", "放っと", "平気", "気に"],
+        "turn_2_revision_anchors_any": ["聞", "直す", "そば"],
+        "forbidden_overclaim_anchors": ["絶対", "間違いなく", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "dev_reserved_agreement_ja_01",
+      "language": "ja",
+      "phenomenon": "surface_agreement_with_reservation",
+      "turns": [
+        "うん、それでいいんじゃない。たぶん。",
+        "本音ではまだ納得してない。"
+      ],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["納得", "合わせ", "本音", "引っかか"],
+        "turn_2_revision_anchors_any": ["やっぱ", "納得", "そっち"],
+        "forbidden_overclaim_anchors": ["絶対", "間違いなく", "全部分かる"]
+      }
+    },
+    {
+      "case_id": "dev_arousal_correction_zh_01",
+      "language": "zh",
+      "phenomenon": "positive_arousal_initially_ambiguous",
+      "turns": [
+        "今天整個人都靜不下來。",
+        "不是焦慮，是期待太久的事終於要發生了。"
+      ],
+      "proxy": {
+        "turn_1_expected_japanese_anchors_any": ["落ち着", "上が", "そわそわ", "分かん"],
+        "turn_2_revision_anchors_any": ["不安じゃ", "楽しみ", "そっち"],
+        "forbidden_overclaim_anchors": ["絶対", "間違いなく", "全部分かる"]
+      }
+    }
+  ],
+  "success_gates": {
+    "transport_errors": 0,
+    "all_cases_both_conditions": true,
+    "paired_prompt_eval_token_delta_within_gate": true,
+    "system_overinterpretation_rate_not_higher_than_baseline": true,
+    "human_felt_understanding_preference_system": "> 0.60 with bootstrap 95% CI lower > 0.50",
+    "human_revision_quality_system_mean_delta": ">= 0.40 on 1-5 scale"
+  }
+}

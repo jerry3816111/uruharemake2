@@ -1,0 +1,74 @@
+{
+  "schema": "uruha_p3_b56_allowlisted_diagnostic_transport_review_required_v1",
+  "version": "1.0.0",
+  "recorded_at": "2026-09-19",
+  "status": "review_required_after_single_authorized_diagnostic_failure",
+  "source_id": "youtube_4y5GiQpgJgo",
+  "requested_context_seconds": [
+    3000.0,
+    3180.0
+  ],
+  "result": {
+    "status": "diagnostic_transport_failed",
+    "diagnostic_category": "ffmpeg_or_postprocessing",
+    "network_attempt_count": 1,
+    "network_elapsed_seconds": 2.944204,
+    "transport_returncode": 1,
+    "transport_stdout_bytes_discarded": 0,
+    "transport_stderr_bytes_discarded": 35,
+    "stderr_material_persisted": false,
+    "private_runtime_deleted_before_result": true,
+    "public_artifact_count": 0,
+    "result_hash": "63cd7ea589999cb654665823b0e4215bef148775798b88966f4d0813c240998c"
+  },
+  "offline_differential": {
+    "yt_dlp_ffmpeg_postprocessor_available": true,
+    "yt_dlp_detected_ffmpeg_version": "8.0.1",
+    "yt_dlp_detected_ffprobe_version": "8.0.1",
+    "direct_ffmpeg_synthetic_pipeline_exit_code": 0,
+    "system_python_yt_dlp_import_available": false,
+    "yt_dlp_embedded_python_used_for_discovery": true,
+    "network_request_count": 0,
+    "conclusion": "ffmpeg is installed and discoverable; the saved evidence identifies the yt-dlp ffmpeg/postprocessing class but not its child cause"
+  },
+  "aggregate_denied_action_counts": {
+    "hidden_future_media_request_count": 0,
+    "manual_playback_count": 0,
+    "semantic_inspection_count": 0,
+    "prediction_execution_count": 0,
+    "model_call_count": 0,
+    "formal_m56_write_count": 0,
+    "production_memory_write_count": 0
+  },
+  "bindings": {
+    "contract": {
+      "path": "configs/p3_b56_allowlisted_diagnostic_transport_v1.json",
+      "sha256": "64fa54df03983e4f738355cd6ea13ce48e151e72464c34238f3b766542cdabc9"
+    },
+    "implementation_freeze": {
+      "path": "research/p3_b56_allowlisted_diagnostic_transport_implementation_freeze_2026-09-19.json",
+      "sha256": "19acd767e025454bb98f3042bfde4ff809392789956cef9327efb3cd9412d783"
+    },
+    "result": {
+      "path": "analysis/p3_b56_allowlisted_diagnostic_transport_result_2026-09-19.json",
+      "sha256": "8b6a5663ef134f9ebfb95d189a43d444dc367efdf0301c5f99eadca3df42f511"
+    },
+    "acceptance": {
+      "path": "analysis/p3_b56_allowlisted_diagnostic_transport_acceptance_2026-09-19.md",
+      "sha256": "81acdf3f931d86a093ca56ab34b98d838b50333bcf27fdaa16500091fdef9aa2"
+    },
+    "saved_result_test": {
+      "path": "test_p3_b56_allowlisted_diagnostic_transport_result.py",
+      "sha256": "946115211909c2b73c4beebb1b4bbe4310e32d1b7343e81de79a7e6741b5420e"
+    }
+  },
+  "recommended_next_design": "split private transport into an in-memory yt-dlp bestaudio URL resolver and direct ffmpeg 3000..3180 extraction, then reuse the unchanged B54 duration/hash/public-reader gate",
+  "recommended_next_design_costs": [
+    "one additional provider request",
+    "a signed media URL exists transiently inside the private worker",
+    "provider byte-range exactness remains unprovable",
+    "new capability design requires separate authorization and freeze"
+  ],
+  "next_execution_authorized": false,
+  "claim_boundary": "B56 narrows the real transport failure to an ffmpeg/postprocessing category while preserving redaction and the hidden-future boundary. It does not establish successful source extraction, model input, prediction, formal evidence, or system advantage."
+}

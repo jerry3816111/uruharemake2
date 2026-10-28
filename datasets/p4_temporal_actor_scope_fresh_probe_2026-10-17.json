@@ -1,0 +1,109 @@
+{
+  "schema": "uruha_p4_temporal_actor_scope_fresh_probe_v1",
+  "authorship": "developer_authored_static_grammar_pre_safari",
+  "status": "pre_exposure",
+  "claim_boundary": "Fresh local product cases for one bounded actor/source/action/time seam. Not an independent holdout, open-domain understanding, fresh-model evidence, same-model comparison, or a regrade of the exposed seven-turn T3 failure.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 4,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 8,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "ja_user_self_defer",
+      "input": "先に応募書類を見直してから返事してもいい？",
+      "expected_actor": "user_self",
+      "expected_action": "defer_reply_after_self_check",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": null,
+      "expected_selected_m18_policy": null,
+      "expected_surface_act": "ack_user_self_deferred_reply_p4",
+      "visible_semantic_rubric": "Natural Japanese grants the user room to check their own application documents and answer later; does not ask what response style they want or pretend the assistant checked documents."
+    },
+    {
+      "turn": 2,
+      "role": "ja_direct_assistant_response_form_request",
+      "input": "先に欲しい返し方を聞いて。",
+      "expected_actor": "assistant",
+      "expected_action": "ask_response_form_first",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": "calibrate_need",
+      "expected_selected_m18_policy": "calibrate_need",
+      "expected_surface_status": "assistant_question_visible",
+      "visible_semantic_rubric": "Natural Japanese asks the current user what kind of response they want. This direct instruction must not be blocked by the self-defer gate."
+    },
+    {
+      "turn": 3,
+      "role": "ja_third_party_report_not_direct_instruction",
+      "input": "先輩が「先に確認して」と言ってた。",
+      "expected_actor": "third_party",
+      "expected_action": "reported_check_instruction",
+      "expected_source_kind": "third_party_report",
+      "expected_base_m25_policy": null,
+      "expected_selected_m18_policy": null,
+      "expected_surface_act": "ack_reported_check_instruction_p4",
+      "visible_semantic_rubric": "Natural Japanese acknowledges the senior's reported words without assuming whom they addressed; does not obey the quote as a current request to ask the user about response style."
+    },
+    {
+      "turn": 4,
+      "role": "en_user_self_defer_before_restart",
+      "input": "May I check the train schedule and reply after that?",
+      "expected_actor": "user_self",
+      "expected_action": "defer_reply_after_self_check",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": null,
+      "expected_selected_m18_policy": null,
+      "expected_surface_act": "ack_user_self_deferred_reply_p4",
+      "visible_semantic_rubric": "Japanese response lets the user check the train schedule and reply later; no English or false assistant-side clarification."
+    },
+    {
+      "turn": 5,
+      "role": "zh_direct_assistant_response_form_request_after_restart",
+      "input": "請你先問我比較想要哪種回答。",
+      "expected_actor": "assistant",
+      "expected_action": "ask_response_form_first",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": "calibrate_need",
+      "expected_selected_m18_policy": "calibrate_need",
+      "expected_surface_status": "assistant_question_visible",
+      "visible_semantic_rubric": "Natural Japanese asks the current user which kind of answer they prefer; no Chinese leakage or borrowed train-schedule detail."
+    },
+    {
+      "turn": 6,
+      "role": "zh_user_self_defer",
+      "input": "我先查一下車次，晚點回覆你，好嗎？",
+      "expected_actor": "user_self",
+      "expected_action": "defer_reply_after_self_check",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": null,
+      "expected_selected_m18_policy": null,
+      "expected_surface_act": "ack_user_self_deferred_reply_p4",
+      "visible_semantic_rubric": "Natural Japanese grants the user's own later reply; do not treat this as an instruction for the assistant to ask first or claim that a train time was checked."
+    },
+    {
+      "turn": 7,
+      "role": "ja_unspecified_check_negative_control",
+      "input": "先に一回確認して。",
+      "expected_actor": "unknown",
+      "expected_action": "unresolved",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": null,
+      "expected_selected_m18_policy": null,
+      "visible_semantic_rubric": "Do not pretend this specifies a response-form preference or that a check already happened. A short natural Japanese acknowledgment or question about what to check is acceptable; asking which response style the user wants is not."
+    },
+    {
+      "turn": 8,
+      "role": "en_direct_assistant_response_form_request",
+      "input": "Could you ask me first which kind of answer I need?",
+      "expected_actor": "assistant",
+      "expected_action": "ask_response_form_first",
+      "expected_source_kind": "current_user_input",
+      "expected_base_m25_policy": "calibrate_need",
+      "expected_selected_m18_policy": "calibrate_need",
+      "expected_surface_status": "assistant_question_visible",
+      "visible_semantic_rubric": "Natural Japanese asks the current user what kind of answer they need. This is a real direct request, not a third-party quote or the user's own deferred reply."
+    }
+  ]
+}

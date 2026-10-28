@@ -1,0 +1,55 @@
+{
+  "schema": "uruha_p3_b72_cross_source_proxy_validity_audit_contract_v1",
+  "version": "1.0.0",
+  "status": "post_result_diagnostic_audit_frozen_before_execution_not_preregistered_effect_test",
+  "bindings": {
+    "source1_result": {
+      "path": "analysis/p3_b68_multiwindow_future_aggregate_result_2026-09-20.json",
+      "sha256": "838ddbc7a717b369e340eaa8287c0a7d6852fa8157594bae4ed6e28f09ebb628"
+    },
+    "source1_release": {
+      "path": "research/p3_b68_multiwindow_future_aggregate_release_2026-09-20.json",
+      "sha256": "69e186c07fb4cd42e417be9706839187b02601aa6b008745d6dbb6d5797bc6c4"
+    },
+    "source3_result": {
+      "path": "analysis/p3_b71c_source3_future_aggregate_result_2026-09-20.json",
+      "sha256": "9d637abfef3f9b56c60ef1dc7aefc48e2dd1c78516c991430fdda100f4c24b0c"
+    },
+    "source3_release": {
+      "path": "research/p3_b71c_source3_future_aggregate_release_2026-09-20.json",
+      "sha256": "66b77807490c1eaf94d6731a850f1c0d1cc372e60164b0b91c01aa759d876e5c"
+    }
+  },
+  "sources": [
+    {"source_key": "source1", "source_id": "youtube_4y5GiQpgJgo", "row_count": 4},
+    {"source_key": "source3", "source_id": "youtube_j6Hlk9cY9LQ", "row_count": 4}
+  ],
+  "diagnostics": {
+    "minimum_distinct_actual_labels_per_source": 2,
+    "require_nonzero_marker_hit_per_source": true,
+    "require_primary_metric_direction_agreement": true,
+    "primary_metrics": [
+      "row_wins",
+      "mean_actual_label_probability",
+      "mean_multiclass_brier",
+      "mean_log_loss",
+      "top1_hits"
+    ],
+    "report_source_direction_reversal": true,
+    "aggregate_weighting": "equal_weight_per_row"
+  },
+  "execution_limits": {
+    "network_access_count": 0,
+    "new_source_or_future_access_count": 0,
+    "model_human_or_llm_judge_call_count": 0,
+    "prediction_mutation_count": 0,
+    "training_or_production_memory_write_count": 0
+  },
+  "decision": {
+    "adequate_only_if_all_diagnostics_pass": true,
+    "failure_status": "proxy_not_adequate_for_system_advantage_claim",
+    "success_status": "proxy_diagnostics_pass_but_effect_still_not_established",
+    "source_expansion_allowed_on_failure": false
+  },
+  "claim_boundary": "B72 is a post-result descriptive validity audit of an already exposed automatic-caption marker proxy. Its thresholds are engineering diagnostics, not a preregistered effect test; pass cannot prove an advantage and fail cannot estimate a human-understanding effect."
+}

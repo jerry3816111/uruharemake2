@@ -1,0 +1,78 @@
+{
+  "schema": "uruha_p4_ad_desired_response_ambiguity_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_ad_desired_response_ambiguity_holdout_v1.json",
+    "sha256": "1b270cdca4a65a33dfa78ae6f9f5b4b0162530f97edb92a290fb330155e58f3b",
+    "development_case_count": 3,
+    "holdout_ambiguity_case_count": 9,
+    "literal_control_count": 6,
+    "languages": ["zh", "en", "ja"]
+  },
+  "predecessor_bindings": {
+    "adaptive_model": {
+      "path": "uruha_adaptive_person_model.py",
+      "sha256": "96c2557b52dee307ee455c1ad61500223df2c981922b68fc94b31842015563bf"
+    },
+    "human_equation": {
+      "path": "uruha_human_response_equation_m54.py",
+      "sha256": "70ec5a6fae67268b58fbb60b7f576479d99d16a3f87849c6462763580430a165"
+    },
+    "released_product_entry": {
+      "path": "uruha_web_ui_product_p4_ab.py",
+      "sha256": "21abba416b36e1a755260113f99fa132d252a787a20c7f16ecd7838e7c4d6bef"
+    },
+    "core_graph_renderer": {
+      "path": "uruha_memory_observatory.py",
+      "sha256": "c95e756a6e8b03cbe79cef079f62bf2cecf93dd98cc3290a2ae178139e9c4b76"
+    }
+  },
+  "implementation_boundary": {
+    "mode": "additive_shadow_only",
+    "existing_adaptive_model_change_allowed": false,
+    "existing_human_equation_change_allowed": false,
+    "released_product_entry_change_allowed": false,
+    "core_graph_renderer_change_allowed": false,
+    "visible_reply_change_allowed": false,
+    "prompt_change_allowed": false,
+    "model_or_generation_parameter_change_allowed": false,
+    "new_model_call_allowed": false,
+    "factual_profile_or_episode_write_allowed": false,
+    "candidate_action_score_may_be_called_private_truth_probability": false,
+    "selected_action_may_be_called_private_truth": false
+  },
+  "gates": {
+    "development_case_count": 3,
+    "development_exact_status_count": 3,
+    "development_exact_selected_action_count": 3,
+    "holdout_ambiguity_case_count": 9,
+    "holdout_exact_status_count": 9,
+    "holdout_required_candidate_modes_complete_count": 9,
+    "literal_control_count": 6,
+    "literal_control_false_positive_count": 0,
+    "candidate_contract_pass_count": 12,
+    "selected_action_private_truth_commitment_count": 0,
+    "raw_input_trace_count": 0,
+    "visible_reply_changed_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "integration_gates": {
+    "additive_product_entry_installs_ledger": true,
+    "runtime_graph_node_test_passed": true,
+    "visible_reply_unchanged_test_passed": true,
+    "duplicate_graph_node_count": 0
+  },
+  "failure_policy": {
+    "maximum_informed_correction_batches": 2,
+    "gate_change_after_result_allowed": false,
+    "holdout_input_change_after_result_allowed": false,
+    "score_or_threshold_tuning_on_holdout_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "real_product_or_safari_execution_authorized_by_this_contract": false
+  },
+  "claim_boundary": "A pass proves a deterministic shadow ledger can preserve multiple desired-response action hypotheses, evidence provenance, falsifiers and explicit unknown space across frozen multilingual examples without changing the reply or writing private-state facts. It does not identify the user's true desired response, establish felt understanding, prove a human equation, or show advantage over a strong LLM."
+}

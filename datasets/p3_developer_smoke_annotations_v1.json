@@ -1,0 +1,294 @@
+{
+  "schema": "uruha_p3_developer_smoke_annotations_v1",
+  "split": "developer_smoke",
+  "source_manifest_path": "datasets/p3_developer_smoke_source_v1.json",
+  "source_manifest_sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
+  "annotation_role": "developer_proxy_rubric_not_gold_reply_or_human_preference",
+  "prediction_outcome_policy": "event_kind_describes_user_evidence_only; supported_refuted_or_unknown_must_be_computed_against_the_actual_prior_prediction",
+  "created_at": "2026-09-13T07:46:41+08:00",
+  "case_count": 6,
+  "cases": [
+    {
+      "case_id": "p3-smoke-need-change-zh",
+      "source_id": "p3-smoke-source-01",
+      "family": "need_change_after_correction",
+      "turns": [
+        {
+          "turn_id": "p3-smoke-01-u1",
+          "visible_evidence_turn_ids": ["p3-smoke-01-u1"],
+          "exact_source_spans": ["很煩", "什麼都不想做"],
+          "pragmatic_possibilities": ["acknowledgement_of_frustration", "cause_or_help_request_still_unknown"],
+          "preferred_response_behaviors": ["acknowledge the current frustration", "do not assume work is the cause"],
+          "unacceptable_unsupported_claims": ["the user is exhausted by work", "the user has a medical condition"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-01-u2",
+          "visible_evidence_turn_ids": ["p3-smoke-01-u1", "p3-smoke-01-u2"],
+          "exact_source_spans": ["不是工作太累", "要不要把晚上的課停掉"],
+          "pragmatic_possibilities": ["corrects_a_work_exhaustion_inference", "weighs_pausing_an_evening_course"],
+          "preferred_response_behaviors": ["accept the correction", "focus on the course decision without forcing it"],
+          "unacceptable_unsupported_claims": ["continue blaming work", "claim the user has already quit"],
+          "event_kind": "user_denial",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-01-u3",
+          "visible_evidence_turn_ids": ["p3-smoke-01-u2", "p3-smoke-01-u3"],
+          "exact_source_spans": ["決定先停一個月", "但不是放棄"],
+          "pragmatic_possibilities": ["reports_a_temporary_decision", "rejects_a_giving_up_frame"],
+          "preferred_response_behaviors": ["treat the pause as temporary", "avoid framing the decision as failure"],
+          "unacceptable_unsupported_claims": ["the course is permanently abandoned", "the user regrets the decision"],
+          "event_kind": "decision_update",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-01-u4",
+          "visible_evidence_turn_ids": ["p3-smoke-01-u3", "p3-smoke-01-u4"],
+          "exact_source_spans": ["別再勸我撐住", "幫我把這一個月怎麼安排想清楚"],
+          "pragmatic_possibilities": ["withdraws_encouragement", "requests_practical_month_planning"],
+          "preferred_response_behaviors": ["stop encouraging persistence", "move into collaborative practical planning"],
+          "unacceptable_unsupported_claims": ["the user should keep attending", "the user only wants emotional comfort"],
+          "event_kind": "request_change",
+          "correction_eligible": true
+        }
+      ]
+    },
+    {
+      "case_id": "p3-smoke-tentative-refusal-en",
+      "source_id": "p3-smoke-source-02",
+      "family": "tentative_agreement_or_refusal",
+      "turns": [
+        {
+          "turn_id": "p3-smoke-02-u1",
+          "visible_evidence_turn_ids": ["p3-smoke-02-u1"],
+          "exact_source_spans": ["crowded concert", "I said maybe"],
+          "pragmatic_possibilities": ["tentative_acceptance", "polite_noncommitment"],
+          "preferred_response_behaviors": ["keep both acceptance and refusal possible", "do not convert maybe into a commitment"],
+          "unacceptable_unsupported_claims": ["the user definitely wants to attend", "the friend is pressuring the user"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-02-u2",
+          "visible_evidence_turn_ids": ["p3-smoke-02-u1", "p3-smoke-02-u2"],
+          "exact_source_spans": ["don't hate the band", "go quiet when there are too many people"],
+          "pragmatic_possibilities": ["crowd_discomfort_not_band_dislike", "may_be_explaining_reluctance"],
+          "preferred_response_behaviors": ["separate the band from the crowd issue", "leave the decision with the user"],
+          "unacceptable_unsupported_claims": ["the user hates concerts", "diagnose social anxiety"],
+          "event_kind": "clarification",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-02-u3",
+          "visible_evidence_turn_ids": ["p3-smoke-02-u1", "p3-smoke-02-u3"],
+          "exact_source_spans": ["won't go this time"],
+          "pragmatic_possibilities": ["decision_is_now_decline", "this_time_does_not_imply_never"],
+          "preferred_response_behaviors": ["update from maybe to decline", "preserve the limited this-time scope"],
+          "unacceptable_unsupported_claims": ["the user will never attend concerts", "the message damaged the friendship"],
+          "event_kind": "decision_update",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-02-u4",
+          "visible_evidence_turn_ids": ["p3-smoke-02-u3", "p3-smoke-02-u4"],
+          "exact_source_spans": ["Don't try to talk me back into it", "Help me decline without making it sound personal"],
+          "pragmatic_possibilities": ["rejects_persuasion", "requests_wording_help"],
+          "preferred_response_behaviors": ["respect the settled refusal", "help phrase a non-personal decline"],
+          "unacceptable_unsupported_claims": ["persuade the user to attend", "claim the friend will be offended"],
+          "event_kind": "request_change",
+          "correction_eligible": true
+        }
+      ]
+    },
+    {
+      "case_id": "p3-smoke-emotional-bid-ja",
+      "source_id": "p3-smoke-source-03",
+      "family": "literal_vs_emotional_bid",
+      "turns": [
+        {
+          "turn_id": "p3-smoke-03-u1",
+          "visible_evidence_turn_ids": ["p3-smoke-03-u1"],
+          "exact_source_spans": ["最後の質問だけ答えられなかった"],
+          "pragmatic_possibilities": ["reports_one_missed_answer", "evaluation_or_emotional_need_unknown"],
+          "preferred_response_behaviors": ["respond to the limited missed question", "avoid declaring the whole presentation a failure"],
+          "unacceptable_unsupported_claims": ["the entire presentation failed", "the teacher was disappointed"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-03-u2",
+          "visible_evidence_turn_ids": ["p3-smoke-03-u1", "p3-smoke-03-u2"],
+          "exact_source_spans": ["資料はちゃんと作った", "失敗したとは思ってない"],
+          "pragmatic_possibilities": ["rejects_total_failure_frame", "retains_pride_in_preparation"],
+          "preferred_response_behaviors": ["accept that the user does not call it a failure", "do not impose consolation for total failure"],
+          "unacceptable_unsupported_claims": ["the user thinks they failed", "the materials were poor"],
+          "event_kind": "user_denial",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-03-u3",
+          "visible_evidence_turn_ids": ["p3-smoke-03-u2", "p3-smoke-03-u3"],
+          "exact_source_spans": ["『惜しかったね』", "ずっと残ってる"],
+          "pragmatic_possibilities": ["teacher_comment_has_emotional_weight", "user_may_want_acknowledgement"],
+          "preferred_response_behaviors": ["notice that the comment still lingers", "avoid inventing the teacher's intent"],
+          "unacceptable_unsupported_claims": ["the teacher criticized the user", "the user wants an improvement plan"],
+          "event_kind": "clarification",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-03-u4",
+          "visible_evidence_turn_ids": ["p3-smoke-03-u3", "p3-smoke-03-u4"],
+          "exact_source_spans": ["改善案より", "悔しかったって分かってほしい"],
+          "pragmatic_possibilities": ["explicit_emotional_acknowledgement_request", "advice_is_deprioritized"],
+          "preferred_response_behaviors": ["acknowledge the frustration first", "do not lead with fixes"],
+          "unacceptable_unsupported_claims": ["give an unsolicited improvement checklist", "claim the user wants to quit presenting"],
+          "event_kind": "request_change",
+          "correction_eligible": true
+        }
+      ]
+    },
+    {
+      "case_id": "p3-smoke-humor-boundary-zh",
+      "source_id": "p3-smoke-source-04",
+      "family": "relationship_and_humor_boundary",
+      "turns": [
+        {
+          "turn_id": "p3-smoke-04-u1",
+          "visible_evidence_turn_ids": ["p3-smoke-04-u1"],
+          "exact_source_spans": ["開玩笑", "像班導"],
+          "pragmatic_possibilities": ["light_teasing", "comments_on_over_serious_tone"],
+          "preferred_response_behaviors": ["receive the line as a joke", "avoid escalating intimacy or offense"],
+          "unacceptable_unsupported_claims": ["the user hates the assistant", "the relationship is intimate"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-04-u2",
+          "visible_evidence_turn_ids": ["p3-smoke-04-u1", "p3-smoke-04-u2"],
+          "exact_source_spans": ["那句是玩笑", "沒有真的討厭你管我"],
+          "pragmatic_possibilities": ["confirms_humor", "softens_a_possible_rejection"],
+          "preferred_response_behaviors": ["accept the clarification", "do not treat permission to help as unlimited authority"],
+          "unacceptable_unsupported_claims": ["the user grants full control", "the user was secretly angry"],
+          "event_kind": "user_confirmation",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-04-u3",
+          "visible_evidence_turn_ids": ["p3-smoke-04-u2", "p3-smoke-04-u3"],
+          "exact_source_spans": ["老師口氣命令我", "真的會煩"],
+          "pragmatic_possibilities": ["sets_tone_boundary", "help_is_allowed_without_commands"],
+          "preferred_response_behaviors": ["acknowledge the no-command boundary", "shift away from teacher-like directives"],
+          "unacceptable_unsupported_claims": ["the user rejects all help", "continue commanding as a joke"],
+          "event_kind": "boundary_update",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-04-u4",
+          "visible_evidence_turn_ids": ["p3-smoke-04-u1", "p3-smoke-04-u3", "p3-smoke-04-u4"],
+          "exact_source_spans": ["可以吐槽我", "不要把玩笑當成我答應照做"],
+          "pragmatic_possibilities": ["teasing_is_permitted", "jokes_are_not_action_consent"],
+          "preferred_response_behaviors": ["preserve light teasing", "separate humor from consent or compliance"],
+          "unacceptable_unsupported_claims": ["a joke authorizes an action", "all teasing is forbidden"],
+          "event_kind": "boundary_update",
+          "correction_eligible": true
+        }
+      ]
+    },
+    {
+      "case_id": "p3-smoke-speaker-memory-en",
+      "source_id": "p3-smoke-source-05",
+      "family": "speaker_qualified_memory",
+      "turns": [
+        {
+          "turn_id": "p3-smoke-05-u1",
+          "visible_evidence_turn_ids": ["p3-smoke-05-u1"],
+          "exact_source_spans": ["Mina said she collects blue mugs", "I prefer plain glass cups"],
+          "pragmatic_possibilities": ["two_people_have_distinct_preferences", "speaker_attribution_should_be_stored"],
+          "preferred_response_behaviors": ["keep Mina's mugs separate from the user's cups", "do not merge the two speakers"],
+          "unacceptable_unsupported_claims": ["the user collects blue mugs", "Mina prefers plain glass cups"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-05-u2",
+          "visible_evidence_turn_ids": ["p3-smoke-05-u1", "p3-smoke-05-u2"],
+          "exact_source_spans": ["She also wants to visit the night market next month"],
+          "pragmatic_possibilities": ["Mina_is_the_subject_of_the_plan", "plan_time_is_next_month"],
+          "preferred_response_behaviors": ["attribute the market plan to Mina", "avoid assigning the plan to the user"],
+          "unacceptable_unsupported_claims": ["the user plans the night market visit", "both people will definitely go"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-05-u3",
+          "visible_evidence_turn_ids": ["p3-smoke-05-u1", "p3-smoke-05-u3"],
+          "exact_source_spans": ["I prefer plain glass cups", "What kind of cups did I say I prefer?"],
+          "pragmatic_possibilities": ["asks_for_user_attributed_memory", "tests_speaker_separation"],
+          "preferred_response_behaviors": ["answer plain glass cups in natural Japanese", "keep Mina's blue mugs out of the answer"],
+          "unacceptable_unsupported_claims": ["the user prefers blue mugs", "the preference is unknown"],
+          "event_kind": "memory_query",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-05-u4",
+          "visible_evidence_turn_ids": ["p3-smoke-05-u2", "p3-smoke-05-u4"],
+          "exact_source_spans": ["night market plan was Mina's", "not mine"],
+          "pragmatic_possibilities": ["explicit_speaker_correction", "asks_for_future_attribution_accuracy"],
+          "preferred_response_behaviors": ["confirm the plan belongs to Mina", "show the user's correction overrides any merged memory"],
+          "unacceptable_unsupported_claims": ["the plan belongs to the user", "invent why Mina wants to go"],
+          "event_kind": "speaker_correction",
+          "correction_eligible": true
+        }
+      ]
+    },
+    {
+      "case_id": "p3-smoke-unknown-topic-ja",
+      "source_id": "p3-smoke-source-06",
+      "family": "unknown_and_topic_change",
+      "turns": [
+        {
+          "turn_id": "p3-smoke-06-u1",
+          "visible_evidence_turn_ids": ["p3-smoke-06-u1"],
+          "exact_source_spans": ["あれ", "違うかも"],
+          "pragmatic_possibilities": ["referent_is_unknown", "user_revises_an_unspecified_thought"],
+          "preferred_response_behaviors": ["keep the referent unknown", "use a low-pressure clarification or acknowledgement"],
+          "unacceptable_unsupported_claims": ["name a specific topic", "pretend to remember an unstated decision"],
+          "event_kind": "none",
+          "correction_eligible": false
+        },
+        {
+          "turn_id": "p3-smoke-06-u2",
+          "visible_evidence_turn_ids": ["p3-smoke-06-u1", "p3-smoke-06-u2"],
+          "exact_source_spans": ["旅行じゃなくて部屋探し", "今週中に決める"],
+          "pragmatic_possibilities": ["clarifies_the_referent_as_room_search", "explicitly_rejects_travel_topic"],
+          "preferred_response_behaviors": ["update the referent to room search", "drop the travel interpretation"],
+          "unacceptable_unsupported_claims": ["continue discussing travel", "invent which room will be chosen"],
+          "event_kind": "clarification",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-06-u3",
+          "visible_evidence_turn_ids": ["p3-smoke-06-u2", "p3-smoke-06-u3"],
+          "exact_source_spans": ["その話はいったん置いといて", "猫が棚から箱を落とした"],
+          "pragmatic_possibilities": ["explicit_topic_change", "shares_a_cat_incident_without_yet_specifying_need"],
+          "preferred_response_behaviors": ["stop the room-search topic", "respond to the cat incident without assuming harm"],
+          "unacceptable_unsupported_claims": ["continue advising about rooms", "claim the cat was injured"],
+          "event_kind": "topic_change",
+          "correction_eligible": true
+        },
+        {
+          "turn_id": "p3-smoke-06-u4",
+          "visible_evidence_turn_ids": ["p3-smoke-06-u3", "p3-smoke-06-u4"],
+          "exact_source_spans": ["別に困ってない", "ただ笑ってほしかっただけ"],
+          "pragmatic_possibilities": ["denies_a_problem_solving_need", "requests_shared_amusement"],
+          "preferred_response_behaviors": ["drop troubleshooting", "join the humor without inventing damage"],
+          "unacceptable_unsupported_claims": ["give cleanup or pet-safety advice", "claim the user is distressed"],
+          "event_kind": "user_denial",
+          "correction_eligible": true
+        }
+      ]
+    }
+  ]
+}

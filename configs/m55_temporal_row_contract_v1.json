@@ -1,0 +1,173 @@
+{
+  "schema": "uruha_m55_temporal_row_contract_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_target_behavior_content_access",
+  "target_id": "ichinose_uruha_public_persona",
+  "bindings": {
+    "equation_v1": {
+      "path": "configs/m54_human_response_equation_v1.json",
+      "sha256": "0b3c98853c20511bb3224b6ecaded5e99c01e3697c2b62cc8a8ee54cedf9fb0a"
+    },
+    "event_schema": {
+      "path": "configs/public_persona_event_coding_schema_v1.json",
+      "sha256": "8951d6a606cbe193556eeb4ae6debada1d4bea9ee5a9e9650148f3f68cd75a33"
+    },
+    "behavior_codebook": {
+      "path": "configs/public_persona_contrast_coding_codebook_v6.json",
+      "sha256": "b7336503fdc18849e31ce6679e7897824193d237b0400c84500ebee6d51f84e1"
+    },
+    "target_sampling_frame": {
+      "path": "datasets/public_persona_target_calibration_sampling_frame_v9.json",
+      "sha256": "fccac49c7cf2df6b54be2fc9af4182b9c6f20f646d909597c7c0c1831c71d4ae"
+    },
+    "target_source_metadata": {
+      "path": "datasets/public_persona_target_calibration_source_metadata_v9.json",
+      "sha256": "d1e151870cf73d92d454d1b74264b28891629dd1288996bd973480d8fb9402c7"
+    },
+    "target_v9_result_lock": {
+      "path": "configs/public_persona_target_calibration_coding_v9_result_lock.json",
+      "sha256": "3572c8b5c5b125eac479e6c4082ee410add90b4ed8300c8ced6d3b63aea660fd"
+    }
+  },
+  "record_pack": {
+    "schema": "uruha_m55_private_temporal_record_pack_v1",
+    "allowed_data_kinds": [
+      "synthetic_engineering_fixture",
+      "real_public_observation"
+    ],
+    "required_record_fields": [
+      "sample_id",
+      "sampling_slot_id",
+      "source_id",
+      "source_published_at",
+      "event_start_seconds",
+      "observable_input_start_seconds",
+      "prediction_cutoff_seconds",
+      "observable_behavior_start_seconds",
+      "observable_behavior_end_seconds",
+      "event_end_seconds",
+      "observable_input_paraphrase",
+      "completed_event_summary",
+      "behavior_label",
+      "acceptable_behavior_labels",
+      "annotation_confidence",
+      "context_family",
+      "observable_audience_relation",
+      "independent_coder_count",
+      "review_status",
+      "prediction_boundary_attestation",
+      "outcome_excluded_from_input_attestation",
+      "paraphrase_and_no_quote_attestation"
+    ],
+    "allowed_review_statuses": [
+      "synthetic_engineering_only",
+      "agreed_independent_codes",
+      "adjudicated_after_retained_disagreement"
+    ]
+  },
+  "temporal_boundary": {
+    "coordinate": "source_publication_date_plus_relative_seconds_for_ordering_only",
+    "wall_clock_precision_claimed": false,
+    "interval_semantics": "half_open",
+    "required_order": [
+      "event_start_seconds <= observable_input_start_seconds",
+      "observable_input_start_seconds < prediction_cutoff_seconds",
+      "prediction_cutoff_seconds < observable_behavior_start_seconds",
+      "observable_behavior_start_seconds < observable_behavior_end_seconds",
+      "observable_behavior_end_seconds <= event_end_seconds"
+    ],
+    "whole_event_start_may_substitute_for_prediction_cutoff": false,
+    "current_outcome_may_enter_model_input": false,
+    "prior_completed_outcomes_may_enter_history_after_available": true
+  },
+  "behavior_taxonomy": {
+    "source_binding": "behavior_codebook",
+    "label_field": "dialogue_act_or_action_labels",
+    "private_state_labels_allowed": false
+  },
+  "equation_variable_crosswalk": [
+    {
+      "variable_id": "current_observable_input",
+      "record_sources": ["observable_input_paraphrase", "context_family"],
+      "status": "observed_pre_cutoff"
+    },
+    {
+      "variable_id": "observable_history",
+      "record_sources": ["prior_completed_records_only"],
+      "status": "derived_pre_cutoff"
+    },
+    {
+      "variable_id": "structured_memory",
+      "record_sources": ["prior_completed_records_only"],
+      "status": "derived_pre_cutoff_or_unavailable"
+    },
+    {
+      "variable_id": "transient_state",
+      "record_sources": [],
+      "status": "unavailable_not_inferred"
+    },
+    {
+      "variable_id": "relationship_state",
+      "record_sources": ["prior_observable_audience_relation_only"],
+      "status": "derived_pre_cutoff_or_unavailable"
+    },
+    {
+      "variable_id": "goal_need_state",
+      "record_sources": [],
+      "status": "unavailable_not_inferred"
+    },
+    {
+      "variable_id": "observable_context",
+      "record_sources": ["context_family", "observable_audience_relation"],
+      "status": "observed_pre_cutoff"
+    },
+    {
+      "variable_id": "person_parameter",
+      "record_sources": ["equation_v1.person_parameter"],
+      "status": "frozen_development_prior_not_fitted_on_current_outcome"
+    },
+    {
+      "variable_id": "uncertainty_calibration",
+      "record_sources": ["annotation_confidence"],
+      "status": "annotation_uncertainty_only_prediction_calibration_unavailable"
+    }
+  ],
+  "output_contract": {
+    "primary_label": "behavior_label",
+    "outcome_available_only_after": "observable_behavior_start_seconds",
+    "behavior_paraphrase_in_model_input": false,
+    "desired_response_policy_is_not_primary_label": true,
+    "visible_utterance_is_not_primary_label": true
+  },
+  "privacy": {
+    "formal_record_pack_git_tracked": false,
+    "formal_compiled_dataset_git_tracked": false,
+    "researcher_paraphrase_only": true,
+    "raw_or_verbatim_content_allowed": false,
+    "model_output_visible_to_coders": false,
+    "private_mental_fact_allowed": false
+  },
+  "authorization": {
+    "synthetic_fixture_authorizes_human_reliability": false,
+    "synthetic_fixture_authorizes_m56": false,
+    "real_pack_requires_two_independent_humans": true,
+    "real_pack_requires_m55_human_gate": true,
+    "m55_compiler_alone_authorizes_m56": false,
+    "separate_m56_protocol_required": true
+  },
+  "claim_boundary": {
+    "may_claim": [
+      "machine-checkable cutoff-to-future row contract",
+      "fail-closed temporal leakage validation",
+      "explicit Equation V1 missingness crosswalk"
+    ],
+    "may_not_claim": [
+      "real-person labels collected",
+      "Equation V1 predictive validity",
+      "M56 model comparison authorized",
+      "private mental-state truth",
+      "biological human-brain equation",
+      "persona equivalence"
+    ]
+  }
+}

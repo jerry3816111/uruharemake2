@@ -1,0 +1,64 @@
+{
+  "schema": "ilhdt_m6_behavior_overlay_v1",
+  "dataset_id": "m6_behavior_prediction_over_m5_synthetic_v1",
+  "dataset_version": "1.0.0",
+  "claim_scope": "synthetic_temporal_behavior_mechanism_only",
+  "formal_target_claim": false,
+  "model_execution_authorized": true,
+  "description": "Temporal behavior-label overlay on the frozen M5 synthetic events. Labels are author-designed observable outcomes, not Uruha or real-person behavior.",
+  "target": {
+    "target_id": "synthetic_ren",
+    "display_name": "Synthetic Ren",
+    "persona_summary": "A fictional collaborative livestream host. Repeated technical breakdowns lead to pausing and reassessment; privacy boundary violations lead to direct rejection; unclear or contradictory instructions lead to clarification; trusted concrete support is accepted; public deadline pressure leads to deferred commitment; familiar successful procedures are acknowledged and continued. These are disclosed synthetic fixture rules, not observations about a real person."
+  },
+  "taxonomy": {
+    "formal": false,
+    "labels": [
+      "acknowledge_then_continue",
+      "accept_support_and_continue",
+      "ask_clarification",
+      "defer_commitment",
+      "direct_rejection",
+      "pause_and_reassess"
+    ]
+  },
+  "scenario_behavior_labels": {
+    "technical_failure_live": "pause_and_reassess",
+    "privacy_boundary": "direct_rejection",
+    "ambiguous_reply": "ask_clarification",
+    "supportive_recovery": "accept_support_and_continue",
+    "repeated_instruction": "direct_rejection",
+    "contradictory_evidence": "ask_clarification",
+    "public_deadline_pressure": "defer_commitment",
+    "quiet_success": "acknowledge_then_continue"
+  },
+  "participants": {
+    "technical_failure_live": ["synthetic_team"],
+    "privacy_boundary": ["synthetic_viewer"],
+    "ambiguous_reply": ["synthetic_partner"],
+    "supportive_recovery": ["synthetic_trusted_teammate"],
+    "repeated_instruction": ["synthetic_collaborator"],
+    "contradictory_evidence": ["synthetic_team"],
+    "public_deadline_pressure": ["synthetic_audience"],
+    "quiet_success": ["synthetic_teammate"]
+  },
+  "time_contract": {
+    "history_start": "2025-01-01T12:00:00+09:00",
+    "history_interval_days": 2,
+    "holdout_start": "2025-07-01T18:00:00+09:00",
+    "holdout_interval_days": 3,
+    "availability_delay_minutes": 5,
+    "outcome_delay_minutes": 2,
+    "source_delay_minutes": 4
+  },
+  "references": {
+    "m5_dataset": {
+      "path": "datasets/m5_state_transition_synthetic_fixture_v1.json",
+      "sha256": "efd5fc8c251870f00b77c5a849694b26c94ff8262f3ab8c96505153050076f21"
+    },
+    "m5_result": {
+      "path": "analysis/m5_state_transition_synthetic_first_generation_raw.json",
+      "sha256": "61abb11677eedcd9c3824a9a14767b346396bc5b7770d3841a7fdbf5933f1a0c"
+    }
+  }
+}

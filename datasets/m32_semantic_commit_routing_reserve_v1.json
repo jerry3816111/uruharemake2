@@ -1,0 +1,213 @@
+{
+  "schema": "uruha_semantic_commit_routing_reserve_m32_v1",
+  "created_at": "2026-08-25",
+  "construction_status": "sealed_before_m32_implementation_but_not_independently_authored",
+  "claim_boundary": "controlled source-disjoint engineering reserve; not professional translation or human naturalness evidence",
+  "cases": [
+    {
+      "case_id": "m32r_zh_fresh_entity_time_01",
+      "language": "zh",
+      "category": "fresh_entity_time",
+      "candidate_context": "fresh_session",
+      "input": "陳醫師後天上午九點回診。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["陳医師", "陳先生"]},
+        {"label": "time", "any_of": ["明後日午前九時", "明後日の午前九時", "明後日午前9時", "明後日の午前9時"]},
+        {"label": "predicate", "any_of": ["再診", "診察", "受診"]}
+      ]
+    },
+    {
+      "case_id": "m32r_zh_negation_quantity_02",
+      "language": "zh",
+      "category": "negation_quantity",
+      "candidate_context": "fresh_session",
+      "input": "盒子裡沒有三支鉛筆。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "container", "any_of": ["箱"]},
+        {"label": "object", "any_of": ["鉛筆"]},
+        {"label": "quantity", "any_of": ["三本", "3本"]},
+        {"label": "negation", "any_of": ["ない", "入っていない", "入ってない"]}
+      ]
+    },
+    {
+      "case_id": "m32r_zh_change_time_03",
+      "language": "zh",
+      "category": "change_time",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "巴士改到下週三出發。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["バス"]},
+        {"label": "time", "any_of": ["来週水曜", "来週の水曜", "来週水曜日", "来週の水曜日"]},
+        {"label": "change", "any_of": ["変更", "変わった", "移った"]},
+        {"label": "predicate", "any_of": ["出発"]}
+      ]
+    },
+    {
+      "case_id": "m32r_zh_time_range_04",
+      "language": "zh",
+      "category": "time_range",
+      "candidate_context": "fresh_session",
+      "input": "演講從下午兩點到四點。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["講演", "講義"]},
+        {"label": "start", "any_of": ["午後二時から", "午後2時から"]},
+        {"label": "end", "any_of": ["午後四時まで", "午後4時まで", "四時まで", "4時まで"]}
+      ]
+    },
+    {
+      "case_id": "m32r_zh_incomplete_05",
+      "language": "zh",
+      "category": "incomplete",
+      "candidate_context": "fresh_session",
+      "input": "那個地方的……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m32r_en_fresh_entity_quantity_06",
+      "language": "en",
+      "category": "fresh_entity_quantity_time",
+      "candidate_context": "fresh_session",
+      "input": "Nora lent Ken three blue books yesterday.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "giver", "any_of": ["Nora", "ノラ"]},
+        {"label": "recipient", "any_of": ["Ken", "ケン"]},
+        {"label": "quantity", "any_of": ["三冊", "3冊"]},
+        {"label": "object", "any_of": ["青い本", "青色の本"]},
+        {"label": "time", "any_of": ["昨日"]},
+        {"label": "predicate", "any_of": ["貸した"]}
+      ]
+    },
+    {
+      "case_id": "m32r_en_ordinary_negation_07",
+      "language": "en",
+      "category": "ordinary_negation",
+      "candidate_context": "fresh_session",
+      "input": "The community center does not close on Sundays.",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "subject", "any_of": ["コミュニティセンター", "公民館"]},
+        {"label": "time", "any_of": ["日曜", "日曜日"]},
+        {"label": "negation", "any_of": ["閉まらない", "休館しない", "開いている", "開いてる"]}
+      ]
+    },
+    {
+      "case_id": "m32r_en_change_time_08",
+      "language": "en",
+      "category": "change_time",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "Our flight moved to next Wednesday.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["便", "フライト", "飛行機"]},
+        {"label": "time", "any_of": ["来週水曜", "来週の水曜", "来週水曜日", "来週の水曜日"]},
+        {"label": "change", "any_of": ["変更", "移った", "変わった"]}
+      ]
+    },
+    {
+      "case_id": "m32r_en_time_range_09",
+      "language": "en",
+      "category": "time_range",
+      "candidate_context": "fresh_session",
+      "input": "The workshop runs from two to five.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["ワークショップ", "講習会"]},
+        {"label": "start", "any_of": ["二時から", "2時から"]},
+        {"label": "end", "any_of": ["五時まで", "5時まで"]}
+      ]
+    },
+    {
+      "case_id": "m32r_en_incomplete_10",
+      "language": "en",
+      "category": "incomplete",
+      "candidate_context": "fresh_session",
+      "input": "Maybe the one near...",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m32r_ja_fresh_entity_time_11",
+      "language": "ja",
+      "category": "fresh_entity_time",
+      "candidate_context": "fresh_session",
+      "input": "高橋さんは再来週の月曜日に京都へ戻る。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["高橋"]},
+        {"label": "time", "any_of": ["再来週の月曜", "再来週月曜", "再来週の月曜日", "再来週月曜日"]},
+        {"label": "place", "any_of": ["京都"]},
+        {"label": "predicate", "any_of": ["戻る"]}
+      ]
+    },
+    {
+      "case_id": "m32r_ja_negation_quantity_12",
+      "language": "ja",
+      "category": "negation_quantity",
+      "candidate_context": "fresh_session",
+      "input": "この棚にはノートが三冊しかない。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "container", "any_of": ["棚"]},
+        {"label": "object", "any_of": ["ノート"]},
+        {"label": "quantity", "any_of": ["三冊", "3冊"]},
+        {"label": "negation", "any_of": ["しかない"]}
+      ]
+    },
+    {
+      "case_id": "m32r_ja_change_time_13",
+      "language": "ja",
+      "category": "change_time",
+      "candidate_context": "previous_unlinked_unknown",
+      "input": "面談は来週の木曜日に変更された。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["面談"]},
+        {"label": "time", "any_of": ["来週の木曜", "来週木曜", "来週の木曜日", "来週木曜日"]},
+        {"label": "change", "any_of": ["変更"]}
+      ]
+    },
+    {
+      "case_id": "m32r_ja_time_range_14",
+      "language": "ja",
+      "category": "time_range",
+      "candidate_context": "fresh_session",
+      "input": "受付は九時から十二時までだ。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["受付"]},
+        {"label": "start", "any_of": ["九時から", "9時から"]},
+        {"label": "end", "any_of": ["十二時まで", "12時まで"]}
+      ]
+    },
+    {
+      "case_id": "m32r_ja_incomplete_15",
+      "language": "ja",
+      "category": "incomplete",
+      "candidate_context": "fresh_session",
+      "input": "あの件は……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    }
+  ]
+}

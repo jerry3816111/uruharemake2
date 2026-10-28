@@ -1,0 +1,7 @@
+# P4 direct-act handoff：送出前 active DB 硬 gate 的前瞻測量修訂 1
+
+日期：2026-10-23。此修訂在任何 `b0–b6` 真模型／Safari 輸出前提出；原設計、題本、條件 gold、九臂上限與 `a0` strict FAIL 不變。只補足原設計已要求、但現有 Web/controller 無法直接觀察的 **same-PID active DB path**，不是降低 gate 或修改能力變因。獨立只讀審查發現：controller 的 child env 與空 DB 只證配置，`lsof` 也可能保留舊 SQLite handle；Web status 只報 session，不報 `brain.memory` 當前的 Chroma client。現有 `verify-ready` 只證 HTTP/PID，不證 brain 已初始化。
+
+允許檔增補：`uruha_web_ui.py` 的 opt-in、私有、無對話內容之 active-DB 診斷收據與 reset 世代；`p4_direct_reply_act_m29_priority_detached_control.py` 僅對本項兩臂設相同 prewarm／私有 receipt path；其聚焦測試及收據分析。不得更動 `MemoryManager.save_episode`、資料選擇、M29/M31/M32、模型設定、一般 Web 公開狀態或正式 DB。兩臂均以相同 `URUHA_WEB_PREWARM_BRAIN=1` 建 brain；官方 ONNX 必須先私有離線預熱，無下載；同 PID zero-turn ready 後，等待 brain loaded、收據 PID=controller PID、session ID 同 Web、`reset_generation=0`、`client.get_settings().persist_directory` 正規化為本 root 的 `memory_db`，且 T0 embeddings/profile 0，才能按 Safari Send。收據只由活的同 PID Web brain 在 init/reset 後以 0600 原子寫於 controller-owned 0700 root，含 schema、PID、session ID、reset generation、active path（或其可回算絕對路徑）、brain-load status、autonomous tick；不含 prompt、回覆、模型內文、個人資料。若設定/路徑取得失敗，不猜測預設值，寫 unavailable 並停。
+
+每臂 Send 後再讀同 PID receipt，確認 PID/session/reset generation/active path 未漂移，並核 episode 確實只進同 root `memory_db`。若 prewarm 尚未 ready、臨時 reset、收據缺失或狀態更動，該 arm **FAIL／0 retry**，不以 stdout、環境變數、`lsof` 或事後 episode 單獨代替送出前證據。診斷本身不得觸發新模型生成、背景週期或改寫使用者狀態；兩臂回合前 `autonomous_tick_index=0`，若已變則停。此測量只支撐 DB/init 同等性，不代表記憶因果或人評通過。

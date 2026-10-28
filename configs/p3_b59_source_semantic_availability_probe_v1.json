@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_p3_b59_source_semantic_availability_probe_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_under_standing_authorization_before_metadata_request",
+  "single_changed_variable": "replace the closed direct-audio transport branch with a metadata-only subtitle and automatic-caption availability probe",
+  "authorization": {
+    "basis": "2026-09-19 through 2026-09-20 user standing authorization for continuous execution under the existing plan",
+    "resolver_process_invocation_count_max": 1,
+    "caption_content_download_count_max": 0,
+    "retry_or_fallback_authorized": false,
+    "paid_api_login_cookie_or_account_access_authorized": false
+  },
+  "bindings": {
+    "b58_review_required": {
+      "path": "research/p3_b58_private_allowlisted_header_transport_review_required_2026-09-20.json",
+      "sha256": "8a01a77295d678b40d3e885da2d7d8699afeca61df0beebef2ec729550dcc403"
+    },
+    "b54_release": {
+      "path": "research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json",
+      "sha256": "9c304dd2fa13cf9571f165b765e8aad7babe6096797beb38d95a9e0f7ee940a9"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "locator_template": "https://www.youtube.com/watch?v=<video_id>",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "hidden_future_start_seconds": 3181.0,
+    "hidden_future_end_seconds": 3241.0
+  },
+  "probe": {
+    "tool": "yt-dlp",
+    "required_version": "2026.02.04",
+    "print_fields_in_order": ["subtitles", "automatic_captions"],
+    "target_language_code": "ja",
+    "preferred_formats_in_order": ["json3", "vtt", "srv3", "srv2", "srv1", "ttml", "srt"],
+    "ignore_user_configuration": true,
+    "cookies_or_browser_session_allowed": false,
+    "playlist_allowed": false,
+    "file_download_allowed": false,
+    "caption_content_download_allowed": false,
+    "metadata_sidecar_allowed": false,
+    "cache_allowed": false,
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "timeout_seconds": 120,
+    "provider_http_request_count_observable": false
+  },
+  "private_metadata_boundary": {
+    "lifetime": "in-memory until availability projection is produced",
+    "raw_metadata_persistence_allowed": false,
+    "track_url_text_persistence_allowed": false,
+    "track_url_hash_persistence_allowed": false,
+    "track_url_excerpt_or_query_key_persistence_allowed": false,
+    "resolver_stdout_text_persistence_allowed": false,
+    "resolver_stderr_text_persistence_allowed": false,
+    "allowed_public_projection_fields": [
+      "manual_language_code_count",
+      "automatic_language_code_count",
+      "manual_japanese_available",
+      "automatic_japanese_available",
+      "selected_track_type",
+      "selected_language_code",
+      "selected_format"
+    ]
+  },
+  "runtime_state": {
+    "state_root": "external_data/p3_b59_semantic_availability_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "execution_result.json",
+    "exclusive_intent_before_resolver": true,
+    "intent_without_result_is_terminal": true
+  },
+  "decision": {
+    "manual_track_preferred_over_automatic": true,
+    "available_branch": "freeze capability-separated private caption acquisition and pre-cutoff extraction before any content request",
+    "unavailable_branch": "require a legal user-supplied local artifact or separately frozen replacement source",
+    "automatic_next_execution_allowed": false
+  },
+  "denied_actions": {
+    "caption_content_download": true,
+    "hidden_future_content_access": true,
+    "manual_playback_or_semantic_inspection": true,
+    "prediction_execution": true,
+    "model_call": true,
+    "training_write": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_account_access": true,
+    "external_deployment": true
+  },
+  "claim_boundary": "B59 can establish only whether the frozen public source exposes a Japanese manual or automatic caption track and a supported format. It never downloads or reads caption content, accesses hidden-future outcomes, runs prediction/model/training, or establishes system advantage."
+}

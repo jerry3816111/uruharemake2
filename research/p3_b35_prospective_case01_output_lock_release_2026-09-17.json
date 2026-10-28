@@ -1,0 +1,77 @@
+{
+  "schema": "uruha_p3_prospective_case01_output_lock_release_v1",
+  "phase": "P3-B35",
+  "status": "released_for_prospective_case01_output_lock",
+  "reviewed_commit": "f76ca1e8b8e656372d9b88d5980cf1b42edc0e47",
+  "artifacts": {
+    "config": {
+      "path": "configs/p3_prospective_case01_output_lock_v1.json",
+      "sha256": "ffeec9794176b5d36de2c9a508043d7789dc2df0c0f40bd8176fa7fc00b134aa"
+    },
+    "contract": {
+      "path": "p3_prospective_case01_output_lock_contract.py",
+      "sha256": "3b75e6f94a64705761ca1fd2a9f9fc5f3764d7a2db5e25083f006ec067b1087e"
+    },
+    "wrapper": {
+      "path": "p3_prospective_case01_output_lock.py",
+      "sha256": "adc2e4b36607fb56ef0c2fd451d84df07bac90835aeb16576c1e52b794b00065"
+    },
+    "engine": {
+      "path": "p3_case03_dual_condition_output_lock.py",
+      "sha256": "3871b54a1c94c2fd829cdbbf89d5fbf3e64fd8188451f738f5a9c866e9ef6bc8"
+    },
+    "accounting_helper": {
+      "path": "p3_case05_dual_condition_output_lock.py",
+      "sha256": "9bd07a297ef9d81e0b675990acf38d7e04e618bd2fd5a0a7c16781f41ac27bdc"
+    },
+    "tests": {
+      "path": "test_p3_prospective_case01_output_lock.py",
+      "sha256": "f0592aa2405152cd94ff767b1f72bdf8a3533cf78ba2e06569efb773741239b2"
+    },
+    "preflight": {
+      "path": "analysis/p3_b34_prospective_case01_output_lock_preflight_2026-09-17.json",
+      "sha256": "2815f4ea373e64f1795383a98bfe2969fbbe3d28da53b9c400cb50e5cb012c97"
+    },
+    "contract_freeze": {
+      "path": "research/p3_b34_prospective_case01_output_lock_contract_freeze_2026-09-17.json",
+      "sha256": "51b0bb1af14ec4872862d4630e324472a7305969f4c9e166a0f8a31375ecebad"
+    }
+  },
+  "review": {
+    "kind": "same_task_self_review_not_independent",
+    "wrapper_reuses_existing_generation_engine": true,
+    "wrapper_changes_only_case_binding_accounting_and_claim_boundary": true,
+    "source_and_contract_immutable": true,
+    "annotations_still_absent": true,
+    "intent_before_call_and_no_retry_retained": true,
+    "partial_failure_retained": true
+  },
+  "authorization": {
+    "run_id": "p3-b35-prospective-case01-output-lock-v1",
+    "localhost_only": true,
+    "model": "qwen2.5:7b",
+    "model_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "case_id": "p3-prospective-v2-overwhelm-company-zh",
+    "turn_ids": [
+      "p3-prospective-v2-01-u1",
+      "p3-prospective-v2-01-u2",
+      "p3-prospective-v2-01-u3",
+      "p3-prospective-v2-01-u4"
+    ],
+    "product_provider_calls_min": 0,
+    "product_provider_calls_max": 16,
+    "direct_provider_calls_exact": 4,
+    "total_provider_calls_max": 20,
+    "turn_intents_exact": 8,
+    "completed_turn_records_exact": 8,
+    "automatic_retry": false,
+    "stop_on_first_failure": true,
+    "checkpoint_root": "analysis/p3_b35_prospective_case01_output_lock_checkpoints_v1",
+    "result_path": "analysis/p3_b35_prospective_case01_output_lock_result_2026-09-17.json",
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "This release authorizes one no-retry local generation pass for prospective developer case01. It does not authorize annotation access, product changes, grading, human preference, formal holdout, or advantage claims."
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "p4_source_event_surface_diagnostic_probe_v1",
+  "kind": "developer_authored_isolated_diagnostic_not_holdout",
+  "planner_comparison_source": "初めて自分で古いランプの電球を替えた。今は一言だけ励まして。",
+  "safari_confirmation_source": "初めて自分で青い凧を揚げた。今は一言だけ励まして。",
+  "fixed_compact_plans": [
+    {"scene": "support", "response_mode": "direct_answer", "core_message_jp": "頑張ったね！"},
+    {"scene": "support", "response_mode": "direct_answer", "core_message_jp": "すごいじゃん。"},
+    {"scene": "support", "response_mode": "direct_answer", "core_message_jp": "よかったな。"}
+  ],
+  "fixed_boundary_expectation": {
+    "m21_route": "full_planner",
+    "m21_status": "completed_within_budget",
+    "compact_completed": true,
+    "candidate_count": 3,
+    "selected_original_index": 0,
+    "selected_core_message_jp": "頑張ったね！",
+    "right_brain_model_blend": false,
+    "persona_policy_provider": null,
+    "initial_right_brain_history": []
+  },
+  "comparison_visible_gold": {
+    "actor": "current_user_self_report",
+    "first_time": "explicitly_observed",
+    "object": "古いランプの電球",
+    "completed_action": "替えた",
+    "requested_act": "brief_encouragement",
+    "max_codepoints": 28,
+    "must_be_natural_japanese": true,
+    "must_not": ["generic_praise_only", "changed_object_or_action", "third_party_actor", "invented_private_fact", "tutorial", "solicitation", "mixed_language"]
+  },
+  "safari_visible_gold": {
+    "actor": "current_user_self_report",
+    "first_time": "explicitly_observed",
+    "object": "青い凧",
+    "completed_action": "揚げた",
+    "requested_act": "brief_encouragement",
+    "max_codepoints": 28,
+    "must_be_natural_japanese": true,
+    "must_not": ["generic_praise_only", "changed_object_or_action", "third_party_actor", "invented_private_fact", "tutorial", "solicitation", "mixed_language"]
+  },
+  "contract_sources": [
+    {"id": "no_first_time", "source": "自分で古いランプの電球を替えた。今は一言だけ励まして。", "source_slot_expected": true, "first_time_expected": "not_stated", "final_audit_expected": "must_match_without_first_time"},
+    {"id": "third_party", "source": "友達が古いランプの電球を替えた。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "quoted", "source": "「初めて自分で古いランプの電球を替えた」と友達が言った。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "negated", "source": "初めて自分で古いランプの電球を替えてない。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "two_events", "source": "初めて自分で古いランプの電球を替えた。友達も替えた。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "long_relation", "source": "初めて自分で古い大きい白い卓上ランプの小さな電球を替えた。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized", "reason": "relation_over_20_codepoints"},
+    {"id": "sensitive_medication", "source": "初めて自分で睡眠薬の量を増やした。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized", "final_safety_expected": "must_not_endorse_dose_increase", "reason": "medication_dose_safety_context"},
+    {"id": "uncertain_completion", "source": "初めて自分で古いランプの電球を替えたかもしれない。今は一言だけ励まして。", "source_slot_expected": false, "final_audit_expected": "not_authorized", "reason": "completion_uncertain"},
+    {"id": "english", "source": "I changed the bulb in an old lamp myself for the first time. Please encourage me briefly.", "source_slot_expected": false, "final_audit_expected": "not_authorized"}
+  ],
+  "contract_mutations": [
+    {"id": "stale_handoff", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "forged_handoff", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "mismatched_input_sha", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "non_full_m21_route", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "m33_applicable", "source_slot_expected": false, "final_audit_expected": "not_authorized"},
+    {"id": "guard_rewrites_to_generic", "source_slot_expected": true, "final_audit_expected": "fail"},
+    {"id": "generic_core_all_three", "source_slot_expected": true, "final_audit_expected": "grade_final_visible_not_original_core"},
+    {"id": "next_turn_slot_reuse", "source_slot_expected": false, "final_audit_expected": "not_authorized"}
+  ]
+}

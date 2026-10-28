@@ -1,0 +1,589 @@
+"""Bounded speaker-qualified fact recall from already-selected evidence.
+
+This product adapter covers one explicit act that the quoted-source P2 adapter
+does not: asking for the user's own previously stated preference. It never
+searches unselected memory and never asks a model to infer the speaker.
+"""
+
+from __future__ import annotations
+
+from copy import deepcopy
+import hashlib
+import json
+import re
+import unicodedata
+
+
+LABEL = "speaker_qualified_fact_p3"
+SCHEMA = "uruha_speaker_qualified_fact_p3"
+_INSTALLED = False
+_ORIGINAL_RULE_PLAN = None
+_ORIGINAL_VISIBLE_GUARD = None
+_ORIGINAL_RUN = None
+_ORIGINAL_EMIT = None
+
+_PREFERENCE_QUERIES = (
+    (
+        "en",
+        re.compile(
+            r"\bwhat(?:\s+kind|\s+type)?\s+of\s+"
+            r"(?P<category>[a-z][a-z0-9 -]{0,32}?)\s+did\s+i\s+say\s+i\s+"
+            r"(?:prefer|like)\b",
+            re.I,
+        ),
+    ),
+    (
+        "zh",
+        re.compile(
+            r"我(?:之前|剛才|刚才|剛剛|刚刚)?(?:有)?(?:說|说)(?:過|过)?我"
+            r"(?:比較|比较)?(?:喜歡|喜欢)(?:哪(?:一)?種|哪种|什麼樣|什么样)"
+            r"(?P<category>[^？?，。]{1,20})"
+        ),
+    ),
+    (
+        "ja",
+        re.compile(
+            r"(?:前に|さっき)?どんな(?P<category>[^？?、。]{1,20}?)"
+            r"(?:が|を)(?:好き|好み)(?:って|と)言った"
+        ),
+    ),
+)
+
+_METALINGUISTIC = re.compile(
+    r"(?:どういう意味|意味は|什麼意思|什么意思|怎麼翻|怎么翻|翻譯|翻译|"
+    r"\bwhat\s+does\b.+\bmean\b|\btranslate\b|\btranslation\b)",
+    re.I,
+)
+
+
+def _digest(value):
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+
+
+def _normalize(value):
+    text = unicodedata.normalize("NFKC", str(value or "")).lower()
+    return re.sub(r"[\s\u3000。．，,、！？?!…~～ー\-_/'\"`「」『』“”()（）:：;；]+", "", text)
+
+
+def classify_speaker_qualified_fact_p3(user_input):
+    """Classify only explicit observable wording; retain no raw input."""
+    text = str(user_input or "")
+    input_digest = _digest(text)
+    if _METALINGUISTIC.search(text):
+        return {
+            "schema": SCHEMA,
+            "status": "not_selected",
+            "selected": False,
+            "reason": "metalinguistic_or_translation_context",
+            "input_digest": input_digest,
+            "raw_dialogue_persisted": False,
+        }
+    for language, pattern in _PREFERENCE_QUERIES:
+        match = pattern.search(text)
+        if match:
+            category = match.group("category").strip()
+            return {
+                "schema": SCHEMA,
+                "status": "explicit_first_person_preference_recall",
+                "selected": True,
+                "fact_kind": "first_person_preference_recall",
+                "query_language": language,
+                "input_digest": input_digest,
+                "category_digest": _digest(_normalize(category)),
+                "epistemic_status": "selected_memory_required",
+                "raw_dialogue_persisted": False,
+                "_category_runtime_only": category,
+            }
+    return {
+        "schema": SCHEMA,
+        "status": "not_selected",
+        "selected": False,
+        "reason": "explicit_speaker_qualified_fact_act_not_detected",
+        "input_digest": input_digest,
+        "raw_dialogue_persisted": False,
+    }
+
+
+def _parse_memory_user(text):
+    text = str(text or "")
+    episode = re.search(
+        r"(?:^|\|\s*)User:\s*(.*?)\s*\|\s*Summary:.*?\|\s*Uruha:",
+        text,
+        re.S,
+    )
+    if episode:
+        return episode.group(1).strip()
+    short = re.search(r"User:\s*(.*?)\s*->\s*Uruha:", text, re.S)
+    return short.group(1).strip() if short else ""
+
+
+def _selected_user_evidence(memory_data):
+    rows = []
+    for turn in (memory_data or {}).get("recent_turns") or []:
+        user = str((turn or {}).get("user") or "").strip()
+        if user:
+            episode_id = str((turn or {}).get("episode_id") or "") or None
+            rows.append({
+                "user": user,
+                "source": "recent_turn",
+                "trace_id": f"stored:episode:{episode_id}" if episode_id else None,
+                "memory_id": episode_id,
+                "score": 1.0,
+            })
+    for item in (memory_data or {}).get("working_memory_items") or []:
+        if item.get("selected") is False:
+            continue
+        user = _parse_memory_user(item.get("text"))
+        if user:
+            rows.append({
+                "user": user,
+                "source": str(item.get("source") or "working_memory"),
+                "trace_id": item.get("trace_id"),
+                "memory_id": item.get("memory_id"),
+                "score": float(item.get("score") or 0.0),
+            })
+    deduped = {}
+    for row in rows:
+        key = row.get("memory_id") or row.get("trace_id") or _digest(row["user"])
+        previous = deduped.get(key)
+        if previous is None or row["score"] > previous["score"]:
+            deduped[key] = row
+    return list(deduped.values())
+
+
+def _preference_values(user_utterance):
+    text = str(user_utterance or "")
+    patterns = (
+        re.compile(
+            r"\bI\s+(?:said\s+(?:that\s+)?I\s+)?(?:prefer|like)\s+"
+            r"(?P<value>[^.!?]{2,80})",
+            re.I,
+        ),
+        re.compile(
+            r"我(?:說|说)(?:我)?(?:比較|比较)?(?:喜歡|喜欢)"
+            r"(?P<value>[^，。！？?]{1,40})"
+        ),
+        re.compile(
+            r"(?:私は|うちは|自分は)(?P<value>[^、。！？?]{1,40}?)"
+            r"(?:が|を)(?:好き|好み)(?:って言った|と言った)?"
+        ),
+    )
+    values = []
+    for pattern in patterns:
+        for match in pattern.finditer(text):
+            value = re.sub(r"\s+", " ", match.group("value")).strip(" 、,，。.!！?")
+            if value and value not in values:
+                values.append(value)
+    return values
+
+
+_EXPLICIT_PREFERENCE_CORRECTIONS = (
+    re.compile(
+        r"\bI\s+(?:do\s+not|don't)\s+(?:prefer|like)\s+"
+        r"(?P<old>[^.!?\n]{2,80}?)\s+anymore\s*[.!?]+\s*"
+        r"I\s+(?:prefer|like)\s+(?P<new>[^.!?\n]{2,80})(?:[.!?]|$)",
+        re.I,
+    ),
+    re.compile(
+        r"\bI\s+no\s+longer\s+(?:prefer|like)\s+"
+        r"(?P<old>[^.!?\n]{2,80}?)\s*[.!?]+\s*"
+        r"I\s+(?:prefer|like)\s+(?P<new>[^.!?\n]{2,80})(?:[.!?]|$)",
+        re.I,
+    ),
+)
+
+
+def _clean_correction_value(value):
+    value = re.sub(r"\s+", " ", str(value or "")).strip(" 、,，。.!！?")
+    return re.sub(r"\s+now$", "", value, flags=re.I).strip()
+
+
+def _explicit_first_person_preference_corrections(user_utterance):
+    """Return bounded same-utterance corrections for runtime use only."""
+    text = str(user_utterance or "")
+    corrections = []
+    for pattern in _EXPLICIT_PREFERENCE_CORRECTIONS:
+        for match in pattern.finditer(text):
+            old_value = _clean_correction_value(match.group("old"))
+            new_value = _clean_correction_value(match.group("new"))
+            if not old_value or not new_value or _normalize(old_value) == _normalize(new_value):
+                continue
+            pair = (_normalize(old_value), _normalize(new_value))
+            if pair not in {(_normalize(old), _normalize(new)) for old, new in corrections}:
+                corrections.append((old_value, new_value))
+    return corrections
+
+
+def _category_matches(category, value):
+    category_norm, value_norm = _normalize(category), _normalize(value)
+    if not category_norm or not value_norm:
+        return False
+    if re.search(r"[a-z]", str(category).lower()):
+        category_tokens = re.findall(r"[a-z]+", str(category).lower())
+        value_tokens = re.findall(r"[a-z]+", str(value).lower())
+        stems = {token[:-1] if token.endswith("s") and len(token) > 3 else token for token in value_tokens}
+        return any(
+            (token[:-1] if token.endswith("s") and len(token) > 3 else token) in stems
+            for token in category_tokens
+        )
+    return category_norm in value_norm or value_norm in category_norm
+
+
+def _localize_preference_value(value):
+    normalized = re.sub(r"\s+", " ", str(value or "")).strip().lower()
+    replacements = {
+        "plain glass cups": "無地のガラスコップ",
+        "plain glass cup": "無地のガラスコップ",
+        "black coffee": "ブラックコーヒー",
+        "herbal tea": "ハーブティー",
+        "black tea": "紅茶",
+        "ceramic mugs": "陶器のマグカップ",
+        "ceramic mug": "陶器のマグカップ",
+        "透明玻璃杯": "透明なガラスコップ",
+        "無糖茶": "無糖のお茶",
+        "无糖茶": "無糖のお茶",
+    }
+    if normalized in replacements:
+        return replacements[normalized]
+    value = str(value or "").strip()
+    if re.search(r"[ぁ-んァ-ヶー]", value) and not re.search(r"[A-Za-z]", value):
+        return value
+    return ""
+
+
+def build_speaker_qualified_fact_contract_p3(user_input, memory_data):
+    query = classify_speaker_qualified_fact_p3(user_input)
+    category = query.pop("_category_runtime_only", "")
+    if not query.get("selected"):
+        return query
+    evidence_rows = _selected_user_evidence(memory_data or {})
+    candidates = []
+    for row in evidence_rows:
+        for value in _preference_values(row["user"]):
+            if not _category_matches(category, value):
+                continue
+            localized = _localize_preference_value(value)
+            candidates.append({
+                "speaker_role": "user",
+                "value_digest": _digest(_normalize(value)),
+                "localized_value_jp": localized or None,
+                "localized_value_sha256": _digest(localized) if localized else None,
+                "source": row.get("source"),
+                "trace_id": row.get("trace_id"),
+                "memory_id": row.get("memory_id"),
+                "retrieval_score": round(float(row.get("score") or 0.0), 4),
+            })
+    correction_rows = []
+    for row in evidence_rows:
+        for old_value, new_value in _explicit_first_person_preference_corrections(row["user"]):
+            if not (_category_matches(category, old_value) and _category_matches(category, new_value)):
+                continue
+            correction_rows.append({
+                "old_value": old_value,
+                "new_value": new_value,
+                "old_digest": _digest(_normalize(old_value)),
+                "new_digest": _digest(_normalize(new_value)),
+                "old_jp": _localize_preference_value(old_value) or None,
+                "new_jp": _localize_preference_value(new_value) or None,
+                "source": row.get("source"),
+                "trace_id": row.get("trace_id"),
+                "memory_id": row.get("memory_id"),
+                "retrieval_score": round(float(row.get("score") or 0.0), 4),
+            })
+    unique_corrections = {}
+    for correction in correction_rows:
+        key = (correction["old_digest"], correction["new_digest"])
+        previous = unique_corrections.get(key)
+        if previous is None or correction["retrieval_score"] > previous["retrieval_score"]:
+            unique_corrections[key] = correction
+    corrections = sorted(
+        unique_corrections.values(),
+        key=lambda row: (-row["retrieval_score"], row["old_digest"], row["new_digest"]),
+    )
+    unique = {}
+    for candidate in candidates:
+        key = candidate["value_digest"]
+        previous = unique.get(key)
+        if previous is None or candidate["retrieval_score"] > previous["retrieval_score"]:
+            unique[key] = candidate
+    values = sorted(unique.values(), key=lambda row: -row["retrieval_score"])
+    supersession = None
+    if len(corrections) == 1:
+        correction = corrections[0]
+        historical = sorted(
+            (
+                candidate
+                for candidate in candidates
+                if candidate["value_digest"] == correction["old_digest"]
+                and (candidate.get("memory_id"), candidate.get("trace_id"))
+                != (correction.get("memory_id"), correction.get("trace_id"))
+            ),
+            key=lambda row: -row["retrieval_score"],
+        )
+        if not correction["old_jp"] or not correction["new_jp"]:
+            status = "unsupported_supersession_localization"
+            selected_speaker = None
+            core = "その更新、今の記憶だけじゃ日本語で確実に整理できない。"
+            reason = "explicit_correction_value_cannot_be_safely_localized"
+        elif not historical:
+            status = "missing_superseded_preference_history"
+            selected_speaker = None
+            core = "前の好みの記録まで確認できないから、今は断定しない。"
+            reason = "explicit_correction_has_no_distinct_selected_historical_episode"
+        else:
+            current = {
+                "speaker_role": "user",
+                "value_digest": correction["new_digest"],
+                "localized_value_jp": correction["new_jp"],
+                "localized_value_sha256": _digest(correction["new_jp"]),
+                "source": correction.get("source"),
+                "trace_id": correction.get("trace_id"),
+                "memory_id": correction.get("memory_id"),
+                "retrieval_score": correction["retrieval_score"],
+                "temporal_status": "current",
+            }
+            old = historical[0]
+            values = [current]
+            supersession = {
+                "status": "applied",
+                "current_value_digest": correction["new_digest"],
+                "current_value_jp": correction["new_jp"],
+                "current_value_jp_sha256": _digest(correction["new_jp"]),
+                "revoked_value_digest": correction["old_digest"],
+                "revoked_value_jp": correction["old_jp"],
+                "revoked_value_jp_sha256": _digest(correction["old_jp"]),
+                "correction_source": correction.get("source"),
+                "correction_trace_id": correction.get("trace_id"),
+                "correction_memory_id": correction.get("memory_id"),
+                "historical_source": old.get("source"),
+                "historical_trace_id": old.get("trace_id"),
+                "historical_memory_id": old.get("memory_id"),
+                "history_preserved": True,
+                "database_rewrite_count": 0,
+            }
+            status = "resolved_explicit_preference_supersession"
+            selected_speaker = "user"
+            core = f"今の好みは{correction['new_jp']}。前の{correction['old_jp']}から更新してる。"
+            reason = "one_explicit_same_item_preference_correction_in_selected_memory"
+    elif len(corrections) > 1:
+        status = "ambiguous_conflicting_explicit_corrections"
+        selected_speaker = None
+        core = "好みの更新が複数ある。今はどれが最新か断定しない。"
+        reason = "multiple_conflicting_explicit_corrections_in_selected_memory"
+    elif len(values) == 1 and values[0]["localized_value_jp"]:
+        status = "resolved_unique_user_preference"
+        selected_speaker = "user"
+        core = f"あんたが好みって言ってたのは{values[0]['localized_value_jp']}。"
+        reason = "one_category_matching_first_person_preference_in_selected_memory"
+    elif len(values) > 1:
+        status = "ambiguous_multiple_user_preferences"
+        selected_speaker = None
+        core = "候補が二つある。どっちの好みの話？"
+        reason = "multiple_category_matching_first_person_preferences"
+    elif len(values) == 1:
+        status = "unsupported_value_localization"
+        selected_speaker = "user"
+        core = "その好み、今の記憶だけじゃ日本語で確実に答えられない。"
+        reason = "selected_preference_value_cannot_be_safely_localized"
+    else:
+        status = "not_found_in_selected_memory"
+        selected_speaker = None
+        core = "その好み、今の記憶からは確認できない。"
+        reason = "no_category_matching_first_person_preference_in_selected_memory"
+    result = {
+        **query,
+        "status": status,
+        "reason": reason,
+        "surface_authority": True,
+        "selected_speaker": selected_speaker,
+        "candidate_count": len(values),
+        "candidates": values[:12],
+        "selected_core_jp": core,
+        "selected_core_sha256": _digest(core),
+        "model_call_added": False,
+        "fact_memory_write_count": 0,
+        "private_state_truth_claimed": False,
+        "raw_dialogue_persisted": False,
+        "claim_boundary": "first-person preference from already-selected speaker-qualified evidence; category match and bounded localization, not open-domain recall",
+    }
+    if supersession:
+        result["supersession"] = supersession
+        result["claim_boundary"] = (
+            "one explicit first-person same-category correction from already-selected evidence; "
+            "old episode retained as historical, not general temporal belief revision"
+        )
+    return result
+
+
+def _plan_from_contract(contract):
+    resolved = contract.get("status") in {
+        "resolved_unique_user_preference",
+        "resolved_explicit_preference_supersession",
+    }
+    return {
+        "candidate_label": "p3_speaker_fact",
+        "intent": "speaker_qualified_fact_recall",
+        "mood_impact": 0,
+        "trust_impact": 0,
+        "scene": "casual",
+        "listener_state": "前に話した事実の持ち主を確かめている",
+        "reply_goal": "選択済みの話者根拠だけで答える",
+        "jp_summary": "ユーザーが人ごとの情報を混同せず扱うよう求めている。",
+        "core_message_jp": contract["selected_core_jp"],
+        "cognitive_mode": "direct" if resolved else "reflective",
+        "response_mode": "direct_answer" if resolved else "clarify_light",
+        "uncertainty": 0.08 if resolved else 0.72,
+        "premise_check": "accept" if resolved else "question",
+        "self_check": True,
+        "subjective_note_jp": "話者付きの選択済み根拠以外は使わない",
+        "hidden_intent": "memory_probe",
+        "user_belief": "人ごとの情報を区別できると思っている。",
+        "my_hidden_knowledge": "選択済み記憶だけを使う。",
+        "user_expectation": "誰の情報かを混ぜず短く答える。",
+        "surface_act": "memory_presence_reply",
+        "grounding": {
+            "speaker_role": contract.get("selected_speaker") or "unknown",
+            "evidence_status": contract.get("status"),
+        },
+        "payload_level": "medium",
+        "memory_recall_contract": deepcopy(contract),
+        "planner_path": "speaker_qualified_selected_fact_p3",
+        "constraints": {
+            "first_person": "うち",
+            "sentence_count": 2,
+            "max_chars": 46,
+            "casual_japanese_only": True,
+            "forbid_polite": True,
+            "forbid_knowledge": True,
+            "forbid_lore": True,
+            "forbid_self_variants": True,
+        },
+        "must_avoid": ["私", "わかりました", "たぶん", "きっと", "AI"],
+    }
+
+
+def rule_plan_with_speaker_qualified_fact_p3(self, user_input, current_psyche, memory_data=None):
+    contract = build_speaker_qualified_fact_contract_p3(user_input, memory_data or {})
+    if contract.get("selected") and contract.get("surface_authority"):
+        return _plan_from_contract(contract)
+    return _ORIGINAL_RULE_PLAN(self, user_input, current_psyche, memory_data)
+
+
+def visible_guard_with_speaker_qualified_fact_p3(self, reply, logic_data, user_input="", memory_data=None):
+    visible = _ORIGINAL_VISIBLE_GUARD(
+        self,
+        reply,
+        logic_data,
+        user_input=user_input,
+        memory_data=memory_data,
+    )
+    contract = deepcopy((logic_data or {}).get("memory_recall_contract") or {})
+    route = str(((logic_data or {}).get("semantic_route_m22") or {}).get("selected_type") or "")
+    if contract.get("schema") != SCHEMA or not contract.get("surface_authority") or route == "safety_sensitive":
+        return visible
+    selected = str(contract.get("selected_core_jp") or "").strip()
+    before = str(visible or "").strip()
+    visible = selected or before
+    contract.update(
+        visible_surface_status="matched" if selected and visible == selected else "mismatch",
+        pre_authority_surface_sha256=_digest(before),
+        final_visible_surface_jp=visible,
+        final_visible_surface_sha256=_digest(visible),
+        final_visible_surface_matches_contract=bool(selected and visible == selected),
+        visible_surface_changed=visible != before,
+    )
+    logic_data["memory_recall_contract"] = contract
+    m39 = deepcopy(logic_data.get("semantic_persona_surface_verifier_m39") or {})
+    if m39:
+        m39.update(
+            effective_after_speaker_qualified_fact_p3=False,
+            downstream_authority=LABEL,
+            pre_authority_status=m39.get("status"),
+        )
+        logic_data["semantic_persona_surface_verifier_m39"] = m39
+    language_guard = deepcopy(logic_data.get("visible_language_guard") or {})
+    language_guard.update(
+        final_reply=visible,
+        final_reply_sha256=hashlib.sha256(visible.encode("utf-8")).hexdigest(),
+        speaker_qualified_fact_p3=True,
+        speaker_qualified_fact_surface_status=contract["visible_surface_status"],
+    )
+    logic_data["visible_language_guard"] = language_guard
+    return visible
+
+
+def materialize_speaker_qualified_fact_p3(result):
+    logic = result.setdefault("logic", {})
+    payload = deepcopy(logic.get("memory_recall_contract") or {})
+    trace = result.setdefault("runtime_trace", {})
+    rows = [row for row in trace.get("blackboard", []) if row.get("label") != LABEL]
+    if payload.get("schema") == SCHEMA and payload.get("surface_authority"):
+        final = str(result.get("reply") or result.get("response") or "").strip()
+        payload.update(
+            visible_surface_status="matched" if final and final == payload.get("selected_core_jp") else "mismatch",
+            final_visible_surface_jp=final,
+            final_visible_surface_sha256=_digest(final),
+            final_visible_surface_matches_contract=bool(final and final == payload.get("selected_core_jp")),
+            flow=[
+                "explicit_speaker_qualified_fact_act",
+                "selected_memory_evidence",
+                "speaker_role_and_category_join",
+                "explicit_supersession_or_unique_or_abstain",
+                "visible_japanese_surface",
+            ],
+        )
+        logic["memory_recall_contract"] = deepcopy(payload)
+        index = next(
+            (i for i, row in enumerate(rows) if row.get("label") == "selected_plan"),
+            next((i for i, row in enumerate(rows) if row.get("label") == "utterance"), len(rows)),
+        )
+        rows.insert(index, {
+            "stage": "select",
+            "label": LABEL,
+            "payload": deepcopy(payload),
+            "salience": 1.0,
+        })
+        trace[LABEL] = deepcopy(payload)
+    trace["blackboard"] = rows
+
+
+def install_speaker_qualified_fact_p3():
+    global _INSTALLED, _ORIGINAL_RULE_PLAN, _ORIGINAL_VISIBLE_GUARD
+    global _ORIGINAL_RUN, _ORIGINAL_EMIT
+    if _INSTALLED:
+        return False
+    from uruha_brain_mac import LeftBrain, RightBrain, UruhaBrainV4_Mac
+    from uruha_trace_history_sync_m41_1 import sync_current_history_m41_1
+
+    _ORIGINAL_RULE_PLAN = LeftBrain._rule_based_plan
+    _ORIGINAL_VISIBLE_GUARD = RightBrain.enforce_user_visible_japanese
+    _ORIGINAL_RUN = UruhaBrainV4_Mac.run_turn_debug
+    _ORIGINAL_EMIT = UruhaBrainV4_Mac.emit_response_if_ready
+
+    LeftBrain._rule_based_plan = rule_plan_with_speaker_qualified_fact_p3
+    RightBrain.enforce_user_visible_japanese = visible_guard_with_speaker_qualified_fact_p3
+
+    def finish(self, result):
+        materialize_speaker_qualified_fact_p3(result)
+        self.runtime.blackboard = deepcopy(result["runtime_trace"]["blackboard"])
+        sync_current_history_m41_1(result)
+        if (
+            self.runtime.turn_traces
+            and self.runtime.turn_traces[-1].get("cycle_index")
+            == result["runtime_trace"].get("cycle_index")
+        ):
+            self.runtime.turn_traces[-1] = deepcopy(result["runtime_trace"])
+        return result
+
+    def run(self, user_input, input_context=None):
+        return finish(self, _ORIGINAL_RUN(self, user_input, input_context=input_context))
+
+    def emit(self, event, tick_result):
+        return finish(self, _ORIGINAL_EMIT(self, event, tick_result))
+
+    UruhaBrainV4_Mac.run_turn_debug = run
+    UruhaBrainV4_Mac.emit_response_if_ready = emit
+    _INSTALLED = True
+    return True

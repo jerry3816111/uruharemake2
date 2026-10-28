@@ -1,0 +1,80 @@
+{
+  "schema": "uruha_m57_9_adjudicator_confirmed_manifest_export_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_implementation_and_before_any_real_participant_export",
+  "single_changed_variable": "adjudicator_confirmed_token_free_preoutcome_manifest_export",
+  "frozen_dependencies": {
+    "configs/m57_2_component_prediction_capsule_v1.json": "492fed804e8cf6520e174e29410cd4b1d47ac55c8c59eb4209aead2b102b661e",
+    "m57_2_component_prediction_capsule.py": "acc670d470f3c6f4032d51890a571c5bf4ca67e81e24012edcd7d43717c8df30",
+    "configs/m57_4_component_evidence_collection_v1.json": "dc1949a44c66e5850c5a925a330a42ce10938c14860d8861b9b6317a7a44c45d",
+    "m57_4_component_evidence_collection.py": "09c964d246322b540041c44950c777c8f5ee026e82e3618d880ab391325466d0",
+    "configs/m57_8_participant_confirmed_ledger_completion_v1.json": "20ebae418472776c89444265caeeedf6d62b5e3bd4473178d93abe9d88d1f2ac",
+    "m57_8_participant_confirmed_ledger_completion.py": "e5112190f5ac32146b69c323e016d5da9a2e5dc7e74c86f3270b12d4aa14a512",
+    "research/m57_8_participant_confirmed_ledger_completion_implementation_freeze_2026-09-06.json": "c382a0722bdd69c3e4c6d7a95108566f55f7555d5051b8b3d4290357c2e70de7"
+  },
+  "eligibility": {
+    "role_slot": "adjudicator",
+    "all_three_m57_4_ledgers_complete_and_sealed": true,
+    "adjudicator_m57_8_completion_receipt_required": true,
+    "outcome_absence_revalidated": true,
+    "automatic_export_after_seal": false,
+    "exact_manifest_preview_hash_required": true,
+    "explicit_checkbox_required": true,
+    "confirmation_value": "confirm_exact_preoutcome_manifest_and_export"
+  },
+  "transaction": {
+    "existing_single_writer_lock_required_for_each_validation_phase": true,
+    "durable_intent_before_m57_4_export": true,
+    "unchanged_m57_4_export_function_delegated": true,
+    "final_receipt_binds_intent_three_seals_manifest_and_export_commitment": true,
+    "identical_interrupted_or_completed_replay_allowed": true,
+    "preexisting_export_without_m57_9_intent_attributable": false,
+    "nonidentical_replay_allowed": false
+  },
+  "browser": {
+    "loopback_only": true,
+    "http_only_same_site_cookie_reused": true,
+    "csrf_required_for_save_seal_and_export": true,
+    "export_post_fields": [
+      "csrf",
+      "expected_manifest_hash",
+      "confirmation"
+    ],
+    "coder_export_control_visible": false,
+    "raw_private_ledgers_visible": false,
+    "role_token_or_recovery_secret_in_url_form_html_cookie_receipt": false,
+    "post_export_form_visible": false
+  },
+  "runtime_launch": {
+    "m57_7_full_audit_precedes_exec": true,
+    "public_arguments": [
+      "run_id",
+      "role_slot",
+      "envelope_path",
+      "port"
+    ],
+    "collection_time_download_install_or_repair_calls": 0,
+    "role_token_or_recovery_secret_argument": false
+  },
+  "public_functions": {
+    "inspect_adjudicator_manifest_export": [
+      "run_id",
+      "adjudicator_session_token"
+    ],
+    "confirm_and_export_adjudicator_manifest": [
+      "run_id",
+      "adjudicator_session_token",
+      "expected_manifest_hash",
+      "confirmation"
+    ]
+  },
+  "formal_boundary": {
+    "target_outcome_access_count": 0,
+    "model_call_count": 0,
+    "synthetic_rehearsal_is_real_human_evidence": false,
+    "adjudicator_confirmation_proves_identity_or_label_correctness": false,
+    "m57_2_prediction_execution_automatic": false,
+    "m58_authorized": false
+  },
+  "claim_boundary": "M57.9 may prove that an already-authorized adjudicator can explicitly and recoverably export the exact frozen pre-outcome M57.2 manifest without exposing the role token. It cannot prove who the participants are, label correctness, predictive validity, Equation V1, LLM superiority, a solved human-response equation, production security or M58 authority."
+}

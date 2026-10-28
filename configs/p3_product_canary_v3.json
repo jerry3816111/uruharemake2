@@ -1,0 +1,67 @@
+{
+  "schema": "uruha_p3_product_canary_v3",
+  "status": "preregistered_not_executed",
+  "purpose": "fresh_direct_v2_surface_product_canary",
+  "comparison_design": {
+    "path": "configs/p3_product_comparison_v1.json",
+    "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+  },
+  "canary_source": {
+    "path": "datasets/p3_product_canary_source_v3.json",
+    "sha256": "52c09d8df6ff409d4ae3759ff3d734891cdc63501668b90581a84dd34ee1cb77"
+  },
+  "tokenizer_binding_result": {
+    "path": "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_result_2026-09-15.json",
+    "sha256": "e360e626931d40ff52f5a217131541701a1eb69831fa3b249214dbb4fed5774f",
+    "required_status": "stage_provider_binding_pass"
+  },
+  "selection": {
+    "rule": "third_case_first_turn_after_direct_v2_design_review",
+    "case_id": "p3-smoke-emotional-bid-ja",
+    "turn_id": "p3-smoke-03-u1",
+    "content_sha256": "00000231b0c6bf86a385126dd4f5bba7d7b99418ee883c133fa018bd8a660e39"
+  },
+  "model": {
+    "name": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false
+  },
+  "budget": {
+    "provider_calls_max": 4,
+    "aggregate_prompt_tokens_max": 32768,
+    "aggregate_completion_tokens_max": 768,
+    "per_call_completion_tokens_max": 320,
+    "wall_seconds_max": 60,
+    "concurrency": 1,
+    "automatic_retry": false
+  },
+  "retention": {
+    "reply_text": true,
+    "runtime_trace": true,
+    "raw_provider_payload": false,
+    "provider_output_hash": true,
+    "checkpoint_intent_without_complete_terminal": true
+  },
+  "access_boundary": {
+    "source_turns_exact": 1,
+    "future_turns": false,
+    "annotations": false,
+    "confirmation": false,
+    "production_database": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "success": {
+    "nonempty_visible_reply": true,
+    "turn_completed_without_transport_fallback": true,
+    "all_provider_calls_accounted": true,
+    "all_generation_options_exact": true,
+    "budget_violations": 0,
+    "ephemeral_workspace_removed": true
+  }
+}

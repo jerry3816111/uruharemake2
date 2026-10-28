@@ -1,0 +1,57 @@
+{
+  "schema": "uruha_p4_g_multilingual_preference_acknowledgement_acceptance_v1",
+  "version": "1.0.0",
+  "runtime": {
+    "fresh_isolated_root_required": true,
+    "localhost_only": true,
+    "production_memory_access_count": 0,
+    "existing_safari_tab_may_be_reused": true,
+    "user_tabs_may_be_closed": false
+  },
+  "turns": [
+    {
+      "turn_index": 1,
+      "input": "我喜歡茉莉花茶，請記住這是我現在的飲料偏好。",
+      "expected_language": "zh",
+      "expected_act": "write",
+      "expected_visible_output": "ん、その好みは覚えとく。"
+    },
+    {
+      "turn_index": 2,
+      "input": "訂正。もうジャスミンティーは好みじゃない。今はアイスコーヒーが好き。",
+      "expected_language": "ja",
+      "expected_act": "correction",
+      "expected_visible_output": "ん、訂正の内容はそのまま覚えとく。"
+    }
+  ],
+  "per_turn_requirements": {
+    "visible_output_language": "Japanese",
+    "p4_g_status": "casual_acknowledgement_committed",
+    "surface_authority": true,
+    "surface_changed": true,
+    "language_guard_repair_action": "explicit_preference_acknowledgement_p4",
+    "graph_node": "explicit_preference_acknowledgement_p4",
+    "durable_episode_write_count": 1,
+    "product_planner_model_call_count_maximum": 1,
+    "fallback_count": 0,
+    "raw_dialogue_persisted_in_p4_g_trace": false
+  },
+  "execution_ceiling": {
+    "real_product_turns": 2,
+    "process_starts": 1,
+    "retry_count": 0,
+    "local_product_planner_model_calls_maximum": 2,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "failure_policy": {
+    "same_case_rerun_allowed": false,
+    "prompt_or_expected_surface_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "general_prompt_model_or_memory_change_allowed": false
+  },
+  "claim_boundary": "A pass establishes only one prospective two-turn Chinese-write and Japanese-correction product surface case. It is not a human rating, general multilingual persona result, semantic correction guarantee or research advantage."
+}

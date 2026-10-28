@@ -1,0 +1,40 @@
+{
+  "schema": "uruha_p3_b60_private_caption_cutoff_extractor_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b60_caption_content_request",
+  "authorization_basis": "2026-09-19 through 2026-09-20 standing user authorization plus the released B59 caption path",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b60_private_caption_cutoff_extractor_v1.json",
+      "sha256": "d673168ee758b1248b46e1006469495edf03ebd52dec1175203f66aab85fa738"
+    },
+    "implementation": {
+      "path": "p3_b60_private_caption_cutoff_extractor.py",
+      "sha256": "7b9642ae98531d0e727b16da0f1fb998ecd17343052295f4601f691c3f76c691"
+    },
+    "public_reader": {
+      "path": "p3_b60_caption_context_reader.py",
+      "sha256": "ed0b45b34bba35e95137375311e5ee2b3f9129afa9ab498a9905a76f0ec426b9"
+    },
+    "tests": {
+      "path": "test_p3_b60_private_caption_cutoff_extractor.py",
+      "sha256": "42f22a2787b0da0a46399d5a656d1f42b60ada0e1ccc4259872c498bc6d44610"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b60_private_caption_cutoff_extractor.py -k 'not implementation_freeze'",
+    "passed": 14,
+    "failed": 0,
+    "synthetic_future_sentinels_excluded": ["CROSS-FUTURE", "FUTURE-SENTINEL"]
+  },
+  "resolver_process_invocation_count_at_freeze": 0,
+  "caption_get_invocation_count_at_freeze": 0,
+  "prediction_side_future_access_count_at_freeze": 0,
+  "prediction_execution_count_at_freeze": 0,
+  "model_call_count_at_freeze": 0,
+  "paid_api_or_account_access_count_at_freeze": 0,
+  "single_changed_variable": "private selected caption acquisition followed by a pre-cutoff-only public context projection",
+  "success_condition": "one resolver and one caption GET produce a nonempty Japanese artifact whose every cue starts at or after 3000 seconds and ends at or before 3180 seconds; raw caption and track material are cleared before a fresh reader validates hash and cutoff without returning text",
+  "failure_condition": "any tool, track, network, JSON, cutoff, publication, reader, persistence, prediction-side future-access, retry, or account-access violation produces a redacted terminal failure and no public artifact",
+  "claim_boundary": "This freeze authorizes one B60 caption acquisition and cutoff extraction. The private curator may transiently see the full raw caption; the prediction side remains at zero future access. It does not authorize human semantic inspection, prediction, model calls, training, future-outcome publication, paid APIs, login/cookies, or deployment."
+}

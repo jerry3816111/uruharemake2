@@ -1,0 +1,132 @@
+{
+  "schema": "uruha_p3_prospective_v3_execution_contract_v1",
+  "phase": "P3-B45",
+  "status": "preregistered_not_executed",
+  "purpose": "freeze_crash_safe_no_retry_dual_condition_execution_before_v3_generation",
+  "frozen_dependencies": {
+    "data_and_rubric_freeze": {
+      "path": "research/p3_b44_prospective_v3_data_and_rubric_freeze_2026-09-17.json",
+      "sha256": "7f1f10ae17e2284390d190a559657bf3670037d9430fac136440787c59be9e62",
+      "required_status": "prospective_v3_data_and_rubric_frozen"
+    },
+    "comparison_design": {
+      "path": "configs/p3_product_comparison_v1.json",
+      "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+    },
+    "direct_v2_review": {
+      "path": "configs/p3_direct_baseline_v2_design_review_v1.json",
+      "sha256": "2d0a17759e4daa4f7fd9cc2533cda3d285d5c04bf88c8f7428dc96e194aeed53"
+    },
+    "strict_surface": {
+      "path": "p3_strict_visible_surface_v2.py",
+      "sha256": "60dfba159b1f7671c0f18e1f0e76a429bd6821dc48a2a625e860d493a479dd56"
+    }
+  },
+  "frozen_input_commitments": {
+    "source_sha256": "8980e85d321d3f3e1997a31be184a47bc4390428f85c92f4a8ef12f266ae011d",
+    "rubric_sha256_commitment_only": "c72c648b39a7b149bb75640fea76f1635b248cb6249eb8015d11f9df29e9603f",
+    "rubric_file_access_during_generation": false,
+    "product_snapshot_commit": "0cab07b44aa47adb3866a9ba1aa317b71a5d3091",
+    "product_entrypoints": [
+      "uruha_web_ui_product.py"
+    ],
+    "product_snapshot_verification": "recursive_root_local_python_import_closure_matches_git_commit",
+    "post_source_product_tuning_before_first_run": false
+  },
+  "selection": {
+    "case_order": [
+      "p3-prospective-v3-growing-comments-zh",
+      "p3-prospective-v3-concert-excitement-en",
+      "p3-prospective-v3-team-pending-ja"
+    ],
+    "turn_order": "immutable_source_order_within_case",
+    "condition_order_per_turn": [
+      "product_system",
+      "full_history_direct"
+    ],
+    "schedule_order": "case_then_turn_then_condition",
+    "quality_based_selection": false
+  },
+  "common_history": {
+    "mode": "system_anchored_prefix_paired",
+    "include_all_prior_sessions": true,
+    "include_roles": true,
+    "include_only_past_visible_messages": true,
+    "baseline_output_written_back": false,
+    "current_product_reply_visible_to_baseline": false,
+    "product_visible_reply_added_after_both_current_views_freeze": true,
+    "cross_case_state_shared": false,
+    "truncate_or_summarize": false
+  },
+  "session_boundary": {
+    "restart_product_at_each_case_third_turn": true,
+    "same_case_memory_path_retained": true,
+    "new_brain_instance": true,
+    "cross_case_workspace_reuse": false
+  },
+  "generation": {
+    "model": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "aggregate_prompt_tokens_max_per_condition_turn": 32768,
+    "aggregate_completion_tokens_max_per_condition_turn": 768,
+    "product_calls_max_per_turn": 4,
+    "direct_calls_exact_per_turn": 1,
+    "wall_seconds_max_per_condition_turn": 60
+  },
+  "checkpoint_contract": {
+    "logical_steps_exact": 24,
+    "provider_call_intent_before_every_transport": true,
+    "complete_checkpoint_combines_output_hash_usage_and_transport_evidence": true,
+    "complete_checkpoint_reuse_allowed": true,
+    "model_recall_for_complete_checkpoint": false,
+    "intent_without_complete_is_terminal": true,
+    "failure_record_is_terminal": true,
+    "checkpoint_or_manifest_drift_is_terminal": true,
+    "out_of_order_execution_allowed": false,
+    "automatic_retry_count": 0,
+    "fallback_count": 0,
+    "concurrency": 1
+  },
+  "execution_boundary": {
+    "source_cases_exact": 3,
+    "source_turns_exact": 12,
+    "visible_outputs_exact": 24,
+    "product_provider_calls_min": 0,
+    "product_provider_calls_max": 48,
+    "direct_provider_calls_exact": 12,
+    "total_provider_calls_max": 60,
+    "localhost_only": true,
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false,
+    "separate_release_required": true
+  },
+  "retention": {
+    "visible_replies": true,
+    "product_runtime_trace": true,
+    "product_memory_snapshot": true,
+    "per_provider_call_intent_usage_and_hashes": true,
+    "raw_provider_payload": false,
+    "partial_failure_evidence": true,
+    "ephemeral_workspace_removed": true
+  },
+  "success": {
+    "all_twenty_four_visible_outputs_nonempty": true,
+    "all_twenty_four_quotation_aware_japanese_surface_pass": true,
+    "all_twelve_view_pairs_share_source_and_prefix": true,
+    "all_actual_provider_and_network_calls_accounted_once": true,
+    "all_condition_turn_budgets_valid": true,
+    "all_session_restarts_preserve_only_same_case_paths": true,
+    "all_product_state_isolated_and_workspaces_removed": true,
+    "zero_annotation_confirmation_or_production_access": true
+  },
+  "claim_boundary": "Execution mechanics and immutable input commitments only. This contract does not authorize generation, access annotations, score quality, or establish product advantage."
+}

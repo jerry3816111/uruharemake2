@@ -1,0 +1,87 @@
+{
+  "schema": "uruha_p4_profile_owner_fresh_product_probe_v1",
+  "case_id": "p4_profile_owner_fresh_20261001_01",
+  "status": "developer_authored_prospective_product_probe_not_holdout",
+  "turn_count": 10,
+  "restart_after_turn": 5,
+  "source_only_expected": {
+    "turn_1_reporter": "user",
+    "turn_1_reported_speaker": "灯里",
+    "turn_1_reported_preference": "花梨茶",
+    "turn_1_user_owns_preference": false,
+    "turn_1_direct_real_world_speech_verified": false,
+    "turn_1_episode_must_be_persisted": true,
+    "turn_10_source_trace_must_use_turn_1_episode_id": true,
+    "turn_10_required_source_channel": "any_actual_delivered_channel",
+    "visible_reply_language": "ja",
+    "forbidden_user_profile_values": [
+      "花梨茶", "あずき茶", "桑の実茶", "羅漢果茶", "しそ茶", "黒豆麦茶"
+    ]
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "role": "third_party_source_negative",
+      "input": "友達の灯里は花梨茶が一番好きだ。灯里が言った。",
+      "expected_new_user_profile": []
+    },
+    {
+      "turn": 2,
+      "role": "friend_then_self_mixed",
+      "input": "友達の千景はあずき茶が一番好きだ。私は刺繍が好きだ。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "刺繍"}]
+    },
+    {
+      "turn": 3,
+      "role": "quote_denial_then_self_mixed",
+      "input": "「私は桑の実茶が一番好き」は作文の例文で、私の好みじゃない。私は紙版画が好きだ。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "紙版画"}]
+    },
+    {
+      "turn": 4,
+      "role": "negated_positive_negative",
+      "input": "羅漢果茶が一番好きじゃない。",
+      "expected_new_user_profile": []
+    },
+    {
+      "turn": 5,
+      "role": "omitted_subject_self_positive",
+      "input": "苔庭が好き。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "苔庭"}]
+    },
+    {
+      "turn": 6,
+      "role": "self_then_friend_mixed_after_restart",
+      "input": "私は豆本作りが好きだ。友達の蓮実はしそ茶が一番好きだ。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "豆本作り"}]
+    },
+    {
+      "turn": 7,
+      "role": "explicit_current_drink_positive",
+      "input": "今はレモンバーム茶が好き。今の飲み物の好みとして覚えといて。",
+      "expected_new_user_profile": [{"fact_type": "like", "value": "レモンバーム茶", "scope": "drink", "state": "active"}]
+    },
+    {
+      "turn": 8,
+      "role": "explicit_current_drink_correction",
+      "input": "訂正。もうレモンバーム茶は好みじゃない。今は橙花茶が好き。今の飲み物の好みとして覚えといて。",
+      "expected_new_user_profile": [
+        {"fact_type": "dislike", "value": "レモンバーム茶", "scope": "drink"},
+        {"fact_type": "like", "value": "橙花茶", "scope": "drink", "state": "active"}
+      ],
+      "expected_prior_current_value_state": "historical"
+    },
+    {
+      "turn": 9,
+      "role": "selected_third_party_message_negative",
+      "input": "友達からの伝言。今は黒豆麦茶が好き。今の好みとして覚えといて。",
+      "expected_new_user_profile": []
+    },
+    {
+      "turn": 10,
+      "role": "explicit_past_source_query",
+      "input": "前に私は花梨茶が一番好きって言った？違うなら誰？",
+      "expected_new_user_profile": []
+    }
+  ]
+}

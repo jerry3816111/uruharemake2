@@ -1,0 +1,69 @@
+{
+  "schema": "uruha_p4_r_multiturn_interference_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_execution",
+  "dataset": {
+    "path": "datasets/p4_r_multiturn_interference_holdout_v1.json",
+    "sha256": "de1bdaeb7d48c9fa7b8f095aacc84d55889cd27f8c59b911c59f9a200431d222",
+    "case_id": "p4_r_cross_scope_and_recency_interference_001",
+    "turn_count": 12,
+    "recall_turns": [6, 12],
+    "write_turns": [1, 5, 8]
+  },
+  "conditions": {
+    "baseline": "recent_five_turn_lexical_drink_mention",
+    "system": "p4_typed_current_preference_lineage",
+    "same_transcript": true,
+    "same_recall_questions": true,
+    "model_call_count_each": 0
+  },
+  "expected_recall": [
+    {
+      "turn": 6,
+      "system_value": "月桃茶",
+      "system_surface": "今の飲み物の好みは月桃茶。前のじゃなくて、今の方ね。",
+      "baseline_value": "紫蘇茶"
+    },
+    {
+      "turn": 12,
+      "system_value": "よもぎ茶",
+      "system_surface": "今の飲み物の好みはよもぎ茶。前のじゃなくて、今の方ね。",
+      "baseline_value": "紫蘇茶"
+    }
+  ],
+  "gates": {
+    "system_exact_recall_count": 2,
+    "baseline_exact_recall_count": 0,
+    "system_minus_baseline_accuracy": 1.0,
+    "system_japanese_surface_count": 2,
+    "system_answer_use_authorized_count": 2,
+    "historical_answer_use_count": 0,
+    "negative_answer_use_count": 0,
+    "non_write_distractor_selected_count": 0,
+    "profile_record_count_after_turn_12": 4,
+    "drink_active_count_after_turn_12": 1,
+    "game_active_count_after_turn_12": 1,
+    "drink_historical_count_after_turn_12": 1,
+    "drink_explicit_negative_count_after_turn_12": 1,
+    "recall_profile_write_count": 0,
+    "unverified_mental_fact_write_count": 0
+  },
+  "execution": {
+    "fresh_temporary_chroma": true,
+    "dataset_execution_count": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "local_model_call_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "safari_turn_count": 0
+  },
+  "failure_policy": {
+    "same_case_rerun_allowed": false,
+    "value_or_transcript_change_after_result_allowed": false,
+    "failed_result_must_be_preserved": true,
+    "maximum_correction_batches_after_failure": 2
+  },
+  "claim_boundary": "A pass would show that the released P4 typed-state lineage defeats one prospectively frozen 12-turn recency, speaker, quotation, hypothetical and cross-scope interference transcript while a zero-model five-turn lexical-recency diagnostic baseline does not. It would not compare against a strong LLM or establish open-domain long-dialogue memory, felt understanding, human preference, future prediction or a human equation."
+}

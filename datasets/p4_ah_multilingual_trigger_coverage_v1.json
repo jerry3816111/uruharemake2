@@ -1,0 +1,158 @@
+{
+  "schema": "uruha_p4_ah_multilingual_trigger_coverage_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "development_cases": [
+    {
+      "case_id": "ah_dev_p4ag_missed_ja",
+      "language": "ja",
+      "input": "頭の中が回り続けていて、じっとしていられない。",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_dev_p4ag_missed_en",
+      "language": "en",
+      "input": "My thoughts will not slow down and I keep shifting in my chair.",
+      "expected_predicate": "cognitive_overactivity"
+    }
+  ],
+  "fresh_positive_cases": [
+    {
+      "case_id": "ah_positive_zh_01",
+      "language": "zh",
+      "input": "腦海裡的念頭一直湧上來，完全安靜不下來。",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_zh_02",
+      "language": "zh",
+      "input": "我的思緒怎麼都慢不下來，坐著也一直換姿勢。",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_zh_03",
+      "language": "zh",
+      "input": "腦中一直轉，今晚完全歇不下來。",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_en_01",
+      "language": "en",
+      "input": "My thoughts cannot settle, even after I lie down.",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_en_02",
+      "language": "en",
+      "input": "My head keeps running long after the work is over.",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_en_03",
+      "language": "en",
+      "input": "The ideas in my mind will not quiet down tonight.",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_ja_01",
+      "language": "ja",
+      "input": "頭の中の考えが回り続けて、全然休まらない。",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_ja_02",
+      "language": "ja",
+      "input": "思考がどうしても静まらない。",
+      "expected_predicate": "cognitive_overactivity"
+    },
+    {
+      "case_id": "ah_positive_ja_03",
+      "language": "ja",
+      "input": "頭の中がずっと休んでくれない。",
+      "expected_predicate": "cognitive_overactivity"
+    }
+  ],
+  "fresh_control_cases": [
+    {
+      "case_id": "ah_control_zh_fan",
+      "language": "zh",
+      "input": "風扇一直轉，但我已經把報告寫完了。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_zh_metalinguistic",
+      "language": "zh",
+      "input": "「思緒」和「安靜不下來」是我寫在白板上的兩個詞。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_zh_resolved",
+      "language": "zh",
+      "input": "我的思緒終於慢下來了。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_zh_physical_head",
+      "language": "zh",
+      "input": "我把腦袋轉向右邊看窗戶。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_en_fan",
+      "language": "en",
+      "input": "The fan will not slow down, but the room is fine.",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_en_metalinguistic",
+      "language": "en",
+      "input": "I wrote the words thoughts and cannot settle on the whiteboard.",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_en_resolved",
+      "language": "en",
+      "input": "My thoughts finally settled after lunch.",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_en_physical_head",
+      "language": "en",
+      "input": "I keep turning my head toward the window.",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_ja_fan",
+      "language": "ja",
+      "input": "扇風機が回り続けている。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_ja_metalinguistic",
+      "language": "ja",
+      "input": "「思考」と「静まらない」を白板に書いた。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_ja_resolved",
+      "language": "ja",
+      "input": "思考はやっと静まった。",
+      "expected_predicate": null
+    },
+    {
+      "case_id": "ah_control_ja_physical_head",
+      "language": "ja",
+      "input": "頭を右へ回し続けて窓を見た。",
+      "expected_predicate": null
+    }
+  ],
+  "detection_contract": {
+    "required_structure": "bounded cognitive head plus unresolved or continuing regulation predicate in the same local span",
+    "metalinguistic_or_quoted_token_use_is_trigger": false,
+    "resolved_or_completed_polarity_is_trigger": false,
+    "ordinary_object_motion_is_trigger": false,
+    "private_state_truth_claim_allowed": false,
+    "full_case_string_patch_allowed": false
+  },
+  "claim_boundary": "A pass shows bounded multilingual compositional coverage on frozen developer-authored cases while abstaining on frozen near controls. It does not prove open-domain semantic understanding, private mental-state truth, natural-distribution performance, or a human equation."
+}

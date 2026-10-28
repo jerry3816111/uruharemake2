@@ -1,0 +1,98 @@
+{
+  "schema": "uruha_p3_b26_preexisting_source_eligibility_audit_v1",
+  "phase": "P3-B26",
+  "status": "no_eligible_preexisting_speaker_memory_case",
+  "audited_at": "2026-09-16T11:28:00+08:00",
+  "source": {
+    "path": "datasets/p3_developer_smoke_source_v1.json",
+    "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f",
+    "case_count": 6,
+    "turn_count": 24,
+    "source_only_read": true
+  },
+  "selection_contract": {
+    "required_family": "speaker_qualified_memory",
+    "require_preexisting_source": true,
+    "require_not_previously_executed": true,
+    "require_not_exposed_to_repair": true,
+    "excluded_case_ids": [
+      "p3-smoke-speaker-memory-en"
+    ],
+    "excluded_case_reasons": {
+      "p3-smoke-speaker-memory-en": [
+        "executed_in_p3_b23",
+        "failure_trace_used_to_design_p3_b24",
+        "replayed_for_p3_b24_and_p3_b25_acceptance"
+      ]
+    }
+  },
+  "cases": [
+    {
+      "case_id": "p3-smoke-need-change-zh",
+      "family": "need_change_after_correction",
+      "language": "zh",
+      "matches_required_family": false,
+      "excluded_as_previously_executed_or_repair_exposed": false,
+      "eligible": false
+    },
+    {
+      "case_id": "p3-smoke-tentative-refusal-en",
+      "family": "tentative_agreement_or_refusal",
+      "language": "en",
+      "matches_required_family": false,
+      "excluded_as_previously_executed_or_repair_exposed": false,
+      "eligible": false
+    },
+    {
+      "case_id": "p3-smoke-emotional-bid-ja",
+      "family": "literal_vs_emotional_bid",
+      "language": "ja",
+      "matches_required_family": false,
+      "excluded_as_previously_executed_or_repair_exposed": false,
+      "eligible": false
+    },
+    {
+      "case_id": "p3-smoke-humor-boundary-zh",
+      "family": "relationship_and_humor_boundary",
+      "language": "zh",
+      "matches_required_family": false,
+      "excluded_as_previously_executed_or_repair_exposed": false,
+      "eligible": false
+    },
+    {
+      "case_id": "p3-smoke-speaker-memory-en",
+      "family": "speaker_qualified_memory",
+      "language": "en",
+      "matches_required_family": true,
+      "excluded_as_previously_executed_or_repair_exposed": true,
+      "eligible": false
+    },
+    {
+      "case_id": "p3-smoke-unknown-topic-ja",
+      "family": "unknown_and_topic_change",
+      "language": "ja",
+      "matches_required_family": false,
+      "excluded_as_previously_executed_or_repair_exposed": false,
+      "eligible": false
+    }
+  ],
+  "result": {
+    "required_family_case_count": 1,
+    "excluded_required_family_case_count": 1,
+    "eligible_case_count": 0,
+    "selected_case_id": null,
+    "source_projection_created": false,
+    "output_lock_config_created": false,
+    "release_created": false
+  },
+  "access_and_cost": {
+    "annotation_file_opened": false,
+    "target_outcome_accessed": false,
+    "generation_calls": 0,
+    "judge_calls": 0,
+    "network_calls": 0,
+    "paid_calls": 0,
+    "production_database_access": 0
+  },
+  "claim_boundary": "The pre-existing B2 source-only corpus has no unexecuted and repair-unexposed speaker-qualified-memory case. This is a negative eligibility audit, not a generation result or evidence about system quality."
+}

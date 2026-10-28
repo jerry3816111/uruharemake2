@@ -1,0 +1,2184 @@
+{
+  "schema": "uruha_p4_m46_decision_interface_result_v1",
+  "status": "review_required_component_fail",
+  "freeze_sha": "7abf74579e7793c22d3111b149037d9d7bdc5393",
+  "contract_sha256": "baa0e2a855dab7489699fa0da898a15b535e569f928eb2f24f0511944a49f1b0",
+  "dataset_sha256": "2f9129c10732c58085324d0fbad262964a6fa2a4af8cc3479f10bb5283d850ee",
+  "runner_sha256": "ad37a797c7291d677aa71641c9aa6b475267208024fcade929f9d36f19d78f67",
+  "retry_count": 0,
+  "arm_order_rule": "eligible case index even A-B, odd B-A",
+  "maximum_review_scored_calls": 20,
+  "generation_scored_calls": 0,
+  "prewarm": {
+    "model": "qwen3.5:9b",
+    "attempted": true,
+    "completed": true,
+    "load_duration_ns": 0,
+    "total_duration_ns": 0,
+    "wall_seconds": 4.8483
+  },
+  "rows": [
+    {
+      "packet_id": "p4_m46_di_valid_zh_001",
+      "category": "valid",
+      "source": {
+        "id": "current:di01",
+        "kind": "current_user",
+        "text": "我的植物觀察表已經有逐週紀錄，欄位上方還是空白。先給我一個能整理這張表的小動作；觀察數值不要補寫。"
+      },
+      "batch_digest": "d4e3f42a2e502673",
+      "gold_label": "valid",
+      "expected_failed_axis": null,
+      "selected_plan_digest_before_review": "ad4ee512f19b9bf7",
+      "selected_fingerprint_before_review": "11d30828d42efe41",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "A",
+        "B"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_valid_zh_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "858c80438be82af9a1cd33e9d05b6b018c05d01a991d4506160636e00c999d84",
+          "payload_digest": "90700d5ade4a6a75",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 864,
+          "completion_tokens": 294,
+          "load_duration_ns": 3931459,
+          "total_duration_ns": 14721306334,
+          "content_digest": "939145c3c85cb848",
+          "wall_seconds": 14.72437
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_valid_zh_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "453601e80c4f324c9711e7024dbe38ea2c0082932805cff9c74b4e49e916e051",
+          "payload_digest": "90700d5ade4a6a75",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 691,
+          "completion_tokens": 157,
+          "load_duration_ns": 2513167,
+          "total_duration_ns": 8822351375,
+          "content_digest": "6de62aaeee604b5c",
+          "wall_seconds": 8.82335
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di01",
+          "source_span": "我的植物觀察表已經有逐週紀錄，欄位上方還是空白。先給我一個能整理這張表的小動作；觀察數值不要補寫。",
+          "counterfactual_before_jp": "観察表の空欄に見出しが二つ加わっていない状態",
+          "counterfactual_after_jp": "観察表の空欄に見出しが二つ加わった状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": false,
+            "action_changes_task_state": false,
+            "action_is_operationally_specific": false,
+            "effect_links_action_to_criterion": false,
+            "not_random_or_task_relabeling": false,
+            "no_invented_facts": false,
+            "no_unknown_prerequisites": false,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": false,
+            "casual_japanese": true,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di01",
+          "source_span": "我的植物觀察表已經有逐週紀錄，欄位上方還是空白。先給我一個能整理這張表的小動作；觀察數值不要補寫。",
+          "before_jp": "観察表の空欄に記述なし",
+          "after_jp": "見出し二つ追加で完了",
+          "observed_progress_mechanism": "structure_scaffold",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "fail",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「観察数値不要補写」の指示あり"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di01",
+        "source_digest": "9225f97370eaed39",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di01",
+          "goal_source_span": "我的植物觀察表已經有逐週紀錄，欄位上方還是空白。先給我一個能整理這張表的小動作；觀察數值不要補寫。",
+          "task_goal_jp": "植物観察表を整理しやすくする",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "観察表の空欄に見出しが二つ加わった状態",
+          "progress_mechanism": "structure_scaffold",
+          "action_object_jp": "観察表の欄見出し二つ",
+          "action_verb_jp": "書く",
+          "action_step_jp": "まず観察表の欄見出し二つだけ書いてみて。書けたらそこで終わり。",
+          "expected_state_change_jp": "観察表の空欄に見出しが二つ加わった状態",
+          "completion_jp": "見出しを二つ書いたら終わり",
+          "unknown_constraint_jp": "観察数値の詳細は不明",
+          "instruction_jp": "まず観察表の欄見出し二つだけ書いてみて。書けたらそこで終わり。"
+        },
+        "selected_plan_digest": "ad4ee512f19b9bf7",
+        "selected_fingerprint": "11d30828d42efe41",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "effect_links_action_to_criterion",
+            "no_invented_facts",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "prerequisites",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "valid",
+        "expected_failed_axis": null,
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": false,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_wrong_task_zh_001",
+      "category": "wrong_task",
+      "source": {
+        "id": "current:di02",
+        "kind": "current_user",
+        "text": "我正在整理讀書會的提問清單，摘要稿先不要改。只要一個整理提問的小步驟。"
+      },
+      "batch_digest": "58529dd9a651165f",
+      "gold_label": "invalid",
+      "expected_failed_axis": "task_alignment",
+      "selected_plan_digest_before_review": "c23db77ad9187aff",
+      "selected_fingerprint_before_review": "0dcc9be2dc617b60",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "B",
+        "A"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_wrong_task_zh_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "7adab845726b3cabbcecbb22b4596fcbb48504bc2a04f9b6299ab3d57c3fab38",
+          "payload_digest": "9cf45a9829070c58",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 840,
+          "completion_tokens": 282,
+          "load_duration_ns": 2545083,
+          "total_duration_ns": 12987960083,
+          "content_digest": "96dbecd0a16a6d4f",
+          "wall_seconds": 12.98915
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_wrong_task_zh_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "10ea6cb3c9e222be1e9a7ab3ee324d38361725bd45880021f2bca30669b2c0e1",
+          "payload_digest": "9cf45a9829070c58",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 667,
+          "completion_tokens": 175,
+          "load_duration_ns": 2208750,
+          "total_duration_ns": 8854178375,
+          "content_digest": "425b0c2d57b025a7",
+          "wall_seconds": 8.85533
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di02",
+          "source_span": "我正在整理讀書會的提問清單，摘要稿先不要改。只要一個整理提問的小步驟。",
+          "counterfactual_before_jp": "要約原稿に小見出しが一つ増えた状態ではない",
+          "counterfactual_after_jp": "要約原稿に小見出しが一つ増えた状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": true,
+            "action_is_operationally_specific": true,
+            "effect_links_action_to_criterion": true,
+            "not_random_or_task_relabeling": true,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": true,
+            "casual_japanese": true,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di02",
+          "source_span": "我正在整理讀書會的提問清單，摘要稿先不要改。只要一個整理提問的小步驟。",
+          "before_jp": "要約原稿に小見出しがない状態",
+          "after_jp": "要約原稿に一つだけ小見出しが追加された状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "fail",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「書けたらそこで終わり」は、アシスタントが物理操作を完了したと主張しているように見えるが、ツール受領がないため不成立である。"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di02",
+        "source_digest": "087516dfd34aaae4",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di02",
+          "goal_source_span": "我正在整理讀書會的提問清單，摘要稿先不要改。只要一個整理提問的小步驟。",
+          "task_goal_jp": "読書会の質問一覧を整理する",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "要約原稿に小見出しが一つ増えた状態",
+          "progress_mechanism": "structure_scaffold",
+          "action_object_jp": "要約原稿の小見出し一つ",
+          "action_verb_jp": "書く",
+          "action_step_jp": "まず要約原稿の小見出し一つだけ書いてみて。書けたらそこで終わり。",
+          "expected_state_change_jp": "要約原稿に小見出しが一つ増えた状態",
+          "completion_jp": "小見出しを一つ書いたら終わり",
+          "unknown_constraint_jp": "質問の具体的な文面は不明",
+          "instruction_jp": "まず要約原稿の小見出し一つだけ書いてみて。書けたらそこで終わり。"
+        },
+        "selected_plan_digest": "c23db77ad9187aff",
+        "selected_fingerprint": "0dcc9be2dc617b60",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": true,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": true,
+          "accepted": false,
+          "violations": [],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "prerequisites",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": true,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "task_alignment",
+        "arms": {
+          "old_contract": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": false,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_valid_en_001",
+      "category": "valid",
+      "source": {
+        "id": "current:di03",
+        "kind": "current_user",
+        "text": "The delivery slips in my folder each show a date. I need the date from one slip copied into my index, then stop; leave the sender names out."
+      },
+      "batch_digest": "929d90489a97fe35",
+      "gold_label": "valid",
+      "expected_failed_axis": null,
+      "selected_plan_digest_before_review": "471ce57d780bb128",
+      "selected_fingerprint_before_review": "ecf06946c1374a3b",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "A",
+        "B"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_valid_en_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "4844e9eca50d004447b2b38df6ec46834092785653fa81dec5d8462430096345",
+          "payload_digest": "3c6af38f36d54bce",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 859,
+          "completion_tokens": 284,
+          "load_duration_ns": 1101667,
+          "total_duration_ns": 12960951709,
+          "content_digest": "2fcc957ad29eb600",
+          "wall_seconds": 12.96204
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_valid_en_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "49b4072e8d5708d1a1f243d80d1c2ab7e3c9c7431f71c7c61ae6d965e38d1de4",
+          "payload_digest": "3c6af38f36d54bce",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 686,
+          "completion_tokens": 165,
+          "load_duration_ns": 1063708,
+          "total_duration_ns": 8517250916,
+          "content_digest": "2d3deda216100ae2",
+          "wall_seconds": 8.51827
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di03",
+          "source_span": "The delivery slips in my folder each show a date. I need the date from one slip copied into my index, then stop; leave the sender names out.",
+          "counterfactual_before_jp": "索引に伝票の日付が書かれていない状態",
+          "counterfactual_after_jp": "索引に伝票一枚の日付が写された状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": true,
+            "action_is_operationally_specific": true,
+            "effect_links_action_to_criterion": true,
+            "not_random_or_task_relabeling": true,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": true,
+            "casual_japanese": true,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di03",
+          "source_span": "The delivery slips in my folder each show a date. I need the date from one slip copied into my index, then stop; leave the sender names out.",
+          "before_jp": "索引に日付がまだない状態",
+          "after_jp": "配送伝票の日付を一つだけ索引に記した状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "pass",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "pass",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「write the date from one slip」は物理操作を助手が代行する主張"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di03",
+        "source_digest": "ede817b2c05900a9",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di03",
+          "goal_source_span": "The delivery slips in my folder each show a date. I need the date from one slip copied into my index, then stop; leave the sender names out.",
+          "task_goal_jp": "配送伝票一枚の日付を索引に写す",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "索引に伝票一枚の日付が写された状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "配送伝票一枚の日付",
+          "action_verb_jp": "写す",
+          "action_step_jp": "まず配送伝票一枚の日付だけ索引に写してみて。写せたらそこで終わり。",
+          "expected_state_change_jp": "索引に伝票一枚の日付が写された状態",
+          "completion_jp": "日付を一つ写したら終わり",
+          "unknown_constraint_jp": "具体的な日付は手元の伝票を見ないと分からない",
+          "instruction_jp": "まず配送伝票一枚の日付だけ索引に写してみて。写せたらそこで終わり。"
+        },
+        "selected_plan_digest": "471ce57d780bb128",
+        "selected_fingerprint": "ecf06946c1374a3b",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": true,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "valid",
+        "expected_failed_axis": null,
+        "arms": {
+          "old_contract": {
+            "would_deliver": true,
+            "false_action": false,
+            "valid_retained": true,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": false,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_unsupported_specificity_en_001",
+      "category": "unsupported_specificity",
+      "source": {
+        "id": "current:di04",
+        "kind": "current_user",
+        "text": "I keep a daily electricity log and want to compare one entry with the target number I set privately. I haven't told you the target, so don't supply a number for me."
+      },
+      "batch_digest": "1fcf5cc2c1cf9714",
+      "gold_label": "invalid",
+      "expected_failed_axis": "source_grounding",
+      "selected_plan_digest_before_review": "f7e939f1da323dac",
+      "selected_fingerprint_before_review": "744b6d6ce204ee19",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "B",
+        "A"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_unsupported_specificity_en_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "9ff9ef9e2cb9ee749df489fc067bf9df7583150e60556ac770d6707f8e18ff85",
+          "payload_digest": "2b6458057e335db3",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 885,
+          "completion_tokens": 301,
+          "load_duration_ns": 1044625,
+          "total_duration_ns": 13880257208,
+          "content_digest": "7ba0a7d7033008bb",
+          "wall_seconds": 13.88142
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_unsupported_specificity_en_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "ed8ba50c445da7c87ce32050545c93fc73bbf2d2778f1e8720006a1f1cada524",
+          "payload_digest": "2b6458057e335db3",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 712,
+          "completion_tokens": 148,
+          "load_duration_ns": 993250,
+          "total_duration_ns": 7955515583,
+          "content_digest": "1c9b9169101169a5",
+          "wall_seconds": 7.95643
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di04",
+          "source_span": "I keep a daily electricity log and want to compare one entry with the target number I set privately. I haven't told you the target, so don't supply a number for me.",
+          "counterfactual_before_jp": "記録一件が一日八キロワット時の目標値と照合されていない状態",
+          "counterfactual_after_jp": "記録一件が一日八キロワット時の目標値と照合された状態",
+          "observed_progress_mechanism": "verify_named_condition",
+          "content_checks": {
+            "goal_matches_source": false,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": false,
+            "action_changes_task_state": false,
+            "action_is_operationally_specific": false,
+            "effect_links_action_to_criterion": false,
+            "not_random_or_task_relabeling": false,
+            "no_invented_facts": false,
+            "no_unknown_prerequisites": false,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": false,
+            "casual_japanese": false,
+            "completion_is_visible": false,
+            "no_identity_or_role_error": false
+          }
+        },
+        "B": {
+          "source_id": "current:di04",
+          "source_span": "I keep a daily electricity log and want to compare one entry with the target number I set privately. I haven't told you the target, so don't supply a number for me.",
+          "before_jp": "目標値を共有せず比較依頼",
+          "after_jp": "照合不能で中断",
+          "observed_progress_mechanism": "unknown",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "fail",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "fail"
+          },
+          "primary_failure": "prerequisites",
+          "evidence_jp": "「don't supply a number for me」"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di04",
+        "source_digest": "0da7d5ae6d81516e",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di04",
+          "goal_source_span": "I keep a daily electricity log and want to compare one entry with the target number I set privately. I haven't told you the target, so don't supply a number for me.",
+          "task_goal_jp": "電気使用量の記録を本人の目標値と照らす",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "記録一件が一日八キロワット時の目標値と照合された状態",
+          "progress_mechanism": "verify_named_condition",
+          "action_object_jp": "一日八キロワット時の目標値",
+          "action_verb_jp": "照らす",
+          "action_step_jp": "まず一日八キロワット時の目標値と記録一件だけ照らしてみて。照らせたらそこで終わり。",
+          "expected_state_change_jp": "記録一件が一日八キロワット時の目標値と照合された状態",
+          "completion_jp": "記録を一件照らしたら終わり",
+          "unknown_constraint_jp": "目標値の数値は不明",
+          "instruction_jp": "まず一日八キロワット時の目標値と記録一件だけ照らしてみて。照らせたらそこで終わり。"
+        },
+        "selected_plan_digest": "f7e939f1da323dac",
+        "selected_fingerprint": "744b6d6ce204ee19",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "effect_links_action_to_criterion",
+            "goal_matches_source",
+            "no_invented_facts",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "casual_japanese",
+            "completion_is_visible",
+            "instruction_realizes_action",
+            "no_identity_or_role_error"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "prerequisites",
+            "actor_capability",
+            "stop_visible"
+          ],
+          "primary_failure": "prerequisites",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "source_grounding",
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": true,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_private_inference_ja_001",
+      "category": "private_inference",
+      "source": {
+        "id": "current:di05",
+        "kind": "current_user",
+        "text": "私の町内配布物の封筒には受付番号が書いてある。番号順に一通だけ並べたい。気持ちや理由は話していない。"
+      },
+      "batch_digest": "13a698c926ba143c",
+      "gold_label": "invalid",
+      "expected_failed_axis": "private_claim",
+      "selected_plan_digest_before_review": "702cfe5983c8038e",
+      "selected_fingerprint_before_review": "8e66da3fbeda4693",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "A",
+        "B"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_private_inference_ja_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "4cd7f45707056e813a06f0d00ac562586937835b516c5efda96e43394e6cd25d",
+          "payload_digest": "33ac6879ea883a8f",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 873,
+          "completion_tokens": 291,
+          "load_duration_ns": 1037125,
+          "total_duration_ns": 13321415333,
+          "content_digest": "9ed542c68cd43e31",
+          "wall_seconds": 13.32216
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_private_inference_ja_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "0c130fe49a6ad99f7c256d61c1b2e1625f021808de0a7b20e8d4cfb06ca0f00a",
+          "payload_digest": "33ac6879ea883a8f",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 700,
+          "completion_tokens": 159,
+          "load_duration_ns": 930292,
+          "total_duration_ns": 8371325875,
+          "content_digest": "49875f16999672ab",
+          "wall_seconds": 8.37255
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di05",
+          "source_span": "私の町内配布物の封筒には受付番号が書いてある。番号順に一通だけ並べたい。気持ちや理由は話していない。",
+          "counterfactual_before_jp": "配布物が未整理の状態であり、不安な感情が存在する",
+          "counterfactual_after_jp": "少なくとも一通の封筒が受付番号順に正しい位置に置かれた状態である",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": true,
+            "action_is_operationally_specific": true,
+            "effect_links_action_to_criterion": true,
+            "not_random_or_task_relabeling": true,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": true,
+            "casual_japanese": true,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di05",
+          "source_span": "私の町内配布物の封筒には受付番号が書いてある。番号順に一通だけ並べたい。気持ちや理由は話していない。",
+          "before_jp": "不安なまま整理を始める",
+          "after_jp": "不安を減らして整理を試みる",
+          "observed_progress_mechanism": "unknown",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "pass",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「並べたらそこで終わり」は、助手が物理操作を完了したと主張しているように見える。"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di05",
+        "source_digest": "e8102eee7baa9c20",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di05",
+          "goal_source_span": "私の町内配布物の封筒には受付番号が書いてある。番号順に一通だけ並べたい。気持ちや理由は話していない。",
+          "task_goal_jp": "失敗が怖い気持ちを落ち着かせながら配布物を番号順に整理する",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "封筒一通が受付番号順の位置に置かれた状態",
+          "progress_mechanism": "group_by_rule",
+          "action_object_jp": "配布物の封筒一通",
+          "action_verb_jp": "並べる",
+          "action_step_jp": "まず不安を減らすために、配布物の封筒一通だけ受付番号順に並べてみて。並べたらそこで終わり。",
+          "expected_state_change_jp": "封筒一通が受付番号順の位置に置かれた状態",
+          "completion_jp": "封筒を一通並べたら終わり",
+          "unknown_constraint_jp": "受付番号の具体的な値は不明",
+          "instruction_jp": "まず不安を減らすために、配布物の封筒一通だけ受付番号順に並べてみて。並べたらそこで終わり。"
+        },
+        "selected_plan_digest": "702cfe5983c8038e",
+        "selected_fingerprint": "8e66da3fbeda4693",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": true,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": true,
+          "accepted": false,
+          "violations": [],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": true,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "private_claim",
+        "arms": {
+          "old_contract": {
+            "would_deliver": true,
+            "false_action": true,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": false,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_valid_ja_001",
+      "category": "valid",
+      "source": {
+        "id": "current:di06",
+        "kind": "current_user",
+        "text": "私の展示準備メモには持ち物が書いてあるけど、チェック欄がない。内容は消さず、まず一つだけチェック欄を足したい。"
+      },
+      "batch_digest": "920a514036515eaa",
+      "gold_label": "valid",
+      "expected_failed_axis": null,
+      "selected_plan_digest_before_review": "c113a0fb6c28039f",
+      "selected_fingerprint_before_review": "d6a1c85d4a9c5b1b",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "B",
+        "A"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_valid_ja_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "14488580abfa96e93873e92de7cee1ecdfb6cb3f5441395205ee6c92a5aba0e0",
+          "payload_digest": "03085b933caff1b0",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 848,
+          "completion_tokens": 298,
+          "load_duration_ns": 949250,
+          "total_duration_ns": 13883384209,
+          "content_digest": "ef24bee225453f2f",
+          "wall_seconds": 13.88446
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_valid_ja_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "237d1643289b0478d654531eff43aed61363d4fae02fca9d4aca46dd43a3268b",
+          "payload_digest": "03085b933caff1b0",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 675,
+          "completion_tokens": 173,
+          "load_duration_ns": 1188875,
+          "total_duration_ns": 8762010458,
+          "content_digest": "01a9d6a999d3f081",
+          "wall_seconds": 8.76308
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di06",
+          "source_span": "私の展示準備メモには持ち物が書いてあるけど、チェック欄がない。内容は消さず、まず一つだけチェック欄を足したい。",
+          "counterfactual_before_jp": "展示準備メモに持ち物のリストがあり、チェック欄が存在しない状態",
+          "counterfactual_after_jp": "展示準備メモに持ち物のリストがあり、少なくとも一つの項目にチェック欄（またはチェックボックス）が追加された状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": true,
+            "action_is_operationally_specific": true,
+            "effect_links_action_to_criterion": true,
+            "not_random_or_task_relabeling": true,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": true,
+            "casual_japanese": true,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di06",
+          "source_span": "私の展示準備メモには持ち物が書いてあるけど、チェック欄がない。内容は消さず、まず一つだけチェック欄を足したい。",
+          "before_jp": "メモにチェック欄がない状態",
+          "after_jp": "メモに一つだけチェック欄が追加された状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "fail",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「まず展示準備メモのチェック欄一つだけ足してみて」は、ユーザーが物理的に操作する必要があるため、アシスタント自身の実行を主張している。"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di06",
+        "source_digest": "9f6d28c0848f0463",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di06",
+          "goal_source_span": "私の展示準備メモには持ち物が書いてあるけど、チェック欄がない。内容は消さず、まず一つだけチェック欄を足したい。",
+          "task_goal_jp": "展示準備メモを確認しやすくする",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "展示準備メモにチェック欄が一つ加わった状態",
+          "progress_mechanism": "structure_scaffold",
+          "action_object_jp": "展示準備メモのチェック欄一つ",
+          "action_verb_jp": "足す",
+          "action_step_jp": "まず展示準備メモのチェック欄一つだけ足してみて。足せたらそこで終わり。",
+          "expected_state_change_jp": "展示準備メモにチェック欄が一つ加わった状態",
+          "completion_jp": "チェック欄を一つ足したら終わり",
+          "unknown_constraint_jp": "持ち物の細部は不明",
+          "instruction_jp": "まず展示準備メモのチェック欄一つだけ足してみて。足せたらそこで終わり。"
+        },
+        "selected_plan_digest": "c113a0fb6c28039f",
+        "selected_fingerprint": "d6a1c85d4a9c5b1b",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": true,
+          "surface_passed": true,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": true,
+          "accepted": false,
+          "violations": [],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "prerequisites",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": true,
+          "human_validated": false
+        },
+        "gold_label": "valid",
+        "expected_failed_axis": null,
+        "arms": {
+          "old_contract": {
+            "would_deliver": true,
+            "false_action": false,
+            "valid_retained": true,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": true,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": false,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_non_action_en_001",
+      "category": "non_action",
+      "source": {
+        "id": "current:di07",
+        "kind": "current_user",
+        "text": "My lecture handout has section headings but no worked examples. I need one concrete change in the file now, not encouragement or a planning thought."
+      },
+      "batch_digest": "afbe93d918efefea",
+      "gold_label": "invalid",
+      "expected_failed_axis": "state_change",
+      "selected_plan_digest_before_review": "fd751e17a53ea106",
+      "selected_fingerprint_before_review": "d5feda8d488a2f2d",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "A",
+        "B"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_non_action_en_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "d7b646bc6b704a67f185f9d059f1fce03d77b8dc23e3b71e7a0ce759514c0318",
+          "payload_digest": "ff7fd4d032484ea1",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 838,
+          "completion_tokens": 284,
+          "load_duration_ns": 1093459,
+          "total_duration_ns": 12927160417,
+          "content_digest": "0cbeed72ab1bac92",
+          "wall_seconds": 12.92794
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_non_action_en_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "8b9509af6947c0b266f79a58d874876c1948696cd1f1738ef54d14200e35fbd0",
+          "payload_digest": "ff7fd4d032484ea1",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 665,
+          "completion_tokens": 153,
+          "load_duration_ns": 1410291,
+          "total_duration_ns": 8166358750,
+          "content_digest": "6799e3bdd4027995",
+          "wall_seconds": 8.16703
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di07",
+          "source_span": "My lecture handout has section headings but no worked examples. I need one concrete change in the file now, not encouragement or a planning thought.",
+          "counterfactual_before_jp": "講義資料に具体的な作業が含まれていない状態",
+          "counterfactual_after_jp": "改善点が頭の中で一つ考えられた状態（ファイル自体は変更されていない）",
+          "observed_progress_mechanism": "unknown",
+          "content_checks": {
+            "goal_matches_source": false,
+            "criterion_is_observable": false,
+            "criterion_advances_goal": false,
+            "action_changes_task_state": false,
+            "action_is_operationally_specific": false,
+            "effect_links_action_to_criterion": false,
+            "not_random_or_task_relabeling": false,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": false,
+            "casual_japanese": true,
+            "completion_is_visible": false,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di07",
+          "source_span": "My lecture handout has section headings but no worked examples. I need one concrete change in the file now, not encouragement or a planning thought.",
+          "before_jp": "講義資料に具体例がない状態",
+          "after_jp": "改善案を頭で一つ考えた状態",
+          "observed_progress_mechanism": "verify_named_condition",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "pass",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「one concrete change in the file now」"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di07",
+        "source_digest": "2188d7c57f38de45",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di07",
+          "goal_source_span": "My lecture handout has section headings but no worked examples. I need one concrete change in the file now, not encouragement or a planning thought.",
+          "task_goal_jp": "講義資料に具体的な作業を加える",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "講義資料の改善点を頭の中で一つ考えた状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "講義資料の改善点一つ",
+          "action_verb_jp": "考える",
+          "action_step_jp": "まず講義資料の改善点一つだけ考えてみて。考えたらそこで終わり。",
+          "expected_state_change_jp": "講義資料の改善点を頭の中で一つ考えた状態",
+          "completion_jp": "改善点を一つ考えたら終わり",
+          "unknown_constraint_jp": "例の内容は不明",
+          "instruction_jp": "まず講義資料の改善点一つだけ考えてみて。考えたらそこで終わり。"
+        },
+        "selected_plan_digest": "fd751e17a53ea106",
+        "selected_fingerprint": "d5feda8d488a2f2d",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "criterion_advances_goal",
+            "criterion_is_observable",
+            "effect_links_action_to_criterion",
+            "goal_matches_source",
+            "not_random_or_task_relabeling",
+            "review_observed_nonprogress_mechanism"
+          ],
+          "surface_violations": [
+            "completion_is_visible",
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "state_change",
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": true,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_actor_surface_ja_001",
+      "category": "actor_surface",
+      "source": {
+        "id": "current:di08",
+        "kind": "current_user",
+        "text": "私の読書画面で右の目次パネルが本文に重なっている。私がそのパネルを一つ閉じたいから、あなたは操作せず手順だけ言って。"
+      },
+      "batch_digest": "68a3cc7b3de2c7c0",
+      "gold_label": "invalid",
+      "expected_failed_axis": "actor_capability",
+      "selected_plan_digest_before_review": "7c766819327b654a",
+      "selected_fingerprint_before_review": "b6439f0853962017",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "B",
+        "A"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_actor_surface_ja_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "04317fc898a1535bc249fd7e25ac170ae22be32199055d5341980cb275c66acf",
+          "payload_digest": "32ecdf96f909a0ed",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 854,
+          "completion_tokens": 292,
+          "load_duration_ns": 987667,
+          "total_duration_ns": 13208365667,
+          "content_digest": "a9d66605fe760ffe",
+          "wall_seconds": 13.20944
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_actor_surface_ja_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "fb7b60704a91b713282450822e09987ac2508f9a54aba8428411817cae771bb0",
+          "payload_digest": "32ecdf96f909a0ed",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 681,
+          "completion_tokens": 166,
+          "load_duration_ns": 1076458,
+          "total_duration_ns": 8521055541,
+          "content_digest": "5b9562b8c189494d",
+          "wall_seconds": 8.52202
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di08",
+          "source_span": "私の読書画面で右の目次パネルが本文に重なっている。私がそのパネルを一つ閉じたいから、あなたは操作せず手順だけ言って。",
+          "counterfactual_before_jp": "右の目次パネルが本文に重なっている状態",
+          "counterfactual_after_jp": "右の目次パネルの一つが閉じられ、本文が見える状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": false,
+            "action_is_operationally_specific": false,
+            "effect_links_action_to_criterion": false,
+            "not_random_or_task_relabeling": false,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": false,
+            "casual_japanese": true,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": false
+          }
+        },
+        "B": {
+          "source_id": "current:di08",
+          "source_span": "私の読書画面で右の目次パネルが本文に重なっている。私がそのパネルを一つ閉じたいから、あなたは操作せず手順だけ言って。",
+          "before_jp": "ユーザーは目次パネルを閉じる手順のみを求めている状態",
+          "after_jp": "助手は物理操作を行わず、手順説明のみを提供する状態",
+          "observed_progress_mechanism": "verify_named_condition",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "pass",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「あなたは操作せず手順だけ言って」"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di08",
+        "source_digest": "0b70b62f1b557bd7",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di08",
+          "goal_source_span": "私の読書画面で右の目次パネルが本文に重なっている。私がそのパネルを一つ閉じたいから、あなたは操作せず手順だけ言って。",
+          "task_goal_jp": "本文が見えるように目次パネルを閉じる",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "目次パネルが閉じて本文が見える状態",
+          "progress_mechanism": "remove_named_obstacle",
+          "action_object_jp": "目次パネル一つ",
+          "action_verb_jp": "閉じる",
+          "action_step_jp": "まず目次パネル一つはうちが閉じておく。閉じたらそこで終わり。",
+          "expected_state_change_jp": "目次パネルが閉じて本文が見える状態",
+          "completion_jp": "パネルを一つ閉じたら終わり",
+          "unknown_constraint_jp": "画面上の細かな位置は不明",
+          "instruction_jp": "まず目次パネル一つはうちが閉じておく。閉じたらそこで終わり。"
+        },
+        "selected_plan_digest": "7c766819327b654a",
+        "selected_fingerprint": "b6439f0853962017",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_changes_task_state",
+            "action_is_operationally_specific",
+            "effect_links_action_to_criterion",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "instruction_realizes_action",
+            "no_identity_or_role_error"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "actor_capability",
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": true,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_invented_prerequisite_zh_001",
+      "category": "invented_prerequisite",
+      "source": {
+        "id": "current:di09",
+        "kind": "current_user",
+        "text": "我的手繪捷運路線草圖就在桌上，想先圈出一個站名。紙筆都在手邊，不用登入或打開任何程式；只給我一個能立刻做的步驟。"
+      },
+      "batch_digest": "e1496d5dc69f7b93",
+      "gold_label": "invalid",
+      "expected_failed_axis": "prerequisites",
+      "selected_plan_digest_before_review": "26b1b83986e8a359",
+      "selected_fingerprint_before_review": "8ea08c9b7ea512e2",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "A",
+        "B"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_invented_prerequisite_zh_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "383415a25d38a50b8eedd97bd40c3aacd2283a2a4b1aad5e707a41dc129e5b58",
+          "payload_digest": "547ed0fc555c6a42",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 877,
+          "completion_tokens": 284,
+          "load_duration_ns": 1261417,
+          "total_duration_ns": 14300737625,
+          "content_digest": "050ed5ee3e11bbeb",
+          "wall_seconds": 14.30216
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_invented_prerequisite_zh_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "8aad3be66d0e95fab5322c63f8c8c210cf47fa8c4df3636c1e55c84295ae9e6c",
+          "payload_digest": "547ed0fc555c6a42",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 704,
+          "completion_tokens": 195,
+          "load_duration_ns": 2730417,
+          "total_duration_ns": 10779938542,
+          "content_digest": "1f2349644e13846d",
+          "wall_seconds": 10.78069
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di09",
+          "source_span": "我的手繪捷運路線草圖就在桌上，想先圈出一個站名。紙筆都在手邊，不用登入或打開任何程式；只給我一個能立刻做的步驟。",
+          "counterfactual_before_jp": "駅名が囲まれていない状態",
+          "counterfactual_after_jp": "駅名が囲まれた状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": false,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": true,
+            "action_is_operationally_specific": false,
+            "effect_links_action_to_criterion": false,
+            "not_random_or_task_relabeling": false,
+            "no_invented_facts": false,
+            "no_unknown_prerequisites": false,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": false,
+            "casual_japanese": false,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di09",
+          "source_span": "我的手繪捷運路線草圖就在桌上，想先圈出一個站名。紙筆都在手邊，不用登入或打開任何程式；只給我一個能立刻做的步驟。",
+          "before_jp": "ユーザーは紙とペンで駅名を囲む準備ができているが、指示に従う必要がある。",
+          "after_jp": "ユーザーはまずアプリにログインし、その後紙の駅名を囲む動作を実行する。",
+          "observed_progress_mechanism": "structure_scaffold",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "fail",
+            "private_claim": "pass",
+            "prerequisites": "fail",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "fail"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「まず専用アプリにログインしてから、紙の駅名一つを囲んでみて」"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di09",
+        "source_digest": "3d9620adbe092c5f",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di09",
+          "goal_source_span": "我的手繪捷運路線草圖就在桌上，想先圈出一個站名。紙筆都在手邊，不用登入或打開任何程式；只給我一個能立刻做的步驟。",
+          "task_goal_jp": "路線草図の駅名を一つ囲む",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "草図の駅名一つが丸で囲まれた状態",
+          "progress_mechanism": "direct_atomic_completion",
+          "action_object_jp": "紙の駅名一つ",
+          "action_verb_jp": "囲む",
+          "action_step_jp": "まず専用アプリにログインしてから、紙の駅名一つを囲んでみて。囲めたらそこで終わり。",
+          "expected_state_change_jp": "草図の駅名一つが丸で囲まれた状態",
+          "completion_jp": "駅名を一つ囲んだら終わり",
+          "unknown_constraint_jp": "どの駅名かは不明",
+          "instruction_jp": "まず専用アプリにログインしてから、紙の駅名一つを囲んでみて。囲めたらそこで終わり。"
+        },
+        "selected_plan_digest": "26b1b83986e8a359",
+        "selected_fingerprint": "8ea08c9b7ea512e2",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": false,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [
+            "action_is_operationally_specific",
+            "effect_links_action_to_criterion",
+            "goal_matches_source",
+            "no_invented_facts",
+            "no_unknown_prerequisites",
+            "not_random_or_task_relabeling"
+          ],
+          "surface_violations": [
+            "casual_japanese",
+            "instruction_realizes_action"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": true,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "source_grounding",
+            "prerequisites",
+            "actor_capability",
+            "stop_visible"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "prerequisites",
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": true,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_unnatural_surface_en_001",
+      "category": "unnatural_surface",
+      "source": {
+        "id": "current:di10",
+        "kind": "current_user",
+        "text": "The workshop schedule already lists session titles. I want one separator line under a title so the page is easier to scan; don't change any title text."
+      },
+      "batch_digest": "a07601a8008e2b3c",
+      "gold_label": "invalid",
+      "expected_failed_axis": "natural_japanese",
+      "selected_plan_digest_before_review": "26bd073f6afb7c78",
+      "selected_fingerprint_before_review": "9a7e3bea5856ffb6",
+      "deterministic_eligible": true,
+      "arm_order": [
+        "B",
+        "A"
+      ],
+      "call_started": {
+        "A": true,
+        "B": true
+      },
+      "calls": {
+        "A": {
+          "call_id": "review:p4_m46_di_unnatural_surface_en_001",
+          "stage": "review",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "c9ff2a668fb3ff17603bd6b9a3c94dabdfbd2ed74961bab9c3aed3a06dc3aff5",
+          "schema_sha256": "4a35052a9bd6844e071d4f65e2a2d0c52f26e1872c93709d135aa5700096a51b",
+          "payload_digest": "cefed3e93856d152",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 868,
+          "completion_tokens": 281,
+          "load_duration_ns": 941250,
+          "total_duration_ns": 14444236375,
+          "content_digest": "0d0ac3dfff0ef361",
+          "wall_seconds": 14.44547
+        },
+        "B": {
+          "call_id": "review_b:p4_m46_di_unnatural_surface_en_001",
+          "stage": "review",
+          "arm": "B",
+          "model": "qwen3.5:9b",
+          "attempted": true,
+          "completed": true,
+          "json_parse_success": true,
+          "system_sha256": "48c67bcd2efcdb09ef1e2da1462bc0f61eab6a43c25e9bc1219d11801a277e63",
+          "schema_sha256": "372aa59f2b2f68982eae21712fc8974036b481233630018dad1be192346fdf8b",
+          "payload_digest": "cefed3e93856d152",
+          "options": {
+            "temperature": 0,
+            "seed": 20260829,
+            "num_ctx": 4096,
+            "num_predict": 320
+          },
+          "prompt_tokens": 695,
+          "completion_tokens": 161,
+          "load_duration_ns": 981666,
+          "total_duration_ns": 9587897458,
+          "content_digest": "3f09fa989e6778e1",
+          "wall_seconds": 9.58919
+        }
+      },
+      "reviews": {
+        "A": {
+          "source_id": "current:di10",
+          "source_span": "The workshop schedule already lists session titles. I want one separator line under a title so the page is easier to scan; don't change any title text.",
+          "counterfactual_before_jp": "セッション名の下に区切り線がない状態",
+          "counterfactual_after_jp": "セッション名の下に区切り線が一本ある状態",
+          "observed_progress_mechanism": "direct_atomic_completion",
+          "content_checks": {
+            "goal_matches_source": true,
+            "criterion_is_observable": true,
+            "criterion_advances_goal": true,
+            "action_changes_task_state": true,
+            "action_is_operationally_specific": true,
+            "effect_links_action_to_criterion": true,
+            "not_random_or_task_relabeling": true,
+            "no_invented_facts": true,
+            "no_unknown_prerequisites": true,
+            "low_risk_reversible": true
+          },
+          "surface_checks": {
+            "instruction_realizes_action": true,
+            "casual_japanese": false,
+            "completion_is_visible": true,
+            "no_identity_or_role_error": true
+          }
+        },
+        "B": {
+          "source_id": "current:di10",
+          "source_span": "The workshop schedule already lists session titles. I want one separator line under a title so the page is easier to scan; don't change any title text.",
+          "before_jp": "予定表のセッション名は区切り線なし",
+          "after_jp": "セッション名の下に区切り線が一本ある状態",
+          "observed_progress_mechanism": "verify_named_condition",
+          "checks": {
+            "task_alignment": "pass",
+            "state_change": "fail",
+            "source_grounding": "pass",
+            "private_claim": "pass",
+            "prerequisites": "fail",
+            "actor_capability": "fail",
+            "natural_japanese": "pass",
+            "stop_visible": "pass"
+          },
+          "primary_failure": "actor_capability",
+          "evidence_jp": "「don't change any title text」"
+        }
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di10",
+        "source_digest": "c24eb53fbb9b8842",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di10",
+          "goal_source_span": "The workshop schedule already lists session titles. I want one separator line under a title so the page is easier to scan; don't change any title text.",
+          "task_goal_jp": "予定表のセッション名を見分けやすくする",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "セッション名の下に区切り線が一本ある状態",
+          "progress_mechanism": "structure_scaffold",
+          "action_object_jp": "区切り線一本",
+          "action_verb_jp": "引く",
+          "action_step_jp": "まず区切り線一本をセッション名の下に引く行為を実行せよ。引き終えたらそこで終わりとせよ。",
+          "expected_state_change_jp": "セッション名の下に区切り線が一本ある状態",
+          "completion_jp": "区切り線を一本引いたら終わり",
+          "unknown_constraint_jp": "セッション名の文面は不明",
+          "instruction_jp": "まず区切り線一本をセッション名の下に引く行為を実行せよ。引き終えたらそこで終わりとせよ。"
+        },
+        "selected_plan_digest": "26bd073f6afb7c78",
+        "selected_fingerprint": "9a7e3bea5856ffb6",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [],
+        "deterministic_eligible": true,
+        "old_review_audit": {
+          "content_passed": true,
+          "surface_passed": false,
+          "structural_violations": [],
+          "content_violations": [],
+          "surface_violations": [
+            "casual_japanese"
+          ],
+          "verification_kind": "source_and_structure_plus_same_model_counterfactual_proxy",
+          "mechanism_exact_agreement": false,
+          "human_validated": false
+        },
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "evidence_not_source_or_instruction_anchored"
+          ],
+          "failed_or_uncertain_axes": [
+            "state_change",
+            "prerequisites",
+            "actor_capability"
+          ],
+          "primary_failure": "actor_capability",
+          "source_exact": true,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "natural_japanese",
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": true,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    },
+    {
+      "packet_id": "p4_m46_di_guard_control_ja_001",
+      "category": "guard_control",
+      "source": {
+        "id": "current:di11",
+        "kind": "current_user",
+        "text": "私のカード箱は赤と青の印を見て色別に分けたい。中身の文字は変えずに、まず二枚だけ動かしたい。"
+      },
+      "batch_digest": "598ecd58734eed10",
+      "gold_label": "invalid",
+      "expected_failed_axis": "state_change",
+      "selected_plan_digest_before_review": "61c55af2d4d9bbfd",
+      "selected_fingerprint_before_review": "3fd64b5f101f04cb",
+      "deterministic_eligible": false,
+      "arm_order": [],
+      "call_started": {
+        "A": false,
+        "B": false
+      },
+      "calls": {
+        "A": null,
+        "B": null
+      },
+      "reviews": {
+        "A": null,
+        "B": null
+      },
+      "score": {
+        "schema": "uruha_p4_m46_decision_interface_component_score_v1",
+        "source_id": "current:di11",
+        "source_digest": "8244e5a0531600cc",
+        "selected_plan": {
+          "status": "action",
+          "goal_source_id": "current:di11",
+          "goal_source_span": "私のカード箱は赤と青の印を見て色別に分けたい。中身の文字は変えずに、まず二枚だけ動かしたい。",
+          "task_goal_jp": "カード箱を印の色で分ける",
+          "criterion_basis": "safe_proposed_criterion",
+          "progress_criterion_jp": "カード二枚の位置だけが入れ替わった状態",
+          "progress_mechanism": "random_rearrangement",
+          "action_object_jp": "カード二枚",
+          "action_verb_jp": "入れ替える",
+          "action_step_jp": "まずカード二枚を適当に入れ替えてみて。入れ替えたらそこで終わり。",
+          "expected_state_change_jp": "カード二枚の位置だけが入れ替わった状態",
+          "completion_jp": "二枚入れ替えたら終わり",
+          "unknown_constraint_jp": "各カードの印の色は不明",
+          "instruction_jp": "まずカード二枚を適当に入れ替えてみて。入れ替えたらそこで終わり。"
+        },
+        "selected_plan_digest": "61c55af2d4d9bbfd",
+        "selected_fingerprint": "3fd64b5f101f04cb",
+        "selected_index": 0,
+        "selection_guard_parity": true,
+        "guard_violations": [
+          "nonprogress_or_unknown_mechanism"
+        ],
+        "deterministic_eligible": false,
+        "old_review_audit": null,
+        "new_review_audit": {
+          "schema_passed": false,
+          "accepted": false,
+          "violations": [
+            "review_not_object"
+          ],
+          "failed_or_uncertain_axes": [],
+          "primary_failure": null,
+          "source_exact": false,
+          "evidence_anchored": false,
+          "human_validated": false
+        },
+        "gold_label": "invalid",
+        "expected_failed_axis": "state_change",
+        "arms": {
+          "old_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          },
+          "new_contract": {
+            "would_deliver": false,
+            "false_action": false,
+            "valid_retained": false,
+            "valid_retention_denominator": false,
+            "uncertain_action_risk": false
+          }
+        },
+        "old_category_reason_hit": false,
+        "new_category_reason_hit": false,
+        "model_calls_by_scorer": 0,
+        "product_runtime_changed": false,
+        "claim_boundary": "Developer-authored offline paired reviewer proxy with shared deterministic guards; not human judgment, natural M51 generation, M45/Web delivery, or full two-stage latency."
+      }
+    }
+  ],
+  "summary": {
+    "metrics": {
+      "packet_count": 11,
+      "deterministic_eligible_packet_count": 10,
+      "valid_packet_count": 3,
+      "invalid_packet_count": 7,
+      "guard_control_both_arms_blocked_count": 1,
+      "selector_parity_all_packets": true,
+      "source_and_selected_plan_identity_both_arms": true,
+      "review_scored_call_count": 20
+    },
+    "common_failed_gates": [],
+    "arms": {
+      "A": {
+        "metrics": {
+          "completed_parseable_token_count": 10,
+          "source_exact_count": 10,
+          "valid_retained_count": 2,
+          "invalid_false_action_count": 2,
+          "mapped_expected_axis_false_check_count": 5,
+          "reviewer_only_max_wall_seconds": 14.72437,
+          "reviewer_only_median_wall_seconds": 13.601790000000001,
+          "prompt_tokens": 8606,
+          "completion_tokens": 2891
+        },
+        "failed_gates": [
+          "valid_retained_count",
+          "invalid_false_action_count",
+          "mapped_expected_axis_false_check_count"
+        ],
+        "reason_diagnostic_kind": "legacy_many_to_one_false_check_proxy",
+        "component_gate_pass": false
+      },
+      "B": {
+        "metrics": {
+          "completed_parseable_token_count": 10,
+          "source_exact_count": 10,
+          "valid_retained_count": 0,
+          "invalid_false_action_count": 0,
+          "explicit_expected_axis_fail_count": 0,
+          "reviewer_only_max_wall_seconds": 10.78069,
+          "reviewer_only_median_wall_seconds": 8.64255,
+          "prompt_tokens": 6876,
+          "completion_tokens": 1652
+        },
+        "failed_gates": [
+          "valid_retained_count",
+          "explicit_expected_axis_fail_count"
+        ],
+        "reason_diagnostic_kind": "explicit_expected_axis_fail_and_primary_proxy",
+        "component_gate_pass": false
+      }
+    },
+    "paired": {
+      "B_only_decision_correct_count": 2,
+      "A_only_decision_correct_count": 2,
+      "B_only_decision_correct_packet_ids": [
+        "p4_m46_di_wrong_task_zh_001",
+        "p4_m46_di_private_inference_ja_001"
+      ],
+      "A_only_decision_correct_packet_ids": [
+        "p4_m46_di_valid_en_001",
+        "p4_m46_di_valid_ja_001"
+      ],
+      "valid_retention_B_only_count": 0,
+      "valid_retention_A_only_count": 2,
+      "invalid_block_B_only_count": 2,
+      "invalid_block_A_only_count": 0,
+      "reason_metrics_not_semantically_symmetric": true
+    },
+    "B_component_gate_pass": false,
+    "A_component_gate_pass": false,
+    "product_eligible": false,
+    "status": "review_required_component_fail",
+    "reason_quality_human_validated": false,
+    "claim_boundary": "Developer-authored fixed-packet component discrimination only; not natural M51 generation, independent human or temporal holdout, full two-stage latency, M45/Web/Safari delivery, product selection, strong-LLM advantage, or human-equation proof."
+  },
+  "production_database_access": false,
+  "product_runtime_changed": false,
+  "product_eligible": false,
+  "claim_boundary": "Developer-authored fixed-packet component discrimination only; not natural M51 generation, independent human or temporal holdout, full two-stage latency, M45/Web/Safari delivery, product selection, strong-LLM advantage, or human-equation proof."
+}

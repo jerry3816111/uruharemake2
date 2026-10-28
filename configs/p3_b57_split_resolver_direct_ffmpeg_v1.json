@@ -1,0 +1,106 @@
+{
+  "schema": "uruha_p3_b57_split_resolver_direct_ffmpeg_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_after_explicit_user_authorization_before_resolver_or_media_request",
+  "single_changed_variable": "replace yt-dlp section postprocessing with an in-memory bestaudio URL resolver followed by direct ffmpeg bounded extraction",
+  "authorization": {
+    "basis": "2026-09-19 user message: 請繼續",
+    "overrides_b56_next_execution_authorized_false": true,
+    "resolver_process_invocation_count_max": 1,
+    "direct_ffmpeg_process_invocation_count_max": 1,
+    "retry_or_additional_correction_authorized": false
+  },
+  "bindings": {
+    "b56_review_required": {
+      "path": "research/p3_b56_allowlisted_diagnostic_transport_review_required_2026-09-19.json",
+      "sha256": "4bf7a7be4d1e14891adc26db1cbea6c5cf32e99a290de09a64d0c99a3defe180"
+    },
+    "b54_release": {
+      "path": "research/p3_b54_unidirectional_context_extraction_release_2026-09-18.json",
+      "sha256": "9c304dd2fa13cf9571f165b765e8aad7babe6096797beb38d95a9e0f7ee940a9"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "locator_template": "https://www.youtube.com/watch?v=<video_id>",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "hidden_future_start_seconds": 3181.0,
+    "hidden_future_end_seconds": 3241.0
+  },
+  "resolver": {
+    "tool": "yt-dlp",
+    "required_version": "2026.02.04",
+    "format_selector": "bestaudio/best",
+    "get_url_only": true,
+    "ignore_user_configuration": true,
+    "cookies_or_browser_session_allowed": false,
+    "playlist_allowed": false,
+    "file_download_allowed": false,
+    "metadata_sidecars_allowed": false,
+    "subtitles_allowed": false,
+    "comments_allowed": false,
+    "cache_allowed": false,
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "timeout_seconds": 120,
+    "required_url_count": 1,
+    "required_scheme": "https",
+    "allowed_host_suffix": ".googlevideo.com",
+    "provider_http_request_count_observable": false
+  },
+  "private_url_boundary": {
+    "lifetime": "in-memory inside one worker until direct ffmpeg exits",
+    "url_text_persistence_allowed": false,
+    "url_hash_persistence_allowed": false,
+    "url_excerpt_or_query_key_persistence_allowed": false,
+    "hostname_persistence_allowed": false,
+    "receipt_host_category": "googlevideo_cdn",
+    "resolver_stdout_text_persistence_allowed": false,
+    "resolver_stderr_text_persistence_allowed": false
+  },
+  "direct_ffmpeg": {
+    "required_version_prefix": "ffmpeg version 8.0.1",
+    "input_seek_seconds": 3000.0,
+    "output_duration_seconds": 180.0,
+    "container": "wav",
+    "codec": "pcm_s16le",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "metadata_removed": true,
+    "timeout_seconds": 900,
+    "stdout_text_persistence_allowed": false,
+    "stderr_text_persistence_allowed": false,
+    "provider_byte_range_exactness_claim_allowed": false
+  },
+  "success_gate": {
+    "duration_tolerance_seconds": 0.05,
+    "public_profile": "reserved_source_context",
+    "raw_url_and_private_artifact_destroyed_before_fresh_reader": true,
+    "fresh_reader_count": 1,
+    "public_artifact_hash_revalidation_required": true,
+    "public_forbidden_field_count_required": 0
+  },
+  "runtime_state": {
+    "state_root": "external_data/p3_b57_split_transport_state",
+    "public_root": "external_data/p3_b57_public_context",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "execution_result.json",
+    "exclusive_intent_before_resolver": true,
+    "intent_without_result_is_terminal": true,
+    "preexisting_nonempty_public_root_allowed": false
+  },
+  "denied_actions": {
+    "hidden_future_media_request": true,
+    "title_description_transcript_comment_or_subtitle_persistence": true,
+    "manual_playback_or_semantic_inspection": true,
+    "prediction_execution": true,
+    "model_call": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "external_deployment": true
+  },
+  "claim_boundary": "B57 can establish only whether one in-memory public media URL plus direct ffmpeg produces a B54-gated 180-second observable-context artifact. The signed URL and raw diagnostics never become artifacts. Provider HTTP request count and byte-range exactness remain unobservable. B57 does not access hidden future, inspect semantics, execute a prediction or model, train on the reserved source, or establish system advantage."
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_p4_h_multilingual_preference_memory_act_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "implementation_commit": "7d4e8d8b08dc28804eed530fe774071bfe006535",
+  "turns": [
+    {
+      "turn_index": 1,
+      "input": "I prefer sparkling water. Please remember that as my current drink preference.",
+      "expected_visible_output": "ん、その好みは覚えとく。",
+      "expected_language": "en",
+      "expected_act": "write",
+      "expected_intent": "explicit_preference_memory_write"
+    },
+    {
+      "turn_index": 2,
+      "input": "更正：我現在不喜歡氣泡水了，現在比較喜歡熱可可。",
+      "expected_visible_output": "ん、訂正の内容はそのまま覚えとく。",
+      "expected_language": "zh",
+      "expected_act": "correction",
+      "expected_intent": "explicit_preference_memory_correction"
+    }
+  ],
+  "per_turn_requirements": {
+    "visible_output_language": "Japanese",
+    "p4_h_status": "explicit_preference_memory_act_committed",
+    "plan_authority": true,
+    "surface_authority": true,
+    "planner_path": "explicit_preference_memory_act_authority_p4",
+    "planner_route": "deterministic_rule_plan",
+    "product_planner_model_call_count": 0,
+    "fallback_count": 0,
+    "graph_node_visible": "explicit_preference_acknowledgement_p4",
+    "graph_node_stage": "select",
+    "final_visible_surface_matches_contract": true,
+    "durable_episode_write_count": 1,
+    "raw_dialogue_persisted_in_p4_h_trace": false,
+    "latency_target_seconds": 20.0
+  },
+  "runtime_requirements": {
+    "fresh_isolated_root": true,
+    "listener": "127.0.0.1:7860",
+    "process_starts": 1,
+    "real_product_turns": 2,
+    "retry_count": 0,
+    "local_product_planner_model_calls_maximum": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "distinct_episode_ids": true,
+    "actual_two_turn_safari_acceptance": true,
+    "closed_user_tab_count": 0
+  },
+  "evidence_to_capture": [
+    "exact visible output for each turn",
+    "selected intent act language plan and surface authority",
+    "deterministic planner route and zero model call",
+    "graph label stage and exact-match audit",
+    "distinct durable episode ids",
+    "latency and process accounting",
+    "Safari visibility without closing user tabs"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "same_case_rerun_allowed": false,
+    "prompt_or_expected_surface_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "implementation_change_after_result_allowed": false,
+    "terminal_result": "preserve_pass_or_fail_then_open_a_separately_reviewed_next_item"
+  },
+  "claim_boundary": "A pass proves only that the new bounded multilingual preference memory-act plan and Japanese surface work in this isolated two-turn product case. It does not prove semantic cross-restart recall, general persona quality, felt understanding, human preference or research advantage."
+}

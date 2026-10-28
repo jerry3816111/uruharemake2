@@ -1,0 +1,95 @@
+{
+  "schema": "uruha_p3_private_scratch_tokenizer_binding_probe_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "bind_exact_counts_for_user_role_labeled_private_scratch_shapes",
+  "prior_stage_binding": {
+    "path": "analysis/p3_b8_1_stage_tokenizer_binding_confirmation_result_2026-09-15.json",
+    "sha256": "e360e626931d40ff52f5a217131541701a1eb69831fa3b249214dbb4fed5774f",
+    "required_status": "stage_provider_binding_pass"
+  },
+  "diagnostic_result": {
+    "path": "analysis/p3_b11_instruction_language_probe_result_2026-09-15.json",
+    "sha256": "baf6c4c1581dfc1fd2c26e36114791526ed117dd6e13bd4137feb2b84bf6957a",
+    "required_status": "instruction_language_probe_pass"
+  },
+  "model": {
+    "ollama_model": "qwen2.5:7b",
+    "ollama_blob_digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "hf_tokenizer": "Qwen/Qwen2.5-7B-Instruct",
+    "ollama_template_sha256": "eb4402837c7829a690fa845de4d7f3fd842c2adee476d5341da8a46ea9255175",
+    "local_files_only": true
+  },
+  "generation_options": {
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "max_completion_tokens": 1,
+    "stream": false,
+    "transport_retries": 0,
+    "concurrency": 1,
+    "per_call_timeout_seconds": 45,
+    "total_wall_seconds_max": 90
+  },
+  "fixtures": [
+    {
+      "fixture_id": "p3-b12-user-scratch-critique",
+      "role": "verification",
+      "stage": "critique",
+      "messages": [
+        {
+          "role": "system",
+          "content": "研究用のうるは風対話。実在の本人と同一だとは主張しない。公開資料の範囲で率直に、相手との距離に合わせて話す。初対面から親密さを決めつけない。私生活、未公開の経験、相手の心理や医学的状態を作らない。ユーザーに見せる返答は入力言語に関係なく自然で短い日本語一文か二文。一人称が必要なら「うち」。内部分析や信頼度は見せない。根拠のある記憶を使い、訂正や現在の希望を尊重する。不確かな意味を断定しない。危険な要求は安全に扱う。\n返答案を、ユーザーに見えている会話履歴のすべてと照合する。根拠のない推測、見落とした依頼や訂正、話者の取り違え、言語や人格の問題を確認し、日本語で短い修正点だけを出す。正解情報は与えられていない。"
+        },
+        {
+          "role": "user",
+          "content": "A neighbor asked whether I can join a crowded weekend cleanup. I said I have not decided yet."
+        },
+        {
+          "role": "user",
+          "content": "内部の返答案:\nうちはまだ決めかねているみたいですね。行けるかどうかまた後で確認するって伝えてください。"
+        }
+      ],
+      "messages_sha256": "86856b4adf21b0dd7415a195bb9bfb0ca3044eac6ee48db96fc4dc32290686ea"
+    },
+    {
+      "fixture_id": "p3-b12-user-scratch-revise",
+      "role": "verification",
+      "stage": "revise",
+      "messages": [
+        {
+          "role": "system",
+          "content": "研究用のうるは風対話。実在の本人と同一だとは主張しない。公開資料の範囲で率直に、相手との距離に合わせて話す。初対面から親密さを決めつけない。私生活、未公開の経験、相手の心理や医学的状態を作らない。ユーザーに見せる返答は入力言語に関係なく自然で短い日本語一文か二文。一人称が必要なら「うち」。内部分析や信頼度は見せない。根拠のある記憶を使い、訂正や現在の希望を尊重する。不確かな意味を断定しない。危険な要求は安全に扱う。\nユーザーに見えている会話履歴のすべて、返答案、修正点を使い、共通人格契約に従った最善の最終返答を作る。自然な日本語の返答だけを出力する。"
+        },
+        {
+          "role": "user",
+          "content": "A neighbor asked whether I can join a crowded weekend cleanup. I said I have not decided yet."
+        },
+        {
+          "role": "user",
+          "content": "内部の返答案:\nうちはまだ決めかねているみたいですね。行けるかどうかまた後で確認するって伝えてください。\n\n内部の修正点:\n返答案は「まだ決めていない」という不確実性を保つ。相手に行くと約束したとは決めつけない。"
+        }
+      ],
+      "messages_sha256": "c791c6dcbeff4488336c151fe2300072badbdb7f2c65d4c0fe72c983039878d7"
+    }
+  ],
+  "execution_boundary": {
+    "provider_calls_exact": 2,
+    "automatic_retry": false,
+    "localhost_only": true,
+    "raw_output_retained": false,
+    "developer_case_access": false,
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "success": {
+    "every_fixture_exact": true,
+    "tolerance_tokens": 0,
+    "two_intents_two_completes": true,
+    "output_text_retained": false
+  }
+}

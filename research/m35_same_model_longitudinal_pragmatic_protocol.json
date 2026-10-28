@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_same_model_longitudinal_pragmatic_protocol_m35_v1",
+  "frozen_at": "2026-08-25",
+  "status": "sealed_before_m35_evaluator_implementation",
+  "research_question": "With the base model, exact current input, persona/surface contract, decoding, output budget, and hardware held constant, does a verified longitudinal pragmatic branch packet improve desired-response selection and later correction over current-turn-only direct generation?",
+  "conditions": {
+    "baseline": "qwen3.5:9b sees the exact current utterance and shared public-Uruha expression contract but no seed history, M34 branch, prediction, verification, or revision",
+    "system": "the same qwen3.5:9b realizes the authoritative M34 selected branch computed from prior explicit response-form request and decisive support; it may not silently replace that branch"
+  },
+  "controlled_variables": [
+    "qwen3.5:9b model identity",
+    "temperature zero and fixed seed",
+    "same current utterance within and across conditions",
+    "same public-Uruha expression and Japanese-visible contract",
+    "same output token budget",
+    "same machine and local Ollama endpoint",
+    "paired real prompt-token difference at most two tokens"
+  ],
+  "intentional_information_intervention": "baseline is current-turn-only; system adds only independently computed M34 typed verified context/branch state. This measures the value of that information path, not a model-architecture win.",
+  "reserve": {
+    "path": "datasets/m35_same_model_longitudinal_pragmatic_reserve_v1.json",
+    "sha256": "5ab3fcd8a1dbbe0b5a036499e8cd1425b1812620076b61007a1e1359cf0b299f",
+    "case_count": 12,
+    "pair_count": 6,
+    "languages": ["zh", "en", "ja"],
+    "source_disjoint_from": [
+      "datasets/m34_counterfactual_pragmatic_branch_reserve_v1.json",
+      "V2.14 human pragmatic holdout"
+    ]
+  },
+  "model_contract": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260825,
+    "num_ctx": 4096,
+    "num_predict": 112,
+    "input_token_budget": 1280,
+    "token_balance_preflight_rounds": 2,
+    "think": false,
+    "paired_prompt_eval_token_delta_gate": 2
+  },
+  "scored_outputs": {
+    "current_turn": "internal selected_policy declaration plus user-visible natural Japanese reply",
+    "feedback_turn": "all cases score M34 support/contradiction/unknown verification; selected_policy and visible correction are comparatively scored only for contradiction cases with an explicit replacement",
+    "surface_proxy": "policy-specific observable Japanese act markers; a harness proxy, not a human rating",
+    "pair_test": "baseline output should remain invariant for byte-identical current inputs while system branch should diverge under different verified histories"
+  },
+  "frozen_success_gates": {
+    "transport_error_count_max": 0,
+    "json_parse_error_count_max": 0,
+    "paired_prompt_token_gate_rate_min": 1.0,
+    "system_mechanism_current_policy_accuracy_min": 1.0,
+    "system_mechanism_feedback_outcome_accuracy_min": 1.0,
+    "system_current_policy_accuracy_min": 0.9166,
+    "system_minus_baseline_current_policy_accuracy_min": 0.30,
+    "system_pair_divergence_rate_min": 1.0,
+    "baseline_pair_policy_invariance_rate_min": 1.0,
+    "system_current_surface_proxy_match_rate_min": 0.75,
+    "system_feedback_policy_accuracy_min": 0.9166,
+    "system_minus_baseline_feedback_policy_accuracy_min": 0.0,
+    "system_contradiction_revision_accuracy_min": 1.0,
+    "visible_japanese_rate_each_condition_min": 1.0,
+    "unverified_mental_fact_write_count_max": 0,
+    "raw_dialogue_persisted_count_max": 0,
+    "system_to_baseline_scored_prompt_token_ratio_max": 1.01,
+    "system_to_baseline_completion_token_ratio_max": 1.35,
+    "system_to_baseline_latency_ratio_max": 1.50
+  },
+  "future_human_gate": {
+    "required_for_felt_understanding_claim": true,
+    "minimum_independent_blind_raters": 3,
+    "dimensions": [
+      "implicit_need_caught_without_overclaiming",
+      "overinterpretation_or_fabrication",
+      "correction_quality",
+      "cross_turn_consistency",
+      "felt_understanding_preference"
+    ]
+  },
+  "claim_boundary": "a pass supports only a controlled same-model proxy advantage from verified longitudinal context; it does not establish private-intent truth, human felt-understanding preference, general superiority over LLMs, or a human-brain equation",
+  "post_result_rule": "do_not_modify_m35_evaluator_or_prompts_from_m35_reserve_outcomes; failures move to a new milestone and new reserve"
+}

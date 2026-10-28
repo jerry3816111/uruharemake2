@@ -1,0 +1,56 @@
+{
+  "schema": "uruha_p4_source_bound_third_party_statement_act_fresh_probe_v1",
+  "authorship": "developer_authored_source_only_pre_model",
+  "status": "pre_exposure",
+  "claim_boundary": "Prospective local product probe only; not independent holdout, human evaluation, or same-model comparison.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_row_id_deltas": [0, 1, 0, 0, 0],
+  "expected_distinct_turn_episode_count": 5,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "direct_friend_affirmative_statement",
+      "input": "友達は生姜黒蜜ゼリーが好き。",
+      "expected_source_act": "third_party_direct_affirmative_statement",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; explicitly preserve that the friend likes 生姜黒蜜ゼリー as an affirmative statement, not as a question, user's own preference, or Uruha's preference. The selected plan and graph utterance must agree with the bubble."
+    },
+    {
+      "turn": 2,
+      "role": "self_preference_protected_fast_path",
+      "input": "私は梅しそおにぎりが好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_m31_model_call_completed": false,
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; acknowledge the user's own item preference without moving it to the friend or Uruha; no unsupported memory-write promise."
+    },
+    {
+      "turn": 3,
+      "role": "different_third_party_affirmative_statement_before_restart",
+      "input": "姉は柚子抹茶プリンが好き。",
+      "expected_source_act": "third_party_direct_affirmative_statement",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; preserve that the sister likes 柚子抹茶プリン as an affirmative statement, not as a question or a user's own preference."
+    },
+    {
+      "turn": 4,
+      "role": "genuine_friend_preference_question_after_restart",
+      "input": "友達は白桃麦茶が好き？",
+      "forbidden_source_act_repair": true,
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; treat the user's utterance as a genuine question about the friend, without inventing a confirmed friend preference or writing a user profile fact."
+    },
+    {
+      "turn": 5,
+      "role": "third_third_party_affirmative_statement_after_restart",
+      "input": "先輩は黒豆ほうじ茶ラテが好き。",
+      "expected_source_act": "third_party_direct_affirmative_statement",
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; preserve that the senior likes 黒豆ほうじ茶ラテ as an affirmative statement, not as a question or a user's own preference."
+    }
+  ]
+}

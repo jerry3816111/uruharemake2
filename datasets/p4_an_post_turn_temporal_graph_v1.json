@@ -1,0 +1,43 @@
+{
+  "schema": "uruha_p4_an_post_turn_temporal_graph_dataset_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_after_p4_am_failure_before_p4_an_implementation_or_runtime",
+  "case_id": "p4-an-post-turn-temporal-cycle-01",
+  "turns": [
+    {
+      "turn": 1,
+      "input": "腦海裡的想法一直冒出來，怎麼都安靜不下來。",
+      "expected_past_record_count": 0,
+      "expected_present_candidate_count": 6,
+      "expected_current_future_status": "committed_outcome_locked",
+      "expected_previous_outcome": null,
+      "required_summary_fragments": ["過去 0", "現在 6候選", "本輪未來 已封存"]
+    },
+    {
+      "turn": 2,
+      "input": "對，這個方向對；先問我此刻希望你怎麼回。",
+      "expected_past_record_count": 0,
+      "expected_present_candidate_count": 6,
+      "expected_current_future_status": "committed_outcome_locked",
+      "expected_previous_outcome": "supported",
+      "required_summary_fragments": ["過去 0", "現在 6候選", "前輪 supported→本輪驗證", "本輪未來 已封存"]
+    },
+    {
+      "turn": 3,
+      "input": "沒錯，就照這樣；以後也先問我當下要什麼。",
+      "expected_past_record_count": 1,
+      "expected_present_candidate_count": 6,
+      "expected_current_future_status": "committed_outcome_locked",
+      "expected_previous_outcome": "supported",
+      "required_summary_fragments": ["過去 1", "現在 6候選", "既有驗證→過去", "前輪 supported→本輪驗證", "本輪未來 已封存"]
+    }
+  ],
+  "failure_addressed": "P4-AM payload existed in top-level trace but its emit-time blackboard insertion was overwritten by the later run_turn_debug blackboard refresh.",
+  "novelty": {
+    "p4_am_formal_turn_strings_reused": false,
+    "prior_p4_ag_ai_ak_turn_strings_reused": false,
+    "developer_authored_product_acceptance_case": true,
+    "natural_distribution_holdout": false
+  },
+  "claim_boundary": "A pass shows a fresh isolated three-turn product and Safari delivery after the final run_turn_debug blackboard refresh. It does not establish future-prediction accuracy, human preference, natural-distribution generalization, a human equation, or advantage over a strong LLM."
+}

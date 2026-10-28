@@ -1,0 +1,19 @@
+{
+  "schema": "uruha_p4_quoted_line_act_scope_fresh_probe_v1",
+  "authorship": "developer_authored_unseen_product_probe_not_formal_holdout",
+  "status": "frozen_before_implementation_and_first_model_generation",
+  "sessions": 2,
+  "restart_after_turn": 4,
+  "same_isolated_db_after_restart": true,
+  "retry_count_per_turn": 0,
+  "turns": [
+    {"turn": 1, "role": "user_source_place", "input": "展示会の受付場所は東側のロビーだよ。", "conditional_gold": "Create a source episode, not a profile fact."},
+    {"turn": 2, "role": "direct_recall_positive_control", "input": "さっき言った展示会の受付場所、覚えてる？", "conditional_gold": "Without quotes, preserve the existing source-bound explicit recall. If T1 is not in the retrieved pool, record coverage FAIL; do not guess."},
+    {"turn": 3, "role": "quoted_recall_line_naturalness", "input": "「展示会の受付場所、覚えてる？」という台詞、口語として自然？", "conditional_gold": "Answer whether the quoted line sounds natural in conversation. The quoted recall is not a current memory request; do not answer with the T1 place."},
+    {"turn": 4, "role": "unrelated_recent_memory", "input": "帰りのバスは最終便だよ。", "conditional_gold": "Create a distinct recent episode without turning it into a profile fact; planned same-DB restart follows."},
+    {"turn": 5, "role": "quoted_relationship_line_tone", "input": "「私のこと、今も覚えてる？」って台詞、重すぎる？", "conditional_gold": "Answer the outer tone question, not the relationship question in quotes and not the T4 bus memory."},
+    {"turn": 6, "role": "direct_relationship_positive_control", "input": "私のこと、今も覚えてる？", "conditional_gold": "Without quotes, preserve a normal relationship-presence route; do not invent a specific memory fact."},
+    {"turn": 7, "role": "quoted_line_plus_real_outer_relationship", "input": "「覚えてる？」は引用ね。で、私のことは今も覚えてる？", "conditional_gold": "The outer real relationship question must remain eligible; do not block the whole turn because a separate quote is present."},
+    {"turn": 8, "role": "alternate_quotes_outer_shorten", "input": "『展示会の受付場所、覚えてる？』という一文、短くできる？", "conditional_gold": "Answer the outer shortening/editing request at least with a bounded suggestion; do not execute the quoted recall or invent an old memory answer. Exact rewrite quality is not the scope claim."}
+  ]
+}

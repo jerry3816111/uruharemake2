@@ -1,0 +1,401 @@
+{
+  "schema": "uruha_p4_action_task_alignment_v2_dev_gold",
+  "version": "0.1.0",
+  "status": "development_only_unscored",
+  "annotation_provenance": "developer_authored_exposed_dev_not_holdout_not_independent_human",
+  "development_only": true,
+  "case_count": 12,
+  "decision_counts": {"action": 6, "abstain": 6},
+  "language_counts": {
+    "zh-TW": {"action": 2, "abstain": 2},
+    "en": {"action": 2, "abstain": 2},
+    "ja": {"action": 2, "abstain": 2}
+  },
+  "gold_boundary": "Source-only developer-authored development cases. These exact sources and labels are exposed, are not sealed holdout, and cannot establish model or product capability. Each evidence span is a source-id plus exact source substring; semantic roles are author judgments, not mechanically proven by the substring.",
+  "gold_by_case_id": {
+    "p4_b2_dev_zh_01_v": {
+      "case_id": "p4_b2_dev_zh_01_v",
+      "pair_id": "p4_b2_dev_zh_01",
+      "language": "zh-TW",
+      "family": "personal_task_board",
+      "decision": "action",
+      "expected_reason_code": "none",
+      "acceptable_reason_codes": ["none"],
+      "requested_change_zh": "由使用者把指定卡從待辦欄移到進行中欄。",
+      "current_substrate_zh": "私人待辦看板；使用者有編輯權，指定卡目前在待辦欄。",
+      "availability_status": "user_accessible_and_authorized",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dzh01v", "quote": "我想自己把這張卡移到「進行中」欄"}],
+        "current": [{"source_id": "current:b2dzh01v", "quote": "一張「整理票根」卡目前在「待辦」欄"}],
+        "target": [{"source_id": "current:b2dzh01v", "quote": "一張「整理票根」卡"}],
+        "availability": [{"source_id": "current:b2dzh01v", "quote": "我有編輯權"}],
+        "forbidden": [{"source_id": "current:b2dzh01v", "quote": "其他卡不要動"}],
+        "actor": [{"source_id": "current:b2dzh01v", "quote": "我想自己"}],
+        "stop": [{"source_id": "current:b2dzh01v", "quote": "只移這一張就停"}]
+      },
+      "acceptable_action_envelope": {
+        "actor": "user",
+        "allowed_mechanisms": ["direct_atomic_completion"],
+        "required_substrate_zh": "使用者有權編輯的看板上，指定卡仍在待辦欄。",
+        "object_zh": "「整理票根」卡",
+        "verb_zh": "移到進行中欄",
+        "effect_zh": "指定卡進入進行中欄，其他卡不變。",
+        "stop_zh": "移好這一張卡即停。",
+        "prohibited_effects_zh": ["移動或改寫其他卡", "聲稱助手已操作看板"],
+        "japanese_surface_zh": "自然日文指示使用者做一個有界動作，明示停點，不虛稱代做。"
+      },
+      "blocking_reason": null
+    },
+    "p4_b2_dev_zh_01_i": {
+      "case_id": "p4_b2_dev_zh_01_i",
+      "pair_id": "p4_b2_dev_zh_01",
+      "language": "zh-TW",
+      "family": "personal_task_board",
+      "decision": "abstain",
+      "expected_reason_code": "forbidden_action",
+      "acceptable_reason_codes": ["forbidden_action"],
+      "requested_change_zh": "使用者想把私人看板上的指定卡移到進行中欄。",
+      "current_substrate_zh": "私人待辦看板；使用者沒有編輯權。",
+      "availability_status": "editing_not_authorized",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dzh01i", "quote": "我想自己把這張卡移到「進行中」欄"}],
+        "current": [{"source_id": "current:b2dzh01i", "quote": "一張「整理票根」卡目前在「待辦」欄"}],
+        "target": [{"source_id": "current:b2dzh01i", "quote": "一張「整理票根」卡"}],
+        "availability": [{"source_id": "current:b2dzh01i", "quote": "我沒有編輯權"}],
+        "forbidden": [{"source_id": "current:b2dzh01i", "quote": "我沒有編輯權"}, {"source_id": "current:b2dzh01i", "quote": "其他卡不要動"}],
+        "actor": [{"source_id": "current:b2dzh01i", "quote": "我想自己"}],
+        "stop": [{"source_id": "current:b2dzh01i", "quote": "只移這一張就停"}]
+      },
+      "acceptable_action_envelope": null,
+      "blocking_reason": {
+        "primary_code": "forbidden_action",
+        "blocking_spans": [{"source_id": "current:b2dzh01i", "quote": "我沒有編輯權"}],
+        "rationale_zh": "來源明說使用者沒有編輯權；指定卡及停點清楚也不能形成授權的移卡動作。",
+        "no_in_scope_alternative_zh": "徵求授權可作後續澄清，並非本輪被要求的移卡；不能假定權限或改動其他卡。",
+        "japanese_surface_zh": "自然日文具體說明沒有編輯權時不能叫使用者改動，不暗示已取得權限。"
+      }
+    },
+    "p4_b2_dev_zh_02_v": {
+      "case_id": "p4_b2_dev_zh_02_v",
+      "pair_id": "p4_b2_dev_zh_02",
+      "language": "zh-TW",
+      "family": "sewing_pattern_legend",
+      "decision": "action",
+      "expected_reason_code": "none",
+      "acceptable_reason_codes": ["none"],
+      "requested_change_zh": "使用者把縫紉紙樣上已知的線型標記抄進紙樣邊角的空白圖例。",
+      "current_substrate_zh": "紙樣邊角線型圖例空白，紙樣明示「虛線」。",
+      "availability_status": "exact_value_in_source",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dzh02v", "quote": "我想自己把標記抄進線型圖例"}],
+        "current": [{"source_id": "current:b2dzh02v", "quote": "有一處空白「線型圖例」"}],
+        "target": [{"source_id": "current:b2dzh02v", "quote": "「線型圖例」"}],
+        "availability": [{"source_id": "current:b2dzh02v", "quote": "紙樣上的標記清楚寫著「虛線」"}],
+        "forbidden": [{"source_id": "current:b2dzh02v", "quote": "不改尺寸數字"}],
+        "actor": [{"source_id": "current:b2dzh02v", "quote": "我想自己"}],
+        "stop": [{"source_id": "current:b2dzh02v", "quote": "只填這一處就停"}]
+      },
+      "acceptable_action_envelope": {
+        "actor": "user",
+        "allowed_mechanisms": ["direct_atomic_completion"],
+        "required_substrate_zh": "紙樣邊角的空白線型圖例與來源已給的「虛線」標記。",
+        "object_zh": "縫紉紙樣的線型圖例",
+        "verb_zh": "抄入「虛線」",
+        "effect_zh": "只有線型圖例被填入「虛線」。",
+        "stop_zh": "填完這一處即停。",
+        "prohibited_effects_zh": ["改寫尺寸數字", "編造其他線型", "聲稱助手已修改紙樣"],
+        "japanese_surface_zh": "自然日文指示使用者只填該圖例並立即停止。"
+      },
+      "blocking_reason": null
+    },
+    "p4_b2_dev_zh_02_i": {
+      "case_id": "p4_b2_dev_zh_02_i",
+      "pair_id": "p4_b2_dev_zh_02",
+      "language": "zh-TW",
+      "family": "sewing_pattern_legend",
+      "decision": "abstain",
+      "expected_reason_code": "unsupported_specificity",
+      "acceptable_reason_codes": ["unsupported_specificity", "prerequisites"],
+      "requested_change_zh": "使用者想把紙樣的精確線型標記抄進紙樣邊角圖例。",
+      "current_substrate_zh": "線型圖例空白，但標記磨失，且沒有可查副本。",
+      "availability_status": "exact_value_unavailable",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dzh02i", "quote": "我想自己把標記抄進線型圖例"}],
+        "current": [{"source_id": "current:b2dzh02i", "quote": "有一處空白「線型圖例」"}],
+        "target": [{"source_id": "current:b2dzh02i", "quote": "「線型圖例」"}],
+        "availability": [{"source_id": "current:b2dzh02i", "quote": "紙樣上的原線條和線型標記都已磨掉"}, {"source_id": "current:b2dzh02i", "quote": "也沒有照片或備份可查"}],
+        "forbidden": [{"source_id": "current:b2dzh02i", "quote": "不改尺寸數字"}],
+        "actor": [{"source_id": "current:b2dzh02i", "quote": "我想自己"}],
+        "stop": [{"source_id": "current:b2dzh02i", "quote": "只填這一處就停"}]
+      },
+      "acceptable_action_envelope": null,
+      "blocking_reason": {
+        "primary_code": "unsupported_specificity",
+        "blocking_spans": [{"source_id": "current:b2dzh02i", "quote": "原線條和線型標記都已磨掉"}, {"source_id": "current:b2dzh02i", "quote": "也沒有照片或備份可查"}],
+        "rationale_zh": "這處圖例所需的原線條和標記既不在當輪來源，也不可由手邊材料或備份核對。",
+        "no_in_scope_alternative_zh": "猜測線型或改填尺寸數字不會完成『抄原標記』；等待新來源是後續狀態。",
+        "japanese_surface_zh": "自然日文說明缺少可核對標記，不給出虛構線型或填寫指令。"
+      }
+    },
+    "p4_b2_dev_en_01_v": {
+      "case_id": "p4_b2_dev_en_01_v",
+      "pair_id": "p4_b2_dev_en_01",
+      "language": "en",
+      "family": "rehearsal_cue_strip",
+      "decision": "action",
+      "expected_reason_code": "none",
+      "acceptable_reason_codes": ["none"],
+      "requested_change_zh": "使用者把已知開場鈴 cue 編號抄進唯一空白格。",
+      "current_substrate_zh": "個人彩排 cue 條的開場鈴編號格空白，來源明示 C-4。",
+      "availability_status": "exact_value_in_source",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2den01v", "quote": "Tell me one step to copy that exact cue number into that box myself"}],
+        "current": [{"source_id": "current:b2den01v", "quote": "the opening-bell cue-number box is blank"}],
+        "target": [{"source_id": "current:b2den01v", "quote": "the opening-bell cue-number box"}],
+        "availability": [{"source_id": "current:b2den01v", "quote": "the cue number is C-4 in this message"}],
+        "forbidden": [{"source_id": "current:b2den01v", "quote": "leave later cues untouched"}],
+        "actor": [{"source_id": "current:b2den01v", "quote": "myself"}],
+        "stop": [{"source_id": "current:b2den01v", "quote": "stop after that box"}]
+      },
+      "acceptable_action_envelope": {
+        "actor": "user",
+        "allowed_mechanisms": ["direct_atomic_completion"],
+        "required_substrate_zh": "空白開場鈴 cue 格，確切編號 C-4 已在來源。",
+        "object_zh": "開場鈴 cue 編號格",
+        "verb_zh": "寫入 C-4",
+        "effect_zh": "該格呈現 C-4，後續 cues 不變。",
+        "stop_zh": "填完該格即停。",
+        "prohibited_effects_zh": ["修改後續 cue", "猜測或換用其他編號", "聲稱助手已寫入"],
+        "japanese_surface_zh": "自然日文指示使用者只填明示編號並停止。"
+      },
+      "blocking_reason": null
+    },
+    "p4_b2_dev_en_01_i": {
+      "case_id": "p4_b2_dev_en_01_i",
+      "pair_id": "p4_b2_dev_en_01",
+      "language": "en",
+      "family": "rehearsal_cue_strip",
+      "decision": "abstain",
+      "expected_reason_code": "unsupported_specificity",
+      "acceptable_reason_codes": ["unsupported_specificity", "prerequisites"],
+      "requested_change_zh": "使用者想把開場鈴的確切 cue 編號填進空白格。",
+      "current_substrate_zh": "編號格空白，但唯一 cue 記錄已遺失，今天沒有副本、錄音或其他編號線索可核對。",
+      "availability_status": "exact_value_unavailable",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2den01i", "quote": "Tell me one step to copy that exact cue number into that box myself"}],
+        "current": [{"source_id": "current:b2den01i", "quote": "the opening-bell cue-number box is blank"}],
+        "target": [{"source_id": "current:b2den01i", "quote": "the opening-bell cue-number box"}],
+        "availability": [{"source_id": "current:b2den01i", "quote": "the only cue notes are lost with no copy"}, {"source_id": "current:b2den01i", "quote": "recording"}, {"source_id": "current:b2den01i", "quote": "or other numbered clue to check today"}],
+        "forbidden": [{"source_id": "current:b2den01i", "quote": "leave later cues untouched"}],
+        "actor": [{"source_id": "current:b2den01i", "quote": "myself"}],
+        "stop": [{"source_id": "current:b2den01i", "quote": "stop after that box"}]
+      },
+      "acceptable_action_envelope": null,
+      "blocking_reason": {
+        "primary_code": "unsupported_specificity",
+        "blocking_spans": [{"source_id": "current:b2den01i", "quote": "the only cue notes are lost with no copy"}, {"source_id": "current:b2den01i", "quote": "recording"}, {"source_id": "current:b2den01i", "quote": "or other numbered clue to check today"}],
+        "rationale_zh": "正確 cue 編號不在來源，且無可取得材料核對，不能給確切填值動作。",
+        "no_in_scope_alternative_zh": "任意 cue 編號會污染記錄；日後找到記錄是另一個任務狀態。",
+        "japanese_surface_zh": "自然日文說明無法確認編號，不編造任何具體值。"
+      }
+    },
+    "p4_b2_dev_en_02_v": {
+      "case_id": "p4_b2_dev_en_02_v",
+      "pair_id": "p4_b2_dev_en_02",
+      "language": "en",
+      "family": "photo_contact_sheet",
+      "decision": "action",
+      "expected_reason_code": "none",
+      "acceptable_reason_codes": ["none"],
+      "requested_change_zh": "使用者在個人接觸表上只圈出已指定的 P-6 相片格。",
+      "current_substrate_zh": "接觸表上有印出的 frame ID，目標 P-6 已指明。",
+      "availability_status": "target_specified_and_user_observable",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2den02v", "quote": "Tell me one step I can take to circle that frame on my sheet"}],
+        "current": [{"source_id": "current:b2den02v", "quote": "has several frames with printed IDs"}],
+        "target": [{"source_id": "current:b2den02v", "quote": "The frame to mark is P-6"}],
+        "availability": [{"source_id": "current:b2den02v", "quote": "My personal photo contact sheet has several frames with printed IDs"}],
+        "forbidden": [{"source_id": "current:b2den02v", "quote": "leave all others unchanged"}, {"source_id": "current:b2den02v", "quote": "I do not want a step to choose a frame"}],
+        "actor": [{"source_id": "current:b2den02v", "quote": "I can take"}],
+        "stop": [{"source_id": "current:b2den02v", "quote": "stop after one frame"}]
+      },
+      "acceptable_action_envelope": {
+        "actor": "user",
+        "allowed_mechanisms": ["direct_atomic_completion"],
+        "required_substrate_zh": "個人接觸表的 frame ID 可由使用者查看，來源指定 P-6。",
+        "object_zh": "P-6 相片格",
+        "verb_zh": "圈出",
+        "effect_zh": "僅 P-6 被圈出。",
+        "stop_zh": "圈完一格即停。",
+        "prohibited_effects_zh": ["圈其他 frame", "要求重新選目標", "聲稱助手已在紙上畫圈"],
+        "japanese_surface_zh": "自然日文指示使用者辨認 P-6 並只圈該格，明示停止。"
+      },
+      "blocking_reason": null
+    },
+    "p4_b2_dev_en_02_i": {
+      "case_id": "p4_b2_dev_en_02_i",
+      "pair_id": "p4_b2_dev_en_02",
+      "language": "en",
+      "family": "photo_contact_sheet",
+      "decision": "abstain",
+      "expected_reason_code": "ambiguous_or_unsupported",
+      "acceptable_reason_codes": ["ambiguous_or_unsupported", "prerequisites"],
+      "requested_change_zh": "使用者要求圈出某一張『正確』相片格。",
+      "current_substrate_zh": "有多個印 ID 的格子，沒有選定目標，也沒有選擇規則。",
+      "availability_status": "target_unselected",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2den02i", "quote": "Tell me one step I can take to circle that frame on my sheet"}],
+        "current": [{"source_id": "current:b2den02i", "quote": "has several frames with printed IDs"}],
+        "target": [{"source_id": "current:b2den02i", "quote": "The frame to mark has not been chosen"}],
+        "availability": [{"source_id": "current:b2den02i", "quote": "I have no rule for choosing it"}],
+        "forbidden": [{"source_id": "current:b2den02i", "quote": "leave all others unchanged"}, {"source_id": "current:b2den02i", "quote": "I do not want a step to choose a frame"}],
+        "actor": [{"source_id": "current:b2den02i", "quote": "I can take"}],
+        "stop": [{"source_id": "current:b2den02i", "quote": "stop after one frame"}]
+      },
+      "acceptable_action_envelope": null,
+      "blocking_reason": {
+        "primary_code": "ambiguous_or_unsupported",
+        "blocking_spans": [{"source_id": "current:b2den02i", "quote": "The frame to mark has not been chosen"}, {"source_id": "current:b2den02i", "quote": "I have no rule for choosing it"}],
+        "rationale_zh": "具體目標格未指定，印有 ID 本身不足以判定哪一格應被圈出。",
+        "no_in_scope_alternative_zh": "使用者明確不要選目標步驟；任圈一格或代替使用者選擇都不是所要求的精確標記。",
+        "japanese_surface_zh": "自然日文指出目標未定，不擅自圈選或假稱已標記。"
+      }
+    },
+    "p4_b2_dev_ja_01_v": {
+      "case_id": "p4_b2_dev_ja_01_v",
+      "pair_id": "p4_b2_dev_ja_01",
+      "language": "ja",
+      "family": "personal_practice_hourglass",
+      "decision": "action",
+      "expected_reason_code": "none",
+      "acceptable_reason_codes": ["none"],
+      "requested_change_zh": "由使用者把桌上橫倒的練習砂時計立起來。",
+      "current_substrate_zh": "砂時計橫倒、砂未流動；助手不在房間內。",
+      "availability_status": "user_accessible_no_assistant_physical_access",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dja01v", "quote": "私が自分で砂時計を立てるための一手だけ教えて"}],
+        "current": [{"source_id": "current:b2dja01v", "quote": "練習用の砂時計は横倒しで、砂が動いていない"}],
+        "target": [{"source_id": "current:b2dja01v", "quote": "練習用の砂時計"}],
+        "availability": [{"source_id": "current:b2dja01v", "quote": "私の机にある"}, {"source_id": "current:b2dja01v", "quote": "あなたは私の部屋にいない"}],
+        "forbidden": [{"source_id": "current:b2dja01v", "quote": "ほかの道具は触らず"}],
+        "actor": [{"source_id": "current:b2dja01v", "quote": "私が自分で"}],
+        "stop": [{"source_id": "current:b2dja01v", "quote": "砂時計を立てたら止めたい"}]
+      },
+      "acceptable_action_envelope": {
+        "actor": "user",
+        "allowed_mechanisms": ["direct_atomic_completion"],
+        "required_substrate_zh": "使用者桌上的練習砂時計橫倒；助手不在現場。",
+        "object_zh": "練習用砂時計",
+        "verb_zh": "由使用者立起",
+        "effect_zh": "砂時計由橫倒變成立起，其他道具不動。",
+        "stop_zh": "砂時計立起即停。",
+        "prohibited_effects_zh": ["碰其他道具", "聲稱助手已在房內操作"],
+        "japanese_surface_zh": "自然日文給使用者可做的一步，不虛稱親自操作。"
+      },
+      "blocking_reason": null
+    },
+    "p4_b2_dev_ja_01_i": {
+      "case_id": "p4_b2_dev_ja_01_i",
+      "pair_id": "p4_b2_dev_ja_01",
+      "language": "ja",
+      "family": "personal_practice_hourglass",
+      "decision": "abstain",
+      "expected_reason_code": "actor_capability",
+      "acceptable_reason_codes": ["actor_capability"],
+      "requested_change_zh": "使用者要求不在房間的助手親自立起砂時計。",
+      "current_substrate_zh": "砂時計橫倒；助手不在房間。",
+      "availability_status": "assistant_not_present",
+      "actor_expected": "assistant",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dja01i", "quote": "あなたが今砂時計を立てて、立てたら止めて"}],
+        "current": [{"source_id": "current:b2dja01i", "quote": "練習用の砂時計は横倒しで、砂が動いていない"}],
+        "target": [{"source_id": "current:b2dja01i", "quote": "練習用の砂時計"}],
+        "availability": [{"source_id": "current:b2dja01i", "quote": "あなたは私の部屋にいない"}],
+        "forbidden": [{"source_id": "current:b2dja01i", "quote": "ほかの道具は触らず"}],
+        "actor": [{"source_id": "current:b2dja01i", "quote": "あなたが今砂時計を立てて"}],
+        "stop": [{"source_id": "current:b2dja01i", "quote": "砂時計を立てたら止めたい"}]
+      },
+      "acceptable_action_envelope": null,
+      "blocking_reason": {
+        "primary_code": "actor_capability",
+        "blocking_spans": [{"source_id": "current:b2dja01i", "quote": "あなたは私の部屋にいない"}, {"source_id": "current:b2dja01i", "quote": "あなたが今砂時計を立てて"}],
+        "rationale_zh": "來源明說助手不在房間，不能按要求親自立起實物；本隔離元件也沒有可信的工具執行回執。",
+        "no_in_scope_alternative_zh": "建議使用者自行操作是另一個 actor 的步驟，不能冒充完成本輪要求的助手操作。",
+        "japanese_surface_zh": "自然日文說明不能親自代做，絕不說砂時計已被立起。"
+      }
+    },
+    "p4_b2_dev_ja_02_v": {
+      "case_id": "p4_b2_dev_ja_02_v",
+      "pair_id": "p4_b2_dev_ja_02",
+      "language": "ja",
+      "family": "tabletop_game_rule_draft",
+      "decision": "action",
+      "expected_reason_code": "none",
+      "acceptable_reason_codes": ["none"],
+      "requested_change_zh": "在只有標題的手製桌遊規則草稿加入一個空白中性見出し，建立可續寫骨架。",
+      "current_substrate_zh": "規則草稿只有一行標題，尚無說明本文。",
+      "availability_status": "title_only_draft_available",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dja02v", "quote": "空の見出しを一つ加える一手を教えて"}],
+        "current": [{"source_id": "current:b2dja02v", "quote": "タイトル一行だけで、説明本文はまだない"}],
+        "target": [{"source_id": "current:b2dja02v", "quote": "私の手製ボードゲームのルール草案"}],
+        "availability": [{"source_id": "current:b2dja02v", "quote": "タイトル一行だけ"}],
+        "forbidden": [{"source_id": "current:b2dja02v", "quote": "内容を作り足さず"}],
+        "actor": [{"source_id": "current:b2dja02v", "quote": "私は自分で"}],
+        "stop": [{"source_id": "current:b2dja02v", "quote": "作業は一か所だけにして止めたい"}]
+      },
+      "acceptable_action_envelope": {
+        "actor": "user",
+        "allowed_mechanisms": ["structure_scaffold"],
+        "required_substrate_zh": "可編輯的標題-only 桌遊規則草稿，沒有可拆的既有說明正文。",
+        "object_zh": "規則草稿的空白說明區",
+        "verb_zh": "新增一個不含事實內容的中性見出し",
+        "effect_zh": "標題下方出現一個可後續填寫的空白結構。",
+        "stop_zh": "只加一個見出し即停。",
+        "prohibited_effects_zh": ["編造遊戲規則細節", "聲稱存在並拆分正文", "聲稱助手已改稿"],
+        "japanese_surface_zh": "自然日文指示使用者做一個空白骨架步驟，不代寫內容。"
+      },
+      "blocking_reason": null
+    },
+    "p4_b2_dev_ja_02_i": {
+      "case_id": "p4_b2_dev_ja_02_i",
+      "pair_id": "p4_b2_dev_ja_02",
+      "language": "ja",
+      "family": "tabletop_game_rule_draft",
+      "decision": "abstain",
+      "expected_reason_code": "prerequisites",
+      "acceptable_reason_codes": ["prerequisites", "ambiguous_or_unsupported"],
+      "requested_change_zh": "使用者要求把已存在的規則說明段落拆成兩段。",
+      "current_substrate_zh": "規則草稿只有一行標題，說明本文還不存在。",
+      "availability_status": "required_paragraph_absent",
+      "actor_expected": "user",
+      "evidence_spans": {
+        "request": [{"source_id": "current:b2dja02i", "quote": "すでにある説明本文の段落を二つに分ける一手だけ教えて"}],
+        "current": [{"source_id": "current:b2dja02i", "quote": "タイトル一行だけで、説明本文はまだない"}],
+        "target": [{"source_id": "current:b2dja02i", "quote": "説明本文の段落"}],
+        "availability": [{"source_id": "current:b2dja02i", "quote": "説明本文はまだない"}],
+        "forbidden": [{"source_id": "current:b2dja02i", "quote": "内容を作り足さず"}],
+        "actor": [{"source_id": "current:b2dja02i", "quote": "私は自分で"}],
+        "stop": [{"source_id": "current:b2dja02i", "quote": "作業は一か所だけにして止めたい"}]
+      },
+      "acceptable_action_envelope": null,
+      "blocking_reason": {
+        "primary_code": "prerequisites",
+        "blocking_spans": [{"source_id": "current:b2dja02i", "quote": "説明本文はまだない"}, {"source_id": "current:b2dja02i", "quote": "すでにある説明本文の段落を二つに分ける一手だけ教えて"}],
+        "rationale_zh": "欲拆分的說明正文段落不存在；把標題當正文或先編出內容會偏離任務與禁令。",
+        "no_in_scope_alternative_zh": "新增空見出し是另一個任務，不能冒充拆分既有段落；只能指出前提衝突。",
+        "japanese_surface_zh": "自然日文具體指出目前沒有可拆的本文，不提出切標題或虛構正文的操作。"
+      }
+    }
+  }
+}

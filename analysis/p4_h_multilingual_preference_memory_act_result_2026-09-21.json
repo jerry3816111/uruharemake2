@@ -1,0 +1,123 @@
+{
+  "schema": "uruha_p4_h_multilingual_preference_memory_act_result_v1",
+  "version": "1.0.0",
+  "status": "pass",
+  "freeze_binding": {
+    "path": "research/p4_h_multilingual_preference_memory_act_freeze_2026-09-21.json",
+    "sha256": "e1532f93467d43bf93fafd2d15c48dd636b49880f9ba215e03ebc574a585a648"
+  },
+  "runtime": {
+    "listener": "127.0.0.1:7860",
+    "runtime_root": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-qcds63tm",
+    "fresh_isolated_root": true,
+    "runtime_root_mode": "0700",
+    "memory_db": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-qcds63tm/memory_db",
+    "launcher": "p4_b_safe_isolated_product_launcher_v2.py",
+    "launcher_manifest_sha256": "bb913333145bc275ff5020d7a550fc6e441bfade45b2ffb6ffc7a246002dca8b",
+    "process_pid": 73722,
+    "process_started_at": "2026-09-21T04:57:24+08:00",
+    "session_id": "20260921_045729_3fa54608",
+    "repository_write_sandbox_enabled": true,
+    "public_share": false,
+    "production_memory_access_count": 0,
+    "server_left_running_for_user": true
+  },
+  "turns": [
+    {
+      "turn_index": 1,
+      "timestamp": "2026-09-21T04:58:35+08:00",
+      "input": "I prefer sparkling water. Please remember that as my current drink preference.",
+      "visible_output": "ん、その好みは覚えとく。",
+      "visible_output_language": "Japanese",
+      "p4_h_status": "explicit_preference_memory_act_committed",
+      "act": "write",
+      "input_language": "en",
+      "selected_intent": "explicit_preference_memory_write",
+      "plan_authority": true,
+      "surface_authority": true,
+      "surface_changed": true,
+      "planner_path": "explicit_preference_memory_act_authority_p4",
+      "planner_route": "deterministic_rule_plan",
+      "product_planner_model_call_count": 0,
+      "fallback_count": 0,
+      "graph_node_visible": "explicit_preference_acknowledgement_p4",
+      "graph_node_stage": "select",
+      "final_visible_surface_matches_contract": true,
+      "durable_episode_write_count": 1,
+      "episode_id": "f4e13c9b-c223-4c72-a656-eca83a178b1a",
+      "raw_dialogue_persisted_in_p4_h_trace": false,
+      "end_to_end_seconds": 2.1027,
+      "latency_target_met": true,
+      "runtime_node_count": 69
+    },
+    {
+      "turn_index": 2,
+      "timestamp": "2026-09-21T04:59:08+08:00",
+      "input": "更正：我現在不喜歡氣泡水了，現在比較喜歡熱可可。",
+      "visible_output": "ん、訂正の内容はそのまま覚えとく。",
+      "visible_output_language": "Japanese",
+      "p4_h_status": "explicit_preference_memory_act_committed",
+      "act": "correction",
+      "input_language": "zh",
+      "selected_intent": "explicit_preference_memory_correction",
+      "plan_authority": true,
+      "surface_authority": true,
+      "surface_changed": true,
+      "planner_path": "explicit_preference_memory_act_authority_p4",
+      "planner_route": "deterministic_rule_plan",
+      "product_planner_model_call_count": 0,
+      "fallback_count": 0,
+      "graph_node_visible": "explicit_preference_acknowledgement_p4",
+      "graph_node_stage": "select",
+      "final_visible_surface_matches_contract": true,
+      "durable_episode_write_count": 1,
+      "episode_id": "79c430c2-e004-4998-9c94-025fca2ed4bb",
+      "raw_dialogue_persisted_in_p4_h_trace": false,
+      "end_to_end_seconds": 11.2373,
+      "latency_target_met": true,
+      "runtime_node_count": 69
+    }
+  ],
+  "accounting": {
+    "real_product_turns": 2,
+    "process_starts": 1,
+    "retry_count": 0,
+    "local_product_planner_model_calls": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "conversation_jsonl_rows": 2,
+    "conversation_jsonl_bytes": 2612936,
+    "combined_user_wait_seconds": 13.34
+  },
+  "safari": {
+    "actual_two_turn_acceptance": true,
+    "same_existing_uruha_tab_reused": true,
+    "closed_tab_count": 0,
+    "tab_count_observed": 50,
+    "turn_1_visible": true,
+    "turn_2_visible": true,
+    "p4_h_graph_node_visible_both_turns": true
+  },
+  "gate_evaluation": {
+    "schema": "uruha_p4_h_preference_memory_act_gate_result_v1",
+    "status": "pass",
+    "failed_gates": []
+  },
+  "observed_semantic_boundary": {
+    "typed_profile_after_turn_2": {
+      "likes": [],
+      "dislikes": [
+        "氣泡水"
+      ]
+    },
+    "new_current_preference_typed_as_like": false,
+    "old_preference_typed_as_dislike": true,
+    "both_turns_preserved_as_episodes": true,
+    "interpretation": "P4-H repaired the plan and visible acknowledgement, but this multilingual case did not establish complete typed preference semantics: the Chinese correction recorded the old item as a dislike while the new hot-cocoa preference was not added to typed likes."
+  },
+  "claim_boundary": "P4-H passes its frozen bounded product gate: both new multilingual acts selected deterministic plans, exact casual Japanese surfaces, graph select nodes, distinct episode writes and zero planner model calls within latency. It does not establish complete typed preference semantics, cross-restart recall, general persona quality, felt understanding, human preference or research advantage."
+}

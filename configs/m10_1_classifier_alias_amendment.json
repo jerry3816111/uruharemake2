@@ -1,0 +1,43 @@
+{
+  "schema": "ilhdt_m10_1_classifier_alias_amendment_v1",
+  "milestone": "M10.1",
+  "registered_before_first_m10_1_model_call": true,
+  "claim_level": "nonfresh_synthetic_downstream_language_classifier_parser_remediation",
+  "base_config": {
+    "path": "configs/m10_behavior_authoritative_language_preregistration.json",
+    "sha256": "4d56e4b41769065c7455ae7b887f969f3354de8316d2870b2a92151f9b3973ba"
+  },
+  "base_lock": {
+    "path": "configs/m10_behavior_authoritative_language_lock.json",
+    "sha256": "d8af6d33c63b3452d75bfedef8f68f0f74eac85da78cf144bb6eeb5cec93398e"
+  },
+  "first_failure": {
+    "path": "analysis/m10_behavior_authoritative_language_first_result.json",
+    "sha256": "ecddec64124d0f614f708d04f14ff6eb6cdadcda033882e6d684514b478ed2b4"
+  },
+  "first_failure_lock": {
+    "path": "configs/m10_behavior_authoritative_language_first_failure_result_lock.json",
+    "sha256": "6538542c0c3d8340bf6efd241afcb0f1ee01384161aafbb46e93c9843127d01b"
+  },
+  "single_change": {
+    "field": "classifier_output_distribution_key",
+    "before": "probabilities only",
+    "after": "probabilities or exact equivalent classification alias",
+    "raw_output_retained": true,
+    "finite_numeric_values_and_exact_label_set_required": true
+  },
+  "unchanged": [
+    "dataset",
+    "all sixteen cases",
+    "three conditions",
+    "generation prompts",
+    "classifier prompt",
+    "model and generation options",
+    "prompt balancing",
+    "metrics",
+    "hypotheses",
+    "persona boundary",
+    "no scored retry"
+  ],
+  "post_result_change_rule": "Preserve every normalization and all failures. No further classifier alias or semantic repair may be added after M10.1 outputs are exposed."
+}

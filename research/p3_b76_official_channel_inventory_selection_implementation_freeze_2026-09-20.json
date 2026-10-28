@@ -1,0 +1,30 @@
+{
+  "schema": "uruha_p3_b76_official_channel_inventory_selection_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b76_inventory_request_or_content_review",
+  "single_changed_variable": "replace B75 general ranked search discovery with one direct official-channel public upload inventory while keeping filters and slot algorithm fixed",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b76_official_channel_inventory_selection_v1.json",
+      "sha256": "8838216b00c0ca1c3c75bde8089ffe02c205750d1b73cc45651906729d203264"
+    },
+    "implementation": {
+      "path": "p3_b76_official_channel_inventory_selection.py",
+      "sha256": "bc534de00329cd5a0691449fbd96c713fc4638f312c81ea6e077775fcef2dcc5"
+    },
+    "tests": {
+      "path": "test_p3_b76_official_channel_inventory_selection.py",
+      "sha256": "532bdd9316752d93cea5acbb7650eed2a35568c358662607a27557fd7f3e2503"
+    }
+  },
+  "pre_execution_evidence": {
+    "affected_test_count": 9,
+    "affected_test_status": "passed",
+    "provider_inventory_process_invocation_count": 0,
+    "content_review_count": 0,
+    "model_call_count": 0,
+    "outcome_access_count": 0
+  },
+  "post_freeze_rule": "One official-channel inventory request only. On failure or insufficient sources, stop this discovery branch; no alternate tab, larger limit, keyword revision, manual source, retry, or content access.",
+  "claim_boundary": "This is the only prospective source-discovery repair after B75. It does not validate event usability or permit prediction."
+}

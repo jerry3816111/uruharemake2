@@ -1,0 +1,53 @@
+{
+  "schema": "uruha_v2_17_long_dialogue_memory_case",
+  "status": "development_case_frozen_before_formal_run",
+  "case_id": "v217_delayed_preference_recall_and_correction",
+  "research_question": "After many unrelated turns, can the runtime recover an early user memory, expose its source-to-decision trace, update it after an explicit contradiction, and stop treating the withdrawn value as current?",
+  "evidence_boundary": {
+    "isolated_database_required": true,
+    "production_memory_writes": 0,
+    "replayed_turns_use_production_save_episode": true,
+    "replayed_turns_are_fresh_model_generations": false,
+    "checkpoint_turns_use_full_runtime": true,
+    "causal_anchor_ablation_is_full_reply_evidence": false,
+    "human_preference_evidence": false
+  },
+  "expected": {
+    "initial_value": "草莓牛奶",
+    "initial_value_japanese_any": ["いちごミルク", "ストロベリーミルク"],
+    "corrected_value": "ginger ale",
+    "corrected_value_japanese_any": ["ジンジャーエール"],
+    "initial_source_turn": 1,
+    "correction_source_turn": 18,
+    "first_recall_turn": 17,
+    "corrected_recall_turn": 24,
+    "withdrawal_probe_turn": 25
+  },
+  "turns": [
+    {"turn": 1, "role": "memory_seed", "execution": "replayed_writeback", "user": "我最喜歡草莓牛奶，讀論文時也會喝，幫我記住。", "reply": "ストロベリーミルクが好きなんだな。そこは覚えとく。"},
+    {"turn": 2, "role": "distractor", "execution": "replayed_writeback", "user": "我通常早上看論文。", "reply": "朝から論文読むとか、ちゃんとしてんじゃん。"},
+    {"turn": 3, "role": "distractor", "execution": "replayed_writeback", "user": "桌面又堆滿檔案了。", "reply": "また増やしたのかよ。先に三つだけ片づけろ。"},
+    {"turn": 4, "role": "distractor", "execution": "replayed_writeback", "user": "今天外面很熱。", "reply": "暑すぎ。外出るだけで体力持ってかれるな。"},
+    {"turn": 5, "role": "distractor", "execution": "replayed_writeback", "user": "昨晚玩的遊戲更新了。", "reply": "更新来たなら、そりゃ触りたくなるだろ。"},
+    {"turn": 6, "role": "distractor", "execution": "replayed_writeback", "user": "我把測試跑完了。", "reply": "お、そこは偉い。ちゃんと終わらせたじゃん。"},
+    {"turn": 7, "role": "distractor", "execution": "replayed_writeback", "user": "午餐吃了咖哩。", "reply": "カレーいいな。急に腹減ってきた。"},
+    {"turn": 8, "role": "distractor", "execution": "replayed_writeback", "user": "老師下週要看展示。", "reply": "じゃあ見せ場を一個、先に完成させたいな。"},
+    {"turn": 9, "role": "distractor", "execution": "replayed_writeback", "user": "Safari 的頁面終於能開了。", "reply": "やっとか。そこ直っただけでもでかいだろ。"},
+    {"turn": 10, "role": "distractor", "execution": "replayed_writeback", "user": "我還在調整節點圖。", "reply": "情報詰めすぎると読めんぞ。流れ一本を太く見せろ。"},
+    {"turn": 11, "role": "distractor", "execution": "replayed_writeback", "user": "剛剛聽了一首老歌。", "reply": "急に懐かしいやつ聴きたくなる時あるよな。"},
+    {"turn": 12, "role": "distractor", "execution": "replayed_writeback", "user": "我想把圖做得更簡單。", "reply": "それでいい。先生が一目で追える方が強い。"},
+    {"turn": 13, "role": "distractor", "execution": "replayed_writeback", "user": "明天要早起。", "reply": "なら今日は切る時間決めとけ。朝死ぬぞ。"},
+    {"turn": 14, "role": "distractor", "execution": "replayed_writeback", "user": "我先去洗個澡。", "reply": "行ってこい。戻ったら続きな。"},
+    {"turn": 15, "role": "distractor", "execution": "replayed_writeback", "user": "回來了，繼續。", "reply": "おかえり。じゃあ一個ずつ潰すか。"},
+    {"turn": 16, "role": "distractor", "execution": "replayed_writeback", "user": "我把標題改短了。", "reply": "その方が伝わる。入口で迷わせないの大事だし。"},
+    {"turn": 17, "role": "delayed_recall", "execution": "full_runtime", "user": "隔了這麼多個話題，你還記得我讀論文時最喜歡喝什麼嗎？"},
+    {"turn": 18, "role": "explicit_correction", "execution": "full_runtime", "user": "不過現在改了。我不能喝草莓牛奶了。我最喜歡 ginger ale。"},
+    {"turn": 19, "role": "distractor", "execution": "replayed_writeback", "user": "先不聊飲料，我把投影片換成深色了。", "reply": "深色可以，但字別搞得像藏起來一樣。"},
+    {"turn": 20, "role": "distractor", "execution": "replayed_writeback", "user": "朋友剛剛傳了一個很爛的迷因。", "reply": "越爛越想轉給別人，這種最煩。"},
+    {"turn": 21, "role": "distractor", "execution": "replayed_writeback", "user": "我還要補一張流程圖。", "reply": "補一張就好，別又長出五張。"},
+    {"turn": 22, "role": "distractor", "execution": "replayed_writeback", "user": "現在有點餓。", "reply": "先吃點東西。餓著做只會越做越躁。"},
+    {"turn": 23, "role": "distractor", "execution": "replayed_writeback", "user": "我把明天的鬧鐘設好了。", "reply": "珍しいじゃん。あとはちゃんと寝るだけだな。"},
+    {"turn": 24, "role": "corrected_recall", "execution": "full_runtime", "user": "那我現在讀論文時最喜歡喝什麼？"},
+    {"turn": 25, "role": "withdrawal_probe", "execution": "full_runtime", "user": "你沒有還把草莓牛奶當成我現在最喜歡的吧？"}
+  ]
+}

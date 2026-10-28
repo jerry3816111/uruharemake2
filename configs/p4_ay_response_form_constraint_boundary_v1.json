@@ -1,0 +1,99 @@
+{
+  "schema": "uruha_p4_ay_response_form_constraint_boundary_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_ay_response_form_constraint_boundary_v1.json",
+    "sha256": "956080cc3f367e92a9f43e49869df959108a665c90fae89de7e81b0fca5c5173",
+    "case_count": 19,
+    "development_count": 1,
+    "fresh_positive_count": 6,
+    "fresh_control_count": 12,
+    "predecessor_positive_count": 6
+  },
+  "predecessors": {
+    "p4_au_module": [
+      "uruha_source_bound_current_action_delivery_p4.py",
+      "40052de9bb88832e9e706a098af1feef543fbac134792ea69858627a84c5277b"
+    ],
+    "p4_ax_module": [
+      "uruha_compound_feedback_request_split_p4.py",
+      "3fd2c5c59f733fd1f8349978fe5354bc05a62e5bf5d73ddc948764900d93005f"
+    ],
+    "p4_au_dataset": [
+      "datasets/p4_au_source_bound_current_action_delivery_v1.json",
+      "3286e891a75dcd2b2f851e30707f4a1d09b7d277918270598bddb7920f84c4c5"
+    ],
+    "p4_ax_dataset": [
+      "datasets/p4_ax_compound_feedback_request_split_v1.json",
+      "a9bba9f219463a9e33c40babfcde0cd2122474c788864b76805a7d837ab22fb3"
+    ],
+    "p4_ax_real_failure_evidence": [
+      "analysis/p4_ax_real_compound_feedback_to_action_delivery_evidence_2026-09-26.json",
+      "5052199b95a92b002067dd81a5ff627d5dd0777156ef5f91f5590fc8c2d41bee"
+    ],
+    "p4_au_tests": [
+      "test_p4_au_source_bound_current_action_delivery.py",
+      "d3325a83b4afd3c11fdf43f6aff6419d6fdca1724be5603ca917b573d632c6b7"
+    ],
+    "p4_ax_tests": [
+      "test_p4_ax_compound_feedback_request_split.py",
+      "e4a589b124261907fca5d276c2c978deb21608c9ded8475ec3fe6dce4cc44176"
+    ]
+  },
+  "single_variable": {
+    "name": "bounded_response_form_constraint_vs_genuine_task_replacement",
+    "allowed_change": "After exact P4-AX and P4-AT support, exclude only an already-authorized compound-feedback span and a bounded source-free response-form or action-shape constraint from P4-AU current-task-replacement refs; preserve every other P4-AU authority requirement.",
+    "forbidden_changes": [
+      "p4_ax_support_authority_or_patterns",
+      "p4_at_outcome_or_exact_receipt_identity",
+      "p4_au_prior_source_role_trigger_budget_or_turn_window",
+      "genuine_current_problem_or_topic_replacement_block",
+      "current_request_policy_or_routing",
+      "candidate_score_or_order",
+      "m53_m46_m45_or_m39_review_and_fail_closed",
+      "prompt_or_model_call",
+      "visible_reply",
+      "factual_or_long_term_memory",
+      "assistant_or_private_inference_source",
+      "raw_dialogue_trace",
+      "p4_ax_real_failure_or_jsondecodeerror_result"
+    ]
+  },
+  "offline_gates": {
+    "case_count": 19,
+    "development_authorized_count": 1,
+    "development_prior_source_linked_count": 1,
+    "fresh_positive_authorized_count": 6,
+    "fresh_positive_prior_source_linked_count": 6,
+    "fresh_positive_exact_source_identity_count": 6,
+    "fresh_positive_downstream_action_contract_count": 6,
+    "fresh_control_prior_source_added_count": 0,
+    "fresh_control_expected_status_count": 12,
+    "genuine_task_replacement_block_count": 3,
+    "predecessor_positive_prior_source_linked_count": 6,
+    "p4_ax_authority_preserved_count": 7,
+    "p4_at_outcome_mutation_count": 0,
+    "p4_au_non_task_guard_bypass_count": 0,
+    "candidate_score_or_order_change_count": 0,
+    "added_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "assistant_source_count": 0,
+    "private_inference_source_count": 0,
+    "raw_dialogue_persisted_count": 0,
+    "visible_reply_change_count": 0,
+    "full_fresh_string_patch_count": 0
+  },
+  "failure_policy": {
+    "same_fresh_case_retry_allowed": false,
+    "post_result_gate_or_dataset_change_allowed": false,
+    "missing_p4_ax_authority_may_count_as_authorized": false,
+    "genuine_task_replacement_may_inherit_prior_problem": false,
+    "third_party_quote_meta_mismatch_or_wrong_policy_may_inherit_prior_problem": false,
+    "p4_au_non_task_guards_may_be_bypassed": false,
+    "offline_pass_may_rewrite_p4_ax_real_failure": false,
+    "offline_pass_may_fix_or_hide_m45_json_failure": false,
+    "fresh_safari_case_required_after_offline_pass": true
+  },
+  "claim_boundary": "A pass establishes only a bounded deterministic current-task replacement discriminator after exact P4-AX/P4-AT support. It does not establish open-domain topic continuity, plan quality, advice usefulness, private intent truth, a human equation, or superiority over a matched strong LLM."
+}

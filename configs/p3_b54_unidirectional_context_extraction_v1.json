@@ -1,0 +1,112 @@
+{
+  "schema": "uruha_p3_b54_unidirectional_context_extraction_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_synthetic_rehearsal_or_reserved_source_media_access",
+  "single_changed_variable": "give generation an immutable audio artifact bounded at the prediction cutoff while keeping broader transport bytes private",
+  "binding": {
+    "boundary_release": {
+      "path": "research/p3_b53_content_blind_temporal_boundary_release_2026-09-17.json",
+      "sha256": "1658ae717cb0f78c82cda8dc061d49a2a849a0593a12f7faf8a05796ef2de883",
+      "receipt_hash": "0c190de102962657a1ed121fd8ff01853584ed8afdd3b4070ffdb25042f63f5a"
+    }
+  },
+  "profiles": {
+    "synthetic_boundary_rehearsal": {
+      "source_id": "synthetic_p3_b54_boundary_canary",
+      "boundary_receipt_hash": "57b30468c5be05a06da7d1f2d5b423385be1f2d274a8de40f6c4cb90d80459e6",
+      "context_start_seconds": 1.0,
+      "context_end_seconds": 3.0,
+      "raw_transport_duration_seconds": 5.0,
+      "observable_tone_hz": 440.0,
+      "post_cutoff_sentinel_tone_hz": 2000.0
+    },
+    "reserved_source_context": {
+      "source_id": "youtube_4y5GiQpgJgo",
+      "boundary_receipt_hash": "0c190de102962657a1ed121fd8ff01853584ed8afdd3b4070ffdb25042f63f5a",
+      "context_start_seconds": 3000.0,
+      "context_end_seconds": 3180.0
+    }
+  },
+  "private_worker_api": {
+    "function": "export_observable_context",
+    "parameters": [
+      "raw_media_path",
+      "public_root",
+      "profile_name"
+    ],
+    "raw_transport_may_extend_past_cutoff": true,
+    "raw_transport_must_be_deleted_before_generation_reader": true,
+    "network_fetch_inside_extractor": false,
+    "retry_count": 0,
+    "fallback_count": 0
+  },
+  "output_audio": {
+    "container": "wav",
+    "codec": "pcm_s16le",
+    "sample_rate_hz": 16000,
+    "channels": 1,
+    "duration_tolerance_seconds": 0.05,
+    "ffmpeg_filter": "atrim=start=<context_start>:end=<context_end>,asetpts=PTS-STARTPTS",
+    "ffprobe_duration_gate_required": true
+  },
+  "public_surface": {
+    "root_environment_variable": "URUHA_P3_B54_PUBLIC_CONTEXT_ROOT",
+    "artifact_id_regex": "^[0-9a-f]{32}$",
+    "manifest_schema": "uruha_p3_b54_public_context_manifest_v1",
+    "allowed_manifest_fields": [
+      "schema",
+      "version",
+      "status",
+      "artifact_id",
+      "source_id",
+      "boundary_receipt_hash",
+      "context_start_seconds",
+      "context_end_seconds",
+      "requested_duration_seconds",
+      "observed_duration_seconds",
+      "duration_tolerance_seconds",
+      "sample_rate_hz",
+      "channels",
+      "codec",
+      "container",
+      "artifact_name",
+      "artifact_bytes",
+      "artifact_sha256",
+      "exposure_policy",
+      "manifest_hash"
+    ],
+    "forbidden_field_tokens": [
+      "url",
+      "uri",
+      "title",
+      "description",
+      "transcript",
+      "future",
+      "behavior",
+      "raw",
+      "transport_path",
+      "input_path",
+      "source_duration"
+    ],
+    "symlink_allowed": false,
+    "hardlink_allowed": false,
+    "group_or_world_permissions_allowed": false,
+    "public_root_inside_private_root_allowed": false
+  },
+  "synthetic_acceptance": {
+    "post_cutoff_to_observable_spectral_energy_ratio_max": 0.0001,
+    "fresh_public_reader_processes": 2,
+    "overlong_artifact_must_fail_closed": true,
+    "artifact_hash_must_revalidate_after_restart": true,
+    "private_canary_hits_allowed": 0
+  },
+  "execution_authorization": {
+    "synthetic_boundary_rehearsal_authorized": true,
+    "reserved_source_media_access_authorized": false,
+    "hidden_future_access_authorized": false,
+    "prediction_execution_authorized": false,
+    "model_calls_authorized": false,
+    "production_memory_write_authorized": false
+  },
+  "claim_boundary": "B54 can prove only that a synthetic post-cutoff audio sentinel is absent from a duration-gated public context artifact and that a standalone reader needs no private transport access. It does not prove the same for the reserved source until separately executed, does not expose the hidden future, and is not a behavior prediction, model result, or evidence of system advantage."
+}

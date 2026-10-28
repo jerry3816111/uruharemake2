@@ -1,0 +1,88 @@
+{
+  "schema": "uruha_p4_f_cross_restart_preference_supersession_release_v1",
+  "version": "1.0.0",
+  "status": "released_one_bounded_cross_restart_preference_supersession",
+  "bindings": {
+    "freeze": {
+      "path": "research/p4_f_cross_restart_preference_supersession_freeze_2026-09-21.json",
+      "sha256": "c8b105f1328de69c2b4ce0b6a08b0de967e1c1232ba4e6f3c3226ffeb95544a2"
+    },
+    "result": {
+      "path": "analysis/p4_f_cross_restart_preference_supersession_result_2026-09-21.json",
+      "sha256": "ae49a74f3ed39cca990f1d3127dd7597b172c7e43c907c7a72956cc5788874c3"
+    },
+    "acceptance": {
+      "path": "analysis/p4_f_cross_restart_preference_supersession_acceptance_2026-09-21.md",
+      "sha256": "bf69d3b8a6357963f4b542bc47d8f9eb39709fbd641dd49e64ecbfd1855a0aae"
+    }
+  },
+  "passed_scope": {
+    "two_distinct_durable_episodes_preserved": true,
+    "old_product_process_exit_observed": true,
+    "new_pid_and_session": true,
+    "same_isolated_runtime_and_memory_root": true,
+    "answer_values_absent_from_recall_prompt": true,
+    "current_and_revoked_values_resolved": true,
+    "both_episode_provenance_links_preserved": true,
+    "higher_scored_old_episode_not_mistaken_for_current": true,
+    "natural_japanese_recall_output": true,
+    "memory_graph_nodes_visible": true,
+    "recall_without_general_planner_model_call": true,
+    "database_history_not_rewritten": true
+  },
+  "actual_result": {
+    "old_write_output": "了解しました",
+    "correction_write_output": "了解しました。",
+    "recall_output": "今の好みは紅茶。前のハーブティーから更新してる。",
+    "historical_episode_id": "aa6fff5f-ebb6-4d73-b661-5c38fdbd3338",
+    "correction_episode_id": "a2baf17f-c271-4d95-b56b-a49a5990cfdc",
+    "old_pid": 70799,
+    "new_pid": 70923,
+    "old_session_id": "20260921_041025_abc55fae",
+    "new_session_id": "20260921_041239_0f54a1e3",
+    "old_retrieval_score": 1.4813,
+    "correction_retrieval_score": 1.4801,
+    "combined_user_wait_seconds": 32.1162,
+    "frozen_gate_failed_count": 0
+  },
+  "resource_accounting": {
+    "real_product_turns": 3,
+    "process_starts": 2,
+    "process_restart_count": 1,
+    "local_product_planner_model_calls": 2,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0
+  },
+  "retained_surface_gap": {
+    "status": "not_passed",
+    "observed_outputs": [
+      "了解しました",
+      "了解しました。"
+    ],
+    "reason": "The explicit memory write and correction acknowledgements are Japanese but generic and too polite for the established casual Uruha surface constraint.",
+    "p4_f_causal_memory_result_changed": false
+  },
+  "not_passed_or_not_present": {
+    "general_preference_categories_or_paraphrases": "not_established",
+    "multiple_chained_corrections": "not_established",
+    "open_domain_temporal_belief_revision": "not_established",
+    "long_conversation_reliability": "not_established",
+    "write_turn_persona_quality": "observed_gap",
+    "research_advantage": "not_established"
+  },
+  "next_stage": {
+    "id": "P4-G",
+    "single_changed_variable": "bounded casual Japanese acknowledgement authority for explicit preference memory write and correction turns",
+    "first_action": "freeze the observed 了解しました outputs as the prechange failure and locate the narrowest existing post-planner surface authority without changing P4-F memory semantics",
+    "same_p4_f_real_case_may_be_rerun": false,
+    "new_real_product_turns_before_separate_contract_freeze_authorized": 0,
+    "general_persona_prompt_or_memory_ranking_change_authorized": false,
+    "paid_api_external_deployment_or_production_memory_authorized": false
+  },
+  "claim_boundary": "This release proves one developer-authored bounded product correction case across a real process restart. It does not prove general belief revision, casual persona quality on the write turns, long-conversation reliability, a strong-LLM advantage or human-equivalent memory."
+}

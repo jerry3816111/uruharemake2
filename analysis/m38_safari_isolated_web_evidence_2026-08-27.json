@@ -1,0 +1,128 @@
+{
+  "schema": "uruha_m38_safari_isolated_web_evidence_v1",
+  "captured_at": "2026-08-27",
+  "browser": "Safari",
+  "url": "http://127.0.0.1:7875/?m38safari=1",
+  "session_id": "20260826_181004_5c15da6a",
+  "isolation": {
+    "temporary_root": "/tmp/uruha-m38-safari.qTIoLU",
+    "memory_database": "/tmp/uruha-m38-safari.qTIoLU/memory-db/chroma.sqlite3",
+    "adaptive_model": "/tmp/uruha-m38-safari.qTIoLU/adaptive-person-model.json",
+    "web_log": "/tmp/uruha-m38-safari.qTIoLU/web-log.jsonl",
+    "formal_project_database_used": false,
+    "raw_test_utterance_found_in_adaptive_model": false,
+    "adaptive_raw_dialogue_persisted_flag": false
+  },
+  "safari_tabs": {
+    "before": 26,
+    "after": 27,
+    "existing_tabs_closed": 0,
+    "new_tab_owned_by_m38": 1
+  },
+  "accepted_turns": [
+    {
+      "turn_index": 1,
+      "input": "I need one practical step I can do right now. What should I do first?",
+      "visible_reply": "まあ、今すぐできる一個だけ、一緒に決めよ。そのくらいでいいだろ。",
+      "m38_status": "fail_closed_no_pending_prediction",
+      "m34_selected_policy": "solve_regulation",
+      "visible_japanese": true,
+      "user_wait_seconds": 2.2138
+    },
+    {
+      "turn_index": 2,
+      "input": "No, that's not what I meant. Stay here with me while I wait.",
+      "visible_reply": "あー、そこ読み違えた。結果来るまでうちも一緒に待っとく。",
+      "m38_status": "linked_unique_replacement_contradiction",
+      "feedback_linked": true,
+      "previous_policy": "solve_regulation",
+      "replacement_policy": "share_arousal",
+      "m34_previous_verification": "contradicted",
+      "m34_revision": "branch_revised",
+      "m34_surface_status": "matched",
+      "visible_japanese": true,
+      "user_wait_seconds": 2.1914
+    },
+    {
+      "turn_index": 3,
+      "input": "I didn't sleep last night, but I'm not asking you to fix anything.",
+      "visible_reply": "私は昨夜寝なかったが、何かを直すようにあなたに頼んでいるわけではないんだね。",
+      "m38_status": "ordinary_negation_not_feedback",
+      "feedback_linked": false,
+      "previous_policy": "share_arousal",
+      "replacement_policy": null,
+      "m34_revision": "no_revision",
+      "visible_japanese": true,
+      "semantic_surface_correct": false,
+      "semantic_surface_failure": "speaker-role inversion: the user's first-person report was surfaced as the assistant's first-person report",
+      "user_wait_seconds": 16.182
+    },
+    {
+      "turn_index": 5,
+      "input": "Give me one practical step I can take right now.",
+      "visible_reply": "先に、今すぐできる一個だけ、一緒に決めよ。そのくらいでいいだろ。",
+      "m38_status": "fail_closed_no_pending_prediction",
+      "m34_selected_policy": "solve_regulation",
+      "visible_japanese": true,
+      "user_wait_seconds": 2.7469,
+      "role": "setup for targetless rejection"
+    },
+    {
+      "turn_index": 6,
+      "input": "違う、そういうことじゃない。",
+      "visible_reply": "あ、そっちか。さっきは読みすぎた。今の言い方で直す。 今ほしいの、止め方と、ただ聞いてほしいのと、どっちに近い？",
+      "m38_status": "fail_closed_no_replacement_target",
+      "feedback_linked": false,
+      "previous_policy": "solve_regulation",
+      "replacement_policy": null,
+      "m34_selected_policy": "calibrate_need",
+      "m34_previous_verification": "uncertain",
+      "m34_revision": "no_revision",
+      "m34_surface_status": "matched",
+      "visible_japanese": true,
+      "user_wait_seconds": 3.6365
+    }
+  ],
+  "excluded_automation_artifact": {
+    "turn_index": 4,
+    "reason": "The first Computer Use attempt used simulated Japanese keystrokes; Safari received punctuation only. The case was excluded and repeated with clipboard-safe text entry as turns 5-6.",
+    "received_text": "、。",
+    "counted_as_acceptance_evidence": false
+  },
+  "screenshots": [
+    {
+      "path": "analysis/m38_safari_unique_target_correction_chat_2026-08-27.jpeg",
+      "sha256": "77c249f34fad959a03ef01710632fad6769871a755d944314b1accfd5644ae4c"
+    },
+    {
+      "path": "analysis/m38_safari_linkage_comparison_card_2026-08-27.jpeg",
+      "sha256": "cb2cc78f64e42588e24e57815e4b17936c400ad9353aa9cb94abf052759472df"
+    },
+    {
+      "path": "analysis/m38_safari_runtime_node_graph_2026-08-27.jpeg",
+      "sha256": "3f1eef3ac2e1e52b6355f1b95f2aadabce69a1fad96287c3ce72afa69297524d"
+    },
+    {
+      "path": "analysis/m38_safari_ordinary_negation_safety_2026-08-27.jpeg",
+      "sha256": "80d046a8779f6a476036d3d49326ff99cf465f26f6ac6ab070aee88f5c26a0aa"
+    },
+    {
+      "path": "analysis/m38_safari_targetless_fail_closed_2026-08-27.jpeg",
+      "sha256": "7c6a86e69426f3b6b9b56ceba9b75c6e62c8ffc4d187ebb471e72487e3209f73"
+    },
+    {
+      "path": "analysis/m38_safari_dashboard_2026-08-27.jpeg",
+      "sha256": "aeccded7975f04b45283c1ccb1b56f70d867efdca3e5cc6f95f26b789911d4bd"
+    }
+  ],
+  "acceptance": {
+    "unique_target_correction_links_and_revises": true,
+    "ordinary_negation_does_not_revise": true,
+    "targetless_rejection_fails_closed": true,
+    "visible_output_is_japanese": true,
+    "semantic_surface_is_reliable": false,
+    "product_latency_is_uniformly_fast": false,
+    "m38_web_acceptance": "mechanism_pass_surface_and_latency_limitations_retained"
+  },
+  "claim_boundary": "This isolated Safari evidence confirms three bounded feedback-linkage behaviors in the real Web path. It does not repair the frozen formal M38 miss, establish open-domain correction, validate private intent truth, prove natural persona realization, or show human felt-understanding preference."
+}

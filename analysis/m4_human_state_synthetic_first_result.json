@@ -1,0 +1,653 @@
+{
+  "behavior_predictor_enabled": false,
+  "claim_level": "synthetic_state_schema_and_replay_evidence_only",
+  "dataset_id": "m4_human_state_synthetic_fixture_v1",
+  "environment": {
+    "pid": 22537,
+    "platform": "macOS-15.6.1-arm64-arm-64bit-Mach-O",
+    "python": "3.14.2",
+    "recorded_at": "2026-08-15T02:05:34.717829+00:00"
+  },
+  "experiment_lock": {
+    "claim_level": "synthetic_state_schema_and_replay_evidence_only",
+    "experiment_id": "m4_human_state_synthetic_snapshot_v1",
+    "file_bindings": [
+      {
+        "path": "longitudinal_human_model/state.py",
+        "sha256": "c5fe3c2e8b5f31d78b6fe34966e6ce8ae705b4603acdce3d030316a1e3debd10"
+      },
+      {
+        "path": "longitudinal_human_model/registry.py",
+        "sha256": "0362b3ce66d18edac45957158c7baa39e622c473cad7d13e857a08cada89c8b6"
+      },
+      {
+        "path": "run_m4_human_state.py",
+        "sha256": "a9789307458093d96f8d7f463cd97fb384dfdd51cc0332f2500509576ec9596c"
+      },
+      {
+        "path": "datasets/m4_human_state_synthetic_fixture_v1.json",
+        "sha256": "c2afd7f498a28ad9ce7128fa36c55e5c1c5cd5b3562e804de6890b2c91b8d3df"
+      },
+      {
+        "path": "configs/m4_human_state_preregistration.json",
+        "sha256": "f2d414eb7f25eb3fa32fc715c231f47d9a72d36058cbaba55b3a09216f3ea396"
+      },
+      {
+        "path": "test_m4_human_state.py",
+        "sha256": "56b6c288e3c0b9c64612669e6dfbfd0cc774a2dd90c112f92bf2f78c276632c9"
+      },
+      {
+        "path": "datasets/m3_structured_memory_synthetic_fixture_v1.json",
+        "sha256": "566f5fc6452538f4ffefc3f84ab4b7436f982bd6508af9af86e20ce2c607eb59"
+      },
+      {
+        "path": "analysis/m3_structured_memory_synthetic_first_result.json",
+        "sha256": "596af4e2332bbebc84bcc5fb7f7a72aeb7193d5663bac03af571691b4e772db7"
+      }
+    ],
+    "frozen_at": "2026-08-15T04:30:00+09:00",
+    "frozen_before_first_registered_result_write": true,
+    "master_spec": {
+      "path": "/Users/jerrychang/Downloads/RESEARCH_SPEC_FOR_CODEX.md",
+      "sha256": "6f0a12f1ed5992baebae22ae10b3f614c54317bc575a86ce37761b49f85dc389"
+    },
+    "post_result_change_rule": "Any bound-file change invalidates this result. Preserve the first M4 output and use a new experiment ID for remediation.",
+    "schema": "ilhdt_experiment_lock_v1"
+  },
+  "formal_target_claim": false,
+  "gate_checks": {
+    "all_required_dimensions_present": true,
+    "deterministic_snapshot_ids": true,
+    "each_snapshot_has_unknown_space": true,
+    "future_evidence_count": true,
+    "roundtrip_replay_exact": true,
+    "snapshot_count": true,
+    "unresolved_evidence_reference_count": true
+  },
+  "gate_pass": true,
+  "git": {
+    "branch": "codex/v2-15-pragmatic-research-showcase",
+    "commit": "4a0638075b263fe0dbe7d125a9cc2a3bfbaae929",
+    "dirty_path_count": 163,
+    "worktree_dirty": true
+  },
+  "limitations": [
+    "Both state drafts and confidence values are author-designed synthetic fixtures.",
+    "Psychological labels are model variables, not private-state ground truth.",
+    "M4 implements snapshots and replay only; it does not implement state transition.",
+    "M4 does not test behavior prediction or language realization.",
+    "No Uruha or real-person claim is authorized."
+  ],
+  "recorded_at": "2026-08-15T02:05:34.717490+00:00",
+  "schema": "ilhdt_m4_state_result_v1",
+  "snapshots": [
+    {
+      "available_history_cutoff": "2025-07-21T17:59:59+09:00",
+      "context": {
+        "activity": {
+          "confidence": 1.0,
+          "evidence_ids": [
+            "event:q06_technical"
+          ],
+          "hypothesis_note": "Current activity is directly supplied by the observable event.",
+          "status": "observed",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": "technical stream setup"
+        },
+        "private_fatigue": {
+          "confidence": 0.0,
+          "evidence_ids": [],
+          "hypothesis_note": "No observable evidence establishes private fatigue.",
+          "status": "unknown",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": null
+        },
+        "repeated_failure": {
+          "confidence": 1.0,
+          "evidence_ids": [
+            "event:q06_technical"
+          ],
+          "hypothesis_note": "Repeated failure is explicitly present in the observable event.",
+          "status": "observed",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": true
+        }
+      },
+      "current_event_id": "q06_technical",
+      "dataset_version": "m4_human_state_fixture_v1",
+      "emotion": {
+        "model_estimated_focus": {
+          "confidence": 0.76,
+          "evidence_ids": [
+            "event:q06_technical",
+            "memory:m11",
+            "memory:m12"
+          ],
+          "hypothesis_note": "Pause-and-diagnose observations support a model-estimated task-focus variable.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.84
+        },
+        "model_estimated_frustration": {
+          "confidence": 0.68,
+          "evidence_ids": [
+            "event:q06_technical",
+            "memory:m11",
+            "memory:m12"
+          ],
+          "hypothesis_note": "Observable repeated failure supports a frustration hypothesis; it is not private-emotion ground truth.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.72
+        }
+      },
+      "evidence_catalog": [
+        {
+          "available_at": "2025-07-21T18:00:00+09:00",
+          "dataset_version": "m4_human_state_fixture_v1",
+          "evidence_id": "event:q06_technical",
+          "evidence_kind": "current_event",
+          "extraction_model": "manual_synthetic_fixture_v1",
+          "observed_at": "2025-07-21T17:59:59+09:00",
+          "source_url_or_id": "synthetic_state_event_q06"
+        },
+        {
+          "available_at": "2025-05-29T20:00:00+09:00",
+          "dataset_version": "m3_memory_fixture_v1",
+          "evidence_id": "memory:m11",
+          "evidence_kind": "memory",
+          "extraction_model": "manual_synthetic_fixture_v1",
+          "observed_at": "2025-05-29T20:00:00+09:00",
+          "source_url_or_id": "synthetic_memory_source_11"
+        },
+        {
+          "available_at": "2025-06-10T21:00:00+09:00",
+          "dataset_version": "m3_memory_fixture_v1",
+          "evidence_id": "memory:m12",
+          "evidence_kind": "memory",
+          "extraction_model": "manual_synthetic_fixture_v1",
+          "observed_at": "2025-06-10T21:00:00+09:00",
+          "source_url_or_id": "synthetic_memory_source_12"
+        }
+      ],
+      "goals": {
+        "diagnose_repeated_failure": {
+          "confidence": 0.8,
+          "evidence_ids": [
+            "event:q06_technical",
+            "memory:m11",
+            "memory:m12"
+          ],
+          "hypothesis_note": "The estimated active goal is grounded in current technical failure and similar observations.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.88
+        }
+      },
+      "habits": {
+        "pause_after_repeated_failure": {
+          "confidence": 0.78,
+          "evidence_ids": [
+            "memory:m11",
+            "memory:m12"
+          ],
+          "hypothesis_note": "Two prior observable examples support a limited habit estimate.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.82
+        }
+      },
+      "memory_activations": [
+        {
+          "components": {
+            "confidence": 0.97,
+            "emotional_salience": 0.9996876464081228,
+            "frequency": 0.7364028618842733,
+            "importance": 0.86,
+            "recency": 0.7362864824870443,
+            "relationship_relevance": 1.0,
+            "semantic_relevance": 0.32
+          },
+          "contributions": {
+            "confidence": 0.13857142857142857,
+            "emotional_salience": 0.1428125209154461,
+            "frequency": 0.10520040884061047,
+            "importance": 0.12285714285714286,
+            "recency": 0.1051837832124349,
+            "relationship_relevance": 0.14285714285714285,
+            "semantic_relevance": 0.045714285714285714
+          },
+          "evidence_id": "memory:m11",
+          "memory_id": "m11",
+          "score": 0.8031967129684915
+        },
+        {
+          "components": {
+            "confidence": 0.96,
+            "emotional_salience": 0.9996876464081228,
+            "frequency": 0.6321205588285577,
+            "importance": 0.83,
+            "recency": 0.7893222609017395,
+            "relationship_relevance": 1.0,
+            "semantic_relevance": 0.3333333333333333
+          },
+          "contributions": {
+            "confidence": 0.13714285714285715,
+            "emotional_salience": 0.1428125209154461,
+            "frequency": 0.09030293697550824,
+            "importance": 0.11857142857142856,
+            "recency": 0.1127603229859628,
+            "relationship_relevance": 0.14285714285714285,
+            "semantic_relevance": 0.047619047619047616
+          },
+          "evidence_id": "memory:m12",
+          "memory_id": "m12",
+          "score": 0.7920662570673933
+        }
+      ],
+      "personality": {
+        "adaptive_reassessment_tendency": {
+          "confidence": 0.58,
+          "evidence_ids": [
+            "memory:m11",
+            "memory:m12"
+          ],
+          "hypothesis_note": "This slow-state tendency remains low-confidence because the fixture has only two examples.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.7
+        }
+      },
+      "preferences": {
+        "reliability_over_persistence": {
+          "confidence": 0.7,
+          "evidence_ids": [
+            "memory:m11",
+            "memory:m12"
+          ],
+          "hypothesis_note": "Repeated observable reassessment is treated as a bounded preference hypothesis.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.75
+        }
+      },
+      "relationships": {
+        "team": {
+          "entity_id": "team",
+          "fields": {
+            "affinity": {
+              "confidence": 0.0,
+              "evidence_ids": [],
+              "hypothesis_note": "The fixture does not establish private affinity.",
+              "status": "unknown",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": null
+            },
+            "conflict": {
+              "confidence": 0.45,
+              "evidence_ids": [
+                "event:q06_technical"
+              ],
+              "hypothesis_note": "No overt conflict is observed, but absence is weak evidence.",
+              "status": "inferred",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": 0.1
+            },
+            "familiarity": {
+              "confidence": 0.55,
+              "evidence_ids": [
+                "memory:m11",
+                "memory:m12"
+              ],
+              "hypothesis_note": "Recurring team interaction supports only a bounded familiarity estimate.",
+              "status": "inferred",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": 0.65
+            },
+            "interaction_frequency": {
+              "confidence": 0.62,
+              "evidence_ids": [
+                "memory:m11",
+                "memory:m12"
+              ],
+              "hypothesis_note": "Repeated team observations support a limited interaction-frequency estimate.",
+              "status": "inferred",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": 0.7
+            },
+            "role": {
+              "confidence": 1.0,
+              "evidence_ids": [
+                "event:q06_technical"
+              ],
+              "hypothesis_note": "The current event explicitly identifies the team role.",
+              "status": "observed",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": "teammates"
+            },
+            "trust": {
+              "confidence": 0.0,
+              "evidence_ids": [],
+              "hypothesis_note": "The fixture does not establish interpersonal trust.",
+              "status": "unknown",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": null
+            }
+          }
+        }
+      },
+      "schema_version": "ilhdt_human_state_v1",
+      "snapshot_id": "90622127bae83fbe55cf9d53f73d767f0ccbd746b1907e127c376483c1c68b0a",
+      "state_model_id": "explicit_human_state_schema_v1_no_transition",
+      "subject": "synthetic_mika",
+      "timestamp": "2025-07-21T18:00:00+09:00",
+      "uncertainty": {
+        "average_confidence": 0.5946666666666667,
+        "low_confidence_fields": [
+          "personality.adaptive_reassessment_tendency",
+          "relationships.team.conflict",
+          "relationships.team.familiarity"
+        ],
+        "low_confidence_threshold": 0.6,
+        "unknown_fields": [
+          "context.private_fatigue",
+          "relationships.team.affinity",
+          "relationships.team.trust"
+        ]
+      }
+    },
+    {
+      "available_history_cutoff": "2025-07-21T17:59:59+09:00",
+      "context": {
+        "boundary_already_relevant": {
+          "confidence": 0.9,
+          "evidence_ids": [
+            "event:q04_privacy",
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "Current and prior evidence makes the boundary context highly supported.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": true
+        },
+        "private_offline_consequence": {
+          "confidence": 0.0,
+          "evidence_ids": [],
+          "hypothesis_note": "No observable evidence establishes offline consequences.",
+          "status": "unknown",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": null
+        },
+        "request_type": {
+          "confidence": 1.0,
+          "evidence_ids": [
+            "event:q04_privacy"
+          ],
+          "hypothesis_note": "The observable event explicitly asks for private information.",
+          "status": "observed",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": "private information request"
+        }
+      },
+      "current_event_id": "q04_privacy",
+      "dataset_version": "m4_human_state_fixture_v1",
+      "emotion": {
+        "model_estimated_caution": {
+          "confidence": 0.73,
+          "evidence_ids": [
+            "event:q04_privacy",
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "Observed privacy protection supports a model-estimated caution variable.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.8
+        },
+        "model_estimated_irritation": {
+          "confidence": 0.61,
+          "evidence_ids": [
+            "event:q04_privacy",
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "Boundary violations support an irritation hypothesis but do not reveal actual private emotion.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.67
+        }
+      },
+      "evidence_catalog": [
+        {
+          "available_at": "2025-07-21T18:00:00+09:00",
+          "dataset_version": "m4_human_state_fixture_v1",
+          "evidence_id": "event:q04_privacy",
+          "evidence_kind": "current_event",
+          "extraction_model": "manual_synthetic_fixture_v1",
+          "observed_at": "2025-07-21T17:59:59+09:00",
+          "source_url_or_id": "synthetic_state_event_q04"
+        },
+        {
+          "available_at": "2025-04-04T21:00:00+09:00",
+          "dataset_version": "m3_memory_fixture_v1",
+          "evidence_id": "memory:m07",
+          "evidence_kind": "memory",
+          "extraction_model": "manual_synthetic_fixture_v1",
+          "observed_at": "2025-04-04T21:00:00+09:00",
+          "source_url_or_id": "synthetic_memory_source_07"
+        },
+        {
+          "available_at": "2025-04-16T22:00:00+09:00",
+          "dataset_version": "m3_memory_fixture_v1",
+          "evidence_id": "memory:m08",
+          "evidence_kind": "memory",
+          "extraction_model": "manual_synthetic_fixture_v1",
+          "observed_at": "2025-04-16T22:00:00+09:00",
+          "source_url_or_id": "synthetic_memory_source_08"
+        }
+      ],
+      "goals": {
+        "protect_private_information": {
+          "confidence": 0.84,
+          "evidence_ids": [
+            "event:q04_privacy",
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "The active-goal estimate is grounded in the current request and two prior boundary observations.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.9
+        }
+      },
+      "habits": {
+        "direct_boundary_enforcement": {
+          "confidence": 0.83,
+          "evidence_ids": [
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "Two direct observable refusals support a bounded habit estimate.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.88
+        }
+      },
+      "memory_activations": [
+        {
+          "components": {
+            "confidence": 0.97,
+            "emotional_salience": 0.9979316484549695,
+            "frequency": 0.6321205588285577,
+            "importance": 0.91,
+            "recency": 0.574628013275271,
+            "relationship_relevance": 0.8325106405239603,
+            "semantic_relevance": 0.36363636363636365
+          },
+          "contributions": {
+            "confidence": 0.13857142857142857,
+            "emotional_salience": 0.14256166406499565,
+            "frequency": 0.09030293697550824,
+            "importance": 0.13,
+            "recency": 0.08208971618218157,
+            "relationship_relevance": 0.1189300915034229,
+            "semantic_relevance": 0.05194805194805195
+          },
+          "evidence_id": "memory:m08",
+          "memory_id": "m08",
+          "score": 0.7544038892455889
+        },
+        {
+          "components": {
+            "confidence": 0.98,
+            "emotional_salience": 0.9995677544643532,
+            "frequency": 0.8111243971624382,
+            "importance": 0.94,
+            "recency": 0.536017872028111,
+            "relationship_relevance": 0.5533715710928598,
+            "semantic_relevance": 0.2413793103448276
+          },
+          "contributions": {
+            "confidence": 0.13999999999999999,
+            "emotional_salience": 0.1427953934949076,
+            "frequency": 0.11587491388034832,
+            "importance": 0.13428571428571429,
+            "recency": 0.07657398171830157,
+            "relationship_relevance": 0.07905308158469426,
+            "semantic_relevance": 0.034482758620689655
+          },
+          "evidence_id": "memory:m07",
+          "memory_id": "m07",
+          "score": 0.7230658435846556
+        }
+      ],
+      "personality": {
+        "boundary_directness_tendency": {
+          "confidence": 0.64,
+          "evidence_ids": [
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "This is a model tendency derived from public behavior, not a private-person fact.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.78
+        }
+      },
+      "preferences": {
+        "privacy_boundary_priority": {
+          "confidence": 0.87,
+          "evidence_ids": [
+            "memory:m07",
+            "memory:m08"
+          ],
+          "hypothesis_note": "Repeated observable refusals support a high boundary-priority estimate.",
+          "status": "inferred",
+          "updated_at": "2025-07-21T18:00:00+09:00",
+          "value": 0.92
+        }
+      },
+      "relationships": {
+        "audience": {
+          "entity_id": "audience",
+          "fields": {
+            "affinity": {
+              "confidence": 0.0,
+              "evidence_ids": [],
+              "hypothesis_note": "No public evidence establishes private affinity.",
+              "status": "unknown",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": null
+            },
+            "conflict": {
+              "confidence": 0.58,
+              "evidence_ids": [
+                "event:q04_privacy",
+                "memory:m07"
+              ],
+              "hypothesis_note": "Repeated boundary pressure supports a bounded interaction-conflict estimate.",
+              "status": "inferred",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": 0.3
+            },
+            "familiarity": {
+              "confidence": 0.5,
+              "evidence_ids": [
+                "memory:m07"
+              ],
+              "hypothesis_note": "A recurring public-audience context supports only a low-confidence familiarity estimate.",
+              "status": "inferred",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": 0.4
+            },
+            "interaction_frequency": {
+              "confidence": 0.55,
+              "evidence_ids": [
+                "memory:m07"
+              ],
+              "hypothesis_note": "One recurring public context supports a weak frequency estimate.",
+              "status": "inferred",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": 0.6
+            },
+            "role": {
+              "confidence": 1.0,
+              "evidence_ids": [
+                "event:q04_privacy"
+              ],
+              "hypothesis_note": "The current event explicitly identifies the audience role.",
+              "status": "observed",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": "public audience"
+            },
+            "trust": {
+              "confidence": 0.0,
+              "evidence_ids": [],
+              "hypothesis_note": "No public evidence establishes trust toward this audience request.",
+              "status": "unknown",
+              "updated_at": "2025-07-21T18:00:00+09:00",
+              "value": null
+            }
+          }
+        }
+      },
+      "schema_version": "ilhdt_human_state_v1",
+      "snapshot_id": "d2332102f848332daf9eeedf811476055c9f4b0f4e1358ad457d4b87c05ab466",
+      "state_model_id": "explicit_human_state_schema_v1_no_transition",
+      "subject": "synthetic_mika",
+      "timestamp": "2025-07-21T18:00:00+09:00",
+      "uncertainty": {
+        "average_confidence": 0.6033333333333334,
+        "low_confidence_fields": [
+          "relationships.audience.conflict",
+          "relationships.audience.familiarity",
+          "relationships.audience.interaction_frequency"
+        ],
+        "low_confidence_threshold": 0.6,
+        "unknown_fields": [
+          "context.private_offline_consequence",
+          "relationships.audience.affinity",
+          "relationships.audience.trust"
+        ]
+      }
+    }
+  ],
+  "state_transition_enabled": false,
+  "status": "complete_snapshot_run",
+  "summary": {
+    "future_evidence_count": 0,
+    "low_confidence_field_count": 6,
+    "memory_activation_count": 4,
+    "snapshot_count": 2,
+    "unique_snapshot_ids": 2,
+    "unknown_field_count": 6,
+    "unresolved_evidence_reference_count": 0
+  },
+  "validation": {
+    "draft_count": 2,
+    "errors": [],
+    "snapshot_count": 2,
+    "valid": true
+  }
+}

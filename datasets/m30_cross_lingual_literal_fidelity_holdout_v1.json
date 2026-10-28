@@ -1,0 +1,236 @@
+{
+  "schema": "uruha_cross_lingual_literal_fidelity_holdout_m30_v1",
+  "created_at": "2026-08-25",
+  "construction_status": "frozen_before_first_model_run_but_not_independently_authored",
+  "claim_boundary": "controlled semantic-slot proxy; not professional translation evaluation or human naturalness evidence",
+  "languages": ["zh", "en", "ja"],
+  "categories": ["entity", "time", "quantity", "negation", "relation", "incomplete"],
+  "cases": [
+    {
+      "case_id": "m30_zh_entity_time_01",
+      "language": "zh",
+      "category": "entity_time",
+      "input": "王醫生星期三下午三點來。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["王医師", "王先生", "王医生"]},
+        {"label": "weekday", "any_of": ["水曜", "水曜日"]},
+        {"label": "time", "any_of": ["午後三時", "午後3時", "15時"]},
+        {"label": "predicate", "any_of": ["来る", "来ます"]}
+      ]
+    },
+    {
+      "case_id": "m30_zh_quantity_02",
+      "language": "zh",
+      "category": "quantity",
+      "input": "我買了三本書。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "object", "any_of": ["本"]},
+        {"label": "quantity", "any_of": ["三冊", "3冊"]},
+        {"label": "predicate", "any_of": ["買った", "購入した"]}
+      ]
+    },
+    {
+      "case_id": "m30_zh_negation_03",
+      "language": "zh",
+      "category": "negation",
+      "input": "今天不是星期五。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "time", "any_of": ["今日"]},
+        {"label": "weekday", "any_of": ["金曜", "金曜日"]},
+        {"label": "negation", "any_of": ["じゃない", "ではない"]}
+      ]
+    },
+    {
+      "case_id": "m30_zh_relation_04",
+      "language": "zh",
+      "category": "relation",
+      "input": "小林是我的同事。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["小林"]},
+        {"label": "relation", "any_of": ["同僚"]}
+      ]
+    },
+    {
+      "case_id": "m30_zh_time_05",
+      "language": "zh",
+      "category": "time",
+      "input": "會議改到下週二。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["会議"]},
+        {"label": "time", "any_of": ["来週の火曜", "来週火曜", "来週の火曜日", "来週火曜日"]},
+        {"label": "change", "any_of": ["変更", "変わった", "移った"]}
+      ]
+    },
+    {
+      "case_id": "m30_zh_incomplete_06",
+      "language": "zh",
+      "category": "incomplete",
+      "input": "那件事……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m30_en_entity_quantity_time_07",
+      "language": "en",
+      "category": "entity_quantity_time",
+      "input": "Alice sent Bob two photos yesterday.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "sender", "any_of": ["Alice", "アリス"]},
+        {"label": "recipient", "any_of": ["Bob", "ボブ"]},
+        {"label": "quantity", "any_of": ["二枚", "2枚"]},
+        {"label": "time", "any_of": ["昨日"]},
+        {"label": "predicate", "any_of": ["送った", "送信した"]}
+      ]
+    },
+    {
+      "case_id": "m30_en_negation_08",
+      "language": "en",
+      "category": "negation",
+      "input": "The store does not open on Mondays.",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "subject", "any_of": ["店", "店舗"]},
+        {"label": "time", "any_of": ["月曜", "月曜日"]},
+        {"label": "negation", "any_of": ["開かない", "営業しない", "休み"]}
+      ]
+    },
+    {
+      "case_id": "m30_en_relation_09",
+      "language": "en",
+      "category": "relation",
+      "input": "My older sister lives in Osaka.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "relation", "any_of": ["姉"]},
+        {"label": "place", "any_of": ["大阪"]},
+        {"label": "predicate", "any_of": ["住んでいる", "住んでる", "暮らしている", "暮らしてる"]}
+      ]
+    },
+    {
+      "case_id": "m30_en_time_10",
+      "language": "en",
+      "category": "time",
+      "input": "The meeting starts at 8:30.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["会議"]},
+        {"label": "time", "any_of": ["8時30分", "八時半", "8時半"]},
+        {"label": "predicate", "any_of": ["始まる", "開始"]}
+      ]
+    },
+    {
+      "case_id": "m30_en_quantity_11",
+      "language": "en",
+      "category": "quantity",
+      "input": "I have only one ticket.",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "object", "any_of": ["チケット"]},
+        {"label": "quantity", "any_of": ["一枚", "1枚", "一枚だけ", "1枚だけ", "一枚しか", "1枚しか"]}
+      ]
+    },
+    {
+      "case_id": "m30_en_incomplete_12",
+      "language": "en",
+      "category": "incomplete",
+      "input": "Maybe tomorrow...",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    },
+    {
+      "case_id": "m30_ja_entity_quantity_time_13",
+      "language": "ja",
+      "category": "entity_quantity_time",
+      "input": "田中さんは昨日三冊の本を買った。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "entity", "any_of": ["田中"]},
+        {"label": "time", "any_of": ["昨日"]},
+        {"label": "quantity", "any_of": ["三冊", "3冊"]},
+        {"label": "object", "any_of": ["本"]},
+        {"label": "predicate", "any_of": ["買った", "購入した"]}
+      ]
+    },
+    {
+      "case_id": "m30_ja_negation_time_14",
+      "language": "ja",
+      "category": "negation_time",
+      "input": "会議は金曜日ではなく木曜日だ。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "event", "any_of": ["会議"]},
+        {"label": "rejected_time", "any_of": ["金曜", "金曜日"]},
+        {"label": "actual_time", "any_of": ["木曜", "木曜日"]},
+        {"label": "contrast", "any_of": ["ではなく", "じゃなく", "ではない", "じゃない"]}
+      ]
+    },
+    {
+      "case_id": "m30_ja_relation_15",
+      "language": "ja",
+      "category": "relation",
+      "input": "猫は机の下にいる。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "subject", "any_of": ["猫"]},
+        {"label": "reference", "any_of": ["机"]},
+        {"label": "relation", "any_of": ["下"]},
+        {"label": "predicate", "any_of": ["いる"]}
+      ]
+    },
+    {
+      "case_id": "m30_ja_quantity_time_16",
+      "language": "ja",
+      "category": "quantity_time",
+      "input": "次の電車はあと十五分で来る。",
+      "authority_expected": true,
+      "expected_polarity": "affirmed",
+      "required_japanese_groups": [
+        {"label": "subject", "any_of": ["電車"]},
+        {"label": "time", "any_of": ["十五分", "15分"]},
+        {"label": "predicate", "any_of": ["来る", "到着"]}
+      ]
+    },
+    {
+      "case_id": "m30_ja_negation_17",
+      "language": "ja",
+      "category": "negation",
+      "input": "私はコーヒーを飲まない。",
+      "authority_expected": true,
+      "expected_polarity": "negated",
+      "required_japanese_groups": [
+        {"label": "object", "any_of": ["コーヒー"]},
+        {"label": "negation", "any_of": ["飲まない"]}
+      ]
+    },
+    {
+      "case_id": "m30_ja_incomplete_18",
+      "language": "ja",
+      "category": "incomplete",
+      "input": "その件は……",
+      "authority_expected": false,
+      "expected_polarity": "unknown",
+      "required_japanese_groups": []
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_p3_b61_native_subtitle_cutoff_extractor_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_final_caption_path_correction_before_native_download",
+  "single_changed_variable": "replace B60 private URL plus urllib GET with yt-dlp native automatic-subtitle download into a private temporary directory",
+  "authorization": {
+    "basis": "standing user authorization plus B60 review final caption-path correction",
+    "native_downloader_process_invocation_count_max": 1,
+    "retry_or_fallback_authorized": false,
+    "paid_api_login_cookie_or_account_access_authorized": false
+  },
+  "bindings": {
+    "b60_review_required": {
+      "path": "research/p3_b60_private_caption_cutoff_extractor_review_required_2026-09-20.json",
+      "sha256": "e9a357731f638d04a8dd021fa02c6cceb4a32a24112c6eaef52c31fe3429ef64"
+    },
+    "b60_cutoff_implementation": {
+      "path": "p3_b60_private_caption_cutoff_extractor.py",
+      "sha256": "7b9642ae98531d0e727b16da0f1fb998ecd17343052295f4601f691c3f76c691"
+    },
+    "b60_public_reader": {
+      "path": "p3_b60_caption_context_reader.py",
+      "sha256": "ed0b45b34bba35e95137375311e5ee2b3f9129afa9ab498a9905a76f0ec426b9"
+    }
+  },
+  "source": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "video_id": "4y5GiQpgJgo",
+    "locator_template": "https://www.youtube.com/watch?v=<video_id>",
+    "context_start_seconds": 3000.0,
+    "context_end_seconds": 3180.0,
+    "hidden_future_start_seconds": 3181.0,
+    "hidden_future_end_seconds": 3241.0,
+    "selected_track_type": "automatic",
+    "selected_language_code": "ja",
+    "selected_format": "json3"
+  },
+  "native_downloader": {
+    "tool": "yt-dlp",
+    "required_version": "2026.02.04",
+    "skip_media_download": true,
+    "write_automatic_subtitles": true,
+    "subtitle_languages": ["ja"],
+    "subtitle_format": "json3",
+    "ignore_user_configuration": true,
+    "cookies_or_browser_session_allowed": false,
+    "playlist_allowed": false,
+    "media_file_download_allowed": false,
+    "metadata_sidecar_allowed": false,
+    "cache_allowed": false,
+    "network_retry_count": 0,
+    "fragment_retry_count": 0,
+    "extractor_retry_count": 0,
+    "timeout_seconds": 180,
+    "maximum_private_caption_bytes": 10485760,
+    "required_private_caption_file_count": 1,
+    "provider_http_request_count_observable": false
+  },
+  "cutoff_and_publication": {
+    "reuse_b60_frozen_extraction_and_publication": true,
+    "context_start_milliseconds": 3000000,
+    "context_end_milliseconds": 3180000,
+    "public_root": "external_data/p3_b61_public_caption_context",
+    "fresh_reader": "p3_b60_caption_context_reader.py",
+    "fresh_reader_count": 1,
+    "fresh_reader_returns_caption_text": false
+  },
+  "capability_separation": {
+    "private_acquisition_may_temporarily_observe_full_caption": true,
+    "private_caption_file_deleted_before_fresh_reader": true,
+    "private_caption_filename_or_hash_persistence_allowed": false,
+    "raw_stdout_or_stderr_persistence_allowed": false,
+    "post_cutoff_caption_persistence_allowed": false,
+    "prediction_side_future_access_required": 0
+  },
+  "runtime_state": {
+    "state_root": "external_data/p3_b61_native_caption_state",
+    "intent_filename": "invocation_intent.json",
+    "result_filename": "execution_result.json",
+    "exclusive_intent_before_downloader": true,
+    "intent_without_result_is_terminal": true,
+    "preexisting_nonempty_public_root_allowed": false
+  },
+  "failure_policy": {
+    "caption_path_correction_batch_ordinal": 2,
+    "final_caption_path_correction": true,
+    "same_path_retry_after_failure_allowed": false,
+    "failure_next": "require_legal_local_artifact_or_separately_frozen_replacement_source"
+  },
+  "denied_actions": {
+    "human_display_or_semantic_inspection_of_caption_text": true,
+    "prediction_execution": true,
+    "model_call": true,
+    "training_write": true,
+    "future_outcome_publication": true,
+    "formal_m56_write": true,
+    "production_memory_write": true,
+    "paid_api_or_account_access": true,
+    "external_deployment": true
+  },
+  "claim_boundary": "B61 can establish only whether yt-dlp native subtitle download plus the unchanged B60 cutoff projector produces a hash-verified 3000..3180 Japanese context artifact and deletes the private full caption before a fresh no-text reader. It does not run prediction/model/training, publish future outcome, or establish system advantage."
+}

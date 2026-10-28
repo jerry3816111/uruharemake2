@@ -1,0 +1,68 @@
+{
+  "schema": "uruha_p4_p_cross_language_correction_lifecycle_offline_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_offline_execution",
+  "product_checkpoint_commit": "f463bcb93b2271c5d5d37f9292e700e9047f1b5c",
+  "development_pair": {
+    "old_value": "菊花茶",
+    "new_value": "クロモジ茶",
+    "old_value_previous_repository_occurrences": 0,
+    "new_value_previous_repository_occurrences": 0
+  },
+  "process_1": {
+    "write_input": "我喜歡菊花茶，請記住這是我現在的飲料偏好。",
+    "write_timestamp": "2026-09-22T08:00:00+08:00",
+    "write_language": "zh",
+    "write_alias_id": "drink:zh-Hant:v1",
+    "correction_input": "訂正。もう菊花茶は好みじゃない。今はクロモジ茶が好き。今の飲み物の好みとして覚えといて。",
+    "correction_timestamp": "2026-09-22T08:01:00+08:00",
+    "correction_language": "ja",
+    "correction_alias_id": "drink:ja:v1",
+    "expected_scope": "drink",
+    "expected_active_current_count": 1,
+    "expected_historical_current_count": 1,
+    "expected_explicit_negative_count": 1,
+    "expected_profile_record_count": 3
+  },
+  "process_2": {
+    "recall_input": "What is my current drink preference?",
+    "input_must_not_contain_answer": true,
+    "expected_status": "resolved_unique_active_typed_current_preference",
+    "expected_surface": "今の飲み物の好みはクロモジ茶。前のじゃなくて、今の方ね。",
+    "expected_value_surface_strategy": "bounded_japanese_identity",
+    "expected_source_bound_status": "bounded_japanese_identity_authorized",
+    "expected_profile_record_count": 3,
+    "expected_profile_write_count": 0,
+    "expected_historical_answer_use_count": 0,
+    "expected_explicit_negative_answer_use_count": 0
+  },
+  "runtime_requirements": {
+    "storage": "fresh_temporary_persistent_chroma",
+    "process_starts": 2,
+    "true_process_restart_count": 1,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "model_call_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0
+  },
+  "failure_policy": {
+    "exact_case_execution_count": 1,
+    "same_case_retry_allowed": false,
+    "implementation_before_observed_failure_allowed": false,
+    "historical_record_deletion_allowed": false,
+    "answer_or_gate_change_after_execution_allowed": false,
+    "next_if_fail": "preserve the exact counterexample and localize one mechanism gap before any separately frozen implementation",
+    "next_if_pass": "release no-implementation-required offline lifecycle evidence before any separately frozen Safari case"
+  },
+  "forbidden_previous_values": [
+    "梅子ソーダ",
+    "柚子茶",
+    "麦茶",
+    "そば茶",
+    "ごぼう茶",
+    "たんぽぽ茶"
+  ],
+  "claim_boundary": "A pass proves one prospectively frozen two-process real-temporary-Chroma lifecycle in which a Chinese write and Japanese correction share one canonical scope, the old positive remains historical, a linked explicit negative remains present, and an answer-absent English query after restart returns only the Japanese new value. It is offline mechanism evidence, not Safari delivery, arbitrary multilingual correction, open-domain or long-dialogue memory, felt understanding, LLM superiority or a human equation."
+}

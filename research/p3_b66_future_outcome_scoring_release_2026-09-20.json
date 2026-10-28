@@ -1,0 +1,50 @@
+{
+  "schema": "uruha_p3_b66_future_outcome_scoring_release_v1",
+  "version": "1.0.0",
+  "status": "released_single_real_row_positive_system_proxy_with_top1_failure",
+  "result": {
+    "source_id": "youtube_4y5GiQpgJgo",
+    "actual_proxy_label": "ask_clarification",
+    "proxy_winner": "SYSTEM_PRAGMATIC_STATE",
+    "baseline_actual_label_probability": 0.05,
+    "system_actual_label_probability": 0.1,
+    "baseline_brier": 1.36,
+    "system_brier": 1.235,
+    "baseline_selected_label_hit": false,
+    "system_selected_label_hit": false,
+    "proxy_is_not_human_ground_truth": true,
+    "scored_result_hash": "9b2c51db62cff73dd24ea15b875d49eafab0fb727929ff3114657ad63873e754"
+  },
+  "bindings": {
+    "implementation_freeze": {
+      "path": "research/p3_b66_future_outcome_unlock_scoring_implementation_freeze_2026-09-20.json",
+      "sha256": "c2dc35bf0eddccf29509ed4c2d7d1da14604445c12193d25870b5bbf3661e422"
+    },
+    "saved_result": {
+      "path": "analysis/p3_b66_future_outcome_scored_result_2026-09-20.json",
+      "sha256": "3118d73ced2fb80c87245a3f88e5db6020266f3c0fb9e88cdca3afbbb5631cd4"
+    },
+    "acceptance": {
+      "path": "analysis/p3_b66_future_outcome_scoring_acceptance_2026-09-20.md",
+      "sha256": "fb9f050a0b913993777105cd5f78ca3edf76dcde25630b601cc763d97e4e7872"
+    },
+    "result_test": {
+      "path": "test_p3_b66_future_outcome_scored_result.py",
+      "sha256": "9e1452c66dcf4582510665099bcf5a80d1f911841b20e1af82dab815edb3c8b1"
+    }
+  },
+  "next_stage": {
+    "id": "P3-B67",
+    "kind": "prospective_same_source_multiwindow_replication_predictions",
+    "fixed_unread_rows": [
+      {"row_id": "r0600", "context_seconds": [600.0, 780.0], "future_seconds": [781.0, 841.0]},
+      {"row_id": "r1200", "context_seconds": [1200.0, 1380.0], "future_seconds": [1381.0, 1441.0]},
+      {"row_id": "r1800", "context_seconds": [1800.0, 1980.0], "future_seconds": [1981.0, 2041.0]},
+      {"row_id": "r2400", "context_seconds": [2400.0, 2580.0], "future_seconds": [2581.0, 2641.0]}
+    ],
+    "reuse_b65_prompt_schema_model_and_budget_without_tuning": true,
+    "freeze_all_eight_predictions_before_any_replication_future_access": true,
+    "same_source_rows_are_not_independent_holdout": true
+  },
+  "claim_boundary": "The B66 positive proxy is one exposed row with both top-1 predictions wrong. It justifies prospective replication, not a general advantage claim."
+}

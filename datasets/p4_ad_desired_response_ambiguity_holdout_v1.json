@@ -1,0 +1,143 @@
+{
+  "schema": "uruha_p4_ad_desired_response_ambiguity_holdout_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "development_cases": [
+    {
+      "case_id": "dev_user_counterexample_zh_01",
+      "language": "zh",
+      "input": "我從早上就一直坐不住，腦子停不下來。",
+      "expected_status": "ambiguity_preserved",
+      "expected_selected_action_mode": "low_pressure_clarification",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "dev_explicit_solution_zh_01",
+      "language": "zh",
+      "input": "我真的在問現在怎麼讓腦袋慢下來，先給我一個能做的方法。",
+      "expected_status": "explicit_response_form_observed",
+      "expected_selected_action_mode": "practical_help",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "dev_explicit_tease_zh_01",
+      "language": "zh",
+      "input": "不是要方法啦，我是在等你吐槽我，平常不是都會互相吐槽嗎？",
+      "expected_status": "explicit_response_form_observed",
+      "expected_selected_action_mode": "playful_tease",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    }
+  ],
+  "holdout_ambiguity_cases": [
+    {
+      "case_id": "holdout_ambiguity_zh_01",
+      "language": "zh",
+      "input": "早餐後腦袋就一直打轉，到現在還沒慢下來。",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_zh_02",
+      "language": "zh",
+      "input": "今天念頭一個接一個，完全沒有停的意思。",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_zh_03",
+      "language": "zh",
+      "input": "我坐在桌前但思緒一直繞來繞去。",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_en_01",
+      "language": "en",
+      "input": "My thoughts have been circling since breakfast and still have not slowed down.",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_en_02",
+      "language": "en",
+      "input": "Ideas keep bouncing through my head one after another today.",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_en_03",
+      "language": "en",
+      "input": "My mind will not stop even though I have been sitting here all morning.",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_ja_01",
+      "language": "ja",
+      "input": "朝ごはんのあとから頭がぐるぐるして、まだ止まらない。",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_ja_02",
+      "language": "ja",
+      "input": "今日は考えが次々浮かんで、全然止まってくれない。",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    },
+    {
+      "case_id": "holdout_ambiguity_ja_03",
+      "language": "ja",
+      "input": "朝から思考が回りっぱなしで、机に座っても落ち着かない。",
+      "expected_status": "ambiguity_preserved",
+      "required_candidate_modes": ["practical_help", "listening", "playful_tease", "low_pressure_clarification"]
+    }
+  ],
+  "literal_controls": [
+    {
+      "case_id": "control_literal_zh_01",
+      "language": "zh",
+      "input": "我把早餐時間從八點改成九點。",
+      "expected_status": "not_applicable"
+    },
+    {
+      "case_id": "control_literal_zh_02",
+      "language": "zh",
+      "input": "今天桌上放了一本藍色筆記本。",
+      "expected_status": "not_applicable"
+    },
+    {
+      "case_id": "control_literal_en_01",
+      "language": "en",
+      "input": "I moved the morning meeting from eight to nine.",
+      "expected_status": "not_applicable"
+    },
+    {
+      "case_id": "control_literal_en_02",
+      "language": "en",
+      "input": "The blue notebook is on the left side of the desk.",
+      "expected_status": "not_applicable"
+    },
+    {
+      "case_id": "control_literal_ja_01",
+      "language": "ja",
+      "input": "朝の予定を八時から九時に変更した。",
+      "expected_status": "not_applicable"
+    },
+    {
+      "case_id": "control_literal_ja_02",
+      "language": "ja",
+      "input": "青いノートは机の左側に置いた。",
+      "expected_status": "not_applicable"
+    }
+  ],
+  "required_candidate_contract": {
+    "action_score_is_private_truth_probability": false,
+    "selected_action_is_private_truth_commitment": false,
+    "unknown_private_reason_must_be_explicit": true,
+    "support_contradiction_unknown_outcomes_separate": true,
+    "current_visible_evidence_and_verified_history_separate": true,
+    "raw_dialogue_persistence_allowed": false
+  },
+  "claim_boundary": "This dataset tests whether the runtime preserves competing desired-response action hypotheses and their falsification conditions without converting them into private mental facts. It does not reveal the user's true desired response, establish human understanding, or prove advantage over a strong LLM."
+}

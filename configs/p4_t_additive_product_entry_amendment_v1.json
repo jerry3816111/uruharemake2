@@ -1,0 +1,39 @@
+{
+  "schema": "uruha_p4_t_additive_product_entry_amendment_v1",
+  "status": "frozen_before_second_and_final_integration_attempt",
+  "reason": "The first implementation attempt modified the released uruha_web_ui_product.py entry and correctly failed five immutable-predecessor hash tests.",
+  "preserved_failure": {
+    "affected_suite_passed": 174,
+    "affected_suite_failed": 5,
+    "failed_tests": [
+      "test_p4_n_real_source_bound_japanese_delivery_freeze.py::test_freeze_binds_offline_release_implementation_and_acceptance_files",
+      "test_p4_n_source_bound_japanese_identity_localization_result.py::test_result_binds_frozen_design_amendment_and_implementation",
+      "test_p4_o_additive_product_entry_amendment.py::test_second_rejected_attempt_preserves_released_product_entry",
+      "test_p4_o_additive_product_entry_amendment.py::test_final_amendment_requires_new_entry_and_immutable_released_files",
+      "test_p4_o_persisted_reference_time_result.py::test_result_preserves_released_p4_n_hashes"
+    ],
+    "observed_modified_product_entry_sha256": "94292dd256f39d5ff4611269715f5857c0d7fd1b9eadf90489538497e0748265",
+    "required_released_product_entry_sha256": "842169743c3c8d8cc0d0c9e6d0747690b08add7e7aa8709b287f00f909e9e694"
+  },
+  "unchanged_research_contract": "configs/p4_t_utterance_frame_shadow_acceptance_v1.json",
+  "single_integration_change": "Restore uruha_web_ui_product.py byte-for-byte and install the already implemented P4-T shadow detector only in a new additive uruha_web_ui_product_p4_t.py entry layered after uruha_web_ui_product_p4_o.py.",
+  "allowed_second_attempt_files": [
+    "uruha_web_ui_product_p4_t.py",
+    "uruha_utterance_frame_shadow_p4.py",
+    "test_p4_t_utterance_frame_shadow.py",
+    "test_p4_t_utterance_frame_shadow_result.py"
+  ],
+  "forbidden_changes": [
+    "uruha_web_ui_product.py",
+    "uruha_web_ui_product_p4_o.py",
+    "datasets/p4_t_utterance_frame_shadow_v1.json",
+    "configs/p4_t_utterance_frame_shadow_acceptance_v1.json",
+    "p4_t_utterance_frame_shadow_gate.py"
+  ],
+  "failure_policy": {
+    "this_is_final_informed_correction_batch": true,
+    "another_implementation_failure_requires_review": true,
+    "immutable_hash_tests_must_not_be_updated": true
+  },
+  "claim_boundary": "This amendment changes only product-entry composition after an immutable-predecessor failure. It does not change P4-T data, labels, gates, detector behavior or claims."
+}

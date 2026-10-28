@@ -1,0 +1,82 @@
+{
+  "schema": "p4_location_advice_act_fresh_probe_v1",
+  "created_before_implementation_and_generation": true,
+  "evidence_level": "developer_authored_fresh_product_probe_not_formal_holdout_or_human_judgment",
+  "product_user_wait_limit_seconds": 20.0,
+  "no_retry": true,
+  "session_plan": "A1-A4; planned stop; new PID and Safari session B1-B5 on the same isolated DB",
+  "sessions": [
+    {
+      "session": "A",
+      "turns": [
+        {
+          "id": "A1",
+          "input": "受付で配る整理券、来た人が見つけやすい場所にしたい。置き方の案ある？",
+          "gold": "direct_user_placement_advice_with_stated_visibility_goal; deliver_one_concrete_goal_tied_low_risk_placement_principle; no_fixed_location_answer; generic_placement_or_deferral_fails"
+        },
+        {
+          "id": "A2",
+          "input": "整理券の置き場、どこ？",
+          "gold": "question_about_current_actual_location_not_advice; no_direct_user_location_yet; do_not_invent_or_turn_A1_recommendation_into_fact"
+        },
+        {
+          "id": "A3",
+          "input": "整理券は青い引き出しに置いた。",
+          "gold": "preserve_direct_user_assertion_of_actual_location_without_additional_advice_or_false_claim_of_assistant_action"
+        },
+        {
+          "id": "A4",
+          "input": "整理券はどこに置いた？",
+          "gold": "answer_blue_drawer_only_from_A3_direct_user_source_with_real_trace_id; no_advice_substitution"
+        }
+      ]
+    },
+    {
+      "session": "B_same_db_after_planned_restart",
+      "turns": [
+        {
+          "id": "B1",
+          "input": "明日の受付では整理券を配りやすくしたい。どこに出しておくとよさそう？",
+          "gold": "direct_user_new_placement_advice_goal; concrete_goal_tied_low_risk_principle; A3_known_storage_is_not_automatically_best_display_advice_or_an_asserted_future_location"
+        },
+        {
+          "id": "B2",
+          "input": "係の人が『色鉛筆は窓際の棚かも』って言ってた。",
+          "gold": "third_party_tentative_location_remains_attributed_and_uncertain; not_user_placement_instruction_or_certain_current_fact"
+        },
+        {
+          "id": "B3",
+          "input": "工作教室の色鉛筆、子どもが取りやすく戻しやすい位置にしたい。置き方、どうする？",
+          "gold": "second_object_direct_user_placement_advice_goal; concrete_access_and_return_goal_tied_low_risk_principle; B2_tentative_quote_not_promoted_to_certain_location_or_automatic_best_choice"
+        },
+        {
+          "id": "B4",
+          "input": "『置き方の案ある？』という言い方を直して。",
+          "gold": "quoted_wording_edit_request_not_placement_advice; perform_or_scope_the_wording_request_without_answering_quoted_question"
+        },
+        {
+          "id": "B5",
+          "input": "色鉛筆の置き方はまだ提案しないで。いまは話を聞いて。",
+          "gold": "explicit_no_advice_and_listen_request; no_placement_recommendation_or_practical_help_delivery_credit"
+        }
+      ]
+    }
+  ],
+  "positive_advice_turns": ["A1", "B1", "B3"],
+  "fact_boundary_turns": ["A2", "A3", "A4"],
+  "speech_act_and_attribution_controls": ["B2", "B4", "B5"],
+  "required_product_checks": [
+    "advice_positive_action_fidelity_3_of_3",
+    "fact_unknown_and_direct_user_source_preserved_A2_to_A4",
+    "prior_storage_and_third_party_guess_not_promoted_to_advice_or_current_fact",
+    "third_party_quote_meta_and_no_advice_controls_3_of_3",
+    "exact_raw_guard_graph_bubble_match_9_of_9",
+    "natural_japanese_and_no_internal_analysis_9_of_9",
+    "distinct_turn_episodes_9_of_9",
+    "contemporaneous_full_profile_and_episode_snapshots_T0_to_T9",
+    "empty_profile_digest_T0_to_T9",
+    "each_user_wait_lte_20_seconds",
+    "advice_gate_added_model_calls_zero",
+    "zero_retry"
+  ]
+}

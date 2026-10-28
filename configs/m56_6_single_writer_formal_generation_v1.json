@@ -1,0 +1,65 @@
+{
+  "schema": "uruha_m56_single_writer_formal_generation_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_any_real_m56_generation_call",
+  "single_changed_variable": "prevention of concurrent local execution for the same formal-generation run id",
+  "public_api": {
+    "function": "execute_single_writer_formal_generation",
+    "parameters": [
+      "run_id"
+    ],
+    "lock_override_allowed": false,
+    "provider_injection_allowed": false,
+    "prediction_injection_allowed": false,
+    "outcome_injection_allowed": false,
+    "readiness_injection_allowed": false,
+    "retry_or_fallback_override_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_5_crash_safe_no_retry_continuation_v1.json": "11e0b6ec47dd49f1a40eabbe5abadefeb6d5b9b8abfebdd04fbbc28fa733634b",
+    "m56_5_crash_safe_no_retry_continuation.py": "70c0aab4089f131b0bda7000fa6260861b936bed76b2f547cf101a115f856fa6",
+    "research/m56_5_crash_safe_no_retry_continuation_implementation_freeze_2026-09-02.json": "c900aef07d3c3cdacfdaf5856211f93dc6dd08818c2f831f0143494698695fa9"
+  },
+  "lock_boundary": {
+    "scope": "one_local_host_and_one_run_id",
+    "mechanism": "nonblocking_os_advisory_exclusive_lock",
+    "fixed_file_in_private_telemetry_compartment": true,
+    "symlink_allowed": false,
+    "regular_file_required": true,
+    "current_process_owner_required": true,
+    "single_hard_link_required": true,
+    "group_or_world_permissions_allowed": false,
+    "descriptor_path_identity_revalidated": true,
+    "held_for_entire_m56_5_delegate": true,
+    "released_on_normal_return_or_exception": true,
+    "released_by_os_on_process_death": true,
+    "persistent_lock_file_is_authority": false
+  },
+  "contention_policy": {
+    "wait_allowed": false,
+    "second_delegate_entry_allowed": false,
+    "second_transport_attempt_allowed": false,
+    "second_process_may_write_terminal_failure": false,
+    "retry_count": 0,
+    "fallback_count": 0
+  },
+  "unchanged_m56_5_semantics": {
+    "prompt_and_schedule": true,
+    "checkpoint_and_intent": true,
+    "model_and_generation_parameters": true,
+    "no_retry_and_no_fallback": true,
+    "outcome_isolation": true,
+    "final_submission_commitment_and_release": true,
+    "m56_4_scoring_contract": true
+  },
+  "authorization": {
+    "formal_generation_now": false,
+    "formal_scoring": false,
+    "target_outcome_access": false,
+    "formal_result_claim": false,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "synthetic_concurrency_fixture_is_human_evidence": false
+  },
+  "claim_boundary": "M56.6 may establish only cooperative single-writer execution for one formal run id on one local host. It cannot establish malicious-host exclusion, distributed locking, human evidence, actual model performance, Equation V1 validity, a solved human-response equation, full-pipeline readiness, or production readiness."
+}

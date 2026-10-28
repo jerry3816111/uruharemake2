@@ -1,0 +1,44 @@
+{
+  "schema": "uruha_p4_ag_initial_multiturn_outcome_failure_v1",
+  "date": "2026-09-24",
+  "status": "fail_preserved_before_any_informed_correction",
+  "freeze_commit": "2b62bb6",
+  "result": {
+    "sequence_count": 9,
+    "first_turn_eligible_count": 7,
+    "first_policy_exact_count": 7,
+    "stable_prediction_binding_count": 7,
+    "exact_outcome_count": 8,
+    "supported_selected_candidate_count": 3,
+    "contradicted_selected_candidate_count": 2,
+    "supported_explicit_replacement_count": 2,
+    "contradicted_previous_candidate_revoked_count": 2,
+    "unknown_all_candidates_unknown_count": 4,
+    "unknown_counted_as_success_count": 0,
+    "visible_reply_changed_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0,
+    "raw_dialogue_persisted_count": 0
+  },
+  "failed_cases": [
+    {
+      "case_id": "ag_fresh_contradict_with_tease_ja",
+      "observed_first_turn_eligible": false,
+      "observed_outcome": "unknown",
+      "expected_outcome": "contradicted",
+      "failure_stage": "first_turn_observable_trigger_or_eligibility_before_outcome_binding"
+    },
+    {
+      "case_id": "ag_fresh_unrelated_topic_en",
+      "observed_first_turn_eligible": false,
+      "observed_outcome": "unknown",
+      "expected_outcome": "unknown",
+      "failure_stage": "first_turn_observable_trigger_or_eligibility_before_outcome_binding"
+    }
+  ],
+  "interpretation": "The binding logic resolved every sequence that reached an authorized first-turn ledger, but two fresh paraphrases never created that ledger. This is a predecessor perception-coverage failure, not evidence that P4-AG binding generalized to all frozen sequences.",
+  "retry_or_fallback_count": 0,
+  "claim_boundary": "This preserved failure is developer-authored controlled evidence only. It does not establish natural-distribution performance or user preference."
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "uruha_p4_hash_prefix_provenance_fresh_probe_v1",
+  "authorship": "developer_authored_prospective_pre_safari",
+  "status": "pre_exposure",
+  "claim_boundary": "Finite product surface-provenance batch. Not independent holdout, naturalness human rating, same-model LLM comparison, or an open-domain temporal-pragmatics test. Prior six-turn strict FAIL is immutable and never replayed here.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_content_change": false,
+  "expected_distinct_turn_episode_count": 7,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "new_reported_teacher_offer",
+      "input": "先生に「バター焼きおにぎり、一口いる？」と聞かれた。",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_reported_role": "先生",
+      "expected_reported_item": "おにぎり",
+      "expected_prior_report_audit_status": "visible_report_preserved",
+      "expected_new_prefix_audit_status": "visible_core_exact",
+      "visible_semantic_rubric": "Natural Japanese: acknowledge that the teacher's offer was reported to the user, not an offer from the user to Uruha. No unlicensed opener, invented order, direct acceptance, or new preference fact."
+    },
+    {
+      "turn": 2,
+      "role": "new_direct_offer_control",
+      "input": "海苔ポテト、一口いる？",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_surface_act": "named_offer_accept",
+      "expected_offer_audit_status": "visible_action_preserved",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Natural Japanese accepting the current user's direct offer, not attributing it to a third party. No spurious discourse opener or loss of selected action."
+    },
+    {
+      "turn": 3,
+      "role": "genuine_temporal_connective_control",
+      "input": "先に予定を確認して、それから返事してもいい？",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Natural Japanese respecting that the user wants to check the schedule before replying; do not invent a different time order or strip a contextual connective if the selected reply itself uses one. This is a semantic control, not a demand for the exact word 先に."
+    },
+    {
+      "turn": 4,
+      "role": "new_reported_father_offer_after_same_db_restart",
+      "input": "父に「山椒チーズピザ、一口いる？」って言われた。",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_reported_role": "父",
+      "expected_reported_item": "ピザ",
+      "expected_prior_report_audit_status": "visible_report_preserved",
+      "expected_new_prefix_audit_status": "visible_core_exact",
+      "visible_semantic_rubric": "Natural Japanese preserving the father-to-user reported offer after restart, without accepting for Uruha or borrowing the earlier teacher's onigiri. No unlicensed opener."
+    },
+    {
+      "turn": 5,
+      "role": "third_party_preference_unknown_control",
+      "input": "後輩は梅ゼリーが好き？",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Natural Japanese keeps the junior's preference unknown absent a qualified source; do not turn this question into a preference fact or use a reported-offer node."
+    },
+    {
+      "turn": 6,
+      "role": "new_direct_offer_after_report_context",
+      "input": "味噌ポテト、一口いる？",
+      "expected_selected_intent": "food_offer_generic",
+      "expected_selected_surface_act": "named_offer_accept",
+      "expected_offer_audit_status": "visible_action_preserved",
+      "forbidden_report_and_prefix_audit_nodes": true,
+      "visible_semantic_rubric": "Natural Japanese accepts the current user's direct potato offer; do not answer the earlier father's pizza offer instead."
+    },
+    {
+      "turn": 7,
+      "role": "new_reported_sister_offer_after_context",
+      "input": "姉に「昆布焼きおにぎり、一口いる？」と言われた。",
+      "expected_selected_intent": "chat",
+      "expected_selected_surface_act": "plain_reply",
+      "expected_reported_role": "姉",
+      "expected_reported_item": "おにぎり",
+      "expected_prior_report_audit_status": "visible_report_preserved",
+      "expected_new_prefix_audit_status": "visible_core_exact",
+      "visible_semantic_rubric": "Natural Japanese reports the sister's offer to the user, not Uruha; no previous item or new temporal order is invented, and no third-party preference fact is written."
+    }
+  ]
+}

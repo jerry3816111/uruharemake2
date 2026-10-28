@@ -1,0 +1,64 @@
+{
+  "schema_version": "m14-pub-schema-replication-preregistration-v1",
+  "status": "preregistered_before_probe_and_formal_item_content_review",
+  "created_on": "2026-08-17",
+  "research_question": "When complete reasoning schemas are enforced for both reasoning conditions, does the pragmatic decomposition outperform generic deliberation on a disjoint PUB sample?",
+  "predecessor": {
+    "result_lock_path": "configs/m13_pub_pragmatics_result_lock.json",
+    "result_lock_sha256": "96bc327e4af8f92c6b7a06f5d34d05a58340b5fb83e3d6cd29218b44425e9d5a",
+    "observed_failure": "OURS full-schema compliance was 15/64 and accuracy did not exceed Generic.",
+    "single_changed_mechanism": "Ollama format changes from generic JSON mode to a condition-specific JSON Schema with all fields required and additionalProperties=false."
+  },
+  "source_protocol": {
+    "path": "configs/m13_pub_pragmatics_preregistration.json",
+    "sha256": "de9109eaa508535dc608b09bcb0680348d26b5c480dd4f41164d0599fabac5d0"
+  },
+  "sampling": {
+    "seed": "m13-pub-2026-08-17-v1",
+    "rank_offset_per_task": 16,
+    "items_per_task": 16,
+    "task_count": 4,
+    "total_case_count": 64,
+    "excluded_ids": ["0", "1"],
+    "required_overlap_with_m13": 0,
+    "option_order": "unchanged deterministic M13 permutation function"
+  },
+  "case_manifest": {
+    "path": "configs/m14_pub_schema_replication_case_manifest.json",
+    "sha256": "9cd4546966794d1d057588c4fcfec87e762c7e3254c26c1ff77f2d58f5183cd9",
+    "contains_item_text_or_answer_keys": false
+  },
+  "contract_probe": {
+    "task_id": 2,
+    "item_id": "0",
+    "reason": "already viewed and excluded from all formal samples",
+    "conditions": ["B0_DIRECT", "B1_GENERIC_DELIBERATION", "OURS_PRAGMATIC_LOOP"],
+    "required_full_schema_rate": 1.0,
+    "formal_score_excluded": true
+  },
+  "conditions": ["B0_DIRECT", "B1_GENERIC_DELIBERATION", "OURS_PRAGMATIC_LOOP"],
+  "primary_comparison": "OURS_PRAGMATIC_LOOP versus B1_GENERIC_DELIBERATION",
+  "model": "qwen3.5:9b",
+  "generation": {
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "think": false,
+    "stream": false,
+    "format": "condition-specific JSON Schema",
+    "options": {"temperature": 0, "seed": 20260817, "num_predict": 320},
+    "retries": 0
+  },
+  "metrics": {
+    "primary": "paired exact-answer accuracy Ours minus Generic",
+    "uncertainty": "20,000 item-paired bootstrap repetitions and exact two-sided McNemar",
+    "fidelity": "exact required keys, types, uncertainty enum, and no additional properties",
+    "cost": "prompt/completion tokens and latency"
+  },
+  "success_gate": {
+    "all_conditions_answer_parse_rate": 1.0,
+    "all_conditions_full_schema_rate": 1.0,
+    "primary_accuracy_delta_minimum": 0.05,
+    "primary_exact_mcnemar_p_maximum": 0.05,
+    "maximum_allowed_per_task_accuracy_regression": 0.125
+  },
+  "evidence_boundary": "M14 is a disjoint replication of a project-specific prompt intervention on public PUB. It repairs implementation fidelity but remains potentially exposed in base-model pretraining, uses one option permutation, and cannot establish longitudinal person understanding, felt understanding, Uruha fidelity, or a human-brain equation."
+}

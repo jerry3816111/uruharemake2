@@ -1,0 +1,51 @@
+{
+  "schema": "uruha_p4_b_safe_isolated_product_launcher_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_first_real_product_server_launch",
+  "bindings": {
+    "contract": {
+      "path": "configs/p4_b_safe_isolated_product_launcher_contract_v1.json",
+      "sha256": "43b8c1ef0ac73b59ec80c83e28e0353dcfa3e5a21994caed8716fcdf382cebdf"
+    },
+    "launcher": {
+      "path": "p4_b_safe_isolated_product_launcher.py",
+      "sha256": "a11b9043a0c88c811da7fb6fef616bcc2f2a835c5005783f0c56e58ff62b2128"
+    },
+    "tests": {
+      "path": "test_p4_b_safe_isolated_product_launcher.py",
+      "sha256": "e268efdd9621c5a6b9e0539775448a1e3eb25bdab7399a02a54a8e93f1908865"
+    },
+    "offline_result": {
+      "path": "analysis/p4_b_safe_isolated_product_launcher_offline_result_2026-09-20.json",
+      "sha256": "06efa89b50f29da7e35fd691acbc73a4068eaf3088c29b9ca92dac57a019ce1a"
+    }
+  },
+  "offline_gate": {
+    "focused_test_count": 16,
+    "focused_test_pass_count": 16,
+    "actual_product_import_probe_passed": true,
+    "server_start_count": 0,
+    "model_call_count": 0,
+    "safari_operation_count": 0
+  },
+  "real_launch_contract": {
+    "entrypoint": "uruha_web_ui_product.py",
+    "host": "127.0.0.1",
+    "port": 7860,
+    "prewarm": false,
+    "isolated_runtime_required": true,
+    "preserve_runtime_for_restart_check": true,
+    "automatic_retry": false,
+    "public_share": false,
+    "external_deployment": false
+  },
+  "forbidden_changes_after_freeze": [
+    "brain_or_prompt_change",
+    "research_data_or_gate_change",
+    "function_calling_or_vrm_integration",
+    "production_memory_access",
+    "public_host_or_share",
+    "login_cookie_or_paid_api"
+  ],
+  "claim_boundary": "The freeze authorizes one real isolated localhost launch and its bounded acceptance. It does not authorize model tuning, tool execution, VRM integration, external deployment, or any research-effect claim."
+}

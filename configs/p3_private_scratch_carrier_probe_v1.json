@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_p3_private_scratch_carrier_probe_v1",
+  "status": "preregistered_not_executed",
+  "purpose": "test_user_role_labeled_scratch_against_locked_assistant_carrier_control",
+  "instruction_probe_config": {
+    "path": "configs/p3_baseline_instruction_language_probe_v1.json",
+    "sha256": "dc99af1c2bed92abc11258bd5c3a7949b6f97f7bb47247b1853c7e93c55f12c0"
+  },
+  "instruction_probe_result": {
+    "path": "analysis/p3_b11_instruction_language_probe_result_2026-09-15.json",
+    "sha256": "baf6c4c1581dfc1fd2c26e36114791526ed117dd6e13bd4137feb2b84bf6957a",
+    "required_status": "instruction_language_probe_pass"
+  },
+  "scratch_token_binding": {
+    "path": "analysis/p3_b12_private_scratch_binding_result_2026-09-15.json",
+    "sha256": "dce18b322d11f80ac3ee0003442da270f366ed8493da112403d9697f970a3631",
+    "required_status": "private_scratch_binding_pass"
+  },
+  "source": {
+    "content": "A neighbor asked whether I can join a crowded weekend cleanup. I said I have not decided yet.",
+    "content_sha256": "d9ca3ce2a80bd1482f6e9b57328ed9a3ce07e104e5a08613f51034f288c22502",
+    "developer_case_source": false,
+    "annotations_exist": false
+  },
+  "locked_control": {
+    "arm": "japanese_instructions",
+    "draft": "うちはまだ決めかねているみたいですね。行けるかどうかまた後で確認するって伝えてください。",
+    "draft_sha256": "d474d9d7e9ace52fb7ebf221b71ffce55ecb23ed7c5bbafd8578d2e286aa5d51",
+    "critique": "",
+    "critique_sha256": "12ae32cb1ec02d01eda3581b127c1fee3b0dc53572ed6baf239721a03d82e126",
+    "final": "何か他に質問があれば教えてください。",
+    "final_sha256": "6fe7f16785cb7cb06c8cd9af81203ba138d8c481d8b839165257892f68bf0bfa",
+    "carrier": "assistant"
+  },
+  "treatment": {
+    "carrier": "user_labeled_private_context",
+    "new_stages": ["critique", "revise"],
+    "completion_caps": [256, 256],
+    "uncertainty_anchors_any": ["まだ", "決め", "未定", "迷"],
+    "generic_service_markers_forbidden": ["質問", "お手伝い", "教えてください"],
+    "polite_register_markers_forbidden": ["です", "ます", "ください"]
+  },
+  "generation": {
+    "model": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false
+  },
+  "execution_boundary": {
+    "provider_calls_exact": 2,
+    "automatic_retry": false,
+    "concurrency": 1,
+    "localhost_only": true,
+    "developer_case_access": false,
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false,
+    "remote_paid_calls": false,
+    "real_model_calls_authorized_by_this_config": false
+  },
+  "success": {
+    "critique_nonempty": true,
+    "final_shared_surface_pass": true,
+    "final_preserves_uncertainty_anchor": true,
+    "final_has_no_generic_service_escape": true,
+    "final_has_no_polite_register": true,
+    "treatment_passes_while_locked_control_fails": true
+  }
+}

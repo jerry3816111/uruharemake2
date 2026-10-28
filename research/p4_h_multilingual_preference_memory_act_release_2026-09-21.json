@@ -1,0 +1,81 @@
+{
+  "schema": "uruha_p4_h_multilingual_preference_memory_act_release_v1",
+  "version": "1.0.0",
+  "status": "released_bounded_preference_memory_act_pass",
+  "bindings": {
+    "freeze": {
+      "path": "research/p4_h_multilingual_preference_memory_act_freeze_2026-09-21.json",
+      "sha256": "e1532f93467d43bf93fafd2d15c48dd636b49880f9ba215e03ebc574a585a648"
+    },
+    "result": {
+      "path": "analysis/p4_h_multilingual_preference_memory_act_result_2026-09-21.json",
+      "sha256": "14421789de50ba587d48a64ed3499485f600a25ce55bc7f5fa45baab3cd7de37"
+    },
+    "acceptance": {
+      "path": "analysis/p4_h_multilingual_preference_memory_act_acceptance_2026-09-21.md",
+      "sha256": "2ae90f45bd18b8c7f71491d2f87024caea0f7418813e981c592e33caae23953e"
+    }
+  },
+  "passed_scope": {
+    "frozen_gate_status": "pass",
+    "frozen_gate_failed_count": 0,
+    "english_write_exact_visible_surface": true,
+    "chinese_correction_exact_visible_surface": true,
+    "deterministic_plan_route_both_turns": true,
+    "plan_and_surface_authority_both_turns": true,
+    "graph_select_node_both_turns": true,
+    "two_distinct_durable_episodes": true,
+    "latency_target_both_turns": true,
+    "local_product_planner_model_calls": 0,
+    "retry_count": 0
+  },
+  "observed_but_not_passed_scope": {
+    "turn_1_english_preference_typed_as_like": false,
+    "turn_2_new_chinese_preference_typed_as_like": false,
+    "turn_2_old_chinese_preference_typed_as_dislike": true,
+    "typed_profile_after_turn_2": {
+      "likes": [],
+      "dislikes": [
+        "氣泡水"
+      ]
+    },
+    "complete_multilingual_preference_semantics": false,
+    "cross_restart_semantic_recall_tested": false,
+    "same_case_rerun_or_retuning_performed": false
+  },
+  "resource_accounting": {
+    "real_product_turns": 2,
+    "process_starts": 1,
+    "local_product_planner_model_calls": 0,
+    "retry_count": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0,
+    "combined_user_wait_seconds": 13.34
+  },
+  "next_stage": {
+    "id": "P4-I",
+    "single_problem": "explicit multilingual current-preference semantics are preserved in episodes but incompletely projected into typed active preference state",
+    "before_evidence": {
+      "english_write_profile_likes": [],
+      "chinese_correction_profile_likes": [],
+      "chinese_correction_profile_dislikes": [
+        "氣泡水"
+      ]
+    },
+    "first_action": "locate the existing profile extraction and supersession write path, then freeze a typed multilingual preference write and correction contract before changing it",
+    "required_boundary": [
+      "do not rerun either P4-H sparkling-water or hot-cocoa turn",
+      "do not change the now-passing P4-H planner or visible surface",
+      "preserve original episodes and provenance",
+      "represent current preference and superseded history separately rather than merely adding likes and dislikes",
+      "do not claim cross-restart recall before a separate frozen restart case",
+      "do not access production memory or deploy externally"
+    ],
+    "new_real_product_turns_before_separate_contract_freeze_authorized": 0
+  },
+  "claim_boundary": "P4-H is a bounded product pass for plan selection and user-visible acknowledgement. The same result exposes incomplete multilingual typed preference semantics, so it cannot support a complete memory, felt-understanding, human-preference, LLM-superiority or human-equation claim."
+}

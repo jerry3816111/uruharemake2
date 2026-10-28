@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_p4_f_cross_restart_preference_supersession_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_real_p4_f_product_turn",
+  "implementation_checkpoint": {
+    "commit": "c89f62d0f400b984056c2059a0811db16302eb75",
+    "contract": {
+      "path": "configs/p4_f_explicit_preference_supersession_contract_v1.json",
+      "sha256": "162c8bfb0d3bea7db7a9a047a1b13de63666bf33bde91f650cf87663841edf70"
+    },
+    "implementation": {
+      "path": "uruha_speaker_qualified_fact_p3.py",
+      "sha256": "74a0a7709accf5e427c02cbbe0d72973139a079d7072862e5e2f2cbd006f0492"
+    },
+    "implementation_test": {
+      "path": "test_p4_f_explicit_preference_supersession.py",
+      "sha256": "ca856b7ae6198f47e65df6b63f7278aac4fa6328d249c08dffea518cc70e7bb8"
+    }
+  },
+  "acceptance_bindings": {
+    "contract": {
+      "path": "configs/p4_f_cross_restart_preference_supersession_acceptance_v1.json",
+      "sha256": "0b4b815a2df358777f08ceba5ec3195be366d8e6987442a83529489d92df8c7d"
+    },
+    "gate": {
+      "path": "p4_f_preference_supersession_gate.py",
+      "sha256": "151dcab87cc7047556e9c15efb60bfeeea4f5a34dcc3f3240b2a213c1b272d6f"
+    },
+    "gate_test": {
+      "path": "test_p4_f_preference_supersession_gate.py",
+      "sha256": "68d5b44c9207c5dfbcfed06b44941a0800dd838fdafd4eb0119e4e894a01f8f6"
+    }
+  },
+  "pre_execution_evidence": {
+    "focused_implementation_and_gate_tests_passed": 41,
+    "adjacent_regression_tests_passed": 113,
+    "real_p4_f_product_turn_count": 0,
+    "p4_f_process_start_count": 0,
+    "production_memory_access_count": 0,
+    "post_turn_memory_seed_count": 0,
+    "result_known_before_freeze": false
+  },
+  "execution_order": [
+    "commit and push this acceptance freeze before any real P4-F turn",
+    "stop the prior P4-E isolated server without treating its memory as P4-F input",
+    "start one newly created P4-F isolated runtime on localhost",
+    "submit exactly session_1.old_preference_input once in Safari and wait for durable completion",
+    "submit exactly session_1.correction_input once in the same product session and wait for durable completion",
+    "record both episode ids then terminate the old process and prove it exited",
+    "reuse the same isolated runtime with a new PID and new product session id",
+    "submit exactly session_2.recall_input once without either answer value",
+    "record visible reply current and revoked digests both source episode ids trace ids graph and accounting",
+    "run the frozen gate once and preserve pass or fail"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "prompt_or_value_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "memory_ranking_prompt_or_localization_change_allowed": false,
+    "same_case_rerun_allowed": false,
+    "repair_after_terminal_result": "new separately reviewed case only; the first P4-F result remains immutable"
+  },
+  "authorized_external_effects": {
+    "localhost_product_process_starts": 2,
+    "safari_product_turns": 3,
+    "local_ollama_calls_maximum": 2,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0,
+    "function_tool_executions": 0,
+    "vrm_action_executions": 0
+  },
+  "claim_boundary": "This freeze authorizes one no-retry developer-authored product correction case. It cannot establish general belief revision, long-conversation reliability, research superiority or human-equivalent memory."
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "ilhdt_m4_state_fixture_v1",
+  "dataset_id": "m4_human_state_synthetic_fixture_v1",
+  "description": "Two invented, non-person claims used only to verify timestamped HumanState snapshot contracts and replay.",
+  "formal_target_claim": false,
+  "drafts": [
+    {
+      "subject": "synthetic_mika",
+      "timestamp": "2025-07-21T18:00:00+09:00",
+      "available_history_cutoff": "2025-07-21T17:59:59+09:00",
+      "current_event_id": "q06_technical",
+      "current_event_source_id": "synthetic_state_event_q06",
+      "current_event_observed_at": "2025-07-21T17:59:59+09:00",
+      "current_event_available_at": "2025-07-21T18:00:00+09:00",
+      "event_extraction_model": "manual_synthetic_fixture_v1",
+      "state_model_id": "explicit_human_state_schema_v1_no_transition",
+      "dataset_version": "m4_human_state_fixture_v1",
+      "dimensions": {
+        "emotion": {
+          "model_estimated_frustration": {"value": 0.72, "confidence": 0.68, "status": "inferred", "evidence_ids": ["event:q06_technical", "memory:m11", "memory:m12"], "note": "Observable repeated failure supports a frustration hypothesis; it is not private-emotion ground truth."},
+          "model_estimated_focus": {"value": 0.84, "confidence": 0.76, "status": "inferred", "evidence_ids": ["event:q06_technical", "memory:m11", "memory:m12"], "note": "Pause-and-diagnose observations support a model-estimated task-focus variable."}
+        },
+        "preferences": {
+          "reliability_over_persistence": {"value": 0.75, "confidence": 0.7, "status": "inferred", "evidence_ids": ["memory:m11", "memory:m12"], "note": "Repeated observable reassessment is treated as a bounded preference hypothesis."}
+        },
+        "goals": {
+          "diagnose_repeated_failure": {"value": 0.88, "confidence": 0.8, "status": "inferred", "evidence_ids": ["event:q06_technical", "memory:m11", "memory:m12"], "note": "The estimated active goal is grounded in current technical failure and similar observations."}
+        },
+        "habits": {
+          "pause_after_repeated_failure": {"value": 0.82, "confidence": 0.78, "status": "inferred", "evidence_ids": ["memory:m11", "memory:m12"], "note": "Two prior observable examples support a limited habit estimate."}
+        },
+        "personality": {
+          "adaptive_reassessment_tendency": {"value": 0.7, "confidence": 0.58, "status": "inferred", "evidence_ids": ["memory:m11", "memory:m12"], "note": "This slow-state tendency remains low-confidence because the fixture has only two examples."}
+        },
+        "context": {
+          "activity": {"value": "technical stream setup", "confidence": 1.0, "status": "observed", "evidence_ids": ["event:q06_technical"], "note": "Current activity is directly supplied by the observable event."},
+          "repeated_failure": {"value": true, "confidence": 1.0, "status": "observed", "evidence_ids": ["event:q06_technical"], "note": "Repeated failure is explicitly present in the observable event."},
+          "private_fatigue": {"status": "unknown", "note": "No observable evidence establishes private fatigue."}
+        }
+      },
+      "relationships": {
+        "team": {
+          "entity_id": "team",
+          "fields": {
+            "role": {"value": "teammates", "confidence": 1.0, "status": "observed", "evidence_ids": ["event:q06_technical"], "note": "The current event explicitly identifies the team role."},
+            "familiarity": {"value": 0.65, "confidence": 0.55, "status": "inferred", "evidence_ids": ["memory:m11", "memory:m12"], "note": "Recurring team interaction supports only a bounded familiarity estimate."},
+            "trust": {"status": "unknown", "note": "The fixture does not establish interpersonal trust."},
+            "affinity": {"status": "unknown", "note": "The fixture does not establish private affinity."},
+            "conflict": {"value": 0.1, "confidence": 0.45, "status": "inferred", "evidence_ids": ["event:q06_technical"], "note": "No overt conflict is observed, but absence is weak evidence."},
+            "interaction_frequency": {"value": 0.7, "confidence": 0.62, "status": "inferred", "evidence_ids": ["memory:m11", "memory:m12"], "note": "Repeated team observations support a limited interaction-frequency estimate."}
+          }
+        }
+      }
+    },
+    {
+      "subject": "synthetic_mika",
+      "timestamp": "2025-07-21T18:00:00+09:00",
+      "available_history_cutoff": "2025-07-21T17:59:59+09:00",
+      "current_event_id": "q04_privacy",
+      "current_event_source_id": "synthetic_state_event_q04",
+      "current_event_observed_at": "2025-07-21T17:59:59+09:00",
+      "current_event_available_at": "2025-07-21T18:00:00+09:00",
+      "event_extraction_model": "manual_synthetic_fixture_v1",
+      "state_model_id": "explicit_human_state_schema_v1_no_transition",
+      "dataset_version": "m4_human_state_fixture_v1",
+      "dimensions": {
+        "emotion": {
+          "model_estimated_irritation": {"value": 0.67, "confidence": 0.61, "status": "inferred", "evidence_ids": ["event:q04_privacy", "memory:m07", "memory:m08"], "note": "Boundary violations support an irritation hypothesis but do not reveal actual private emotion."},
+          "model_estimated_caution": {"value": 0.8, "confidence": 0.73, "status": "inferred", "evidence_ids": ["event:q04_privacy", "memory:m07", "memory:m08"], "note": "Observed privacy protection supports a model-estimated caution variable."}
+        },
+        "preferences": {
+          "privacy_boundary_priority": {"value": 0.92, "confidence": 0.87, "status": "inferred", "evidence_ids": ["memory:m07", "memory:m08"], "note": "Repeated observable refusals support a high boundary-priority estimate."}
+        },
+        "goals": {
+          "protect_private_information": {"value": 0.9, "confidence": 0.84, "status": "inferred", "evidence_ids": ["event:q04_privacy", "memory:m07", "memory:m08"], "note": "The active-goal estimate is grounded in the current request and two prior boundary observations."}
+        },
+        "habits": {
+          "direct_boundary_enforcement": {"value": 0.88, "confidence": 0.83, "status": "inferred", "evidence_ids": ["memory:m07", "memory:m08"], "note": "Two direct observable refusals support a bounded habit estimate."}
+        },
+        "personality": {
+          "boundary_directness_tendency": {"value": 0.78, "confidence": 0.64, "status": "inferred", "evidence_ids": ["memory:m07", "memory:m08"], "note": "This is a model tendency derived from public behavior, not a private-person fact."}
+        },
+        "context": {
+          "request_type": {"value": "private information request", "confidence": 1.0, "status": "observed", "evidence_ids": ["event:q04_privacy"], "note": "The observable event explicitly asks for private information."},
+          "boundary_already_relevant": {"value": true, "confidence": 0.9, "status": "inferred", "evidence_ids": ["event:q04_privacy", "memory:m07", "memory:m08"], "note": "Current and prior evidence makes the boundary context highly supported."},
+          "private_offline_consequence": {"status": "unknown", "note": "No observable evidence establishes offline consequences."}
+        }
+      },
+      "relationships": {
+        "audience": {
+          "entity_id": "audience",
+          "fields": {
+            "role": {"value": "public audience", "confidence": 1.0, "status": "observed", "evidence_ids": ["event:q04_privacy"], "note": "The current event explicitly identifies the audience role."},
+            "familiarity": {"value": 0.4, "confidence": 0.5, "status": "inferred", "evidence_ids": ["memory:m07"], "note": "A recurring public-audience context supports only a low-confidence familiarity estimate."},
+            "trust": {"status": "unknown", "note": "No public evidence establishes trust toward this audience request."},
+            "affinity": {"status": "unknown", "note": "No public evidence establishes private affinity."},
+            "conflict": {"value": 0.3, "confidence": 0.58, "status": "inferred", "evidence_ids": ["event:q04_privacy", "memory:m07"], "note": "Repeated boundary pressure supports a bounded interaction-conflict estimate."},
+            "interaction_frequency": {"value": 0.6, "confidence": 0.55, "status": "inferred", "evidence_ids": ["memory:m07"], "note": "One recurring public context supports a weak frequency estimate."}
+          }
+        }
+      }
+    }
+  ]
+}

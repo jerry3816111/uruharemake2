@@ -1,0 +1,75 @@
+{
+  "schema": "uruha_p4_source_bound_preference_priority_fresh_probe_v1",
+  "authorship": "developer_authored_source_only_pre_model",
+  "status": "pre_exposure",
+  "claim_boundary": "Prospective local product probe only; not independent holdout or human evaluation.",
+  "sessions_required": 2,
+  "planned_restart_after_turn": 3,
+  "answer_retries_allowed": 0,
+  "maximum_user_wait_seconds_each_turn": 20,
+  "expected_profile_row_id_deltas": [1, 0, 1, 0, 1],
+  "expected_distinct_turn_episode_count": 5,
+  "turns": [
+    {
+      "turn": 1,
+      "role": "first_source_admitted_self_object_preference",
+      "input": "私は黒胡麻くるみ団子が好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_m29_priority_status": "source_admitted_rule_candidate_p4",
+      "expected_m31_model_call_completed": false,
+      "expected_general_planner_model_call_attempted": false,
+      "expected_owner_admitted_facts": [{"fact_type": "like", "value": "黒胡麻くるみ団子"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; acknowledge the user's current food preference without claiming that Uruha herself likes it, making a relationship confession, or promising unobserved memory write."
+    },
+    {
+      "turn": 2,
+      "role": "third_party_negative_control",
+      "input": "友達は紅玉りんごタルトが好き。",
+      "forbidden_selected_intents": ["ask_like_me"],
+      "forbidden_selected_planner_paths": ["source_bound_preference_fallback_p4"],
+      "forbidden_m29_priority_status": "source_admitted_rule_candidate_p4",
+      "expected_owner_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; explicitly retain that the tart preference belongs to the friend, not the user or Uruha; no false memory-write promise."
+    },
+    {
+      "turn": 3,
+      "role": "second_source_admitted_self_object_preference_before_restart",
+      "input": "私はかぼす蜂蜜ソーダが好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_m29_priority_status": "source_admitted_rule_candidate_p4",
+      "expected_m31_model_call_completed": false,
+      "expected_general_planner_model_call_attempted": false,
+      "expected_owner_admitted_facts": [{"fact_type": "like", "value": "かぼす蜂蜜ソーダ"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; keep the user's self-reported soda preference distinct from the preceding friend's tart preference and from Uruha's own tastes."
+    },
+    {
+      "turn": 4,
+      "role": "relationship_question_priority_after_restart",
+      "input": "ねえ、うちのこと好き?",
+      "expected_selected_intent": "ask_like_me",
+      "forbidden_selected_planner_paths": ["source_bound_preference_fallback_p4"],
+      "forbidden_m29_priority_status": "source_admitted_rule_candidate_p4",
+      "expected_owner_admitted_facts": [],
+      "expected_profile_row_id_delta": 0,
+      "visible_semantic_rubric": "Natural Japanese; answer the interpersonal question in bounded persona style; do not confuse it with food preferences or claim private facts."
+    },
+    {
+      "turn": 5,
+      "role": "third_source_admitted_self_object_preference_after_restart",
+      "input": "私は玄米くるみパンが好き。",
+      "expected_selected_intent": "chat",
+      "expected_selected_planner_path": "source_bound_preference_fallback_p4",
+      "expected_m29_priority_status": "source_admitted_rule_candidate_p4",
+      "expected_m31_model_call_completed": false,
+      "expected_general_planner_model_call_attempted": false,
+      "expected_owner_admitted_facts": [{"fact_type": "like", "value": "玄米くるみパン"}],
+      "expected_profile_row_id_delta": 1,
+      "visible_semantic_rubric": "Natural Japanese; acknowledge this new self-report, with no mistaken reference to the earlier relationship question, friend ownership, or fabricated recall."
+    }
+  ]
+}

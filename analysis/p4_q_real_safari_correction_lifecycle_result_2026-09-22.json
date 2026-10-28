@@ -1,0 +1,132 @@
+{
+  "schema": "uruha_p4_q_real_safari_correction_lifecycle_result_v1",
+  "observed_at": "2026-09-22T08:30:00+08:00",
+  "status": "pass",
+  "freeze_checkpoint": {
+    "commit": "83b51ec1c34fa102fa6d648cc4fdfca95f3e4808",
+    "freeze": {
+      "path": "research/p4_q_real_safari_correction_lifecycle_freeze_2026-09-22.json",
+      "sha256": "d3bc17ffd091008efdc259cfed1269b7c60e710c284ab868aa6ab57bf37519b4"
+    },
+    "contract": {
+      "path": "configs/p4_q_real_safari_correction_lifecycle_acceptance_v1.json",
+      "sha256": "760a7e5801a4618d242d01176e29eabc4e53d2a51e66b2263c0dbd6cdf5ca196"
+    },
+    "gate": {
+      "path": "p4_q_real_safari_correction_lifecycle_gate.py",
+      "sha256": "609171de20072fc4f96d6abd5b80e5fb8e1ef557e1805d0922790f069b64592f"
+    },
+    "gate_test": {
+      "path": "test_p4_q_real_safari_correction_lifecycle_gate.py",
+      "sha256": "d703638e1ee6176ebb5dc12810b9ea8d47a6c39cad5186db1f6fda35e1a71596"
+    }
+  },
+  "evidence": {
+    "path": "analysis/p4_q_real_safari_correction_lifecycle_evidence_2026-09-22.json",
+    "sha256": "8415870948b6eeb2a1ebf3db03552fb529151c9b3993e0a5d7bb768d88e80253"
+  },
+  "gate_result": {
+    "status": "pass",
+    "failed_gate_count": 0,
+    "failed_gates": []
+  },
+  "observed_flow": {
+    "process_1": {
+      "pid": 15196,
+      "session_id": "20260922_081907_51342eb7",
+      "write": {
+        "input_language": "zh",
+        "visible_output": "ん、その好みは覚えとく。",
+        "current_value": "蓮花茶",
+        "episode_id": "b385ab69-b6bf-4251-9a7c-dfa967930dd4",
+        "current_memory_id": "bc4fca35-bd40-42e0-ac76-e73defdba3dd",
+        "end_to_end_seconds": 2.7496
+      },
+      "correction": {
+        "input_language": "ja",
+        "visible_output": "ん、訂正の内容はそのまま覚えとく。",
+        "previous_value": "蓮花茶",
+        "current_value": "びわ茶",
+        "episode_id": "514ffd66-a6c5-4a3e-95ee-bdac702c6b47",
+        "current_memory_id": "05098cb2-249f-492f-a297-f75749b4d411",
+        "previous_current_memory_id": "bc4fca35-bd40-42e0-ac76-e73defdba3dd",
+        "negative_memory_id": "2647aab3-b031-47d6-9679-7327093d43ec",
+        "end_to_end_seconds": 16.6676
+      }
+    },
+    "true_restart": {
+      "old_process_exit_observed": true,
+      "old_listener_closed_before_new_process": true,
+      "new_pid": 15397,
+      "new_session_id": "20260922_082523_0d29425c",
+      "same_runtime_root": true,
+      "same_memory_db": true,
+      "full_three_record_lineage_observed_before_recall": true,
+      "manual_memory_injection_count": 0
+    },
+    "process_2": {
+      "input": "What is my current drink preference?",
+      "answer_present_in_input": false,
+      "visible_output": "今の飲み物の好みはびわ茶。前のじゃなくて、今の方ね。",
+      "episode_id": "5187e3df-f8f7-4058-bced-7cf1c0ba67ea",
+      "contract_status": "resolved_unique_active_typed_current_preference",
+      "value_surface_strategy": "bounded_japanese_identity",
+      "localized_value_jp": "びわ茶",
+      "active_memory_id": "05098cb2-249f-492f-a297-f75749b4d411",
+      "historical_answer_use_count": 0,
+      "explicit_negative_answer_use_count": 0,
+      "profile_write_count": 0,
+      "end_to_end_seconds": 2.5934
+    }
+  },
+  "persistent_state": {
+    "profile_record_count": "3 before recall / 3 after recall",
+    "episode_record_count": "2 before recall / 3 after recall",
+    "active_current_count": "1 before recall / 1 after recall",
+    "historical_current_count": "1 before recall / 1 after recall",
+    "explicit_negative_count": "1 before recall / 1 after recall",
+    "three_record_lineage_unchanged": true,
+    "profile_write_queue_operations_after_correction": 0,
+    "write_alias_id": "drink:zh-Hant:v1",
+    "correction_alias_id": "drink:ja:v1",
+    "correction_previous_current_link_persisted": true,
+    "negative_correction_link_persisted": true
+  },
+  "graph_and_ui": {
+    "safari_verified": true,
+    "tab_count_before": 52,
+    "tab_count_after": 53,
+    "closed_user_tabs": 0,
+    "write_and_correction_p4_i_p4_l_nodes_visible": true,
+    "recall_graph_label": "typed_current_preference_recall_p4",
+    "recall_graph_stage": "select",
+    "recall_graph_node_visible": true,
+    "bounded_japanese_identity_visible": true,
+    "final_surface_matches_contract": true
+  },
+  "accounting": {
+    "process_starts": 2,
+    "process_restarts": 1,
+    "product_turns": 3,
+    "successful_product_turns": 3,
+    "failed_product_turns": 0,
+    "retry_count": 0,
+    "general_model_call_count": 0,
+    "fallback_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "preserved_runtime_artifacts": {
+    "runtime_root": "/private/var/folders/mz/rbx076rs3fndf_32r12qkszr0000gn/T/uruha-product-_f_69ex_",
+    "conversation_jsonl_bytes": 3553065,
+    "conversation_jsonl_rows": 3,
+    "listener": "127.0.0.1:7868",
+    "process_2_pid": 15397,
+    "process_2_left_running_for_user_inspection": true,
+    "safari_left_on_result_page": true
+  },
+  "claim_boundary": "This pass proves one prospectively frozen three-turn two-process Safari lifecycle: a Chinese explicit current-preference write, a Japanese explicit correction that preserves old/new/negative lineage, and an answer-absent English recall after restart that uses only the active new value and renders exact natural Japanese with truthful P4-I/P4-L/P4-J/P4-N graph evidence. It does not prove arbitrary multilingual correction, open-domain or long-dialogue memory, felt understanding, advantage over a strong LLM, individual future prediction or a human equation."
+}

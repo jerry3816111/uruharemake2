@@ -1,0 +1,65 @@
+{
+  "schema": "uruha_p4_z_source_bound_proposition_acceptance_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_implementation",
+  "dataset": {
+    "path": "datasets/p4_z_source_bound_proposition_v1.json",
+    "sha256": "1a31725461ec87d24c72fdfb9bd70fc7c0f9afbcb525c89266b26d6347138762",
+    "development_case_count": 3,
+    "holdout_case_count": 9,
+    "faithful_control_count": 6,
+    "unsupported_control_count": 3
+  },
+  "predecessor": {
+    "source_atom_module": "uruha_source_semantic_atoms_m33.py",
+    "source_atom_module_sha256": "e92352a11c2cb2ec28449c6b7727cda68f69cb17ff5f69d5e7017961ba383683",
+    "visible_repair_module": "uruha_frame_preserving_visible_repair_p4.py",
+    "visible_repair_module_sha256": "67a360b1c00deccf402877295818a42005cb8b1c0ff075f54733d5e61ab81f30",
+    "graph_delivery_module": "uruha_runtime_graph_trace_delivery_p4.py",
+    "graph_delivery_module_sha256": "0f4fdbb45077fd7cd6744b7012e0058fc83b47686c74637ad23b281ecd4bf689",
+    "product_entry": "uruha_web_ui_product_p4_y.py",
+    "product_entry_sha256": "1a98ebdca03d834c10e1d2777b1f08d8933e9a21a77ccf49c16db1a9e70c9f1a"
+  },
+  "before_gates": {
+    "development_m33_unavailable_count": 3,
+    "development_existing_frame_after_zero_count": 3,
+    "development_exact_proposition_failure_count": 3
+  },
+  "implementation_gates": {
+    "development_exact_contract_count": 3,
+    "development_exact_reply_count": 3,
+    "development_verified_after_count": 3,
+    "holdout_exact_contract_count": 9,
+    "holdout_exact_reply_count": 9,
+    "holdout_verified_after_count": 9,
+    "faithful_control_unchanged_count": 6,
+    "unsupported_control_abstained_count": 3,
+    "unsupported_control_unchanged_count": 3,
+    "trace_raw_source_or_reply_count": 0,
+    "new_model_call_count": 0,
+    "fact_write_count": 0,
+    "profile_write_count": 0,
+    "episode_write_count": 0
+  },
+  "integration_gates": {
+    "graph_trace_exact_payload_count": 3,
+    "graph_surface_chain_exact_count": 3,
+    "visible_reply_exact_count": 3,
+    "logic_trace_exact_count": 3
+  },
+  "required_graph_surface_chain": [
+    "utterance_frame_shadow_p4",
+    "utterance_frame_shadow_extension_p4",
+    "frame_preserving_visible_repair_p4",
+    "source_bound_proposition_preservation_p4",
+    "utterance"
+  ],
+  "failure_policy": {
+    "holdout_prompt_rewrite_after_result_allowed": false,
+    "candidate_keyword_invention_allowed": false,
+    "unsupported_source_repair_allowed": false,
+    "p4_x_or_p4_y_input_reuse_as_holdout_allowed": false,
+    "failed_result_must_be_preserved": true
+  },
+  "claim_boundary": "A pass proves deterministic preservation and repair for prospectively frozen synthetic cases in three bounded grammar families, plus unchanged controls and trace delivery. It does not establish open-domain proposition recovery, natural-distribution accuracy, translation quality, human preference, felt understanding, strong-LLM advantage or a human equation."
+}

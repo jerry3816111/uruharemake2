@@ -1,0 +1,7232 @@
+"""Fail-closed non-B prototype with isolated synthetic process probes.
+
+The ordinary public live path has no Ollama launcher or HTTP client. Only an
+exact fake diagnostic marker may fork local test children or exec a fixed
+non-network synthetic native child. No fake result authorizes installed
+identity, the B prompt bound, or Safari Send. The
+seven-operation fake worker contains raw request data, while parent-facing
+summaries and frames are allowlisted.
+"""
+
+from __future__ import annotations
+
+from copy import deepcopy
+import ctypes
+import errno
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import re
+import resource
+import secrets
+import select
+import signal
+import socket
+import stat
+import struct
+import sys
+import tempfile
+import threading
+import time
+from typing import Any
+import urllib.request
+
+from p4_b_isolated_ollama_identity_probe import (
+    FROZEN_DAEMON_SHA256, FROZEN_MANIFEST_SHA256, FROZEN_RUNNER_SHA256,
+    GGUF_SHA256, MODEL, SYSTEM_SHA256, TEMPLATE_SHA256, VERSION,
+)
+from p4_b_non_b_usage_parity import fixed_transformed_request
+from uruha_p4_b_child_local_identity import ProbeError, observe_process, raw_generation
+
+
+FRAME_LIMIT = 4096
+REQUEST_LIMIT = 256 * 1024
+RESPONSE_LIMIT = 2 * 1024 * 1024
+JOURNAL_NAME = "journal.json"
+RECEIPT_NAME = "receipt.json"
+_SHA = re.compile(r"[0-9a-f]{64}\Z")
+_RUN = re.compile(r"[A-Za-z0-9._-]{1,128}\Z")
+_NONCE = re.compile(r"[0-9a-f]{32}\Z")
+_SEVEN_PREHASH_LEAF = "synthetic-prehash-v4.bin"
+_SEVEN_PREHASH_BYTES = b"URUHA_P4B_FAKE_HASH_V4\n"
+# Independently frozen expectations; never derive these from the fixture.
+_SEVEN_PREHASH_SHA256 = "2d2078a1d31c931402d626a1321b74731099a9144b32d6aa37e6718c968e95a7"
+_SEVEN_PREHASH_LOGICAL_BYTES = 23
+_SEVEN_PREHASH_LIMIT = 1024 * 1024
+_STAGES = (
+    "before_metadata", "after_render", "before_tokenize_true",
+    "before_tokenize_default", "before_completion", "after_completion",
+)
+_PATHS = (
+    ("daemon", "GET", "/api/version"),
+    ("daemon", "GET", "/api/tags"),
+    ("daemon", "POST", "/api/show"),
+    ("daemon", "POST", "/v1/chat/completions"),
+    ("runner", "POST", "/tokenize"),
+    ("runner", "POST", "/tokenize"),
+    ("daemon", "POST", "/v1/chat/completions"),
+)
+_GRANT_FIELDS = frozenset({
+    "run_id", "worker", "ordinal", "target_role", "port", "method",
+    "path", "payload_sha256", "expires_at",
+})
+_WORKER_FIELDS = frozenset({"pid", "ppid", "start_sec", "start_usec"})
+_DAEMON_FIELDS = frozenset({
+    "pid", "ppid", "raw_generation", "pgid", "port", "argv_sha256",
+    "binary_sha256", "manifest_sha256", "template_sha256",
+    "system_sha256", "gguf_sha256",
+})
+_RUNNER_FIELDS = frozenset({
+    "pid", "ppid", "raw_generation", "pgid", "port", "argv_sha256",
+    "binary_sha256", "gguf_sha256",
+})
+_SOURCE_FIELDS = frozenset({
+    "source_revision", "version", "renderer", "parser", "messages",
+    "manifest_messages", "daemon_argv", "runner_argv", "gguf_pre",
+    "gguf_model", "gguf_add_bos_token", "model_num_ctx",
+    "daemon_default_num_ctx", "normal_request_options",
+    "render_request_options",
+})
+_HTTP_FIELDS = frozenset({
+    "requested_url", "effective_url", "proxy_used", "redirected",
+    "status", "body",
+})
+
+
+class LiveOperatorError(RuntimeError):
+    """Only a fixed, raw-free code is exposed from an injected effect."""
+
+
+def _fail(code: str) -> None:
+    raise LiveOperatorError(code) from None
+
+
+def _canonical(value: Any, code: str) -> bytes:
+    failed = False
+    raw = b""
+    try:
+        raw = json.dumps(value, ensure_ascii=False, sort_keys=True,
+                         separators=(",", ":"), allow_nan=False).encode("utf-8")
+    except Exception:
+        failed = True
+    if failed:
+        _fail(code)
+    return raw
+
+
+def _plain_copy(value: Any, code: str) -> Any:
+    return json.loads(_canonical(value, code))
+
+
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate")
+        result[key] = value
+    return result
+
+
+def _reject_constant(_text: str) -> None:
+    raise ValueError("constant")
+
+
+def _finite_float(text: str) -> float:
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError("nonfinite")
+    return value
+
+
+def encode_frame(value: dict) -> bytes:
+    """Encode one canonical, bounded parent/worker/helper control frame."""
+    if type(value) is not dict:
+        _fail("ipc_invalid")
+    body = _canonical(value, "ipc_invalid")
+    if not body or len(body) > FRAME_LIMIT:
+        _fail("ipc_oversize")
+    return struct.pack(">I", len(body)) + body
+
+
+def decode_frame(frame: bytes, *, keys: frozenset[str] | set[str] | None = None) -> dict:
+    """Reject noncanonical bytes, duplicate keys, and optional unknown fields."""
+    if type(frame) is not bytes or len(frame) < 5:
+        _fail("ipc_invalid")
+    size = struct.unpack(">I", frame[:4])[0]
+    if size == 0 or size > FRAME_LIMIT or len(frame) != size + 4:
+        _fail("ipc_invalid")
+    failed = False
+    value = None
+    try:
+        value = json.loads(frame[4:].decode("utf-8"),
+                           object_pairs_hook=_unique_object,
+                           parse_constant=_reject_constant,
+                           parse_float=_finite_float)
+    except Exception:
+        failed = True
+    if failed:
+        _fail("ipc_invalid")
+    if type(value) is not dict or _canonical(value, "ipc_invalid") != frame[4:]:
+        _fail("ipc_invalid")
+    if keys is not None and set(value) != set(keys):
+        _fail("ipc_fields_invalid")
+    return value
+
+
+def _sha(raw: bytes) -> str:
+    return hashlib.sha256(raw).hexdigest()
+
+
+def _valid_sha(value: Any) -> bool:
+    return type(value) is str and _SHA.fullmatch(value) is not None
+
+
+def _port(value: Any) -> bool:
+    return type(value) is int and 1 <= value <= 65535 and value != 11434
+
+
+def _finite_number(value: Any) -> bool:
+    if type(value) is int:
+        return 0 <= value <= (1 << 63) - 1
+    if type(value) is float:
+        return math.isfinite(value) and value >= 0
+    return False
+
+
+def _worker(value: Any) -> bool:
+    return (type(value) is dict and set(value) == _WORKER_FIELDS
+            and type(value["pid"]) is int and value["pid"] > 0
+            and type(value["ppid"]) is int and value["ppid"] > 0
+            and type(value["start_sec"]) is int and value["start_sec"] >= 0
+            and type(value["start_usec"]) is int
+            and 0 <= value["start_usec"] < 1_000_000)
+
+
+def _generation(value: Any, pid: int, ppid: int) -> bool:
+    return (type(value) is list and len(value) == 4
+            and all(type(item) is int and item >= 0 for item in value)
+            and value[0] == pid and value[1] == ppid
+            and value[3] < 1_000_000)
+
+
+def _identity_process(value: Any, *, runner: bool) -> bool:
+    keys = _RUNNER_FIELDS if runner else _DAEMON_FIELDS
+    if type(value) is not dict or set(value) != keys:
+        return False
+    pid, ppid = value["pid"], value["ppid"]
+    if (type(pid) is not int or pid <= 0 or type(ppid) is not int
+            or ppid <= 0 or type(value["pgid"]) is not int
+            or value["pgid"] <= 0 or not _port(value["port"])
+            or not _generation(value["raw_generation"], pid, ppid)
+            or not _valid_sha(value["argv_sha256"])
+            or not _valid_sha(value["binary_sha256"])
+            or not _valid_sha(value["gguf_sha256"])):
+        return False
+    if runner:
+        return (value["binary_sha256"] == FROZEN_RUNNER_SHA256
+                and value["gguf_sha256"] == GGUF_SHA256)
+    return (value["binary_sha256"] == FROZEN_DAEMON_SHA256
+            and value["manifest_sha256"] == FROZEN_MANIFEST_SHA256
+            and value["template_sha256"] == TEMPLATE_SHA256
+            and value["system_sha256"] == SYSTEM_SHA256
+            and value["gguf_sha256"] == GGUF_SHA256)
+
+
+def _grant_valid(value: Any, *, nonce_required: bool) -> bool:
+    keys = _GRANT_FIELDS | ({"nonce"} if nonce_required else set())
+    if type(value) is not dict or set(value) != keys:
+        return False
+    index = value["ordinal"]
+    if (type(index) is not int or not 1 <= index <= 7
+            or type(value["run_id"]) is not str
+            or _RUN.fullmatch(value["run_id"]) is None
+            or not _worker(value["worker"])
+            or not _port(value["port"])
+            or not _finite_number(value["expires_at"])):
+        return False
+    role, method, path = _PATHS[index - 1]
+    if (value["target_role"] != role or value["method"] != method
+            or value["path"] != path):
+        return False
+    if (value["payload_sha256"] is not None and
+            not _valid_sha(value["payload_sha256"])):
+        return False
+    if method == "GET" and value["payload_sha256"] is not None:
+        return False
+    if method == "POST" and value["payload_sha256"] is None:
+        return False
+    return (not nonce_required or
+            (type(value["nonce"]) is str and
+             _NONCE.fullmatch(value["nonce"]) is not None))
+
+
+class DurableJournal:
+    """Single-use 0600 journal; ``granted`` means *durably minted* only.
+
+    ``ack_callback_returned`` proves only local callback return, not worker
+    delivery. A lost ACK or post-ACK durability failure cannot refund a grant
+    or turn an uncertain ``on_wire`` into ``no``.
+    """
+
+    def __init__(self, run_dir: Path, state: dict):
+        self.run_dir = run_dir
+        self.path = run_dir / JOURNAL_NAME
+        self._state = state
+        self._lock = threading.Lock()
+        self._poisoned = False
+        self._ack_pending = False
+
+    @classmethod
+    def create(cls, run_dir: str | os.PathLike[str], run_id: str) -> DurableJournal:
+        if type(run_id) is not str or _RUN.fullmatch(run_id) is None:
+            _fail("journal_run_invalid")
+        directory = Path(run_dir)
+        if directory.exists() or directory.is_symlink():
+            _fail("journal_existing_run")
+        existed = False
+        failed = False
+        try:
+            directory.mkdir(mode=0o700, parents=False, exist_ok=False)
+            os.chmod(directory, 0o700)
+        except FileExistsError:
+            existed = True
+        except Exception:
+            failed = True
+        if existed:
+            _fail("journal_existing_run")
+        if failed:
+            _fail("journal_create_failed")
+        state = {
+            "schema": "fake_non_b_journal_v1", "run_id": run_id,
+            "reserved": 0, "granted": 0, "worker_issued": 0,
+            "ack_callback_returned": 0,
+            "ack_failed_terminal": 0,
+            "completion_attempt_spent": 0, "operations": [],
+        }
+        path = directory / JOURNAL_NAME
+        fd = None
+        failed = False
+        try:
+            fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.fchmod(fd, 0o600)
+            raw = _canonical(state, "journal_create_failed")
+            if os.write(fd, raw) != len(raw):
+                raise OSError("short write")
+            os.fsync(fd)
+            os.close(fd)
+            fd = None
+            cls._sync_directory(directory)
+        except Exception:
+            failed = True
+            if fd is not None:
+                os.close(fd)
+        if failed:
+            _fail("journal_create_failed")
+        return cls(directory, state)
+
+    @staticmethod
+    def _sync_directory(directory: Path) -> None:
+        fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+
+    def _commit(self, state: dict) -> None:
+        # Failed replace/fsync poisons this one-use attempt.  It is never
+        # retried or reopened, even if the old journal happens to remain.
+        suffix = secrets.token_hex(16)
+        temp = self.run_dir / f".journal-intent-{suffix}"
+        fd = None
+        failed = False
+        try:
+            fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+            os.fchmod(fd, 0o600)
+            raw = _canonical(state, "journal_commit_failed")
+            if os.write(fd, raw) != len(raw):
+                raise OSError("short write")
+            os.fsync(fd)
+            os.close(fd)
+            fd = None
+            os.replace(temp, self.path)
+            self._sync_directory(self.run_dir)
+        except Exception:
+            failed = True
+            self._poisoned = True
+            if fd is not None:
+                os.close(fd)
+        if failed:
+            _fail("journal_commit_failed")
+        self._state = state
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            if self._poisoned:
+                _fail("journal_unavailable")
+            return _plain_copy(self._state, "journal_invalid")
+
+    def reserve(self, grant_fields: dict, *, ack=None) -> dict:
+        if not callable(ack):
+            _fail("grant_ack_required")
+        if not _grant_valid(grant_fields, nonce_required=False):
+            _fail("grant_invalid")
+        with self._lock:
+            if self._poisoned:
+                _fail("journal_unavailable")
+            if self._ack_pending or self._state["ack_failed_terminal"]:
+                _fail("grant_ack_terminal")
+            ordinal = grant_fields["ordinal"]
+            if (grant_fields["run_id"] != self._state["run_id"]
+                    or ordinal != self._state["reserved"] + 1
+                    or ordinal > 7 or self._state["completion_attempt_spent"]):
+                _fail("grant_replay_or_order")
+            if (ordinal > 1 and
+                    grant_fields["worker"] != self._state["operations"][0]["worker"]):
+                _fail("grant_worker_drift")
+            grant = _plain_copy(grant_fields, "grant_invalid")
+            grant["nonce"] = secrets.token_hex(16)
+            # Both the ordinal and operation-7 completion spend are durable
+            # before *any* ACK leaves this method.
+            state = deepcopy(self._state)
+            state["reserved"] += 1
+            state["granted"] += 1
+            if ordinal == 7:
+                state["completion_attempt_spent"] = 1
+            state["operations"].append({
+                **grant, "reserved": 1, "granted": 1,
+                "ack_callback_returned": 0, "worker_issued": 0,
+                "on_wire": "unknown",
+            })
+            self._commit(state)
+            self._ack_pending = True
+        ack_failed = False
+        try:
+            ack(_plain_copy(grant, "grant_invalid"))
+        except Exception:
+            ack_failed = True
+        if ack_failed:
+            with self._lock:
+                self._ack_pending = False
+                state = deepcopy(self._state)
+                state["ack_failed_terminal"] = 1
+                self._commit(state)
+            _fail("grant_ack_failed")
+        # This records the injected callback's local return only.  The
+        # final method return itself has no durable delivery witness.
+        with self._lock:
+            state = deepcopy(self._state)
+            state["operations"][ordinal - 1]["ack_callback_returned"] = 1
+            state["ack_callback_returned"] += 1
+            self._commit(state)
+            self._ack_pending = False
+        return grant
+
+    def mark_worker_issued(self, ordinal: int, nonce: str) -> None:
+        with self._lock:
+            if self._poisoned:
+                _fail("journal_unavailable")
+            if (type(ordinal) is not int or not 1 <= ordinal <= len(self._state["operations"])
+                    or type(nonce) is not str):
+                _fail("grant_invalid")
+            state = deepcopy(self._state)
+            op = state["operations"][ordinal - 1]
+            if op["nonce"] != nonce or op["worker_issued"]:
+                _fail("grant_replay_or_order")
+            op["worker_issued"] = 1
+            state["worker_issued"] += 1
+            self._commit(state)
+
+    def mark_on_wire(self, ordinal: int, nonce: str) -> None:
+        with self._lock:
+            if self._poisoned:
+                _fail("journal_unavailable")
+            if (type(ordinal) is not int or not 1 <= ordinal <= len(self._state["operations"])
+                    or type(nonce) is not str):
+                _fail("grant_invalid")
+            state = deepcopy(self._state)
+            op = state["operations"][ordinal - 1]
+            if op["nonce"] != nonce or op["worker_issued"] != 1 or op["on_wire"] != "unknown":
+                _fail("grant_replay_or_order")
+            op["on_wire"] = "yes"
+            self._commit(state)
+
+
+def _argv_hash(argv: list[str]) -> str:
+    return _sha(_canonical(argv, "source_invalid"))
+
+
+def _option(argv: list[str], flag: str) -> str:
+    values = []
+    for index, token in enumerate(argv):
+        if token == flag:
+            if index + 1 >= len(argv):
+                _fail("source_runner_argv_invalid")
+            values.append(argv[index + 1])
+        elif token.startswith(flag + "="):
+            values.append(token[len(flag) + 1:])
+    if len(values) != 1:
+        _fail("source_runner_argv_invalid")
+    return values[0]
+
+
+def _positive_decimal(value: str) -> int:
+    if (type(value) is not str or not value.isascii() or not value.isdecimal()
+            or len(value) > 18):
+        _fail("source_runner_argv_invalid")
+    result = int(value)
+    if result <= 0:
+        _fail("source_runner_argv_invalid")
+    return result
+
+
+def _source_before_completion(source: dict, rendered_raw: bytes,
+                              runner: dict, daemon: dict) -> dict:
+    """Derive, rather than accept, branch/BOS/context/truncation predicates."""
+    if type(source) is not dict or set(source) != _SOURCE_FIELDS:
+        _fail("source_invalid")
+    if (source["source_revision"] != "v0.34.4"
+            or source["version"] != VERSION
+            or source["renderer"] is not None
+            or source["parser"] is not None
+            or source["messages"] != []
+            or source["manifest_messages"] != []
+            or source["normal_request_options"] != {}
+            or source["render_request_options"] != {}
+            or source["gguf_pre"] != "qwen2"
+            or source["gguf_model"] != "gpt2"
+            or source["gguf_add_bos_token"] is not False):
+        _fail("source_branch_or_bos_unproven")
+    daemon_argv, runner_argv = source["daemon_argv"], source["runner_argv"]
+    if (type(daemon_argv) is not list or not daemon_argv
+            or type(runner_argv) is not list or not runner_argv
+            or any(type(part) is not str or not part for part in daemon_argv + runner_argv)
+            or _argv_hash(daemon_argv) != daemon["argv_sha256"]
+            or _argv_hash(runner_argv) != runner["argv_sha256"]):
+        _fail("source_argv_drift")
+    branch_positions = [index for index, token in enumerate(runner_argv)
+                        if token == "--no-jinja"]
+    if (len(branch_positions) != 1
+            or runner_argv[branch_positions[0]:branch_positions[0] + 3]
+            != ["--no-jinja", "--chat-template", "chatml"]
+            or any(token == "--jinja" or token.startswith("--jinja=")
+                   or token.startswith("--no-jinja=")
+                   or token.startswith("--chat-template=")
+                   or (token == "--chat-template" and
+                       index != branch_positions[0] + 1)
+                   for index, token in enumerate(runner_argv))):
+        _fail("source_branch_or_bos_unproven")
+    # This checks the selected branch flags and their bound argv digest. It
+    # does not establish a full launch-argv or binary conformance proof.
+    context_total = _positive_decimal(_option(runner_argv, "-c"))
+    parallel = _positive_decimal(_option(runner_argv, "-np"))
+    if context_total % parallel:
+        _fail("source_context_unproven")
+    effective_num_ctx = context_total // parallel
+    model_ctx = source["model_num_ctx"]
+    default_ctx = source["daemon_default_num_ctx"]
+    if (model_ctx is not None and
+            (type(model_ctx) is not int or model_ctx <= 0)):
+        _fail("source_context_unproven")
+    if type(default_ctx) is not int or default_ctx <= 0:
+        _fail("source_context_unproven")
+    request_num_ctx = model_ctx if model_ctx is not None else default_ctx
+    if request_num_ctx != effective_num_ctx:
+        _fail("source_context_unproven")
+    if len(rendered_raw) >= effective_num_ctx:
+        _fail("source_wrapper_truncation_unproven")
+    return {
+        "source_revision": "v0.34.4", "version": VERSION,
+        "branch": "go_rendered_chat", "bos_strip_applied": False,
+        "context_total": context_total, "parallel": parallel,
+        "effective_num_ctx": effective_num_ctx,
+        "request_num_ctx": request_num_ctx,
+        "rendered_utf8_below_num_ctx": True,
+        "daemon_argv_sha256": daemon["argv_sha256"],
+        "runner_argv_sha256": runner["argv_sha256"],
+    }
+
+
+def _validate_binding(binding: Any) -> tuple[dict, bytes]:
+    if type(binding) is not dict or set(binding) != {
+            "run_id", "daemon", "worker", "source", "t0", "work_stop_at"}:
+        _fail("binding_invalid")
+    raw = _canonical(binding, "binding_invalid")
+    if len(raw) > FRAME_LIMIT:
+        _fail("binding_invalid")
+    copied = json.loads(raw)
+    daemon, worker = copied["daemon"], copied["worker"]
+    if (type(copied["run_id"]) is not str or _RUN.fullmatch(copied["run_id"]) is None
+            or not _finite_number(copied["t0"])
+            or not _finite_number(copied["work_stop_at"])
+            or copied["work_stop_at"] != copied["t0"] + 80.0
+            or not _identity_process(daemon, runner=False)
+            or not _worker(worker)
+            or worker["pid"] == daemon["pid"]
+            or worker["ppid"] <= 0
+            or type(copied["source"]) is not dict
+            or set(copied["source"]) != _SOURCE_FIELDS):
+        _fail("binding_invalid")
+    return copied, raw
+
+
+def _validate_observation(value: Any, binding: dict, *, runner_required: bool,
+                          prior_runner_raw: bytes | None) -> tuple[dict | None, bytes | None]:
+    if (type(value) is not dict or set(value) !=
+            {"run_id", "identity_http_calls", "daemon", "runner"}
+            or value["run_id"] != binding["run_id"]
+            or type(value["identity_http_calls"]) is not int
+            or value["identity_http_calls"] != 0
+            or not _identity_process(value["daemon"], runner=False)
+            or _canonical(value["daemon"], "identity_drift") !=
+               _canonical(binding["daemon"], "identity_drift")):
+        _fail("identity_drift")
+    runner = value["runner"]
+    if not runner_required:
+        if runner is not None:
+            _fail("identity_drift")
+        return None, None
+    if (not _identity_process(runner, runner=True)
+            or runner["pid"] in (binding["daemon"]["pid"], binding["worker"]["pid"])
+            or runner["ppid"] != binding["daemon"]["pid"]
+            or runner["port"] == binding["daemon"]["port"]):
+        _fail("identity_drift")
+    raw = _canonical(runner, "identity_drift")
+    if prior_runner_raw is not None and raw != prior_runner_raw:
+        _fail("identity_drift")
+    return runner, raw
+
+
+def _tick(clock, previous: float | None, deadline: float | None) -> float:
+    failed = False
+    value = None
+    try:
+        value = clock()
+    except Exception:
+        failed = True
+    if failed:
+        _fail("clock_unavailable")
+    if (not _finite_number(value) or
+            (previous is not None and value < previous)):
+        _fail("clock_invalid")
+    result = float(value)
+    if deadline is not None and result >= deadline:
+        _fail("work_deadline_exceeded")
+    return result
+
+
+def _json_response(body: bytes) -> dict:
+    failed = False
+    value = None
+    try:
+        value = json.loads(body, object_pairs_hook=_unique_object,
+                           parse_constant=_reject_constant,
+                           parse_float=_finite_float)
+    except Exception:
+        failed = True
+    if failed or type(value) is not dict:
+        _fail("response_invalid")
+    pending = [(value, 0)]
+    visited = 0
+    while pending:
+        item, depth = pending.pop()
+        visited += 1
+        if visited > 100_000 or depth > 64:
+            _fail("response_invalid")
+        if type(item) is dict:
+            pending.extend((child, depth + 1) for child in item.values())
+        elif type(item) is list:
+            pending.extend((child, depth + 1) for child in item)
+        elif type(item) is float and not math.isfinite(item):
+            _fail("response_invalid")
+    return value
+
+
+def _metadata(ordinal: int, response: dict, source: dict) -> None:
+    if ordinal == 1:
+        if response.get("version") != VERSION:
+            _fail("metadata_drift")
+    elif ordinal == 2:
+        rows = response.get("models")
+        if (type(rows) is not list or len(rows) != 1 or type(rows[0]) is not dict
+                or rows[0].get("name") != MODEL
+                or rows[0].get("digest") != FROZEN_MANIFEST_SHA256):
+            _fail("metadata_drift")
+    elif ordinal == 3:
+        # Ollama v0.34.4 ShowResponse omits empty renderer/parser/messages;
+        # manifest_messages is private bound manifest evidence, not a show
+        # response field. Normalize only the omitted/empty forms here.
+        renderer = response.get("renderer")
+        parser = response.get("parser")
+        messages = response.get("messages", [])
+        if (type(response.get("template")) is not str
+                or type(response.get("system")) is not str
+                or renderer not in (None, "")
+                or parser not in (None, "")
+                or messages not in (None, [])
+                or source["renderer"] is not None
+                or source["parser"] is not None
+                or source["messages"] != []
+                or source["manifest_messages"] != []):
+            _fail("metadata_drift")
+        failed = False
+        template_sha = system_sha = None
+        try:
+            template_sha = _sha(response["template"].encode("utf-8"))
+            system_sha = _sha(response["system"].encode("utf-8"))
+        except Exception:
+            failed = True
+        if failed or template_sha != TEMPLATE_SHA256 or system_sha != SYSTEM_SHA256:
+            _fail("metadata_drift")
+
+
+def _render(response: dict, request: dict) -> tuple[str, bytes]:
+    try:
+        rendered = response["_debug_info"]["rendered_template"]
+        usage = response["usage"]
+        choices = response["choices"]
+        valid = (response.get("model") == MODEL and type(rendered) is str
+                 and type(usage) is dict
+                 and all(type(usage.get(key)) is int and usage[key] == 0
+                         for key in ("prompt_tokens", "completion_tokens", "total_tokens"))
+                 and type(choices) is list and len(choices) == 1
+                 and type(choices[0]) is dict
+                 and type(choices[0].get("message")) is dict
+                 and choices[0]["message"].get("content") == "")
+    except Exception:
+        valid = False
+        rendered = None
+    if not valid:
+        _fail("render_drift")
+    system = request["messages"][0]["content"]
+    user = request["messages"][1]["content"]
+    expected = ("<|im_start|>system\n" + system + "<|im_end|>\n"
+                + "<|im_start|>user\n" + user + "<|im_end|>\n"
+                + "<|im_start|>assistant")
+    if rendered != expected + "\n":
+        _fail("render_drift")
+    try:
+        raw = rendered.encode("utf-8")
+    except Exception:
+        raw = None
+    if raw is None:
+        _fail("render_drift")
+    return rendered, raw
+
+
+def _token_ids(response: dict) -> list[int]:
+    tokens = response.get("tokens")
+    if (type(tokens) is not list or not tokens
+            or any(type(token) is not int or token < 0 for token in tokens)):
+        _fail("tokenizer_drift")
+    return tokens
+
+
+def _usage(response: dict) -> dict:
+    fields = ("prompt_tokens", "completion_tokens", "total_tokens")
+    usage = response.get("usage")
+    choices = response.get("choices")
+    if ("error" in response or response.get("model") != MODEL
+            or type(choices) is not list or len(choices) != 1
+            or type(choices[0]) is not dict
+            or type(choices[0].get("message")) is not dict
+            or type(choices[0]["message"].get("content")) is not str
+            or type(usage) is not dict
+            or any(type(usage.get(key)) is not int or usage[key] < 0 for key in fields)
+            or usage["total_tokens"] != usage["prompt_tokens"] + usage["completion_tokens"]):
+        _fail("usage_drift")
+    return {key: usage[key] for key in fields}
+
+
+def worker_once(*, binding: dict, clock, observe_identity, authorize_call,
+                http_call) -> dict:
+    """Run seven injected calls; no raw prompt, tokens, or completion escapes.
+
+    This worker alone is *not* a watchdog.  Only a separately reviewed
+    process-supervised parent could bound a blocked injected callback.
+    """
+    if (not callable(clock) or not callable(observe_identity)
+            or not callable(authorize_call) or not callable(http_call)):
+        _fail("worker_configuration_invalid")
+    bound, binding_raw = _validate_binding(binding)
+    started = _tick(clock, None, None)
+    deadline = float(bound["work_stop_at"])
+    if started < bound["t0"]:
+        _fail("clock_invalid")
+    if started >= deadline:
+        _fail("work_deadline_exceeded")
+    fixture_failed = False
+    request = None
+    try:
+        request = fixed_transformed_request()
+    except Exception:
+        fixture_failed = True
+    if fixture_failed:
+        _fail("fixed_request_drift")
+    request_raw = _canonical(request, "fixed_request_drift")
+    if (len(request_raw) != 1833 or _sha(request_raw) !=
+            "7ea87c8e8985dfe7fb2b5dc9198cd9f26caaaa3fbf4c93559405a06230b4eb56"
+            or set(request) != {"model", "messages", "temperature", "timeout",
+                                    "max_tokens", "response_format"}):
+        _fail("fixed_request_drift")
+    normal = deepcopy(request)
+    del normal["timeout"]
+    debug = deepcopy(normal)
+    debug["_debug_render_only"] = True
+    prior = started
+    http_count = 0
+    identity_count = 0
+    nonce_seen: set[str] = set()
+    bound_runner_raw = None
+    bound_runner = None
+
+    def tick() -> float:
+        nonlocal prior
+        prior = _tick(clock, prior, deadline)
+        return prior
+
+    def unchanged() -> None:
+        if _canonical(binding, "binding_mutated") != binding_raw:
+            _fail("binding_mutated")
+
+    def observe(stage: str, runner_required: bool) -> dict | None:
+        nonlocal identity_count, bound_runner_raw, bound_runner
+        if stage != _STAGES[identity_count]:
+            _fail("identity_order_invalid")
+        tick()
+        failed = False
+        value = None
+        try:
+            value = observe_identity(stage)
+        except Exception:
+            failed = True
+        identity_count += 1
+        tick()
+        unchanged()
+        if failed:
+            _fail("identity_unavailable")
+        runner, raw = _validate_observation(value, bound,
+                                            runner_required=runner_required,
+                                            prior_runner_raw=bound_runner_raw)
+        if raw is not None and bound_runner_raw is None:
+            bound_runner_raw, bound_runner = raw, runner
+        return runner
+
+    def send(ordinal: int, payload: dict | None) -> dict:
+        nonlocal http_count
+        if ordinal != http_count + 1 or ordinal > 7:
+            _fail("http_order_invalid")
+        role, method, path = _PATHS[ordinal - 1]
+        port = (bound["daemon"]["port"] if role == "daemon"
+                else bound_runner["port"] if bound_runner is not None else None)
+        if not _port(port):
+            _fail("identity_drift")
+        tick()
+        payload_raw = None if payload is None else _canonical(payload, "request_invalid")
+        if payload_raw is not None and len(payload_raw) > REQUEST_LIMIT:
+            _fail("request_too_large")
+        spec = {
+            "run_id": bound["run_id"], "worker": deepcopy(bound["worker"]),
+            "ordinal": ordinal, "target_role": role, "port": port,
+            "method": method, "path": path,
+            "payload_sha256": None if payload_raw is None else _sha(payload_raw),
+            "expires_at": deadline,
+        }
+        # The round-trip is the only worker-facing grant schema.  It cannot
+        # carry the raw payload; grant bytes are canonical and <=4096.
+        spec = decode_frame(encode_frame(spec), keys=_GRANT_FIELDS)
+        failed = False
+        grant = None
+        try:
+            grant = authorize_call(deepcopy(spec))
+        except Exception:
+            failed = True
+        tick()
+        unchanged()
+        if failed:
+            _fail("grant_unavailable")
+        if not _grant_valid(grant, nonce_required=True):
+            _fail("grant_invalid")
+        if (any(grant[key] != spec[key] for key in _GRANT_FIELDS)
+                or grant["nonce"] in nonce_seen):
+            _fail("grant_mismatch")
+        grant = decode_frame(encode_frame(grant), keys=_GRANT_FIELDS | {"nonce"})
+        nonce_seen.add(grant["nonce"])
+        url = f"http://127.0.0.1:{port}{path}"
+        # Re-check the binding and grant immediately before the sole injected
+        # transport callback.  The future live transport must repeat this
+        # check atomically with its own send; this fake seam is not that proof.
+        now = tick()
+        if now >= grant["expires_at"]:
+            _fail("grant_expired")
+        remaining = min(deadline, float(grant["expires_at"])) - now
+        if remaining <= 0:
+            _fail("grant_expired")
+        sent_payload = None if payload_raw is None else json.loads(payload_raw)
+        callback_grant = deepcopy(grant)
+        callback_grant_raw = _canonical(callback_grant, "grant_invalid")
+        failed = False
+        value = None
+        try:
+            value = http_call(method, url, sent_payload, remaining, callback_grant)
+        except Exception:
+            failed = True
+        http_count += 1
+        tick()
+        unchanged()
+        if payload_raw is not None and _canonical(sent_payload, "request_mutated") != payload_raw:
+            _fail("request_mutated")
+        if _canonical(callback_grant, "grant_mutated") != callback_grant_raw:
+            _fail("grant_mutated")
+        if failed:
+            _fail("http_failed")
+        if (type(value) is not dict or set(value) != _HTTP_FIELDS
+                or value["requested_url"] != url
+                or value["effective_url"] != url
+                or value["proxy_used"] is not False
+                or value["redirected"] is not False
+                or type(value["status"]) is not int or value["status"] != 200
+                or type(value["body"]) is not bytes):
+            _fail("transport_drift")
+        if len(value["body"]) > RESPONSE_LIMIT:
+            _fail("response_too_large")
+        return _json_response(value["body"])
+
+    observe("before_metadata", False)
+    for ordinal, payload in ((1, None), (2, None), (3, {"model": MODEL})):
+        _metadata(ordinal, send(ordinal, payload), bound["source"])
+    rendered, rendered_raw = _render(send(4, debug), request)
+    observe("after_render", True)
+    observe("before_tokenize_true", True)
+    token_true = _token_ids(send(5, {"content": rendered, "add_special": False,
+                                      "parse_special": True}))
+    observe("before_tokenize_default", True)
+    token_default = _token_ids(send(6, {"content": rendered, "add_special": False}))
+    if token_true != token_default:
+        _fail("tokenizer_drift")
+    source_evidence = _source_before_completion(bound["source"], rendered_raw,
+                                                bound_runner, bound["daemon"])
+    if len(token_true) >= source_evidence["effective_num_ctx"]:
+        _fail("source_context_unproven")
+    observe("before_completion", True)
+    completion = send(7, normal)
+    observe("after_completion", True)
+    usage = _usage(completion)
+    # Source/model state and both observed process identities must still be
+    # the same after the one spent completion attempt.
+    _source_before_completion(bound["source"], rendered_raw,
+                              bound_runner, bound["daemon"])
+    tick()
+    unchanged()
+    delta = usage["prompt_tokens"] - len(token_true)
+    summary = {
+        "schema": "fake_non_b_worker_v1",
+        "status": "fake_non_b_parity_pass" if delta == 0 else "fake_non_b_parity_mismatch",
+        "request_sha256": _sha(request_raw),
+        "request_utf8_bytes": len(request_raw),
+        "rendered_prompt_sha256": _sha(rendered_raw),
+        "rendered_prompt_utf8_bytes": len(rendered_raw),
+        "identity_observation_sha256": _sha(bound_runner_raw),
+        "source_evidence": source_evidence,
+        "runner_token_count_parse_special_true": len(token_true),
+        "runner_token_count_parse_special_default": len(token_default),
+        "provider_usage": usage, "signed_delta": delta,
+        "http_calls": http_count, "identity_checks": identity_count,
+        "external_completion_attempts": 1,
+        "internal_runner_generations": "unknown",
+        "elapsed_seconds": prior - started,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+    }
+    return decode_frame(encode_frame(summary), keys=set(summary))
+
+
+def supervise_once(*, run_dir, model_root, clock, effects) -> dict:
+    """Keep live effects closed; allow only exact fake process diagnostics.
+
+    Synthetic markers ignore caller paths and clock. They never execute
+    Ollama, send HTTP, or prove T0+90. All other effects fail before
+    callbacks, process creation, or path writes.
+    """
+    if (type(effects) is dict
+            and len(effects) == 2
+            and all(type(key) is str for key in effects)
+            and set(effects) == {"schema", "fault"}
+            and type(effects["schema"]) is str
+            and effects["schema"] == "synthetic_role_graph_probe_v1"
+            and (effects["fault"] is None
+                 or (type(effects["fault"]) is str
+                     and effects["fault"] in (
+                         "pipe_allocation_after_7", "omit_o_initial_ack",
+                         "retain_o_nonrole_fd")))):
+        # This deliberately ignores run_dir/model_root/clock. It is an
+        # isolated mechanical probe, never an installed/live operator.
+        return _synthetic_role_graph_preflight_once(effects["fault"])
+    if (type(effects) is dict
+            and len(effects) == 2
+            and all(type(key) is str for key in effects)
+            and set(effects) == {"schema", "fault"}
+            and type(effects["schema"]) is str
+            and effects["schema"] == "synthetic_a_exec_probe_v2"
+            and (effects["fault"] is None
+                 or (type(effects["fault"]) is str
+                     and effects["fault"] in (
+                         "missing_exec_grant", "duplicate_exec_grant",
+                         "death_before_exec", "close_status_without_exec",
+                         "wrong_exec_argv", "retain_control_fd")))):
+        return _synthetic_a_exec_preflight_once(effects["fault"])
+    if (type(effects) is dict
+            and len(effects) == 2
+            and all(type(key) is str for key in effects)
+            and set(effects) == {"schema", "fault"}
+            and type(effects["schema"]) is str
+            and effects["schema"] == "synthetic_runner_lifecycle_probe_v1"
+            and (effects["fault"] is None
+                 or (type(effects["fault"]) is str
+                     and effects["fault"] in (
+                         "runner_exited_before_enumeration", "duplicate_runner",
+                         "o_wrong_runner_pid", "watch_registration_missing",
+                         "wrong_exit_event", "retain_private_hold_fd_in_runner")))):
+        return _synthetic_runner_lifecycle_preflight_once(effects["fault"])
+    _fail("process_supervisor_not_implemented")
+
+
+_ROLE_GRAPH_ROLES = (
+    "D", "W", "R", "O", "A", "S_D", "S_W", "S_R", "S_O", "S_A",
+    "S_runner",
+)
+_ROLE_GRAPH_PIPE_FD_TYPE = 6       # sys/proc_info.h PROX_FDTYPE_PIPE
+_ROLE_GRAPH_CLOEXEC = 2            # sys/proc_info.h PROC_FP_CLEXEC
+_SYNTHETIC_A_NATIVE_TARGET = "/bin/cat"
+_SYNTHETIC_RUNNER_SHELL = "/bin/bash"
+_SYNTHETIC_RUNNER_SHELL_IMAGE = "/bin/bash"
+_SYNTHETIC_RUNNER_SCRIPT = "/bin/cat <&0 3<&- & wait; read _ <&3; exit 0"
+_SYNTHETIC_RUNNER_DUPLICATE_SCRIPT = (
+    "/bin/cat <&0 3<&- & /bin/cat <&0 3<&- & wait; read _ <&3; exit 0"
+)
+_SYNTHETIC_RUNNER_RETAIN_SCRIPT = "/bin/cat <&0 & wait; read _ <&3; exit 0"
+
+
+class _RoleGraphProcFileInfo(ctypes.Structure):
+    _fields_ = (("fi_openflags", ctypes.c_uint32),
+                ("fi_status", ctypes.c_uint32),
+                ("fi_offset", ctypes.c_int64),
+                ("fi_type", ctypes.c_int32),
+                ("fi_guardflags", ctypes.c_uint32))
+
+
+class _RoleGraphVinfoStat(ctypes.Structure):
+    _fields_ = (("vst_dev", ctypes.c_uint32),
+                ("vst_mode", ctypes.c_uint16),
+                ("vst_nlink", ctypes.c_uint16),
+                ("vst_ino", ctypes.c_uint64),
+                ("vst_uid", ctypes.c_uint32),
+                ("vst_gid", ctypes.c_uint32),
+                ("vst_atime", ctypes.c_int64),
+                ("vst_atimensec", ctypes.c_int64),
+                ("vst_mtime", ctypes.c_int64),
+                ("vst_mtimensec", ctypes.c_int64),
+                ("vst_ctime", ctypes.c_int64),
+                ("vst_ctimensec", ctypes.c_int64),
+                ("vst_birthtime", ctypes.c_int64),
+                ("vst_birthtimensec", ctypes.c_int64),
+                ("vst_size", ctypes.c_int64),
+                ("vst_blocks", ctypes.c_int64),
+                ("vst_blksize", ctypes.c_int32),
+                ("vst_flags", ctypes.c_uint32),
+                ("vst_gen", ctypes.c_uint32),
+                ("vst_rdev", ctypes.c_uint32),
+                ("vst_qspare", ctypes.c_int64 * 2))
+
+
+class _RoleGraphPipeInfo(ctypes.Structure):
+    _fields_ = (("pipe_stat", _RoleGraphVinfoStat),
+                ("pipe_handle", ctypes.c_uint64),
+                ("pipe_peerhandle", ctypes.c_uint64),
+                ("pipe_status", ctypes.c_int32),
+                ("rfu_1", ctypes.c_int32))
+
+
+class _RoleGraphPipeFDInfo(ctypes.Structure):
+    _fields_ = (("pfi", _RoleGraphProcFileInfo),
+                ("pipeinfo", _RoleGraphPipeInfo))
+
+
+class _RoleGraphFDInfo(ctypes.Structure):
+    _fields_ = (("proc_fd", ctypes.c_int32),
+                ("proc_fdtype", ctypes.c_uint32))
+
+
+def _role_graph_libproc():
+    if sys.platform != "darwin" or (ctypes.sizeof(_RoleGraphFDInfo) != 8
+                                    or ctypes.sizeof(_RoleGraphProcFileInfo) != 24
+                                    or ctypes.sizeof(_RoleGraphVinfoStat) != 136
+                                    or ctypes.sizeof(_RoleGraphPipeFDInfo) != 184):
+        _fail("fake_role_graph_os_unavailable")
+    try:
+        lib = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
+        lib.proc_pidinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_uint64,
+                                     ctypes.c_void_p, ctypes.c_int]
+        lib.proc_pidinfo.restype = ctypes.c_int
+        lib.proc_pidfdinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int,
+                                       ctypes.c_void_p, ctypes.c_int]
+        lib.proc_pidfdinfo.restype = ctypes.c_int
+        return lib
+    except Exception:
+        _fail("fake_role_graph_os_unavailable")
+
+
+def _role_graph_pipe_identity(lib, pid: int, fd: int) -> tuple[int, int]:
+    value = _RoleGraphPipeFDInfo()
+    size = ctypes.sizeof(value)
+    try:
+        read = lib.proc_pidfdinfo(pid, fd, 6, ctypes.byref(value), size)
+    except Exception:
+        read = -1
+    if read != size or not value.pipeinfo.pipe_handle:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    return int(value.pipeinfo.pipe_handle), int(value.pfi.fi_status)
+
+
+def _role_graph_fd_list(lib, pid: int) -> dict[int, int]:
+    # A full buffer cannot prove that an extra inherited endpoint was absent.
+    entries = (_RoleGraphFDInfo * 512)()
+    capacity = ctypes.sizeof(entries)
+    try:
+        read = lib.proc_pidinfo(pid, 1, 0, ctypes.byref(entries), capacity)
+    except Exception:
+        read = -1
+    if read <= 0 or read >= capacity or read % ctypes.sizeof(_RoleGraphFDInfo):
+        _fail("fake_role_graph_fd_witness_unavailable")
+    result: dict[int, int] = {}
+    for row in entries[:read // ctypes.sizeof(_RoleGraphFDInfo)]:
+        if row.proc_fd < 0 or row.proc_fd in result:
+            _fail("fake_role_graph_fd_witness_unavailable")
+        result[row.proc_fd] = row.proc_fdtype
+    return result
+
+
+def _role_graph_attest_child_fds(lib, pid: int, expected: set[int],
+                                 pipe_handles: dict[int, int],
+                                 stdio_types: dict[int, int],
+                                 stdio_pipe_handles: dict[int, int]) -> None:
+    try:
+        initial = raw_generation(pid)
+        first = _role_graph_fd_list(lib, pid)
+        middle = raw_generation(pid)
+        second = _role_graph_fd_list(lib, pid)
+        final = raw_generation(pid)
+    except Exception:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    if initial != middle or middle != final or first != second:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    if {fd: kind for fd, kind in first.items() if fd <= 2} != stdio_types:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    if {fd for fd in first if fd > 2} != expected:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    for fd, handle_expected in stdio_pipe_handles.items():
+        handle, _ = _role_graph_pipe_identity(lib, pid, fd)
+        if handle != handle_expected:
+            _fail("fake_role_graph_fd_witness_unavailable")
+    for fd in expected:
+        if first.get(fd) != _ROLE_GRAPH_PIPE_FD_TYPE:
+            _fail("fake_role_graph_fd_witness_unavailable")
+        handle, flags = _role_graph_pipe_identity(lib, pid, fd)
+        if (handle != pipe_handles[fd]
+                or not flags & _ROLE_GRAPH_CLOEXEC):
+            _fail("fake_role_graph_fd_witness_unavailable")
+    if raw_generation(pid) != final:
+        _fail("fake_role_graph_fd_witness_unavailable")
+
+
+def _role_graph_read_exact(fd: int, size: int, deadline: float) -> bytes | None:
+    result = bytearray()
+    while len(result) < size and time.monotonic() < deadline:
+        try:
+            readable, _, _ = select.select(
+                [fd], [], [], min(0.01, max(0, deadline - time.monotonic())))
+            if not readable:
+                continue
+            part = os.read(fd, size - len(result))
+        except InterruptedError:
+            continue
+        except Exception:
+            return None
+        if not part:
+            return None
+        result.extend(part)
+    return bytes(result) if len(result) == size else None
+
+
+def _role_graph_read_frame(fd: int, deadline: float,
+                           keys: set[str]) -> dict | None:
+    prefix = _role_graph_read_exact(fd, 4, deadline)
+    if prefix is None:
+        return None
+    size = struct.unpack(">I", prefix)[0]
+    if size == 0 or size > FRAME_LIMIT:
+        return None
+    body = _role_graph_read_exact(fd, size, deadline)
+    if body is None:
+        return None
+    try:
+        return decode_frame(prefix + body, keys=keys)
+    except LiveOperatorError:
+        return None
+
+
+def _role_graph_fd_sample(phase: str) -> dict:
+    try:
+        soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+        fds = [int(name) for name in os.listdir("/dev/fd") if name.isdecimal()]
+        if (type(soft) is not int or soft <= 0 or not fds
+                or len(fds) >= soft or max(fds) >= soft):
+            _fail("fake_role_graph_fd_limit")
+        return {"phase": phase, "count": len(fds), "soft": soft}
+    except Exception:
+        _fail("fake_role_graph_fd_limit")
+
+
+def _role_graph_child(role: str, pipes: dict, exec_pipe: tuple[int, int],
+                      inherited: tuple[int, ...], fault: str | None,
+                      deadline: float) -> None:
+    command_fd = pipes[role]["command"][0]
+    proof_fd = pipes[role]["proof"][1]
+    keep = {command_fd, proof_fd}
+    if role == "A":
+        keep.add(exec_pipe[1])
+    if role == "O" and fault == "retain_o_nonrole_fd":
+        keep.add(pipes["A"]["command"][0])
+    try:
+        _fake_child_lifetime(deadline)
+        for fd in inherited:
+            if fd > 2 and fd not in keep:
+                _fake_close(fd)
+        if any(os.get_inheritable(fd) for fd in keep):
+            os._exit(125)
+        pid = os.getpid()
+        generation = raw_generation(pid)
+        if role != "O" or fault != "omit_o_initial_ack":
+            first = {"phase": "initial", "role": role, "pid": pid,
+                     "ppid": generation[1], "raw_generation": list(generation),
+                     "pgid": os.getpgid(pid)}
+            frame = encode_frame(first)
+            if os.write(proof_fd, frame) != len(frame):
+                os._exit(125)
+        command = _role_graph_read_frame(
+            command_fd, deadline, {"phase", "role"})
+        if command != {"phase": "release", "role": role}:
+            os._exit(126)
+        ack = encode_frame({"phase": "released", "role": role, "pid": pid})
+        if os.write(proof_fd, ack) != len(ack):
+            os._exit(126)
+        os._exit(0)
+    except BaseException:
+        os._exit(127)
+
+
+def _role_graph_cleanup(children: list[int], reaped: set[int],
+                        all_fds: set[int]) -> bool:
+    for fd in all_fds:
+        _fake_close(fd)
+    clean = True
+    for pid in children:
+        if pid in reaped:
+            continue
+        for interval, signum in ((0.20, None), (0.20, signal.SIGTERM),
+                                 (0.60, signal.SIGKILL)):
+            try:
+                seen, _ = os.waitpid(pid, os.WNOHANG)
+            except ChildProcessError:
+                clean = False
+                break
+            if seen == pid:
+                reaped.add(pid)
+                break
+            # P still owns an unreaped direct child. Do not signal an
+            # already-reaped PID or a process discovered by enumeration.
+            if signum is not None:
+                try:
+                    os.kill(pid, signum)
+                except ProcessLookupError:
+                    pass
+            until = time.monotonic() + interval
+            while time.monotonic() < until:
+                try:
+                    seen, _ = os.waitpid(pid, os.WNOHANG)
+                except ChildProcessError:
+                    clean = False
+                    break
+                if seen == pid:
+                    reaped.add(pid)
+                    break
+                time.sleep(0.005)
+            if pid in reaped or not clean:
+                break
+        if pid not in reaped:
+            clean = False
+    return clean
+
+
+def _synthetic_role_graph_preflight_once(fault: str | None) -> dict:
+    """Fork-only IPC/resource probe; permanently false installed/live flags."""
+    lib = _role_graph_libproc()
+    stdio_types = {fd: kind for fd, kind in
+                   _role_graph_fd_list(lib, os.getpid()).items() if fd <= 2}
+    if set(stdio_types) != {0, 1, 2}:
+        _fail("fake_role_graph_fd_witness_unavailable")
+    stdio_pipe_handles = {
+        fd: _role_graph_pipe_identity(lib, os.getpid(), fd)[0]
+        for fd, kind in stdio_types.items()
+        if kind == _ROLE_GRAPH_PIPE_FD_TYPE
+    }
+    pipes: dict[str, dict[str, tuple[int, int]]] = {}
+    all_fds: set[int] = set()
+    children: list[int] = []
+    reaped: set[int] = set()
+    samples = [_role_graph_fd_sample("before_allocation")]
+    exec_pipe = None
+    try:
+        allocation = 0
+        for role in _ROLE_GRAPH_ROLES:
+            pipes[role] = {}
+            for edge in ("command", "proof"):
+                if fault == "pipe_allocation_after_7" and allocation == 7:
+                    _fail("fake_role_graph_pipe_allocation_failed")
+                pair = os.pipe()
+                pipes[role][edge] = pair
+                all_fds.update(pair)
+                allocation += 1
+                samples.append(_role_graph_fd_sample(f"allocated_{allocation}"))
+        exec_pipe = os.pipe()
+        all_fds.update(exec_pipe)
+        samples.append(_role_graph_fd_sample("allocated_exec_status"))
+        if allocation != 22 or len(all_fds) != 46:
+            _fail("fake_role_graph_pipe_allocation_failed")
+        pipe_handles = {}
+        for fd in all_fds:
+            handle, flags = _role_graph_pipe_identity(lib, os.getpid(), fd)
+            if not flags & _ROLE_GRAPH_CLOEXEC:
+                _fail("fake_role_graph_fd_witness_unavailable")
+            pipe_handles[fd] = handle
+        deadline = time.monotonic() + 5.0
+        child_deadline = deadline + 3.0
+        parent_pid = os.getpid()
+        for role in _ROLE_GRAPH_ROLES:
+            inherited = tuple(int(name) for name in os.listdir("/dev/fd")
+                              if name.isdecimal())
+            pid = os.fork()
+            if pid == 0:
+                _role_graph_child(role, pipes, exec_pipe, inherited,
+                                  fault, child_deadline)
+                os._exit(127)
+            children.append(pid)
+            command_read = pipes[role]["command"][0]
+            proof_write = pipes[role]["proof"][1]
+            _fake_close(command_read, proof_write)
+            all_fds.difference_update((command_read, proof_write))
+            if role == "A":
+                _fake_close(exec_pipe[1])
+                all_fds.discard(exec_pipe[1])
+            samples.append(_role_graph_fd_sample(f"fork_closed_{role}"))
+            initial = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid", "ppid", "raw_generation", "pgid"})
+            try:
+                observed = _fake_os_witness(pid)
+            except Exception:
+                _fail("fake_role_graph_initial_witness_unavailable")
+            if (initial is None or initial.get("phase") != "initial"
+                    or initial.get("role") != role
+                    or initial.get("pid") != pid
+                    or initial.get("ppid") != parent_pid
+                    or {key: initial.get(key) for key in observed} != observed):
+                _fail("fake_role_graph_initial_witness_unavailable")
+            expected = {command_read, proof_write}
+            if role == "A":
+                expected.add(exec_pipe[1])
+            _role_graph_attest_child_fds(
+                lib, pid, expected, pipe_handles, stdio_types,
+                stdio_pipe_handles)
+            if select.select([pipes[role]["proof"][0]], [], [], 0)[0]:
+                _fail("fake_role_graph_initial_witness_unavailable")
+        for role in _ROLE_GRAPH_ROLES:
+            frame = encode_frame({"phase": "release", "role": role})
+            if os.write(pipes[role]["command"][1], frame) != len(frame):
+                _fail("fake_role_graph_release_failed")
+        for role, pid in zip(_ROLE_GRAPH_ROLES, children):
+            reply = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid"})
+            if reply != {"phase": "released", "role": role, "pid": pid}:
+                _fail("fake_role_graph_release_failed")
+            statuses: dict[int, int] = {}
+            if not _fake_wait_reap(pid, deadline, statuses):
+                _fail("fake_role_graph_release_failed")
+            reaped.add(pid)
+            status = statuses[pid]
+            if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+                _fail("fake_role_graph_release_failed")
+        summary = {
+            "schema": "fake_role_graph_preflight_v1",
+            "status": "fake_topology_partial",
+            "initial_role_count": len(children),
+            "normal_reap_count": len(reaped),
+            "control_pipe_count": 22,
+            "control_endpoint_count": 44,
+            "extra_exec_pipe_count": 1,
+            "fd_samples": samples,
+            "fd_sampled_min_margin": min(row["soft"] - row["count"]
+                                           for row in samples),
+            "work_grants": 0, "http_calls": 0, "model_bytes_read": 0,
+            "a_exec_observed": False,
+            "installed_identity_proven": False,
+            "physical_stop_unproven": True,
+            "full_gate_pass": False, "b_send_authorized": False,
+        }
+        return summary
+    except LiveOperatorError:
+        raise
+    except BaseException:
+        _fail("fake_role_graph_preflight_failed")
+    finally:
+        cleaned = _role_graph_cleanup(children, reaped, all_fds)
+        after = _role_graph_fd_sample("after_cleanup")
+        samples.append(after)
+        if not cleaned or after["count"] != samples[0]["count"]:
+            # This overrides an earlier fake failure if cleanup itself did
+            # not finish; an unreaped child or leaked P FD is never masked.
+            _fail("fake_role_graph_cleanup_failed")
+
+
+def _synthetic_a_exec_target() -> tuple[str, tuple[str, ...]]:
+    """Return only the frozen native no-network synthetic target."""
+    path = _SYNTHETIC_A_NATIVE_TARGET
+    try:
+        if os.path.realpath(path) != path:
+            _fail("fake_a_exec_target_unavailable")
+        info = os.stat(path, follow_symlinks=False)
+    except Exception:
+        _fail("fake_a_exec_target_unavailable")
+    if (not os.path.isabs(path) or not stat.S_ISREG(info.st_mode)
+            or not (info.st_mode & 0o111)):
+        _fail("fake_a_exec_target_unavailable")
+    return path, (path,)
+
+
+def _synthetic_a_exec_child(pipes: dict, exec_pipe: tuple[int, int],
+                            stdin_pipe: tuple[int, int],
+                            inherited: tuple[int, ...], fault: str | None,
+                            deadline: float, path: str,
+                            argv: tuple[str, ...]) -> None:
+    """A's cooperative held bootstrap; never an Ollama process."""
+    command_fd = pipes["A"]["command"][0]
+    proof_fd = pipes["A"]["proof"][1]
+    status_fd = exec_pipe[1]
+    keep = {command_fd, proof_fd, status_fd}
+    try:
+        _fake_child_lifetime(deadline)
+        os.dup2(stdin_pipe[0], 0, inheritable=True)
+        for fd in inherited:
+            if fd > 2 and fd not in keep:
+                _fake_close(fd)
+        if (any(os.get_inheritable(fd) for fd in keep)
+                or not os.get_inheritable(0)):
+            os._exit(125)
+        pid = os.getpid()
+        generation = raw_generation(pid)
+        initial = {"phase": "initial", "role": "A", "pid": pid,
+                   "ppid": generation[1], "raw_generation": list(generation),
+                   "pgid": os.getpgid(pid)}
+        frame = encode_frame(initial)
+        if os.write(proof_fd, frame) != len(frame):
+            os._exit(125)
+        grant = _role_graph_read_frame(command_fd, deadline,
+                                       {"phase", "role"})
+        if grant != {"phase": "exec", "role": "A"}:
+            os._exit(126)
+        if fault == "death_before_exec":
+            os._exit(125)
+        if fault == "close_status_without_exec":
+            _fake_close(status_fd)
+            _role_graph_read_exact(command_fd, 1, deadline)
+            os._exit(126)
+        if fault == "retain_control_fd":
+            # Only after P's initial OS FD witness: deliberately leave one
+            # role endpoint in the new image for the post-exec OS check.
+            os.set_inheritable(proof_fd, True)
+        else:
+            _fake_close(proof_fd)
+        _fake_close(command_fd)
+        if os.get_inheritable(status_fd):
+            os._exit(125)
+        actual_argv = argv + (("-",) if fault == "wrong_exec_argv"
+                              else ())
+        os.execve(path, actual_argv, {})
+    except BaseException:
+        os._exit(127)
+
+
+def _synthetic_a_exec_status_event(fd: int, deadline: float) -> str:
+    """An empty EOF is a transition hint, never an image success proof."""
+    while time.monotonic() < deadline:
+        try:
+            ready, _, _ = select.select(
+                [fd], [], [], min(0.01, max(0, deadline - time.monotonic())))
+            if not ready:
+                continue
+            return "eof" if os.read(fd, 1) == b"" else "data"
+        except InterruptedError:
+            continue
+        except Exception:
+            return "unavailable"
+    return "timeout"
+
+
+def _synthetic_a_exec_fd_snapshot(lib, pid: int) -> tuple:
+    """One raw-generation-bracketed OS FD/type/pipe-handle observation."""
+    try:
+        before = raw_generation(pid)
+        kinds = _role_graph_fd_list(lib, pid)
+        pipes = {
+            fd: _role_graph_pipe_identity(lib, pid, fd)
+            for fd, kind in kinds.items()
+            if kind == _ROLE_GRAPH_PIPE_FD_TYPE
+        }
+        after = raw_generation(pid)
+    except Exception:
+        _fail("fake_a_exec_fd_witness_unavailable")
+    if before != after:
+        _fail("fake_a_exec_fd_witness_unavailable")
+    return before, kinds, pipes
+
+
+def _synthetic_a_exec_post_witness(lib, pid: int, initial: dict,
+                                    path: str, argv: tuple[str, ...],
+                                    stdin_handle: int,
+                                    stdio_types: dict[int, int],
+                                    stdio_pipe_handles: dict[int, int],
+                                    reaped: set[int], deadline: float) -> dict:
+    """Active, bounded OS post-exec witness; EOF alone never counts.
+
+    Every attempt checks the original direct-child identity and a complete
+    FD/type/pipe-handle map. Only startup VNODEs and the exact procargs
+    unavailable error are pending; no observed pipe or identity error is.
+    """
+    if stdio_pipe_handles.get(0) != stdin_handle:
+        _fail("fake_a_exec_fd_witness_unavailable")
+    expected_generation = tuple(initial["raw_generation"])
+    attempts: list[dict] = []
+    started = time.monotonic()
+    previous_start: float | None = None
+    previous_exact_map: tuple | None = None
+    consecutive_exact = 0
+    transient_vnode_attempts = 0
+    transient_vnode_max = 0
+    procargs_unavailable_attempts = 0
+    exact_complete_attempts = 0
+
+    def summary() -> dict:
+        return {
+            "attempts": deepcopy(attempts),
+            "attempt_count": len(attempts),
+            "transient_vnode_attempts": transient_vnode_attempts,
+            "transient_vnode_max": transient_vnode_max,
+            "procargs_unavailable_attempts": procargs_unavailable_attempts,
+            "exact_complete_attempts": exact_complete_attempts,
+            "elapsed_ms": int((time.monotonic() - started) * 1000),
+        }
+
+    def fail(code: str) -> None:
+        # Public str(error) remains a fixed code. The attached bounded
+        # diagnostic contains no PID, argv, FD number, handle or raw source.
+        error = LiveOperatorError(code)
+        error.post_exec_observation = summary()
+        raise error from None
+
+    while len(attempts) < 512:
+        # The first acquisition is immediate. Later starts are paced so a
+        # transient state cannot be polled 512 times before it may settle.
+        if previous_start is not None:
+            next_start = previous_start + 0.012
+            while time.monotonic() < next_start:
+                remaining = min(next_start, deadline) - time.monotonic()
+                if remaining <= 0:
+                    break
+                time.sleep(remaining)
+        attempt_start = time.monotonic()
+        if attempt_start >= deadline:
+            break
+        previous_start = attempt_start
+        row = {
+            "elapsed_ms": int((attempt_start - started) * 1000),
+            "image_category": "unavailable",
+            "extra_fd_type_counts": {},
+            "identity_match": False,
+            "live": False,
+            "classification": "fail",
+        }
+
+        try:
+            seen, _ = os.waitpid(pid, os.WNOHANG)
+        except (ChildProcessError, OSError):
+            attempts.append(row)
+            fail("fake_a_exec_child_died")
+        if seen == pid:
+            reaped.add(pid)
+            attempts.append(row)
+            fail("fake_a_exec_child_died")
+        if seen != 0:
+            attempts.append(row)
+            fail("fake_a_exec_child_died")
+        row["live"] = True
+        try:
+            first_identity = _fake_os_witness(pid)
+        except Exception:
+            attempts.append(row)
+            fail("fake_a_exec_image_unavailable")
+        if first_identity != initial:
+            attempts.append(row)
+            fail("fake_a_exec_image_unavailable")
+
+        image_unavailable = False
+        try:
+            image = observe_process(pid)
+        except ProbeError as error:
+            if type(error) is not ProbeError or str(error) != "procargs_unavailable":
+                attempts.append(row)
+                fail("fake_a_exec_image_unavailable")
+            image_unavailable = True
+            procargs_unavailable_attempts += 1
+        except Exception:
+            attempts.append(row)
+            fail("fake_a_exec_image_unavailable")
+        else:
+            if ((image.pid, image.ppid, image.start_sec,
+                 image.start_usec) != expected_generation
+                    or image.executable != path or image.argv != argv):
+                row["image_category"] = "mismatch"
+                attempts.append(row)
+                fail("fake_a_exec_image_mismatch")
+            row["image_category"] = "matched"
+
+        try:
+            fd_map = _synthetic_a_exec_fd_snapshot(lib, pid)
+            final_identity = _fake_os_witness(pid)
+        except Exception:
+            attempts.append(row)
+            fail("fake_a_exec_fd_witness_unavailable")
+        if fd_map[0] != expected_generation or final_identity != initial:
+            attempts.append(row)
+            fail("fake_a_exec_fd_witness_unavailable")
+        row["identity_match"] = True
+        kinds, handles = fd_map[1], fd_map[2]
+        if (any(kinds.get(fd) != kind for fd, kind in stdio_types.items())
+                or any(fd < 0 for fd in kinds)):
+            attempts.append(row)
+            fail("fake_a_exec_fd_witness_unavailable")
+        for fd, handle_expected in stdio_pipe_handles.items():
+            observed = handles.get(fd)
+            if (observed is None or observed[0] != handle_expected
+                    or observed[1] & _ROLE_GRAPH_CLOEXEC):
+                attempts.append(row)
+                fail("fake_a_exec_fd_witness_unavailable")
+        extra = {fd: kind for fd, kind in kinds.items() if fd not in stdio_types}
+        for kind in set(extra.values()):
+            row["extra_fd_type_counts"][str(kind)] = sum(
+                candidate == kind for candidate in extra.values())
+        if any(kind != 1 for kind in extra.values()):
+            attempts.append(row)
+            fail("fake_a_exec_fd_witness_unavailable")
+        attempts.append(row)
+
+        if extra:
+            transient_vnode_attempts += 1
+            transient_vnode_max = max(transient_vnode_max, len(extra))
+        if extra or image_unavailable:
+            row["classification"] = "transient" if extra else "pending"
+            consecutive_exact = 0
+            previous_exact_map = None
+            continue
+        row["classification"] = "exact"
+        exact_complete_attempts += 1
+        # Compare the full independently reacquired number/type/handle maps,
+        # not merely stdio counts or a handle lookup after both snapshots.
+        if previous_exact_map is not None and fd_map == previous_exact_map:
+            consecutive_exact += 1
+        else:
+            consecutive_exact = 1
+        previous_exact_map = fd_map
+        if consecutive_exact >= 2:
+            try:
+                seen, _ = os.waitpid(pid, os.WNOHANG)
+            except (ChildProcessError, OSError):
+                fail("fake_a_exec_child_died")
+            if seen == pid:
+                reaped.add(pid)
+                fail("fake_a_exec_child_died")
+            if seen != 0:
+                fail("fake_a_exec_child_died")
+            try:
+                final_live_identity = _fake_os_witness(pid)
+            except Exception:
+                fail("fake_a_exec_image_unavailable")
+            if final_live_identity != initial:
+                fail("fake_a_exec_image_unavailable")
+            if time.monotonic() >= deadline:
+                fail("fake_a_exec_fd_witness_unavailable")
+            return summary()
+    fail("fake_a_exec_fd_witness_unavailable")
+
+
+def _synthetic_a_exec_preflight_once(fault: str | None) -> dict:
+    """One fake held-to-exec control transition, never installed/live proof."""
+    lib = _role_graph_libproc()
+    path, argv = _synthetic_a_exec_target()
+    try:
+        held_image = observe_process(os.getpid())
+    except Exception:
+        _fail("fake_a_exec_initial_image_unavailable")
+    stdio_types = {fd: kind for fd, kind in
+                   _role_graph_fd_list(lib, os.getpid()).items() if fd <= 2}
+    if set(stdio_types) != {0, 1, 2}:
+        _fail("fake_a_exec_fd_witness_unavailable")
+    stdio_pipe_handles = {
+        fd: _role_graph_pipe_identity(lib, os.getpid(), fd)[0]
+        for fd, kind in stdio_types.items()
+        if kind == _ROLE_GRAPH_PIPE_FD_TYPE
+    }
+    pipes: dict[str, dict[str, tuple[int, int]]] = {}
+    all_fds: set[int] = set()
+    children: list[int] = []
+    reaped: set[int] = set()
+    samples = [_role_graph_fd_sample("before_allocation")]
+    try:
+        allocation = 0
+        for role in _ROLE_GRAPH_ROLES:
+            pipes[role] = {}
+            for edge in ("command", "proof"):
+                pair = os.pipe()
+                pipes[role][edge] = pair
+                all_fds.update(pair)
+                allocation += 1
+                samples.append(_role_graph_fd_sample(f"allocated_{allocation}"))
+        exec_pipe = os.pipe()
+        all_fds.update(exec_pipe)
+        samples.append(_role_graph_fd_sample("allocated_exec_status"))
+        stdin_pipe = os.pipe()
+        all_fds.update(stdin_pipe)
+        samples.append(_role_graph_fd_sample("allocated_private_stdin"))
+        if allocation != 22 or len(all_fds) != 48:
+            _fail("fake_a_exec_pipe_allocation_failed")
+        pipe_handles = {}
+        for fd in all_fds:
+            handle, flags = _role_graph_pipe_identity(lib, os.getpid(), fd)
+            if not flags & _ROLE_GRAPH_CLOEXEC:
+                _fail("fake_a_exec_fd_witness_unavailable")
+            pipe_handles[fd] = handle
+        deadline = time.monotonic() + 5.0
+        child_deadline = deadline + 3.0
+        parent_pid = os.getpid()
+        initial_a = None
+        for role in _ROLE_GRAPH_ROLES:
+            inherited = tuple(int(name) for name in os.listdir("/dev/fd")
+                              if name.isdecimal())
+            pid = os.fork()
+            if pid == 0:
+                if role == "A":
+                    _synthetic_a_exec_child(pipes, exec_pipe, stdin_pipe,
+                                            inherited, fault, child_deadline,
+                                            path, argv)
+                else:
+                    _role_graph_child(role, pipes, exec_pipe, inherited,
+                                      None, child_deadline)
+                os._exit(127)
+            children.append(pid)
+            command_read = pipes[role]["command"][0]
+            proof_write = pipes[role]["proof"][1]
+            _fake_close(command_read, proof_write)
+            all_fds.difference_update((command_read, proof_write))
+            if role == "A":
+                _fake_close(exec_pipe[1], stdin_pipe[0])
+                all_fds.difference_update((exec_pipe[1], stdin_pipe[0]))
+            samples.append(_role_graph_fd_sample(f"fork_closed_{role}"))
+            initial = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid", "ppid", "raw_generation", "pgid"})
+            try:
+                observed = _fake_os_witness(pid)
+            except Exception:
+                _fail("fake_a_exec_initial_witness_unavailable")
+            if (initial is None or initial.get("phase") != "initial"
+                    or initial.get("role") != role
+                    or initial.get("pid") != pid
+                    or initial.get("ppid") != parent_pid
+                    or {key: initial.get(key) for key in observed} != observed):
+                _fail("fake_a_exec_initial_witness_unavailable")
+            expected = {command_read, proof_write}
+            child_stdio = dict(stdio_types)
+            child_handles = dict(stdio_pipe_handles)
+            if role == "A":
+                expected.add(exec_pipe[1])
+                child_stdio[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+                child_handles[0] = pipe_handles[stdin_pipe[0]]
+                initial_a = observed
+                try:
+                    held = observe_process(pid)
+                except Exception:
+                    _fail("fake_a_exec_initial_image_unavailable")
+                if (held.executable != held_image.executable
+                        or held.argv != held_image.argv
+                        or (held.pid, held.ppid, held.start_sec,
+                            held.start_usec) != tuple(initial["raw_generation"])):
+                    _fail("fake_a_exec_initial_image_unavailable")
+            _role_graph_attest_child_fds(
+                lib, pid, expected, pipe_handles, child_stdio, child_handles)
+            if role == "A":
+                _, flags = _role_graph_pipe_identity(lib, pid, 0)
+                if flags & _ROLE_GRAPH_CLOEXEC:
+                    _fail("fake_a_exec_fd_witness_unavailable")
+            if select.select([pipes[role]["proof"][0]], [], [], 0)[0]:
+                _fail("fake_a_exec_initial_witness_unavailable")
+        if initial_a is None:
+            _fail("fake_a_exec_initial_witness_unavailable")
+        a_pid = children[_ROLE_GRAPH_ROLES.index("A")]
+        grant_count = 0
+
+        def grant_exec() -> None:
+            nonlocal grant_count
+            if grant_count:
+                _fail("fake_a_exec_grant_duplicate")
+            grant_count += 1
+            frame = encode_frame({"phase": "exec", "role": "A"})
+            if os.write(pipes["A"]["command"][1], frame) != len(frame):
+                _fail("fake_a_exec_grant_unavailable")
+
+        if fault != "missing_exec_grant":
+            grant_exec()
+        if fault == "duplicate_exec_grant":
+            grant_exec()
+        event = _synthetic_a_exec_status_event(exec_pipe[0], deadline)
+        if fault == "missing_exec_grant" and event == "timeout":
+            _fail("fake_a_exec_grant_missing")
+        if event != "eof":
+            _fail("fake_a_exec_status_unavailable")
+        a_stdio = dict(stdio_types)
+        a_stdio[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+        a_handles = dict(stdio_pipe_handles)
+        a_handles[0] = pipe_handles[stdin_pipe[0]]
+        post_exec_observation = _synthetic_a_exec_post_witness(
+            lib, a_pid, initial_a, path, argv, pipe_handles[stdin_pipe[0]],
+            a_stdio, a_handles, reaped, deadline)
+        try:
+            os.close(stdin_pipe[1])
+        except OSError:
+            _fail("fake_a_exec_release_unavailable")
+        all_fds.discard(stdin_pipe[1])
+        statuses: dict[int, int] = {}
+        if not _fake_wait_reap(a_pid, deadline, statuses):
+            _fail("fake_a_exec_release_unavailable")
+        reaped.add(a_pid)
+        status = statuses[a_pid]
+        if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+            _fail("fake_a_exec_release_unavailable")
+        for role in _ROLE_GRAPH_ROLES:
+            if role == "A":
+                continue
+            frame = encode_frame({"phase": "release", "role": role})
+            if os.write(pipes[role]["command"][1], frame) != len(frame):
+                _fail("fake_a_exec_release_unavailable")
+        for role, pid in zip(_ROLE_GRAPH_ROLES, children):
+            if role == "A":
+                continue
+            reply = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid"})
+            if reply != {"phase": "released", "role": role, "pid": pid}:
+                _fail("fake_a_exec_release_unavailable")
+            statuses = {}
+            if not _fake_wait_reap(pid, deadline, statuses):
+                _fail("fake_a_exec_release_unavailable")
+            reaped.add(pid)
+            status = statuses[pid]
+            if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+                _fail("fake_a_exec_release_unavailable")
+        return {
+            "schema": "fake_a_exec_preflight_v2",
+            "status": "fake_transition_partial",
+            "initial_role_count": len(children),
+            "normal_reap_count": len(reaped),
+            "control_pipe_count": 22,
+            "control_endpoint_count": 44,
+            "extra_exec_pipe_count": 1,
+            "private_stdin_pipe_count": 1,
+            "private_stdin_bytes_written": 0,
+            "synthetic_exec_observed": True,
+            "post_exec_observation": post_exec_observation,
+            "fd_samples": samples,
+            "fd_sampled_min_margin": min(row["soft"] - row["count"]
+                                       for row in samples),
+            "work_grants": 0, "http_calls": 0, "model_bytes_read": 0,
+            "installed_identity_proven": False,
+            "physical_stop_unproven": True,
+            "full_gate_pass": False, "b_send_authorized": False,
+        }
+    except LiveOperatorError:
+        raise
+    except BaseException:
+        _fail("fake_a_exec_preflight_failed")
+    finally:
+        cleaned = _role_graph_cleanup(children, reaped, all_fds)
+        after = _role_graph_fd_sample("after_cleanup")
+        samples.append(after)
+        if not cleaned or after["count"] != samples[0]["count"]:
+            _fail("fake_a_exec_cleanup_failed")
+
+
+def _synthetic_runner_target(fault: str | None) -> tuple[str, tuple[str, ...]]:
+    """A fixed no-network native shell; two exact scripts are negative-only."""
+    path = _SYNTHETIC_RUNNER_SHELL
+    try:
+        info = os.stat(path, follow_symlinks=False)
+        if (os.path.realpath(path) != path or not stat.S_ISREG(info.st_mode)
+                or not (info.st_mode & 0o111)):
+            _fail("fake_runner_target_unavailable")
+    except Exception:
+        _fail("fake_runner_target_unavailable")
+    script = _SYNTHETIC_RUNNER_SCRIPT
+    if fault == "duplicate_runner":
+        script = _SYNTHETIC_RUNNER_DUPLICATE_SCRIPT
+    elif fault == "retain_private_hold_fd_in_runner":
+        script = _SYNTHETIC_RUNNER_RETAIN_SCRIPT
+    return path, (path, "-c", script)
+
+
+def _synthetic_runner_a_child(pipes: dict, exec_pipe: tuple[int, int],
+                               stdin_pipe: tuple[int, int],
+                               hold_pipe: tuple[int, int],
+                               inherited: tuple[int, ...], deadline: float,
+                               path: str, argv: tuple[str, ...]) -> None:
+    """Held A changes image once; fd3 is a private hold, not role control."""
+    command_fd = pipes["A"]["command"][0]
+    proof_fd = pipes["A"]["proof"][1]
+    status_fd = exec_pipe[1]
+    hold_fd = hold_pipe[0]
+    keep = {command_fd, proof_fd, status_fd, hold_fd}
+    try:
+        _fake_child_lifetime(deadline)
+        os.dup2(stdin_pipe[0], 0, inheritable=True)
+        for fd in inherited:
+            if fd > 2 and fd not in keep:
+                _fake_close(fd)
+        if (any(os.get_inheritable(fd) for fd in keep)
+                or not os.get_inheritable(0)):
+            os._exit(125)
+        pid = os.getpid()
+        generation = raw_generation(pid)
+        first = {"phase": "initial", "role": "A", "pid": pid,
+                 "ppid": generation[1], "raw_generation": list(generation),
+                 "pgid": os.getpgid(pid)}
+        frame = encode_frame(first)
+        if os.write(proof_fd, frame) != len(frame):
+            os._exit(125)
+        grant = _role_graph_read_frame(command_fd, deadline,
+                                       {"phase", "role"})
+        if grant != {"phase": "exec", "role": "A"}:
+            os._exit(126)
+        # fd3 can be the old role command/proof number. Only remap after
+        # the grant has been consumed and both role endpoints are closed.
+        _fake_close(proof_fd, command_fd)
+        os.dup2(hold_fd, 3, inheritable=True)
+        if hold_fd != 3:
+            _fake_close(hold_fd)
+        if (not os.get_inheritable(3)
+                or os.get_inheritable(status_fd)):
+            os._exit(125)
+        os.execve(path, argv, {})
+    except BaseException:
+        os._exit(127)
+
+
+def _synthetic_runner_children(lib, a_pid: int) -> tuple[int, ...]:
+    """Complete proc_listchildpids result; the API returns PID count."""
+    values = (ctypes.c_int * 64)()
+    fn = lib.proc_listchildpids
+    fn.argtypes = [ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
+    fn.restype = ctypes.c_int
+    try:
+        count = fn(a_pid, values, ctypes.sizeof(values))
+    except Exception:
+        _fail("fake_runner_enumeration_unavailable")
+    if count < 0 or count >= len(values):
+        _fail("fake_runner_enumeration_unavailable")
+    result = tuple(int(value) for value in values[:count])
+    if any(value <= 0 for value in result) or len(set(result)) != len(result):
+        _fail("fake_runner_enumeration_unavailable")
+    return result
+
+
+def _synthetic_runner_cat_witness(lib, runner_pid: int,
+                                   a_pid: int, stdin_handle: int,
+                                   stdio_types: dict[int, int],
+                                   stdio_handles: dict[int, int],
+                                   *, require_stdio_only: bool = True) -> dict:
+    """Fresh OS identity, exact native argv, and full FD/pipe-handle map."""
+    try:
+        before = raw_generation(runner_pid)
+        image = observe_process(runner_pid)
+        pgid = os.getpgid(runner_pid)
+        fd_map = _synthetic_a_exec_fd_snapshot(lib, runner_pid)
+        after = raw_generation(runner_pid)
+    except Exception:
+        _fail("fake_runner_witness_unavailable")
+    if (before != after or fd_map[0] != before or before[1] != a_pid
+            or (image.pid, image.ppid, image.start_sec,
+                image.start_usec) != before
+            or image.executable != "/bin/cat"
+            or image.argv != ("/bin/cat",) or pgid <= 0):
+        _fail("fake_runner_witness_unavailable")
+    expected_types = dict(stdio_types)
+    expected_types[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+    expected_handles = dict(stdio_handles)
+    expected_handles[0] = stdin_handle
+    kinds, handles = fd_map[1], fd_map[2]
+    if (any(kinds.get(fd) != kind for fd, kind in expected_types.items())
+            or any(handles.get(fd, (None,))[0] != handle
+                   for fd, handle in expected_handles.items())):
+        _fail("fake_runner_fd_witness_unavailable")
+    if require_stdio_only and set(kinds) != {0, 1, 2}:
+        _fail("fake_runner_fd_witness_unavailable")
+    return {"pid": runner_pid, "generation": list(before), "pgid": pgid}
+
+
+def _synthetic_runner_generation_gone(runner_generation: tuple[int, ...]) -> bool:
+    try:
+        current = raw_generation(runner_generation[0])
+        # PPID is not part of stable process identity: a still-live runner
+        # can be reparented if A dies. Only PID reuse with a different
+        # start time proves the original generation has disappeared.
+        return ((current[0], current[2], current[3])
+                != (runner_generation[0], runner_generation[2],
+                    runner_generation[3]))
+    except ProbeError:
+        # A libproc failure is not evidence of exit. Only the kernel's
+        # explicit ESRCH for this PID can establish absence; a live or
+        # unobservable PID keeps the cleanup gate closed.
+        try:
+            os.kill(runner_generation[0], 0)
+        except OSError as error:
+            return error.errno == errno.ESRCH
+        return False
+
+
+def _synthetic_runner_wait_gone(lib, a_pid: int, a_generation: tuple[int, ...],
+                                 runner_generation: tuple[int, ...],
+                                 deadline: float) -> bool:
+    while time.monotonic() < deadline:
+        try:
+            if (raw_generation(a_pid) == a_generation
+                    and _synthetic_runner_generation_gone(runner_generation)
+                    and _synthetic_runner_children(lib, a_pid) == ()):
+                return True
+        except Exception:
+            return False
+        time.sleep(min(0.01, max(0, deadline - time.monotonic())))
+    return False
+
+
+def _synthetic_runner_observer_bootstrap(role: str, pipes: dict,
+                                          inherited: tuple[int, ...],
+                                          deadline: float) -> tuple[int, int]:
+    command_fd = pipes[role]["command"][0]
+    proof_fd = pipes[role]["proof"][1]
+    keep = {command_fd, proof_fd}
+    _fake_child_lifetime(deadline)
+    for fd in inherited:
+        if fd > 2 and fd not in keep:
+            _fake_close(fd)
+    if any(os.get_inheritable(fd) for fd in keep):
+        os._exit(125)
+    pid = os.getpid()
+    generation = raw_generation(pid)
+    frame = encode_frame({"phase": "initial", "role": role, "pid": pid,
+                          "ppid": generation[1],
+                          "raw_generation": list(generation),
+                          "pgid": os.getpgid(pid)})
+    if os.write(proof_fd, frame) != len(frame):
+        os._exit(125)
+    return command_fd, proof_fd
+
+
+def _synthetic_runner_send(fd: int, value: dict) -> None:
+    frame = encode_frame(value)
+    if os.write(fd, frame) != len(frame):
+        os._exit(126)
+
+
+def _synthetic_runner_observer_release(role: str, command_fd: int,
+                                        proof_fd: int, deadline: float) -> None:
+    command = _role_graph_read_frame(command_fd, deadline, {"phase", "role"})
+    if command != {"phase": "release", "role": role}:
+        os._exit(126)
+    _synthetic_runner_send(proof_fd, {"phase": "released", "role": role,
+                                       "pid": os.getpid()})
+    os._exit(0)
+
+
+def _synthetic_runner_o_child(pipes: dict, inherited: tuple[int, ...],
+                               deadline: float) -> None:
+    try:
+        command_fd, proof_fd = _synthetic_runner_observer_bootstrap(
+            "O", pipes, inherited, deadline)
+        command = _role_graph_read_frame(command_fd, deadline, {
+            "phase", "role", "a_pid", "a_generation", "stdin_handle",
+            "stdio_types", "stdio_handles", "fault"})
+        if command is None or command["phase"] != "enumerate" or command["role"] != "O":
+            os._exit(126)
+        a_pid = command["a_pid"]
+        a_generation = tuple(command["a_generation"])
+        lib = _role_graph_libproc()
+        try:
+            first_a = raw_generation(a_pid)
+            first = _synthetic_runner_children(lib, a_pid)
+            middle_a = raw_generation(a_pid)
+            second = _synthetic_runner_children(lib, a_pid)
+            final_a = raw_generation(a_pid)
+        except Exception:
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": "unavailable",
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        if (first_a != a_generation or middle_a != a_generation
+                or final_a != a_generation or set(first) != set(second)):
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": "unavailable",
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        if len(first) != 1:
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": "child_count_invalid",
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        runner_pid = first[0]
+        stdio_types = {int(key): value for key, value in command["stdio_types"].items()}
+        stdio_handles = {int(key): value for key, value in command["stdio_handles"].items()}
+        try:
+            runner = _synthetic_runner_cat_witness(
+                lib, runner_pid, a_pid, command["stdin_handle"],
+                stdio_types, stdio_handles)
+        except LiveOperatorError as error:
+            status = ("fd_witness_unavailable" if
+                      str(error) == "fake_runner_fd_witness_unavailable"
+                      else "witness_unavailable")
+            _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                               "status": status,
+                                               "enumerations": 2,
+                                               "runner": None})
+            os._exit(126)
+        if command["fault"] == "o_wrong_runner_pid":
+            runner = dict(runner)
+            runner["pid"] += 1  # Negative-only false frame; OS generation remains exact.
+        _synthetic_runner_send(proof_fd, {"phase": "enumerated", "role": "O",
+                                           "status": "ok", "enumerations": 2,
+                                           "runner": runner})
+        verify = _role_graph_read_frame(command_fd, deadline, {
+            "phase", "role", "a_pid", "a_generation", "runner_generation"})
+        if verify is None or verify["phase"] != "verify_exit" or verify["role"] != "O":
+            os._exit(126)
+        valid = _synthetic_runner_wait_gone(
+            lib, a_pid, a_generation, tuple(verify["runner_generation"]), deadline)
+        _synthetic_runner_send(proof_fd, {"phase": "exit_verified", "role": "O",
+                                           "ok": valid})
+        if not valid:
+            os._exit(126)
+        _synthetic_runner_observer_release("O", command_fd, proof_fd, deadline)
+    except BaseException:
+        os._exit(127)
+
+
+def _synthetic_runner_s_child(pipes: dict, inherited: tuple[int, ...],
+                               deadline: float) -> None:
+    watcher = None
+    try:
+        command_fd, proof_fd = _synthetic_runner_observer_bootstrap(
+            "S_runner", pipes, inherited, deadline)
+        command = _role_graph_read_frame(command_fd, deadline, {
+            "phase", "role", "a_pid", "a_generation", "runner",
+            "stdin_handle", "stdio_types", "stdio_handles", "fault"})
+        if (command is None or command["phase"] != "watch"
+                or command["role"] != "S_runner"):
+            os._exit(126)
+        a_pid = command["a_pid"]
+        a_generation = tuple(command["a_generation"])
+        expected_runner = command["runner"]
+        runner_pid = expected_runner["pid"]
+        runner_generation = tuple(expected_runner["generation"])
+        lib = _role_graph_libproc()
+        stdio_types = {int(key): value for key, value in command["stdio_types"].items()}
+        stdio_handles = {int(key): value for key, value in command["stdio_handles"].items()}
+        if raw_generation(a_pid) != a_generation:
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        try:
+            observed = _synthetic_runner_cat_witness(
+                lib, runner_pid, a_pid, command["stdin_handle"],
+                stdio_types, stdio_handles)
+        except LiveOperatorError:
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        if observed != expected_runner or command["fault"] == "watch_registration_missing":
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        try:
+            watcher = select.kqueue()
+            watcher.control([select.kevent(
+                runner_pid, filter=select.KQ_FILTER_PROC,
+                flags=select.KQ_EV_ADD | select.KQ_EV_ENABLE,
+                fflags=select.KQ_NOTE_EXIT)], 0, 0)
+            if (raw_generation(runner_pid) != runner_generation
+                    or _role_graph_fd_list(lib, os.getpid()).get(watcher.fileno()) != 5):
+                raise OSError("watcher witness unavailable")
+        except Exception:
+            _synthetic_runner_send(proof_fd, {"phase": "watch_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        _synthetic_runner_send(proof_fd, {"phase": "registered",
+                                           "role": "S_runner", "pid": runner_pid,
+                                           "generation": list(runner_generation),
+                                           "kqueue_fd": watcher.fileno()})
+        try:
+            events = watcher.control(None, 1,
+                                     max(0, deadline - time.monotonic()))
+        except Exception:
+            events = []
+        if len(events) != 1:
+            _synthetic_runner_send(proof_fd, {"phase": "event_failed",
+                                               "role": "S_runner"})
+            os._exit(126)
+        event = events[0]
+        gone = _synthetic_runner_wait_gone(
+            lib, a_pid, a_generation, runner_generation, deadline)
+        fields = {"phase": "exit_event", "role": "S_runner",
+                  "ident": int(event.ident), "filter": int(event.filter),
+                  "fflags": int(event.fflags), "flags": int(event.flags),
+                  "gone": gone}
+        if command["fault"] == "wrong_exit_event":
+            fields["ident"] += 1
+        _synthetic_runner_send(proof_fd, fields)
+        if not gone:
+            os._exit(126)
+        watcher.close()
+        watcher = None
+        _synthetic_runner_observer_release("S_runner", command_fd, proof_fd,
+                                            deadline)
+    except BaseException:
+        os._exit(127)
+    finally:
+        if watcher is not None:
+            watcher.close()
+
+
+def _synthetic_runner_lifecycle_preflight_once(fault: str | None) -> dict:
+    """Fake-only, OS-witnessed runner lifecycle; never a real Send grant."""
+    lib = _role_graph_libproc()
+    path, argv = _synthetic_runner_target(fault)
+    try:
+        held_image = observe_process(os.getpid())
+    except Exception:
+        _fail("fake_runner_initial_image_unavailable")
+    stdio_types = {fd: kind for fd, kind in
+                   _role_graph_fd_list(lib, os.getpid()).items() if fd <= 2}
+    if set(stdio_types) != {0, 1, 2}:
+        _fail("fake_runner_fd_witness_unavailable")
+    stdio_handles = {
+        fd: _role_graph_pipe_identity(lib, os.getpid(), fd)[0]
+        for fd, kind in stdio_types.items()
+        if kind == _ROLE_GRAPH_PIPE_FD_TYPE
+    }
+    pipes: dict[str, dict[str, tuple[int, int]]] = {}
+    all_fds: set[int] = set()
+    children: list[int] = []
+    reaped: set[int] = set()
+    known_runners: set[tuple[int, ...]] = set()
+    samples = [_role_graph_fd_sample("before_allocation")]
+    stdin_pipe = None
+    hold_pipe = None
+    deadline = None
+    try:
+        allocation = 0
+        for role in _ROLE_GRAPH_ROLES:
+            pipes[role] = {}
+            for edge in ("command", "proof"):
+                pair = os.pipe()
+                pipes[role][edge] = pair
+                all_fds.update(pair)
+                allocation += 1
+                samples.append(_role_graph_fd_sample(f"allocated_{allocation}"))
+        exec_pipe = os.pipe()
+        all_fds.update(exec_pipe)
+        samples.append(_role_graph_fd_sample("allocated_exec_status"))
+        stdin_pipe = os.pipe()
+        all_fds.update(stdin_pipe)
+        samples.append(_role_graph_fd_sample("allocated_private_stdin"))
+        hold_pipe = os.pipe()
+        all_fds.update(hold_pipe)
+        samples.append(_role_graph_fd_sample("allocated_private_a_hold"))
+        if allocation != 22 or len(all_fds) != 50:
+            _fail("fake_runner_pipe_allocation_failed")
+        pipe_handles = {}
+        for fd in all_fds:
+            handle, flags = _role_graph_pipe_identity(lib, os.getpid(), fd)
+            if not flags & _ROLE_GRAPH_CLOEXEC:
+                _fail("fake_runner_fd_witness_unavailable")
+            pipe_handles[fd] = handle
+        deadline = time.monotonic() + 5.0
+        child_deadline = deadline + 3.0
+        parent_pid = os.getpid()
+        initial_a = None
+        initials: dict[str, dict] = {}
+        for role in _ROLE_GRAPH_ROLES:
+            inherited = tuple(int(name) for name in os.listdir("/dev/fd")
+                              if name.isdecimal())
+            pid = os.fork()
+            if pid == 0:
+                if role == "A":
+                    _synthetic_runner_a_child(
+                        pipes, exec_pipe, stdin_pipe, hold_pipe,
+                        inherited, child_deadline, path, argv)
+                elif role == "O":
+                    _synthetic_runner_o_child(pipes, inherited, child_deadline)
+                elif role == "S_runner":
+                    _synthetic_runner_s_child(pipes, inherited, child_deadline)
+                else:
+                    _role_graph_child(role, pipes, exec_pipe, inherited,
+                                      None, child_deadline)
+                os._exit(127)
+            children.append(pid)
+            command_read = pipes[role]["command"][0]
+            proof_write = pipes[role]["proof"][1]
+            _fake_close(command_read, proof_write)
+            all_fds.difference_update((command_read, proof_write))
+            if role == "A":
+                _fake_close(exec_pipe[1], stdin_pipe[0], hold_pipe[0])
+                all_fds.difference_update((exec_pipe[1], stdin_pipe[0],
+                                           hold_pipe[0]))
+            samples.append(_role_graph_fd_sample(f"fork_closed_{role}"))
+            initial = _role_graph_read_frame(
+                pipes[role]["proof"][0], deadline,
+                {"phase", "role", "pid", "ppid", "raw_generation", "pgid"})
+            try:
+                observed = _fake_os_witness(pid)
+            except Exception:
+                _fail("fake_runner_initial_witness_unavailable")
+            if (initial is None or initial.get("phase") != "initial"
+                    or initial.get("role") != role
+                    or initial.get("pid") != pid
+                    or initial.get("ppid") != parent_pid
+                    or {key: initial.get(key) for key in observed} != observed):
+                _fail("fake_runner_initial_witness_unavailable")
+            initials[role] = observed
+            expected = {command_read, proof_write}
+            child_stdio = dict(stdio_types)
+            child_handles = dict(stdio_handles)
+            if role == "A":
+                expected.update((exec_pipe[1], hold_pipe[0]))
+                child_stdio[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+                child_handles[0] = pipe_handles[stdin_pipe[0]]
+                initial_a = observed
+                try:
+                    held = observe_process(pid)
+                except Exception:
+                    _fail("fake_runner_initial_image_unavailable")
+                if (held.executable != held_image.executable
+                        or held.argv != held_image.argv
+                        or (held.pid, held.ppid, held.start_sec,
+                            held.start_usec) != tuple(initial["raw_generation"])):
+                    _fail("fake_runner_initial_image_unavailable")
+            _role_graph_attest_child_fds(
+                lib, pid, expected, pipe_handles, child_stdio, child_handles)
+            if role == "A":
+                _, flags = _role_graph_pipe_identity(lib, pid, 0)
+                if flags & _ROLE_GRAPH_CLOEXEC:
+                    _fail("fake_runner_fd_witness_unavailable")
+            if select.select([pipes[role]["proof"][0]], [], [], 0)[0]:
+                _fail("fake_runner_initial_witness_unavailable")
+        if initial_a is None or len(initials) != len(_ROLE_GRAPH_ROLES):
+            _fail("fake_runner_initial_witness_unavailable")
+        a_pid = children[_ROLE_GRAPH_ROLES.index("A")]
+        a_generation = tuple(initial_a["raw_generation"])
+        _synthetic_runner_send(pipes["A"]["command"][1],
+                               {"phase": "exec", "role": "A"})
+        if _synthetic_a_exec_status_event(exec_pipe[0], deadline) != "eof":
+            _fail("fake_runner_exec_status_unavailable")
+        a_stdio = dict(stdio_types)
+        a_stdio[0] = _ROLE_GRAPH_PIPE_FD_TYPE
+        a_stdio[3] = _ROLE_GRAPH_PIPE_FD_TYPE
+        a_handles = dict(stdio_handles)
+        a_handles[0] = pipe_handles[stdin_pipe[0]]
+        a_handles[3] = pipe_handles[hold_pipe[0]]
+        postexec = _synthetic_a_exec_post_witness(
+            lib, a_pid, initial_a, _SYNTHETIC_RUNNER_SHELL_IMAGE,
+            argv, pipe_handles[stdin_pipe[0]], a_stdio, a_handles,
+            reaped, deadline)
+
+        # P's bounded spawn presence is a prerequisite, never O's receipt.
+        spawn_started = time.monotonic()
+        previous_start = None
+        spawn_attempts = []
+        runner_generations: list[tuple[int, ...]] = []
+        wanted = 2 if fault == "duplicate_runner" else 1
+        while len(spawn_attempts) < 512:
+            if previous_start is not None:
+                next_start = previous_start + 0.012
+                remaining = min(next_start, deadline) - time.monotonic()
+                if remaining > 0:
+                    time.sleep(remaining)
+            started = time.monotonic()
+            if started >= deadline:
+                break
+            previous_start = started
+            try:
+                if raw_generation(a_pid) != a_generation:
+                    _fail("fake_runner_spawn_unavailable")
+                first = _synthetic_runner_children(lib, a_pid)
+                middle = raw_generation(a_pid)
+                second = _synthetic_runner_children(lib, a_pid)
+                final = raw_generation(a_pid)
+            except LiveOperatorError:
+                raise
+            except Exception:
+                _fail("fake_runner_spawn_unavailable")
+            if middle != a_generation or final != a_generation:
+                _fail("fake_runner_spawn_unavailable")
+            row = {"elapsed_ms": int((started - spawn_started) * 1000),
+                   "child_count": len(second), "classification": "pending"}
+            spawn_attempts.append(row)
+            if set(first) != set(second):
+                continue
+            if len(second) == 0:
+                continue
+            if len(second) != wanted:
+                _fail("fake_runner_child_count_invalid")
+            witnessed = []
+            for child_pid in second:
+                # This parent-side OS call also makes the independent test
+                # spy see actual cat images, never only our claimed frame.
+                try:
+                    cat = observe_process(child_pid)
+                except Exception:
+                    _fail("fake_runner_spawn_unavailable")
+                if (cat.executable != "/bin/cat"
+                        or cat.argv != ("/bin/cat",)
+                        or cat.ppid != a_pid):
+                    _fail("fake_runner_spawn_unavailable")
+                generation = (cat.pid, cat.ppid, cat.start_sec, cat.start_usec)
+                known_runners.add(generation)
+                try:
+                    witness = _synthetic_runner_cat_witness(
+                        lib, child_pid, a_pid, pipe_handles[stdin_pipe[0]],
+                        stdio_types, stdio_handles,
+                        require_stdio_only=(fault != "retain_private_hold_fd_in_runner"))
+                except LiveOperatorError:
+                    raise
+                if tuple(witness["generation"]) != generation:
+                    _fail("fake_runner_spawn_unavailable")
+                if fault == "retain_private_hold_fd_in_runner":
+                    kinds = _role_graph_fd_list(lib, child_pid)
+                    handle, flags = _role_graph_pipe_identity(lib, child_pid, 3)
+                    if (kinds.get(3) != _ROLE_GRAPH_PIPE_FD_TYPE
+                            or handle != pipe_handles[hold_pipe[0]]
+                            or flags & _ROLE_GRAPH_CLOEXEC):
+                        _fail("fake_runner_fd_witness_unavailable")
+                witnessed.append(generation)
+            if (set(_synthetic_runner_children(lib, a_pid))
+                    != {generation[0] for generation in witnessed}
+                    or any(raw_generation(generation[0]) != generation
+                           for generation in witnessed)):
+                _fail("fake_runner_spawn_unavailable")
+            row["classification"] = "exact"
+            runner_generations = witnessed
+            break
+        if not runner_generations:
+            _fail("fake_runner_spawn_unavailable")
+        spawn_observation = {"attempts": spawn_attempts,
+                             "attempt_count": len(spawn_attempts),
+                             "elapsed_ms": int((time.monotonic() - spawn_started) * 1000)}
+
+        if fault == "runner_exited_before_enumeration":
+            _fake_close(stdin_pipe[1])
+            all_fds.discard(stdin_pipe[1])
+            if not _synthetic_runner_wait_gone(
+                    lib, a_pid, a_generation, runner_generations[0], deadline):
+                _fail("fake_runner_exit_unavailable")
+        o_command = {"phase": "enumerate", "role": "O", "a_pid": a_pid,
+                     "a_generation": list(a_generation),
+                     "stdin_handle": pipe_handles[stdin_pipe[0]],
+                     "stdio_types": {str(k): v for k, v in stdio_types.items()},
+                     "stdio_handles": {str(k): v for k, v in stdio_handles.items()},
+                     "fault": fault}
+        _synthetic_runner_send(pipes["O"]["command"][1], o_command)
+        o_frame = _role_graph_read_frame(pipes["O"]["proof"][0], deadline, None)
+        if (o_frame is None or set(o_frame) != {
+                "phase", "role", "status", "enumerations", "runner"}
+                or o_frame.get("phase") != "enumerated"
+                or o_frame.get("role") != "O"
+                or o_frame.get("enumerations") != 2):
+            _fail("fake_runner_o_witness_mismatch")
+        if o_frame["status"] == "child_count_invalid":
+            _fail("fake_runner_child_count_invalid")
+        if o_frame["status"] == "fd_witness_unavailable":
+            _fail("fake_runner_fd_witness_unavailable")
+        if o_frame["status"] != "ok" or type(o_frame["runner"]) is not dict:
+            _fail("fake_runner_o_witness_mismatch")
+        runner = o_frame["runner"]
+        if (set(runner) != {"pid", "generation", "pgid"}
+                or type(runner["pid"]) is not int
+                or runner["pid"] != runner_generations[0][0]
+                or tuple(runner["generation"]) != runner_generations[0]
+                or type(runner["pgid"]) is not int):
+            _fail("fake_runner_o_witness_mismatch")
+        try:
+            parent_spotcheck = _synthetic_runner_cat_witness(
+                lib, runner["pid"], a_pid, pipe_handles[stdin_pipe[0]],
+                stdio_types, stdio_handles)
+        except LiveOperatorError:
+            _fail("fake_runner_o_witness_mismatch")
+        if parent_spotcheck != runner:
+            _fail("fake_runner_o_witness_mismatch")
+
+        watch_command = {"phase": "watch", "role": "S_runner",
+                         "a_pid": a_pid, "a_generation": list(a_generation),
+                         "runner": runner,
+                         "stdin_handle": pipe_handles[stdin_pipe[0]],
+                         "stdio_types": {str(k): v for k, v in stdio_types.items()},
+                         "stdio_handles": {str(k): v for k, v in stdio_handles.items()},
+                         "fault": fault}
+        _synthetic_runner_send(pipes["S_runner"]["command"][1], watch_command)
+        s_frame = _role_graph_read_frame(
+            pipes["S_runner"]["proof"][0], deadline, None)
+        if (s_frame is None or set(s_frame) != {
+                "phase", "role", "pid", "generation", "kqueue_fd"}
+                or s_frame.get("phase") != "registered"
+                or s_frame.get("role") != "S_runner"
+                or s_frame.get("pid") != runner["pid"]
+                or s_frame.get("generation") != runner["generation"]
+                or type(s_frame.get("kqueue_fd")) is not int):
+            _fail("fake_runner_watch_unregistered")
+        s_pid = children[_ROLE_GRAPH_ROLES.index("S_runner")]
+        try:
+            if (raw_generation(s_pid) != tuple(initials["S_runner"]["raw_generation"])
+                    or _role_graph_fd_list(lib, s_pid).get(s_frame["kqueue_fd"]) != 5
+                    or raw_generation(a_pid) != a_generation
+                    or raw_generation(runner["pid"]) != tuple(runner["generation"])):
+                _fail("fake_runner_watch_unregistered")
+        except LiveOperatorError:
+            raise
+        except Exception:
+            _fail("fake_runner_watch_unregistered")
+        try:
+            os.waitpid(runner["pid"], os.WNOHANG)
+        except ChildProcessError:
+            nonparent_waitpid_rejected = True
+        else:
+            _fail("fake_runner_nonparent_waitpid_not_rejected")
+        _fake_close(stdin_pipe[1])
+        all_fds.discard(stdin_pipe[1])
+        event = _role_graph_read_frame(pipes["S_runner"]["proof"][0],
+                                       deadline, None)
+        if (event is None or set(event) != {
+                "phase", "role", "ident", "filter", "fflags", "flags", "gone"}
+                or event.get("phase") != "exit_event"
+                or event.get("role") != "S_runner"
+                or event.get("ident") != runner["pid"]
+                or event.get("filter") != select.KQ_FILTER_PROC
+                or type(event.get("fflags")) is not int
+                or not event["fflags"] & select.KQ_NOTE_EXIT
+                or type(event.get("flags")) is not int
+                or event["flags"] & select.KQ_EV_ERROR
+                or event.get("gone") is not True):
+            _fail("fake_runner_exit_event_invalid")
+        _synthetic_runner_send(pipes["O"]["command"][1], {
+            "phase": "verify_exit", "role": "O", "a_pid": a_pid,
+            "a_generation": list(a_generation),
+            "runner_generation": runner["generation"]})
+        exit_frame = _role_graph_read_frame(
+            pipes["O"]["proof"][0], deadline,
+            {"phase", "role", "ok"})
+        if (exit_frame != {"phase": "exit_verified", "role": "O", "ok": True}
+                or not _synthetic_runner_wait_gone(
+                    lib, a_pid, a_generation, tuple(runner["generation"]), deadline)):
+            _fail("fake_runner_exit_verification_failed")
+        # O and S_runner are still held here; only now may A leave.
+        _fake_close(hold_pipe[1])
+        all_fds.discard(hold_pipe[1])
+        statuses: dict[int, int] = {}
+        if not _fake_wait_reap(a_pid, deadline, statuses):
+            _fail("fake_runner_a_exit_failed")
+        reaped.add(a_pid)
+        status = statuses[a_pid]
+        if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+            _fail("fake_runner_a_exit_failed")
+        for role in _ROLE_GRAPH_ROLES:
+            if role == "A":
+                continue
+            _synthetic_runner_send(pipes[role]["command"][1],
+                                   {"phase": "release", "role": role})
+        for role, pid in zip(_ROLE_GRAPH_ROLES, children):
+            if role == "A":
+                continue
+            reply = _role_graph_read_frame(pipes[role]["proof"][0], deadline,
+                                           {"phase", "role", "pid"})
+            if reply != {"phase": "released", "role": role, "pid": pid}:
+                _fail("fake_runner_release_failed")
+            statuses = {}
+            if not _fake_wait_reap(pid, deadline, statuses):
+                _fail("fake_runner_release_failed")
+            reaped.add(pid)
+            status = statuses[pid]
+            if not os.WIFEXITED(status) or os.WEXITSTATUS(status) != 0:
+                _fail("fake_runner_release_failed")
+        if fault is not None:
+            _fail("fake_runner_fault_not_observed")
+        return {
+            "schema": "fake_runner_lifecycle_preflight_v1",
+            "status": "fake_runner_partial",
+            "initial_role_count": len(children),
+            "normal_reap_count": len(reaped),
+            "control_pipe_count": 22, "control_endpoint_count": 44,
+            "extra_exec_pipe_count": 1,
+            "private_runner_stdin_pipe_count": 1,
+            "private_a_hold_pipe_count": 1,
+            "private_runner_stdin_bytes_written": 0,
+            "runner_exit_observed": True,
+            "runner_reaped_by_parent": "not_applicable",
+            "nonparent_waitpid_rejected": nonparent_waitpid_rejected,
+            "o_enumeration_count": 2,
+            "s_runner_independent_reobservation": True,
+            "s_runner_registration_observed": True,
+            "s_runner_event_ident_matched": True,
+            "s_runner_event_filter": event["filter"],
+            "s_runner_event_note_exit": True,
+            "s_runner_event_error": False,
+            "runner_spawn_observation": spawn_observation,
+            "a_postexec_observation": postexec,
+            "fd_samples": samples,
+            "fd_sampled_min_margin": min(row["soft"] - row["count"]
+                                           for row in samples),
+            "work_grants": 0, "http_calls": 0, "model_bytes_read": 0,
+            "installed_identity_proven": False,
+            "physical_stop_unproven": True,
+            "full_gate_pass": False, "b_send_authorized": False,
+        }
+    except LiveOperatorError:
+        raise
+    except BaseException:
+        _fail("fake_runner_preflight_failed")
+    finally:
+        # Close-only release first: the cat belongs to A and P cannot reap it.
+        if stdin_pipe is not None:
+            _fake_close(stdin_pipe[1])
+            all_fds.discard(stdin_pipe[1])
+        if hold_pipe is not None:
+            _fake_close(hold_pipe[1])
+            all_fds.discard(hold_pipe[1])
+        cleaned = _role_graph_cleanup(children, reaped, all_fds)
+        after = _role_graph_fd_sample("after_cleanup")
+        samples.append(after)
+        gone = all(_synthetic_runner_generation_gone(generation)
+                   for generation in known_runners)
+        if not cleaned or not gone or after["count"] != samples[0]["count"]:
+            _fail("fake_runner_cleanup_failed")
+
+
+def _fake_os_witness(pid: int) -> dict:
+    """Small *partial* OS witness for an ephemeral test child, never Ollama.
+
+    The live freeze additionally requires argv, binary, listener, source and
+    model witnesses; this function does not provide or imply those proofs.
+    """
+    first = raw_generation(pid)
+    pgid = os.getpgid(pid)
+    second = raw_generation(pid)
+    if first != second or first[0] != pid or pgid <= 0:
+        _fail("fake_witness_unavailable")
+    return {"pid": pid, "ppid": first[1], "raw_generation": list(first),
+            "pgid": pgid}
+
+
+def _fake_witness_valid(value: Any, pid: int) -> bool:
+    return (type(value) is dict
+            and set(value) == {"pid", "ppid", "raw_generation", "pgid"}
+            and value["pid"] == pid and type(value["pid"]) is int
+            and type(value["ppid"]) is int and value["ppid"] > 0
+            and _generation(value["raw_generation"], pid, value["ppid"])
+            and type(value["pgid"]) is int and value["pgid"] > 0)
+
+
+def _fake_exact_signal_transaction(initial: dict, observe, signum: int) -> str:
+    """Check identity and signal in one *separate* short-lived process.
+
+    The injected observer exists to exercise cleanup stalls/drift. Even if
+    it lies, both bracketing OS observations must match the initial witness.
+    This retains the documented final-check-to-os.kill PID-reuse residual.
+    """
+    pid = initial["pid"]
+    try:
+        if not _fake_witness_valid(initial, pid):
+            return "identity_changed_no_signal"
+        expected = _canonical(initial, "fake_witness_unavailable")
+        first = _fake_os_witness(pid)
+        injected_first = observe(pid)
+        injected_final = observe(pid)
+        final = _fake_os_witness(pid)
+        if not all(_fake_witness_valid(item, pid)
+                   and _canonical(item, "fake_witness_unavailable") == expected
+                   for item in (first, injected_first, injected_final, final)):
+            return "identity_changed_no_signal"
+        os.kill(pid, signum)  # exact initial PID; never killpg
+    except Exception:
+        return "witness_or_signal_unavailable"
+    return "signal_sent"
+
+
+def _fake_child_alarm(_signum, _frame) -> None:
+    # A synthetic callback or injected observer may never return. This is a
+    # backstop for test-owned children, not evidence for the live stop gate.
+    os._exit(124)
+
+
+def _fake_child_lifetime(absolute_deadline: float) -> None:
+    # Use the parent's monotonic deadline, not a new interval starting only
+    # after fork/set-up. Otherwise slow child startup can outlive the
+    # parent's bounded reap window and leave a test child behind.
+    signal.signal(signal.SIGALRM, _fake_child_alarm)
+    signal.setitimer(signal.ITIMER_REAL,
+                     max(0.001, absolute_deadline - time.monotonic()))
+
+
+def _fake_close(*fds: int) -> None:
+    for fd in fds:
+        if fd is None:
+            continue
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+
+
+def _fake_read_bounded(fd: int, deadline: float, *, framed: bool,
+                       keys: set[str] | None = None) -> Any:
+    """Parent-side bounded read; framed messages require exact bytes and EOF.
+
+    Each framed sender closes its write end after one frame. Waiting for EOF
+    before accepting prevents a second/trailing frame from racing the next
+    command. Single-byte cleanup replies use the non-EOF mode.
+    """
+    raw = bytearray()
+    limit = FRAME_LIMIT + 5 if framed else 1
+    while time.monotonic() < deadline and len(raw) < limit:
+        readable, _, _ = select.select([fd], [], [],
+                                       min(0.005, max(0, deadline - time.monotonic())))
+        if not readable:
+            continue
+        try:
+            part = os.read(fd, limit - len(raw))
+        except BlockingIOError:
+            continue
+        if not part:
+            if framed and len(raw) >= 4:
+                size = struct.unpack(">I", raw[:4])[0]
+                if 0 < size <= FRAME_LIMIT and len(raw) == size + 4:
+                    try:
+                        return decode_frame(bytes(raw), keys=keys or {"witness"})
+                    except LiveOperatorError:
+                        return None
+            return None
+        raw.extend(part)
+        if not framed and raw:
+            return bytes(raw)
+        if len(raw) >= 4:
+            size = struct.unpack(">I", raw[:4])[0]
+            if size == 0 or size > FRAME_LIMIT:
+                return None
+            if len(raw) > size + 4:
+                return None
+    return None
+
+
+def _fake_reap_nonblocking(pid: int, statuses: dict[int, int] | None = None) -> bool:
+    try:
+        seen_pid, wait_status = os.waitpid(pid, os.WNOHANG)
+    except ChildProcessError:
+        # A missing waitable child is not an exit/reap witness. Callers keep
+        # an explicit flag only after an exact waitpid result.
+        return False
+    if seen_pid != pid:
+        return False
+    if statuses is not None:
+        statuses[pid] = wait_status
+    return True
+
+
+def _fake_journal_proof_valid(value: Any) -> bool:
+    """Only hashes and the exact grant allowlist may cross this fake IPC."""
+    return (type(value) is dict
+            and set(value) == {"grant", "journal_sha256"}
+            and _grant_valid(value["grant"], nonce_required=True)
+            and _valid_sha(value["journal_sha256"]))
+
+
+def _fake_zero_journal_proof_valid(value: Any, run_id: str) -> bool:
+    return (type(value) is dict
+            and set(value) == {"phase", "seq", "run_id", "journal_sha256",
+                               "reserved", "granted", "completion_attempt_spent"}
+            and value["phase"] == "zero" and type(value["seq"]) is int
+            and value["seq"] == 1 and value["run_id"] == run_id
+            and _valid_sha(value["journal_sha256"])
+            and all(type(value[key]) is int and value[key] == 0
+                    for key in ("reserved", "granted", "completion_attempt_spent")))
+
+
+def _fake_staged_op1_proof_valid(value: Any) -> bool:
+    return (type(value) is dict and set(value) == {"seq", "grant", "journal_sha256"}
+            and type(value["seq"]) is int and value["seq"] == 2
+            and _fake_journal_proof_valid(
+                {"grant": value["grant"], "journal_sha256": value["journal_sha256"]}))
+
+
+def _fake_wait_reap(pid: int, deadline: float,
+                    statuses: dict[int, int] | None = None) -> bool:
+    while time.monotonic() < deadline:
+        if _fake_reap_nonblocking(pid, statuses):
+            return True
+        time.sleep(min(0.003, max(0, deadline - time.monotonic())))
+    return _fake_reap_nonblocking(pid, statuses)
+
+
+def _supervise_fake_callback_once(*, work, observe=None, initial_witness=None,
+                                  signal_initial_witness=None,
+                                  journal_proof: bool = False,
+                                  staged_journal_run_id: str | None = None,
+                                  preparation_seconds: float = 0.15,
+                                  work_seconds: float = 0.10,
+                                  term_grace_seconds: float = 0.04,
+                                  cleanup_seconds: float = 0.25) -> dict:
+    """Explicitly fake-only process watchdog slice, **not** a live receipt.
+
+    `work` and the observer run only in ephemeral forked children. The
+    parent waits for bounded initial witness ACKs before issuing GO,
+    and never executes these callbacks or `raw_generation` itself. Missing
+    witness means no callback and no ownership/signal claim. All returned
+    fields are fixed-code, raw-free test evidence. There are no HTTP grants,
+    durable journal/receipt, private port or shared-port proofs here, so
+    `supervise_once` remains fail-closed.
+    """
+    if (not callable(work) or type(journal_proof) is not bool
+            or (staged_journal_run_id is not None
+                and (journal_proof or type(staged_journal_run_id) is not str
+                     or _RUN.fullmatch(staged_journal_run_id) is None))
+            or (observe is not None and not callable(observe))
+            or (initial_witness is not None and not callable(initial_witness))
+            or (signal_initial_witness is not None
+                and not callable(signal_initial_witness))):
+        _fail("fake_effects_invalid")
+    limits = (preparation_seconds, work_seconds, term_grace_seconds,
+              cleanup_seconds)
+    if any(type(value) not in (int, float) or not math.isfinite(value)
+           or not 0.01 <= value <= 5.0 for value in limits):
+        _fail("fake_limits_invalid")
+    observer = observe or _fake_os_witness
+    initial_reader = initial_witness or _fake_os_witness
+    signal_initial_reader = signal_initial_witness or _fake_os_witness
+    prep_start = time.monotonic()
+    hard_life = sum(limits) + preparation_seconds + 0.20
+    hard_deadline = prep_start + hard_life
+    wr, ww = os.pipe()       # worker initial witness
+    cr, cw = os.pipe()       # parent -> worker GO
+    dr, dw = os.pipe()       # worker fixed result
+    zr, zw = os.pipe() if staged_journal_run_id is not None else (None, None)
+    worker_pid = os.fork()
+    if worker_pid == 0:
+        _fake_close(wr, cw, dr, zr)
+        try:
+            os.setsid()
+            _fake_child_lifetime(hard_deadline)
+            actual = _fake_os_witness(os.getpid())
+            witness = initial_reader(os.getpid())
+            if witness != actual:
+                os._exit(126)
+            os.write(ww, encode_frame({"witness": witness}))
+            _fake_close(ww)
+            if os.read(cr, 1) != b"G":
+                os._exit(0)
+            if staged_journal_run_id is not None:
+                stages = iter(work(actual))
+                zero = next(stages)
+                if not _fake_zero_journal_proof_valid(zero, staged_journal_run_id):
+                    os._exit(125)
+                os.write(zw, encode_frame(zero))
+                _fake_close(zw)
+                if os.read(cr, 1) != b"R":
+                    os._exit(0)
+                work_result = next(stages)
+            else:
+                work_result = work()
+            if (journal_proof and not _fake_journal_proof_valid(work_result)):
+                os._exit(125)
+            if (staged_journal_run_id is not None
+                    and not _fake_staged_op1_proof_valid(work_result)):
+                os._exit(125)
+            os.write(dw, (encode_frame(work_result)
+                          if journal_proof or staged_journal_run_id is not None
+                          else b"D"))
+            os._exit(0)
+        except BaseException:
+            os._exit(125)
+    _fake_close(ww, cr, dw, zw)
+    signal_pid = None
+    sr = sc = rr = None
+    worker_reaped = False
+    signal_reaped = False
+    exit_statuses: dict[int, int] = {}
+    term_code = "not_attempted"
+    kill_code = "not_attempted"
+    status = "fake_partial_initial_witness_unavailable"
+    t0 = None
+    result = None
+    try:
+        initial_msg = _fake_read_bounded(wr, prep_start + preparation_seconds,
+                                         framed=True)
+        initial = initial_msg.get("witness") if initial_msg else None
+        if not _fake_witness_valid(initial, worker_pid):
+            worker_reaped = _fake_wait_reap(worker_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            result = {"schema": "fake_process_watchdog_partial_v1",
+                    "status": status, "go_issued": False,
+                    "worker_reaped": worker_reaped,
+                    "signal_reaped": True, "term": term_code,
+                    "kill": kill_code, "full_gate_pass": False}
+            return result
+
+        # Prestart a separate cleanup transaction process while work is
+        # still behind the GO barrier. Its own initial ACK is mandatory.
+        sr, sw = os.pipe()
+        sc_read, sc = os.pipe()
+        rr, rw = os.pipe()
+        signal_pid = os.fork()
+        if signal_pid == 0:
+            _fake_close(sr, sc, rr, wr, cw, dr, zr)
+            try:
+                os.setsid()
+                _fake_child_lifetime(hard_deadline)
+                actual_own = _fake_os_witness(os.getpid())
+                own = signal_initial_reader(os.getpid())
+                if own != actual_own:
+                    os._exit(126)
+                os.write(sw, encode_frame({"witness": own}))
+                _fake_close(sw)
+                while True:
+                    command = os.read(sc_read, 1)
+                    if command not in (b"T", b"K"):
+                        os._exit(0)
+                    signum = signal.SIGTERM if command == b"T" else signal.SIGKILL
+                    code = _fake_exact_signal_transaction(initial, observer,
+                                                          signum)
+                    os.write(rw, {"signal_sent": b"S",
+                                  "identity_changed_no_signal": b"D",
+                                  "witness_or_signal_unavailable": b"U"}[code])
+            except BaseException:
+                os._exit(125)
+        _fake_close(sw, sc_read, rw)
+        signal_msg = _fake_read_bounded(sr, time.monotonic() + preparation_seconds,
+                                        framed=True)
+        signal_own = signal_msg.get("witness") if signal_msg else None
+        if not _fake_witness_valid(signal_own, signal_pid):
+            status = "fake_partial_signal_helper_witness_unavailable"
+            worker_reaped = _fake_wait_reap(worker_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            signal_reaped = _fake_wait_reap(signal_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            result = {"schema": "fake_process_watchdog_partial_v1",
+                    "status": status, "go_issued": False,
+                    "worker_reaped": worker_reaped,
+                    "signal_reaped": signal_reaped,
+                    "term": term_code, "kill": kill_code,
+                    "full_gate_pass": False}
+            return result
+
+        os.set_blocking(cw, False)
+        t0 = time.monotonic()
+        try:
+            if os.write(cw, b"G") != 1:
+                raise OSError("short GO")
+        except OSError:
+            # An ACKed child can still disappear before GO. No callback
+            # start is claimed and no raw pipe exception escapes.
+            _fake_close(cw)
+            worker_reaped = _fake_wait_reap(worker_pid, hard_deadline + 0.35,
+                                            exit_statuses)
+            result = {"schema": "fake_process_watchdog_partial_v1",
+                      "status": "fake_partial_go_unavailable",
+                      "go_issued": False, "worker_reaped": worker_reaped,
+                      "signal_reaped": False, "term": term_code,
+                      "kill": kill_code, "full_gate_pass": False}
+            return result
+        zero_ack_received = False
+        reserve_command_issued = False
+        if staged_journal_run_id is not None:
+            zero_msg = _fake_read_bounded(
+                zr, t0 + work_seconds, framed=True,
+                keys={"phase", "seq", "run_id", "journal_sha256", "reserved",
+                      "granted", "completion_attempt_spent"})
+            zero_ack_received = _fake_zero_journal_proof_valid(
+                zero_msg, staged_journal_run_id)
+            if zero_ack_received and time.monotonic() < t0 + work_seconds:
+                try:
+                    reserve_command_issued = os.write(cw, b"R") == 1
+                except OSError:
+                    reserve_command_issued = False
+        work_done = _fake_read_bounded(
+            dr, t0 + work_seconds,
+            framed=journal_proof or staged_journal_run_id is not None,
+            keys=({"seq", "grant", "journal_sha256"}
+                  if staged_journal_run_id is not None else
+                  {"grant", "journal_sha256"} if journal_proof else None))
+        if (journal_proof and not _fake_journal_proof_valid(work_done)):
+            work_done = None
+        if (staged_journal_run_id is not None
+                and not _fake_staged_op1_proof_valid(work_done)):
+            work_done = None
+        worker_reaped = _fake_reap_nonblocking(worker_pid, exit_statuses)
+        work_reported = (type(work_done) is dict
+                         if journal_proof or staged_journal_run_id is not None
+                         else work_done == b"D")
+        if work_reported and not worker_reaped:
+            worker_reaped = _fake_wait_reap(worker_pid,
+                                           time.monotonic() + 0.02,
+                                           exit_statuses)
+        if not worker_reaped:
+            os.set_blocking(sc, False)
+            try:
+                os.write(sc, b"T")
+            except OSError:
+                term_code = "cleanup_command_unavailable"
+            else:
+                response = _fake_read_bounded(
+                    rr, t0 + work_seconds + cleanup_seconds, framed=False)
+                term_code = {b"S": "signal_sent", b"D": "identity_changed_no_signal",
+                             b"U": "witness_or_signal_unavailable"}.get(
+                                 response, "cleanup_observer_timeout")
+            grace_end = t0 + work_seconds + term_grace_seconds
+            worker_reaped = _fake_wait_reap(worker_pid, grace_end,
+                                            exit_statuses)
+            if not worker_reaped and term_code == "signal_sent":
+                try:
+                    os.write(sc, b"K")
+                except OSError:
+                    kill_code = "cleanup_command_unavailable"
+                else:
+                    response = _fake_read_bounded(rr, t0 + work_seconds +
+                                                  cleanup_seconds, framed=False)
+                    kill_code = {b"S": "signal_sent",
+                                 b"D": "identity_changed_no_signal",
+                                 b"U": "witness_or_signal_unavailable"}.get(
+                                     response, "cleanup_observer_timeout")
+            worker_reaped = worker_reaped or _fake_wait_reap(
+                worker_pid, t0 + work_seconds + cleanup_seconds, exit_statuses)
+        worker_status = exit_statuses.get(worker_pid)
+        completed_normally = (worker_status is not None
+                              and os.WIFEXITED(worker_status)
+                              and os.WEXITSTATUS(worker_status) == 0)
+        stopped_by_witnessed_signal = (
+            worker_status is not None and os.WIFSIGNALED(worker_status)
+            and ((term_code == "signal_sent"
+                  and os.WTERMSIG(worker_status) == signal.SIGTERM)
+                 or (kill_code == "signal_sent"
+                     and os.WTERMSIG(worker_status) == signal.SIGKILL)))
+        if (work_reported and worker_reaped and completed_normally
+                and (staged_journal_run_id is None or reserve_command_issued)):
+            status = "fake_partial_work_exited"
+        elif worker_reaped and stopped_by_witnessed_signal:
+            status = "fake_partial_witnessed_child_reaped"
+        else:
+            status = "fake_partial_physical_stop_unproven"
+        result = {"schema": "fake_process_watchdog_partial_v1",
+                "status": status, "go_issued": True,
+                "worker_reaped": worker_reaped,
+                "signal_reaped": False, "term": term_code,
+                "kill": kill_code, "full_gate_pass": False}
+        if staged_journal_run_id is not None:
+            result["zero_ack_received"] = zero_ack_received
+            result["reserve_command_issued"] = reserve_command_issued
+        if (status == "fake_partial_work_exited"
+                and (journal_proof or staged_journal_run_id is not None)):
+            result["work_result"] = work_done
+            result["worker_initial_witness"] = initial
+        return result
+    finally:
+        _fake_close(wr, cw, dr, zr)
+        if sc is not None:
+            try:
+                os.write(sc, b"Q")
+            except (OSError, BrokenPipeError):
+                pass
+            _fake_close(sr, sc, rr)
+        if signal_pid is not None and not signal_reaped:
+            signal_reaped = _fake_wait_reap(signal_pid,
+                             hard_deadline + 0.35, exit_statuses)
+        if not worker_reaped:
+            worker_reaped = _fake_wait_reap(worker_pid,
+                             hard_deadline + 0.35, exit_statuses)
+        if result is not None:
+            result["worker_reaped"] = worker_reaped
+            result["signal_reaped"] = signal_reaped or signal_pid is None
+
+
+def _supervise_fake_journal_op1_once(*, run_dir, grant_without_worker: dict,
+                                     crash_after_commit: bool = False,
+                                     work_seconds: float = 0.4) -> dict:
+    """Fake-only bounded zero-ACK -> op1 durability probe.
+
+    One witnessed ephemeral child first creates/readbacks the zero journal.
+    The parent issues the op1 command only after validating its bounded zero
+    ACK. The same child then reserves op1 and emits a final proof after all
+    commits return. This is still *not* a separate durability helper plus
+    worker or a worker-delivered grant; ``supervise_once`` stays fail-closed.
+    """
+    if (type(grant_without_worker) is not dict
+            or set(grant_without_worker) != _GRANT_FIELDS - {"worker"}
+            or grant_without_worker.get("ordinal") != 1
+            or not _grant_valid({**grant_without_worker,
+                                 "worker": {"pid": 1, "ppid": 1,
+                                            "start_sec": 0, "start_usec": 0}},
+                                nonce_required=False)
+            or type(crash_after_commit) is not bool):
+        _fail("fake_journal_spec_invalid")
+    spec = _plain_copy(grant_without_worker, "fake_journal_spec_invalid")
+    directory = Path(run_dir)
+
+    def durable_work(initial):
+        generation = initial["raw_generation"]
+        worker = {"pid": generation[0], "ppid": generation[1],
+                  "start_sec": generation[2], "start_usec": generation[3]}
+        journal = DurableJournal.create(directory, spec["run_id"])
+        zero_state = journal.snapshot()
+        with open(journal.path, "rb") as handle:
+            zero_disk = handle.read(FRAME_LIMIT + 1)
+        if (len(zero_disk) > FRAME_LIMIT
+                or zero_disk != _canonical(zero_state,
+                                           "fake_journal_readback_invalid")
+                or zero_state["reserved"] != 0 or zero_state["granted"] != 0
+                or zero_state["completion_attempt_spent"] != 0
+                or zero_state["operations"] != []):
+            _fail("fake_journal_readback_invalid")
+        yield {"phase": "zero", "seq": 1, "run_id": spec["run_id"],
+               "journal_sha256": _sha(zero_disk), "reserved": 0,
+               "granted": 0, "completion_attempt_spent": 0}
+        grant = journal.reserve({**spec, "worker": worker}, ack=lambda _grant: None)
+        state = journal.snapshot()
+        # The helper, never the parent watchdog, performs the post-commit
+        # readback. A blocked read is subject to the same process deadline.
+        with open(journal.path, "rb") as handle:
+            disk = handle.read(FRAME_LIMIT + 1)
+        if (len(disk) > FRAME_LIMIT
+                or disk != _canonical(state, "fake_journal_readback_invalid")
+                or state["reserved"] != 1 or state["granted"] != 1
+                or state["ack_callback_returned"] != 1
+                or state["worker_issued"] != 0
+                or state["operations"][0]["on_wire"] != "unknown"):
+            _fail("fake_journal_readback_invalid")
+        if crash_after_commit:
+            os._exit(121)  # injected lost proof after durable commit
+        yield {"seq": 2, "grant": grant, "journal_sha256": _sha(disk)}
+
+    watched = _supervise_fake_callback_once(
+        work=durable_work,
+        staged_journal_run_id=spec["run_id"],
+        work_seconds=work_seconds)
+    base = {"schema": "fake_process_journal_partial_v1",
+            "status": "fake_partial_journal_unproven",
+            "watchdog_status": watched["status"],
+            "worker_reaped": watched["worker_reaped"],
+            "signal_reaped": watched["signal_reaped"],
+            "go_issued": watched["go_issued"],
+            "term": watched["term"], "kill": watched["kill"],
+            "zero_ack_received": watched.get("zero_ack_received", False),
+            "reserve_command_issued": watched.get("reserve_command_issued", False),
+            "full_gate_pass": False}
+    if (watched["status"] != "fake_partial_work_exited"
+            or not watched["signal_reaped"]
+            or not watched.get("zero_ack_received")
+            or not watched.get("reserve_command_issued")):
+        return base
+    proof = watched.get("work_result")
+    initial = watched.get("worker_initial_witness")
+    if (not _fake_staged_op1_proof_valid(proof)
+            or not _fake_witness_valid(initial, initial.get("pid", -1)
+                                       if type(initial) is dict else -1)):
+        return base
+    generation = initial["raw_generation"]
+    expected_worker = {"pid": generation[0], "ppid": generation[1],
+                       "start_sec": generation[2], "start_usec": generation[3]}
+    grant = proof["grant"]
+    if (not _grant_valid(grant, nonce_required=True)
+            or _canonical({key: grant[key] for key in _GRANT_FIELDS - {"worker"}},
+                          "fake_journal_proof_invalid") != _canonical(
+                              spec, "fake_journal_proof_invalid")
+            or grant["worker"] != expected_worker):
+        return base
+    return {**base, "status": "fake_partial_op1_durable_proof",
+            "journal_sha256": proof["journal_sha256"],
+            "grant_sha256": _sha(_canonical(grant, "fake_journal_proof_invalid")),
+            "reserved": 1, "granted": 1, "worker_issued": 0,
+            "on_wire": "unknown"}
+
+
+# This is a separate fake-only process topology. Each edge has its own
+# one-frame pipe, so EOF proves there was no second or trailing frame.
+_SPLIT_SCHEMA = "fake_split_op1_v1"
+_SPLIT_EDGES = (
+    "d_initial", "w_initial", "d_go", "d_zero", "w_go", "w_request",
+    "d_reserve", "d_proof", "w_delivery", "w_received",
+)
+_SPLIT_EXTRA = {
+    "initial": frozenset({"role"}),
+    "d_go": frozenset(),
+    "zero": frozenset({"journal_sha256", "reserved", "granted",
+                       "completion_attempt_spent"}),
+    "w_go": frozenset(),
+    "op1_request": frozenset({"fields"}),
+    "reserve": frozenset({"fields", "worker_witness"}),
+    "grant_proof": frozenset({"grant", "journal_sha256"}),
+    "grant_delivery": frozenset({"grant", "journal_sha256"}),
+    "received": frozenset({"grant_sha256"}),
+    "signal_term": frozenset({"target_role", "target_witness"}),
+    "signal_kill": frozenset({"target_role", "target_witness"}),
+    "signal_result": frozenset({"target_role", "signal_name", "code"}),
+    "receipt_preflight": frozenset(),
+    "receipt_preflight_ack": frozenset(),
+    "receipt_write": frozenset({"receipt"}),
+    "receipt_proof": frozenset({"receipt_sha256", "receipt_bytes"}),
+}
+_SPLIT_BASE = frozenset({"schema", "run_id", "phase", "seq", "witness"})
+_SPLIT_SIGNAL_CODES = frozenset({
+    "signal_sent", "identity_changed_no_signal", "witness_or_signal_unavailable",
+})
+_SPLIT_RECEIPT_FIELDS = frozenset({
+    "schema", "run_id", "snapshot_phase", "status", "failure_code",
+    "zero_ack_received",
+    "request_accepted", "grant_proven", "worker_received_proven",
+    "reserved", "granted", "worker_issued", "on_wire", "journal_sha256",
+    "grant_sha256", "d_reaped", "w_reaped", "s_d_reaped", "s_w_reaped",
+    "d_term", "d_kill", "w_term", "w_kill", "d_stop", "w_stop",
+    "physical_stop_unproven", "full_gate_pass", "b_upper_bound_proven",
+    "b_send_authorized",
+})
+_SPLIT_FAILURE_CODES = frozenset({
+    "initial_unavailable", "receipt_helper_initial_unavailable",
+    "receipt_preflight_unavailable",
+    "signal_helper_initial_unavailable", "zero_ack_unavailable",
+    "worker_request_unavailable", "grant_proof_unavailable",
+    "worker_received_ack_unavailable", "ipc_or_spawn_unavailable",
+    "signal_helper_exit_unavailable", "cleanup_unavailable",
+    "receipt_unavailable_review_required", "none",
+})
+_SPLIT_CLEANUP_CODES = frozenset({
+    "not_attempted", "command_sent", "cleanup_command_unavailable",
+    "cleanup_response_unavailable",
+}) | _SPLIT_SIGNAL_CODES
+_SPLIT_STOP_CODES = frozenset({
+    "normal_exit", "witnessed_term", "witnessed_kill", "unproven",
+})
+
+
+def _split_zero_state(run_id: str) -> dict:
+    # Match DurableJournal.create's canonical, empty state without touching
+    # disk on the parent watchdog. D independently reads back actual bytes.
+    return {
+        "schema": "fake_non_b_journal_v1", "run_id": run_id,
+        "reserved": 0, "granted": 0, "worker_issued": 0,
+        "ack_callback_returned": 0, "ack_failed_terminal": 0,
+        "completion_attempt_spent": 0, "operations": [],
+    }
+
+
+def _split_worker_from_witness(witness: dict) -> dict:
+    generation = witness["raw_generation"]
+    return {"pid": generation[0], "ppid": generation[1],
+            "start_sec": generation[2], "start_usec": generation[3]}
+
+
+def _split_worker_request(spec: dict, witness: dict) -> dict:
+    """W alone builds its own pending request after both initial ACKs."""
+    return {**spec, "worker": _split_worker_from_witness(witness)}
+
+
+def _split_frame(run_id: str, phase: str, seq: int, witness: dict,
+                 **extra) -> dict:
+    return {"schema": _SPLIT_SCHEMA, "run_id": run_id, "phase": phase,
+            "seq": seq, "witness": witness, **extra}
+
+
+def _split_same(left: Any, right: Any) -> bool:
+    try:
+        return _canonical(left, "ipc_invalid") == _canonical(right, "ipc_invalid")
+    except LiveOperatorError:
+        return False
+
+
+def _split_fields_valid(fields: Any, spec: dict, worker_witness: dict) -> bool:
+    if not _grant_valid(fields, nonce_required=False):
+        return False
+    if not _fake_witness_valid(worker_witness, worker_witness.get("pid", -1)
+                               if type(worker_witness) is dict else -1):
+        return False
+    expected = {**spec, "worker": _split_worker_from_witness(worker_witness)}
+    return _split_same(fields, expected)
+
+
+def _split_grant_valid(grant: Any, fields: dict) -> bool:
+    return (_grant_valid(grant, nonce_required=True)
+            and _split_same({key: grant[key] for key in _GRANT_FIELDS}, fields)
+            and time.monotonic() < grant["expires_at"])
+
+
+def _split_receipt_payload(result: dict, run_id: str) -> dict:
+    """Project only fixed fake-result fields into the on-disk receipt."""
+    reserved = result["durable_reserved"]
+    return {
+        "schema": "fake_split_receipt_v1", "run_id": run_id,
+        "snapshot_phase": "after_dw_cleanup_before_r_final_reap",
+        "status": result["status"], "failure_code": result["failure_code"],
+        "zero_ack_received": result["zero_ack_received"],
+        "request_accepted": result["request_accepted"],
+        "grant_proven": result["grant_proven"],
+        "worker_received_proven": result["worker_received_proven"],
+        "reserved": reserved, "granted": reserved,
+        "worker_issued": 0, "on_wire": "unknown",
+        "journal_sha256": result.get("journal_sha256"),
+        "grant_sha256": result.get("grant_sha256"),
+        **{key: result[key] for key in (
+            "d_reaped", "w_reaped", "s_d_reaped", "s_w_reaped",
+            "d_term", "d_kill", "w_term", "w_kill", "d_stop", "w_stop")},
+        "physical_stop_unproven": True, "full_gate_pass": False,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+    }
+
+
+def _split_receipt_valid(value: Any, run_id: str) -> bool:
+    if (type(value) is not dict or set(value) != _SPLIT_RECEIPT_FIELDS
+            or value["schema"] != "fake_split_receipt_v1"
+            or value["run_id"] != run_id
+            or value["snapshot_phase"] != "after_dw_cleanup_before_r_final_reap"
+            or value["status"] not in (
+                "fake_partial_split_unproven", "fake_partial_op1_worker_received")
+            or value["failure_code"] not in _SPLIT_FAILURE_CODES
+            or value["reserved"] not in (0, 1, "unknown")
+            or type(value["reserved"]) not in (int, str)
+            or type(value["granted"]) is not type(value["reserved"])
+            or value["granted"] != value["reserved"]
+            or value["worker_issued"] != 0
+            or type(value["worker_issued"]) is not int
+            or value["on_wire"] != "unknown"
+            or any(value[key] is not None and not _valid_sha(value[key])
+                   for key in ("journal_sha256", "grant_sha256"))
+            or any(type(value[key]) is not bool for key in (
+                "zero_ack_received", "request_accepted", "grant_proven",
+                "worker_received_proven", "d_reaped", "w_reaped",
+                "s_d_reaped", "s_w_reaped"))
+            or any(value[key] not in _SPLIT_CLEANUP_CODES for key in (
+                "d_term", "d_kill", "w_term", "w_kill"))
+            or any(value[key] not in _SPLIT_STOP_CODES
+                   for key in ("d_stop", "w_stop"))
+            or any(value[key] is not expected for key, expected in (
+                ("physical_stop_unproven", True), ("full_gate_pass", False),
+                ("b_upper_bound_proven", False),
+                ("b_send_authorized", False)))):
+        return False
+    if (value["worker_received_proven"]
+            and (not value["grant_proven"] or value["reserved"] != 1)):
+        return False
+    if (value["status"] == "fake_partial_op1_worker_received"
+            and (value["failure_code"] != "none"
+                 or not value["worker_received_proven"])):
+        return False
+    return True
+
+
+def _split_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
+                       witness: dict | None = None, pid: int | None = None,
+                       role: str | None = None, spec: dict | None = None,
+                       worker_witness: dict | None = None,
+                       fields: dict | None = None, grant: dict | None = None,
+                       journal_sha256: str | None = None,
+                       target_role: str | None = None,
+                       target_witness: dict | None = None,
+                       signal_name: str | None = None,
+                       receipt: dict | None = None,
+                       allow_h: bool = False) -> bool:
+    """Exact schema and semantic allowlist before encode/after decode."""
+    if (type(value) is not dict or phase not in _SPLIT_EXTRA
+            or set(value) != _SPLIT_BASE | _SPLIT_EXTRA[phase]
+            or value["schema"] != _SPLIT_SCHEMA or value["run_id"] != run_id
+            or value["phase"] != phase or type(value["seq"]) is not int
+            or value["seq"] != seq):
+        return False
+    try:
+        if len(_canonical(value, "ipc_invalid")) + 4 > FRAME_LIMIT:
+            return False
+    except LiveOperatorError:
+        return False
+    got_witness = value["witness"]
+    if (type(got_witness) is not dict
+            or not _fake_witness_valid(got_witness, got_witness.get("pid", -1))):
+        return False
+    if witness is None:
+        if (phase != "initial" or pid is None
+                or not _fake_witness_valid(got_witness, pid)
+                or got_witness["ppid"] != os.getpid()
+                or got_witness["pgid"] != pid):
+            return False
+    elif not _split_same(got_witness, witness):
+        return False
+    if phase == "initial":
+        return value["role"] == role and role in (
+            "D", "W", "R", "O", "S_D", "S_W", "S_R", "S_O",
+            *(("H", "S_H") if allow_h else ()))
+    if phase in ("signal_term", "signal_kill"):
+        return (target_role in (("D", "W", "R", "O", "H") if allow_h
+                               else ("D", "W", "R", "O"))
+                and value["target_role"] == target_role
+                and target_witness is not None
+                and _split_same(value["target_witness"], target_witness))
+    if phase == "signal_result":
+        return (target_role in (("D", "W", "R", "O", "H") if allow_h
+                               else ("D", "W", "R", "O"))
+                and value["target_role"] == target_role
+                and signal_name in ("term", "kill")
+                and value["signal_name"] == signal_name
+                and value["code"] in _SPLIT_SIGNAL_CODES)
+    if phase == "receipt_write":
+        return _split_receipt_valid(value["receipt"], run_id)
+    if phase == "receipt_proof":
+        if receipt is None or not _split_receipt_valid(receipt, run_id):
+            return False
+        raw = _canonical(receipt, "ipc_invalid")
+        return (value["receipt_sha256"] == _sha(raw)
+                and type(value["receipt_bytes"]) is int
+                and value["receipt_bytes"] == len(raw))
+    if phase == "zero":
+        return (journal_sha256 is not None
+                and value["journal_sha256"] == journal_sha256
+                and all(type(value[key]) is int and value[key] == 0
+                        for key in ("reserved", "granted",
+                                    "completion_attempt_spent")))
+    if phase in ("op1_request", "reserve"):
+        if spec is None:
+            return False
+        bound_worker = (got_witness if phase == "op1_request"
+                        else value["worker_witness"])
+        return (worker_witness is None or _split_same(bound_worker, worker_witness)) \
+            and _split_fields_valid(value["fields"], spec, bound_worker)
+    if phase in ("grant_proof", "grant_delivery"):
+        return (fields is not None and _split_grant_valid(value["grant"], fields)
+                and _valid_sha(value["journal_sha256"])
+                and (journal_sha256 is None
+                     or value["journal_sha256"] == journal_sha256)
+                and (grant is None or _split_same(value["grant"], grant)))
+    if phase == "received":
+        return (grant is not None and value["grant_sha256"] ==
+                _sha(_canonical(grant, "ipc_invalid")))
+    return True  # fixed, payload-free GO commands
+
+
+def _split_close_except(pipes: dict[str, tuple[int, int]], keep: set[int]) -> None:
+    for read_fd, write_fd in pipes.values():
+        if read_fd not in keep:
+            _fake_close(read_fd)
+        if write_fd not in keep:
+            _fake_close(write_fd)
+
+
+def _split_send(fd: int, value: dict, deadline: float, **validation) -> bool:
+    """One nonblocking bounded canonical frame; caller closes its one-shot FD."""
+    try:
+        if not _split_frame_valid(value, **validation):
+            return False
+        frame = encode_frame(value)
+        if type(frame) is not bytes or not 5 <= len(frame) <= FRAME_LIMIT:
+            return False
+        # Validate the actual bytes after serialization but before writing.
+        # A changed encoder must not put raw/unknown fields on the IPC pipe.
+        encoded_value = decode_frame(
+            frame, keys=set(_SPLIT_BASE | _SPLIT_EXTRA[validation["phase"]]))
+        if (not _split_frame_valid(encoded_value, **validation)
+                or not _split_same(encoded_value, value)):
+            return False
+        os.set_blocking(fd, False)
+        offset = 0
+        while offset < len(frame) and time.monotonic() < deadline:
+            _, writable, _ = select.select([], [fd], [], min(
+                0.005, max(0, deadline - time.monotonic())))
+            if not writable:
+                continue
+            try:
+                written = os.write(fd, frame[offset:])
+            except BlockingIOError:
+                continue
+            if written <= 0:
+                return False
+            offset += written
+        return offset == len(frame)
+    except Exception:
+        # Neither an injected encoder nor an OS callback may expose a raw
+        # exception string through this fake control boundary.
+        return False
+
+
+def _split_receive(fd: int, deadline: float, *, phase: str, **validation) -> dict | None:
+    keys = set(_SPLIT_BASE | _SPLIT_EXTRA[phase])
+    value = _fake_read_bounded(fd, deadline, framed=True, keys=keys)
+    if not _split_frame_valid(value, phase=phase, **validation):
+        return None
+    return value
+
+
+def _split_disk_readback(journal: DurableJournal, state: dict) -> bytes:
+    fd = os.open(journal.path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(fd)
+        disk = os.read(fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(fd)
+    if (not stat.S_ISREG(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or len(disk) > FRAME_LIMIT
+            or disk != _canonical(state, "fake_journal_readback_invalid")):
+        _fail("fake_journal_readback_invalid")
+    return disk
+
+
+def _split_d_child(pipes: dict[str, tuple[int, int]], *, run_dir: Path,
+                   spec: dict, hard_deadline: float, work_deadline: float,
+                   fault: str | None) -> int:
+    owned = (pipes["d_initial"][1], pipes["d_go"][0],
+             pipes["d_zero"][1], pipes["d_reserve"][0],
+             pipes["d_proof"][1])
+    _split_close_except(pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        run_id = spec["run_id"]
+        initial = _split_frame(run_id, "initial", 0, own, role="D")
+        if not _split_send(owned[0], initial, work_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own, role="D"):
+            return 125
+        _fake_close(owned[0])
+        go = _split_receive(owned[1], work_deadline, phase="d_go",
+                            run_id=run_id, seq=1, witness=own)
+        _fake_close(owned[1])
+        if go is None:
+            return 125
+        journal = DurableJournal.create(run_dir, run_id)
+        zero_state = journal.snapshot()
+        if not _split_same(zero_state, _split_zero_state(run_id)):
+            return 125
+        zero_disk = _split_disk_readback(journal, zero_state)
+        zero_sha = _sha(zero_disk)
+        zero = _split_frame(run_id, "zero", 1, own,
+                            journal_sha256=zero_sha, reserved=0, granted=0,
+                            completion_attempt_spent=0)
+        if not _split_send(owned[2], zero, work_deadline, run_id=run_id,
+                           phase="zero", seq=1, witness=own,
+                           journal_sha256=zero_sha):
+            return 125
+        _fake_close(owned[2])
+        if fault == "d_after_zero":
+            return 121
+        reserve = _split_receive(owned[3], work_deadline, phase="reserve",
+                                  run_id=run_id, seq=2, witness=own, spec=spec)
+        _fake_close(owned[3])
+        if reserve is None:
+            return 125
+        fields = reserve["fields"]
+        grant = journal.reserve(fields, ack=lambda _grant: None)
+        state = journal.snapshot()
+        disk = _split_disk_readback(journal, state)
+        if (state["reserved"] != 1 or state["granted"] != 1
+                or state["ack_callback_returned"] != 1
+                or state["worker_issued"] != 0
+                or state["operations"][0]["on_wire"] != "unknown"):
+            return 125
+        if fault == "d_after_commit":
+            return 121
+        proof = _split_frame(run_id, "grant_proof", 2, own,
+                             grant=grant, journal_sha256=_sha(disk))
+        return (0 if _split_send(owned[4], proof, work_deadline, run_id=run_id,
+                                 phase="grant_proof", seq=2, witness=own,
+                                 fields=fields) else 125)
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _split_w_child(pipes: dict[str, tuple[int, int]], *, spec: dict,
+                   hard_deadline: float, work_deadline: float,
+                   fault: str | None) -> int:
+    owned = (pipes["w_initial"][1], pipes["w_go"][0],
+             pipes["w_request"][1], pipes["w_delivery"][0],
+             pipes["w_received"][1])
+    _split_close_except(pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        run_id = spec["run_id"]
+        initial = _split_frame(run_id, "initial", 0, own, role="W")
+        if not _split_send(owned[0], initial, work_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own, role="W"):
+            return 125
+        _fake_close(owned[0])
+        go = _split_receive(owned[1], work_deadline, phase="w_go",
+                            run_id=run_id, seq=1, witness=own)
+        _fake_close(owned[1])
+        if go is None:
+            return 125
+        fields = _split_worker_request(spec, own)
+        request = _split_frame(run_id, "op1_request", 1, own, fields=fields)
+        if not _split_send(owned[2], request, work_deadline, run_id=run_id,
+                           phase="op1_request", seq=1, witness=own, spec=spec):
+            return 125
+        _fake_close(owned[2])
+        if fault == "w_after_request":
+            return 121
+        delivery = _split_receive(owned[3], work_deadline,
+                                   phase="grant_delivery", run_id=run_id,
+                                   seq=2, witness=own, fields=fields)
+        _fake_close(owned[3])
+        if delivery is None:
+            return 125
+        ack = _split_frame(run_id, "received", 2, own,
+                           grant_sha256=_sha(_canonical(
+                               delivery["grant"], "ipc_invalid")))
+        return (0 if _split_send(owned[4], ack, work_deadline, run_id=run_id,
+                                 phase="received", seq=2, witness=own,
+                                 grant=delivery["grant"]) else 125)
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _split_write_receipt(run_dir: Path, receipt: dict, run_id: str) -> tuple[str, int]:
+    """R-only one-use O_EXCL receipt; no parent filesystem callback."""
+    if not _split_receipt_valid(receipt, run_id):
+        _fail("receipt_invalid")
+    directory = Path(run_dir)
+    directory_mode = os.lstat(directory).st_mode
+    if (not stat.S_ISDIR(directory_mode)
+            or stat.S_IMODE(directory_mode) != 0o700):
+        _fail("receipt_directory_invalid")
+    raw = _canonical(receipt, "receipt_invalid")
+    if len(raw) > FRAME_LIMIT:
+        _fail("receipt_oversize")
+    path = directory / RECEIPT_NAME
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags, 0o600)
+    try:
+        os.fchmod(fd, 0o600)
+        if os.write(fd, raw) != len(raw):
+            _fail("receipt_short_write")
+        os.fsync(fd)
+    finally:
+        _fake_close(fd)
+    DurableJournal._sync_directory(directory)
+    read_fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(read_fd)
+        readback = os.read(read_fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(read_fd)
+    if (not stat.S_ISREG(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or readback != raw):
+        _fail("receipt_readback_invalid")
+    return _sha(raw), len(raw)
+
+
+def _split_receipt_preflight(run_dir: Path, run_id: str) -> bool:
+    """R-only new-run, zero-journal and receipt-absence check before W GO."""
+    directory = Path(run_dir)
+    mode = os.lstat(directory).st_mode
+    if (not stat.S_ISDIR(mode) or stat.S_IMODE(mode) != 0o700
+            or set(os.listdir(directory)) != {JOURNAL_NAME}):
+        return False
+    fd = os.open(directory / JOURNAL_NAME,
+                 os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(fd)
+        raw = os.read(fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(fd)
+    return (stat.S_ISREG(metadata.st_mode)
+            and stat.S_IMODE(metadata.st_mode) == 0o600
+            and raw == _canonical(_split_zero_state(run_id), "ipc_invalid"))
+
+
+def _split_receipt_child(receipt_pipes: dict[str, tuple[int, int]], *,
+                         inherited_split_fds: set[int],
+                         inherited_signal_pipes: dict[str, tuple[int, int]],
+                         run_dir: Path, run_id: str, initial_reader,
+                         prep_deadline: float, preflight_deadline: float,
+                         work_deadline: float,
+                         hard_deadline: float, fault: str | None) -> int:
+    """Pre-witnessed R stays idle until P's final raw-free receipt command."""
+    owned = (receipt_pipes["r_initial"][1],
+             receipt_pipes["r_preflight"][0],
+             receipt_pipes["r_preflight_ack"][1],
+             receipt_pipes["r_write"][0], receipt_pipes["r_proof"][1])
+    _fake_close(*inherited_split_fds)
+    _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(receipt_pipes, set(owned))
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        actual = _fake_os_witness(os.getpid())
+        own = initial_reader(os.getpid())
+        if not _split_same(actual, own):
+            return 126
+        initial = _split_frame(run_id, "initial", 0, own, role="R")
+        if not _split_send(owned[0], initial, prep_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own, role="R"):
+            return 125
+        _fake_close(owned[0])
+        preflight = _split_receive(owned[1], preflight_deadline,
+                                    phase="receipt_preflight", run_id=run_id,
+                                    seq=1, witness=own)
+        _fake_close(owned[1])
+        if preflight is None:
+            return 0
+        if not _split_receipt_preflight(run_dir, run_id):
+            return 125
+        ack = _split_frame(run_id, "receipt_preflight_ack", 1, own)
+        if not _split_send(owned[2], ack, preflight_deadline, run_id=run_id,
+                           phase="receipt_preflight_ack", seq=1,
+                           witness=own):
+            return 125
+        _fake_close(owned[2])
+        command = _split_receive(owned[3], work_deadline,
+                                  phase="receipt_write", run_id=run_id,
+                                  seq=2, witness=own)
+        _fake_close(owned[3])
+        if command is None:
+            return 0  # No final command or invalid/lost frame; never write.
+        receipt = command["receipt"]
+        sha, size = _split_write_receipt(run_dir, receipt, run_id)
+        if fault == "r_after_commit":
+            return 121
+        proof = _split_frame(run_id, "receipt_proof", 2, own,
+                             receipt_sha256=sha, receipt_bytes=size)
+        if not _split_send(owned[4], proof, work_deadline, run_id=run_id,
+                           phase="receipt_proof", seq=2, witness=own,
+                           receipt=receipt):
+            return 125
+        _fake_close(owned[4])
+        return 121 if fault == "r_after_proof" else 0
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _split_signal_child(signal_pipes: dict[str, tuple[int, int]], *,
+                        inherited_split_fds: set[int],
+                        run_id: str, target_role: str, target_witness: dict,
+                        initial_reader, observer, prep_deadline: float,
+                        cleanup_deadline: float, hard_deadline: float,
+                        allow_h: bool = False) -> int:
+    """Pre-witnessed, independent exact-PID transaction child for D or W."""
+    prefix = f"s_{target_role.lower()}"
+    owned = (signal_pipes[f"{prefix}_initial"][1],
+             signal_pipes[f"{prefix}_term"][0],
+             signal_pipes[f"{prefix}_term_result"][1],
+             signal_pipes[f"{prefix}_kill"][0],
+             signal_pipes[f"{prefix}_kill_result"][1])
+    # S inherits the original ten pipes from P. Closing every unowned end is
+    # necessary: one stray writer would suppress D/W's frame+EOF proof.
+    _fake_close(*inherited_split_fds)
+    _split_close_except(signal_pipes, set(owned))
+    try:
+        if allow_h:
+            _seven_v5_quiet_stdio()
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        actual = _fake_os_witness(os.getpid())
+        own = initial_reader(os.getpid())
+        if not _split_same(actual, own):
+            return 126
+        initial = _split_frame(run_id, "initial", 0, own,
+                               role=f"S_{target_role}")
+        if not _split_send(owned[0], initial, prep_deadline, run_id=run_id,
+                           phase="initial", seq=0, witness=own,
+                           role=f"S_{target_role}", allow_h=allow_h):
+            return 125
+        _fake_close(owned[0])
+        for name, seq, signum, command_fd, reply_fd in (
+                ("term", 1, signal.SIGTERM, owned[1], owned[2]),
+                ("kill", 2, signal.SIGKILL, owned[3], owned[4])):
+            command = _split_receive(
+                command_fd, cleanup_deadline, phase=f"signal_{name}",
+                run_id=run_id, seq=seq, witness=own,
+                target_role=target_role, target_witness=target_witness,
+                allow_h=allow_h)
+            _fake_close(command_fd)
+            if command is None:
+                return 0  # P did not request this transaction or pipe broke.
+            code = _fake_exact_signal_transaction(target_witness, observer,
+                                                  signum)
+            reply = _split_frame(run_id, "signal_result", seq, own,
+                                 target_role=target_role,
+                                 signal_name=name, code=code)
+            if not _split_send(reply_fd, reply, cleanup_deadline,
+                               run_id=run_id, phase="signal_result", seq=seq,
+                               witness=own, target_role=target_role,
+                               signal_name=name, allow_h=allow_h):
+                return 125
+            _fake_close(reply_fd)
+        return 0
+    except BaseException:
+        return 125
+    finally:
+        _fake_close(*owned)
+
+
+def _split_cleanup_children(*, result: dict, statuses: dict[int, int],
+                            roles: tuple[str, ...] = ("D", "W"),
+                            child_pids: dict[str, int | None],
+                            child_witnesses: dict[str, dict],
+                            signal_pids: dict[str, int],
+                            signal_witnesses: dict[str, dict],
+                            signal_pipes: dict[str, tuple[int, int]],
+                            signal_parent_fds: set[int], run_id: str,
+                            work_deadline: float, cleanup_deadline: float,
+                            hard_deadline: float,
+                            term_grace_seconds: float,
+                            allow_h: bool = False,
+                            strict_reap_deadline: bool = False) -> None:
+    """Bounded P-side exact witnessed cleanup; no parent OS observation."""
+
+    def close_parent(fd: int) -> None:
+        _fake_close(fd)
+        signal_parent_fds.discard(fd)
+
+    def command(role: str, name: str) -> bool:
+        fd = signal_pipes[f"s_{role.lower()}_{name}"][1]
+        try:
+            frame = _split_frame(run_id, f"signal_{name}",
+                                 1 if name == "term" else 2,
+                                 signal_witnesses[role], target_role=role,
+                                 target_witness=child_witnesses[role])
+            return _split_send(
+                fd, frame, cleanup_deadline, run_id=run_id,
+                phase=f"signal_{name}", seq=1 if name == "term" else 2,
+                witness=signal_witnesses[role], target_role=role,
+                target_witness=child_witnesses[role], allow_h=allow_h)
+        finally:
+            close_parent(fd)
+
+    def responses(pending: list[str], name: str,
+                  deadline: float) -> dict[str, str]:
+        """Read both one-shot replies together so one stalled S cannot hide the other."""
+        codes = {role: "cleanup_response_unavailable" for role in pending}
+        readers = {
+            signal_pipes[f"s_{role.lower()}_{name}_result"][0]: role
+            for role in pending
+        }
+        raw = {fd: bytearray() for fd in readers}
+        try:
+            for fd in readers:
+                os.set_blocking(fd, False)
+            while readers and time.monotonic() < deadline:
+                try:
+                    ready, _, _ = select.select(
+                        list(readers), [], [],
+                        min(0.003, max(0, deadline - time.monotonic())))
+                except OSError:
+                    break
+                for fd in ready:
+                    role = readers[fd]
+                    try:
+                        part = os.read(fd, FRAME_LIMIT + 5)
+                    except BlockingIOError:
+                        continue
+                    except OSError:
+                        part = None
+                    if part:
+                        raw[fd].extend(part)
+                        if len(raw[fd]) <= FRAME_LIMIT + 4:
+                            continue
+                    elif part == b"" and len(raw[fd]) >= 4:
+                        size = struct.unpack(">I", raw[fd][:4])[0]
+                        if 0 < size <= FRAME_LIMIT and len(raw[fd]) == size + 4:
+                            try:
+                                value = decode_frame(
+                                    bytes(raw[fd]),
+                                    keys=set(_SPLIT_BASE | _SPLIT_EXTRA[
+                                        "signal_result"]))
+                                if _split_frame_valid(
+                                        value, run_id=run_id,
+                                        phase="signal_result",
+                                        seq=1 if name == "term" else 2,
+                                        witness=signal_witnesses[role],
+                                        target_role=role, signal_name=name,
+                                        allow_h=allow_h):
+                                    codes[role] = value["code"]
+                            except Exception:
+                                pass
+                    close_parent(fd)
+                    del readers[fd]
+        finally:
+            for fd in readers:
+                close_parent(fd)
+        return codes
+
+    owned = (all(role in child_witnesses and role in signal_witnesses
+                 and role in signal_pids for role in roles))
+    for role in roles:
+        pid = child_pids[role]
+        if pid is not None and pid not in statuses:
+            _fake_reap_nonblocking(pid, statuses)
+    if owned and any(child_pids[r] not in statuses for r in roles):
+        # A completed or failed work phase starts cleanup *now*. The work
+        # deadline is only an upper bound, never a reason to defer TERM.
+        cleanup_started = time.monotonic()
+        phase_deadline = min(cleanup_deadline,
+                             cleanup_started + cleanup_deadline - work_deadline)
+        pending = []
+        for role in roles:
+            pid = child_pids[role]
+            if pid not in statuses and not _fake_reap_nonblocking(pid, statuses):
+                result[f"{role.lower()}_term"] = (
+                    "command_sent" if command(role, "term")
+                    else "cleanup_command_unavailable")
+                if result[f"{role.lower()}_term"] == "command_sent":
+                    pending.append(role)
+            else:
+                close_parent(signal_pipes[f"s_{role.lower()}_term"][1])
+        # Both commands are written before either reply is awaited: a blocked
+        # D observer cannot prevent W's independently witnessed transaction.
+        term_reply_deadline = min(phase_deadline,
+                                  cleanup_started + max(0.04,
+                                      (phase_deadline - cleanup_started) * 0.4))
+        for role, code in responses(pending, "term", term_reply_deadline).items():
+            result[f"{role.lower()}_term"] = code
+        grace = min(phase_deadline, cleanup_started + term_grace_seconds)
+        while time.monotonic() < grace:
+            for role in roles:
+                pid = child_pids[role]
+                if pid not in statuses:
+                    _fake_reap_nonblocking(pid, statuses)
+            time.sleep(min(0.003, max(0, grace - time.monotonic())))
+        pending = []
+        for role in roles:
+            pid = child_pids[role]
+            if pid not in statuses and not _fake_reap_nonblocking(pid, statuses):
+                result[f"{role.lower()}_kill"] = (
+                    "command_sent" if command(role, "kill")
+                    else "cleanup_command_unavailable")
+                if result[f"{role.lower()}_kill"] == "command_sent":
+                    pending.append(role)
+            else:
+                close_parent(signal_pipes[f"s_{role.lower()}_kill"][1])
+        for role, code in responses(pending, "kill", phase_deadline).items():
+            result[f"{role.lower()}_kill"] = code
+    for role in roles:
+        for name in ("term", "kill"):
+            if f"s_{role.lower()}_{name}" in signal_pipes:
+                close_parent(signal_pipes[f"s_{role.lower()}_{name}"][1])
+    for role in roles:
+        pid = child_pids[role]
+        if pid is not None and pid not in statuses:
+            _fake_wait_reap(pid, cleanup_deadline if strict_reap_deadline
+                            else hard_deadline + 0.1, statuses)
+        status = statuses.get(pid)
+        timely = (not strict_reap_deadline or
+                  (status is not None and time.monotonic() <= cleanup_deadline))
+        if strict_reap_deadline and status is None and pid is not None:
+            # A missed verdict deadline is permanently FAIL, but direct
+            # children must still be drained after their independent alarm.
+            # This later waitpid cannot promote an untimely stop to PASS.
+            _fake_wait_reap(pid, hard_deadline + 0.1, statuses)
+            status = statuses.get(pid)
+        result[f"{role.lower()}_reaped"] = status is not None
+        if (timely and status is not None and os.WIFEXITED(status)
+                and os.WEXITSTATUS(status) == 0):
+            stop = "normal_exit"
+        elif timely and status is not None and os.WIFSIGNALED(status) and (
+                (os.WTERMSIG(status) == signal.SIGTERM
+                 and result[f"{role.lower()}_term"] == "signal_sent") or
+                (os.WTERMSIG(status) == signal.SIGKILL
+                 and result[f"{role.lower()}_kill"] == "signal_sent")):
+            stop = ("witnessed_term" if os.WTERMSIG(status) == signal.SIGTERM
+                    else "witnessed_kill")
+        else:
+            stop = "unproven"
+        result[f"{role.lower()}_stop"] = stop
+    for role in roles:
+        pid = signal_pids.get(role)
+        if pid is not None:
+            helper_statuses: dict[int, int] = {}
+            _fake_wait_reap(pid, cleanup_deadline if strict_reap_deadline
+                            else hard_deadline + 0.1, helper_statuses)
+            helper_status = helper_statuses.get(pid)
+            timely = (not strict_reap_deadline or (
+                helper_status is not None
+                and time.monotonic() <= cleanup_deadline))
+            if strict_reap_deadline and helper_status is None:
+                _fake_wait_reap(pid, hard_deadline + 0.1, helper_statuses)
+                helper_status = helper_statuses.get(pid)
+            result[f"s_{role.lower()}_reaped"] = helper_status is not None
+            if f"s_{role.lower()}_normal_exit" in result:
+                result[f"s_{role.lower()}_normal_exit"] = bool(
+                    timely and helper_status is not None
+                    and os.WIFEXITED(helper_status)
+                    and os.WEXITSTATUS(helper_status) == 0)
+            if (not timely or helper_status is None
+                    or not os.WIFEXITED(helper_status)
+                    or os.WEXITSTATUS(helper_status) != 0):
+                if result["status"] == "fake_partial_op1_worker_received":
+                    result["status"] = "fake_partial_split_unproven"
+                    result["failure_code"] = "signal_helper_exit_unavailable"
+                elif result["status"] == "fake_seven_process_pending_receipt":
+                    result["status"] = "fake_seven_process_unproven"
+                    result["failure_code"] = "signal_helper_exit_unavailable"
+    # This remains a fake D/W-only slice: no real receipt, private ports,
+    # shared-11434 proof, or frozen T0+90 evidence.
+    result["physical_stop_unproven"] = True
+
+
+def _supervise_fake_split_op1_once(*, run_dir, grant_without_worker: dict,
+                                   work_seconds: float = 0.4,
+                                   preparation_seconds: float = 0.2,
+                                   fault: str | None = None,
+                                   cleanup_observe=None,
+                                   signal_initial_witness=None,
+                                   receipt_initial_witness=None,
+                                   term_grace_seconds: float = 0.05,
+                                   cleanup_seconds: float = 0.25) -> dict:
+    """Fake-only P+D+W zero→request→durable op1→received-ACK probe.
+
+    W performs no HTTP. `worker_received_proven=False` means no valid received
+    ACK proof, not proof W never received a grant. The separate fake receipt
+    is not port or live cleanup proof;
+    `supervise_once` deliberately stays fail-closed. Parent does only bounded
+    canonical IPC and nonblocking waitpid, never journal disk operations.
+    """
+    if (type(grant_without_worker) is not dict
+            or set(grant_without_worker) != _GRANT_FIELDS - {"worker"}
+            or not _grant_valid({**grant_without_worker,
+                                 "worker": {"pid": 1, "ppid": 1,
+                                            "start_sec": 0, "start_usec": 0}},
+                                nonce_required=False)
+            or grant_without_worker["ordinal"] != 1
+            or fault not in (None, "d_after_zero", "d_after_commit",
+                             "w_after_request", "r_after_commit",
+                             "r_after_proof")
+            or (cleanup_observe is not None and not callable(cleanup_observe))
+            or (signal_initial_witness is not None
+                and not callable(signal_initial_witness))
+            or (receipt_initial_witness is not None
+                and not callable(receipt_initial_witness))
+            or any(type(value) not in (int, float) or not math.isfinite(value)
+                   or not 0.05 <= value <= 5.0
+                   for value in (work_seconds, preparation_seconds,
+                                 term_grace_seconds, cleanup_seconds))):
+        _fail("fake_split_spec_invalid")
+    spec = _plain_copy(grant_without_worker, "fake_split_spec_invalid")
+    run_id = spec["run_id"]
+    result = {"schema": "fake_split_op1_partial_v1",
+              "status": "fake_partial_split_unproven", "failure_code": "initial_unavailable",
+              "zero_ack_received": False, "request_accepted": False,
+              "grant_proven": False, "worker_received_proven": False,
+              "durable_reserved": "unknown", "on_wire": "unknown",
+              "d_reaped": False, "w_reaped": False,
+              "r_reaped": False, "s_d_reaped": False,
+              "s_w_reaped": False, "s_r_reaped": False,
+              "d_term": "not_attempted", "d_kill": "not_attempted",
+              "w_term": "not_attempted", "w_kill": "not_attempted",
+              "r_term": "not_attempted", "r_kill": "not_attempted",
+              "d_stop": "unproven", "w_stop": "unproven",
+              "r_stop": "unproven", "receipt_durable_proven": False,
+              "receipt_preflight_accepted": False,
+              "receipt_failure_code": "receipt_unavailable_review_required",
+              "physical_stop_unproven": True, "full_gate_pass": False}
+    started = time.monotonic()
+    prep_deadline = started + preparation_seconds
+    work_deadline = prep_deadline + work_seconds
+    cleanup_deadline = work_deadline + cleanup_seconds
+    hard_deadline = cleanup_deadline + 0.10
+    # Even when D/W consume their full bounded self-alarm/reap window, R
+    # retains a separate fake-only receipt window. This is not T0+90 proof.
+    receipt_work_deadline = hard_deadline + 0.30
+    receipt_cleanup_deadline = receipt_work_deadline + 0.15
+    receipt_hard_deadline = receipt_cleanup_deadline + 0.10
+    pipes: dict[str, tuple[int, int]] = {}
+    receipt_pipes: dict[str, tuple[int, int]] = {}
+    d_pid = w_pid = r_pid = None
+    parent_fds: set[int] = set()
+    parent_layout_ready = False
+    statuses: dict[int, int] = {}
+    child_witnesses: dict[str, dict] = {}
+    signal_pipes: dict[str, tuple[int, int]] = {}
+    signal_pids: dict[str, int] = {}
+    signal_witnesses: dict[str, dict] = {}
+    signal_parent_fds: set[int] = set()
+    signal_layout_ready = False
+    receipt_parent_fds: set[int] = set()
+    receipt_layout_ready = False
+    r_witness = None
+    try:
+        for name in _SPLIT_EDGES:
+            pipes[name] = os.pipe()
+        for role in ("D", "W", "R"):
+            prefix = f"s_{role.lower()}"
+            for edge in ("initial", "term", "term_result", "kill",
+                         "kill_result"):
+                signal_pipes[f"{prefix}_{edge}"] = os.pipe()
+        for name in ("r_initial", "r_preflight", "r_preflight_ack",
+                     "r_write", "r_proof"):
+            receipt_pipes[name] = os.pipe()
+        d_pid = os.fork()
+        if d_pid == 0:
+            try:
+                _split_close_except(signal_pipes, set())
+                _split_close_except(receipt_pipes, set())
+                child_code = _split_d_child(
+                    pipes, run_dir=Path(run_dir), spec=spec,
+                    hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        w_pid = os.fork()
+        if w_pid == 0:
+            try:
+                _split_close_except(signal_pipes, set())
+                _split_close_except(receipt_pipes, set())
+                child_code = _split_w_child(
+                    pipes, spec=spec, hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        parent_fds = {
+            pipes[name][0] for name in ("d_initial", "w_initial", "d_zero",
+                                      "w_request", "d_proof", "w_received")
+        } | {
+            pipes[name][1] for name in ("d_go", "w_go", "d_reserve",
+                                      "w_delivery")
+        }
+        _split_close_except(pipes, parent_fds)
+        parent_layout_ready = True
+
+        def receive(name: str, phase: str, deadline: float, **kwargs):
+            fd = pipes[name][0]
+            try:
+                return _split_receive(fd, deadline, phase=phase,
+                                      run_id=run_id, **kwargs)
+            finally:
+                _fake_close(fd)
+                parent_fds.discard(fd)
+
+        def send(name: str, phase: str, seq: int, witness: dict,
+                 **extra) -> bool:
+            fd = pipes[name][1]
+            try:
+                frame = _split_frame(run_id, phase, seq, witness, **extra)
+                validation = {"run_id": run_id, "phase": phase, "seq": seq,
+                              "witness": witness}
+                if phase == "reserve":
+                    validation["spec"] = spec
+                    validation["worker_witness"] = w_witness
+                if phase == "grant_delivery":
+                    validation["fields"] = request["fields"]
+                return _split_send(fd, frame, work_deadline, **validation)
+            finally:
+                _fake_close(fd)
+                parent_fds.discard(fd)
+
+        d_initial_frame = receive("d_initial", "initial", prep_deadline,
+                                  seq=0, pid=d_pid, role="D")
+        w_initial_frame = receive("w_initial", "initial", prep_deadline,
+                                  seq=0, pid=w_pid, role="W")
+        if d_initial_frame is None or w_initial_frame is None:
+            return result
+        d_witness = d_initial_frame["witness"]
+        w_witness = w_initial_frame["witness"]
+        child_witnesses = {"D": d_witness, "W": w_witness}
+        # R is process-reserved before D's first work GO. It does not create
+        # the directory: exclusive ownership stays with DurableJournal.create.
+        r_pid = os.fork()
+        if r_pid == 0:
+            try:
+                child_code = _split_receipt_child(
+                    receipt_pipes, inherited_split_fds=parent_fds,
+                    inherited_signal_pipes=signal_pipes,
+                    run_dir=Path(run_dir), run_id=run_id,
+                    initial_reader=receipt_initial_witness or _fake_os_witness,
+                    prep_deadline=prep_deadline,
+                    preflight_deadline=work_deadline,
+                    work_deadline=receipt_work_deadline,
+                    hard_deadline=receipt_hard_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        receipt_parent_fds = {
+            receipt_pipes["r_initial"][0],
+            receipt_pipes["r_preflight"][1],
+            receipt_pipes["r_preflight_ack"][0],
+            receipt_pipes["r_write"][1], receipt_pipes["r_proof"][0],
+        }
+        _split_close_except(receipt_pipes, receipt_parent_fds)
+        receipt_layout_ready = True
+        fd = receipt_pipes["r_initial"][0]
+        try:
+            initial = _split_receive(fd, prep_deadline, phase="initial",
+                                      run_id=run_id, seq=0, pid=r_pid,
+                                      role="R")
+        finally:
+            _fake_close(fd)
+            receipt_parent_fds.discard(fd)
+        if initial is None:
+            result["failure_code"] = "receipt_helper_initial_unavailable"
+            return result
+        r_witness = initial["witness"]
+        child_witnesses["R"] = r_witness
+        for role, target in (("D", d_witness), ("W", w_witness),
+                             ("R", r_witness)):
+            pid = os.fork()
+            if pid == 0:
+                try:
+                    child_code = _split_signal_child(
+                        signal_pipes,
+                        inherited_split_fds=parent_fds | receipt_parent_fds,
+                        run_id=run_id,
+                        target_role=role, target_witness=target,
+                        initial_reader=signal_initial_witness or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=prep_deadline,
+                        cleanup_deadline=(receipt_cleanup_deadline if role == "R"
+                                          else cleanup_deadline),
+                        hard_deadline=(receipt_hard_deadline if role == "R"
+                                       else hard_deadline))
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids[role] = pid
+        signal_parent_fds = {
+            signal_pipes[f"s_{role.lower()}_{edge}"][0]
+            for role in ("D", "W", "R")
+            for edge in ("initial", "term_result", "kill_result")
+        } | {
+            signal_pipes[f"s_{role.lower()}_{edge}"][1]
+            for role in ("D", "W", "R") for edge in ("term", "kill")
+        }
+        _split_close_except(signal_pipes, signal_parent_fds)
+        signal_layout_ready = True
+        for role in ("D", "W", "R"):
+            fd = signal_pipes[f"s_{role.lower()}_initial"][0]
+            try:
+                initial = _split_receive(
+                    fd, prep_deadline, phase="initial", run_id=run_id,
+                    seq=0, pid=signal_pids[role], role=f"S_{role}")
+            finally:
+                _fake_close(fd)
+                signal_parent_fds.discard(fd)
+            if initial is None:
+                result["failure_code"] = "signal_helper_initial_unavailable"
+                return result
+            signal_witnesses[role] = initial["witness"]
+        result["failure_code"] = "zero_ack_unavailable"
+        if not send("d_go", "d_go", 1, d_witness):
+            return result
+        zero_sha = _sha(_canonical(_split_zero_state(run_id), "ipc_invalid"))
+        zero = receive("d_zero", "zero", work_deadline, seq=1,
+                       witness=d_witness, journal_sha256=zero_sha)
+        if zero is None:
+            return result
+        result["zero_ack_received"] = True
+        result["durable_reserved"] = 0
+        result["failure_code"] = "receipt_preflight_unavailable"
+        preflight_fd = receipt_pipes["r_preflight"][1]
+        try:
+            preflight = _split_frame(run_id, "receipt_preflight", 1, r_witness)
+            sent = _split_send(preflight_fd, preflight, work_deadline,
+                               run_id=run_id, phase="receipt_preflight",
+                               seq=1, witness=r_witness)
+        finally:
+            _fake_close(preflight_fd)
+            receipt_parent_fds.discard(preflight_fd)
+        if not sent:
+            return result
+        ack_fd = receipt_pipes["r_preflight_ack"][0]
+        try:
+            preflight_ack = _split_receive(
+                ack_fd, work_deadline, phase="receipt_preflight_ack",
+                run_id=run_id, seq=1, witness=r_witness)
+        finally:
+            _fake_close(ack_fd)
+            receipt_parent_fds.discard(ack_fd)
+        if preflight_ack is None:
+            return result
+        result["receipt_preflight_accepted"] = True
+        result["failure_code"] = "worker_request_unavailable"
+        if not send("w_go", "w_go", 1, w_witness):
+            return result
+        request = receive("w_request", "op1_request", work_deadline,
+                          seq=1, witness=w_witness, spec=spec,
+                          worker_witness=w_witness)
+        if request is None:
+            return result
+        result["request_accepted"] = True
+        result["failure_code"] = "grant_proof_unavailable"
+        # A partial/lost parent command may still have reached D. Once this
+        # edge is attempted, only D's durable proof can narrow reservation.
+        result["durable_reserved"] = "unknown"
+        if not send("d_reserve", "reserve", 2, d_witness,
+                    fields=request["fields"], worker_witness=w_witness):
+            return result
+        proof = receive("d_proof", "grant_proof", work_deadline,
+                        seq=2, witness=d_witness, fields=request["fields"])
+        if proof is None:
+            result["durable_reserved"] = "unknown"
+            return result
+        # A full frame+EOF is not enough if D failed after emitting it.
+        if not _fake_wait_reap(d_pid, work_deadline, statuses):
+            result["durable_reserved"] = "unknown"
+            return result
+        result["d_reaped"] = True
+        d_status = statuses[d_pid]
+        if not (os.WIFEXITED(d_status) and os.WEXITSTATUS(d_status) == 0):
+            result["durable_reserved"] = "unknown"
+            return result
+        result["grant_proven"] = True
+        result["durable_reserved"] = 1
+        result["journal_sha256"] = proof["journal_sha256"]
+        result["grant_sha256"] = _sha(_canonical(proof["grant"], "ipc_invalid"))
+        result["failure_code"] = "worker_received_ack_unavailable"
+        if not send("w_delivery", "grant_delivery", 2, w_witness,
+                    grant=proof["grant"], journal_sha256=proof["journal_sha256"]):
+            return result
+        received = receive("w_received", "received", work_deadline,
+                           seq=2, witness=w_witness, grant=proof["grant"])
+        if received is None:
+            return result
+        if not _fake_wait_reap(w_pid, work_deadline, statuses):
+            return result
+        result["w_reaped"] = True
+        w_status = statuses[w_pid]
+        if not (os.WIFEXITED(w_status) and os.WEXITSTATUS(w_status) == 0):
+            return result
+        result["worker_received_proven"] = True
+        result["failure_code"] = "none"
+        result["status"] = "fake_partial_op1_worker_received"
+        return result
+    except Exception:
+        result["failure_code"] = "ipc_or_spawn_unavailable"
+        return result
+    finally:
+        _fake_close(*parent_fds)
+        if not parent_layout_ready:  # a pipe/fork failed before FD layout
+            for read_fd, write_fd in pipes.values():
+                _fake_close(read_fd, write_fd)
+        cleanup_failed = False
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses,
+                child_pids={"D": d_pid, "W": w_pid},
+                child_witnesses=child_witnesses, signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses, signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds, run_id=run_id,
+                work_deadline=work_deadline, cleanup_deadline=cleanup_deadline,
+                hard_deadline=hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            # A failed cleanup cannot leak a raw OS exception or preserve a
+            # positive status. Test-child alarms are containment, not proof.
+            cleanup_failed = True
+            result["status"] = "fake_partial_split_unproven"
+            result["failure_code"] = "cleanup_unavailable"
+            result["physical_stop_unproven"] = True
+            result["d_stop"] = result["w_stop"] = "unproven"
+        if cleanup_failed:
+            for role, pid in (("D", d_pid), ("W", w_pid),
+                              ("S_D", signal_pids.get("D")),
+                              ("S_W", signal_pids.get("W"))):
+                if pid is None or pid <= 0:
+                    continue
+                try:
+                    if role in ("D", "W"):
+                        reaped = pid in statuses or _fake_wait_reap(
+                            pid, hard_deadline + 0.1, statuses)
+                    else:
+                        reaped = result[f"{role.lower()}_reaped"] or _fake_wait_reap(
+                            pid, hard_deadline + 0.1)
+                    result[f"{role.lower()}_reaped"] = bool(reaped)
+                except Exception:
+                    result[f"{role.lower()}_reaped"] = False
+        # R was pre-witnessed before D GO and held idle through D/W cleanup.
+        # Only its child performs the O_EXCL write, fsync and readback.
+        try:
+            if (result["receipt_preflight_accepted"]
+                    and r_pid is not None and r_witness is not None
+                    and "R" in signal_witnesses):
+                receipt = _split_receipt_payload(result, run_id)
+                frame = _split_frame(run_id, "receipt_write", 2, r_witness,
+                                     receipt=receipt)
+                command_fd = receipt_pipes["r_write"][1]
+                try:
+                    sent = _split_send(
+                        command_fd, frame, receipt_work_deadline,
+                        run_id=run_id, phase="receipt_write", seq=2,
+                        witness=r_witness)
+                finally:
+                    _fake_close(command_fd)
+                    receipt_parent_fds.discard(command_fd)
+                if sent:
+                    proof_fd = receipt_pipes["r_proof"][0]
+                    try:
+                        proof = _split_receive(
+                            proof_fd, receipt_work_deadline,
+                            phase="receipt_proof", run_id=run_id, seq=2,
+                            witness=r_witness, receipt=receipt)
+                    finally:
+                        _fake_close(proof_fd)
+                        receipt_parent_fds.discard(proof_fd)
+                    if proof is not None and _fake_wait_reap(
+                            r_pid, receipt_work_deadline, statuses):
+                        r_status = statuses[r_pid]
+                        if (os.WIFEXITED(r_status)
+                                and os.WEXITSTATUS(r_status) == 0):
+                            result["receipt_durable_proven"] = True
+                            result["receipt_sha256"] = proof["receipt_sha256"]
+                            result["receipt_failure_code"] = "none"
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result.pop("receipt_sha256", None)
+            result["receipt_failure_code"] = "receipt_unavailable_review_required"
+        finally:
+            _fake_close(*receipt_parent_fds)
+            if not receipt_layout_ready:
+                for read_fd, write_fd in receipt_pipes.values():
+                    _fake_close(read_fd, write_fd)
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses, roles=("R",),
+                child_pids={"R": r_pid},
+                child_witnesses=child_witnesses, signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses, signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds, run_id=run_id,
+                work_deadline=receipt_work_deadline,
+                cleanup_deadline=receipt_cleanup_deadline,
+                hard_deadline=receipt_hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result.pop("receipt_sha256", None)
+            result["receipt_failure_code"] = "receipt_unavailable_review_required"
+            result["r_stop"] = "unproven"
+            result["physical_stop_unproven"] = True
+            for role, pid in (("R", r_pid), ("S_R", signal_pids.get("R"))):
+                if pid is None or pid <= 0:
+                    continue
+                try:
+                    reaped = (pid in statuses if role == "R" else
+                              result["s_r_reaped"])
+                    if not reaped:
+                        reaped = _fake_wait_reap(
+                            pid, receipt_hard_deadline + 0.1,
+                            statuses if role == "R" else None)
+                    result[f"{role.lower()}_reaped"] = bool(reaped)
+                except Exception:
+                    result[f"{role.lower()}_reaped"] = False
+        finally:
+            _fake_close(*signal_parent_fds)
+            if not signal_layout_ready:
+                for read_fd, write_fd in signal_pipes.values():
+                    _fake_close(read_fd, write_fd)
+        if (not result["receipt_durable_proven"]
+                and result["status"] == "fake_partial_op1_worker_received"):
+            # W receipt proof remains separately true; the overall one-use
+            # result cannot retain a positive status without durable receipt.
+            result["status"] = "fake_partial_split_unproven"
+            result["failure_code"] = "receipt_unavailable_review_required"
+
+
+# The following is a second, deliberately fake-only topology.  The old op1
+# protocol and public fail-closed entry above remain unchanged.
+_SEVEN_SCHEMA = "fake_seven_process_ipc_v1"
+_SEVEN_BASE = frozenset({"schema", "run_id", "phase", "seq", "witness"})
+_SEVEN_EXTRA = {
+    "initial": frozenset({"role"}),
+    "d_go": frozenset({"worker_witness"}), "w_go": frozenset(),
+    "zero": frozenset({"journal_sha256"}),
+    "request": frozenset({"fields"}),
+    "reserve": frozenset({"fields"}),
+    "grant_proof": frozenset({"grant", "journal_sha256", "reserved",
+                              "completion_attempt_spent"}),
+    "grant_delivery": frozenset({"grant", "journal_sha256"}),
+    "issue_entry": frozenset({"grant_sha256"}),
+    "mark_issue": frozenset({"nonce"}),
+    "issue_proof": frozenset({"journal_sha256", "worker_issued"}),
+    "issue_ack": frozenset({"journal_sha256"}),
+    "result_entry": frozenset({"grant_sha256", "response_sha256",
+                               "response_bytes"}),
+    "mark_wire": frozenset({"nonce"}),
+    "wire_proof": frozenset({"journal_sha256", "on_wire_yes"}),
+    "result_ack": frozenset({"journal_sha256"}),
+    "d_finish": frozenset(), "w_finish": frozenset(),
+    "d_final": frozenset({"journal_sha256", "reserved", "worker_issued",
+                           "on_wire_yes", "completion_attempt_spent"}),
+    "w_summary": frozenset({"summary"}),
+    "r_preflight": frozenset(), "r_preflight_ack": frozenset(),
+    "r_write": frozenset({"receipt"}),
+    "r_proof": frozenset({"receipt_sha256", "receipt_bytes"}),
+    "o_pre": frozenset({"daemon_port"}),
+    "o_pre_hash_port": frozenset({"daemon_port"}),
+    "o_pre_proof": frozenset({"port_sha256", "daemon_port",
+                              "daemon_vacant", "runner_port",
+                              "runner_vacant", "shared_11434_sha256"}),
+    "o_pre_hash_port_proof": frozenset({
+        "port_sha256", "daemon_port", "daemon_vacant", "runner_port",
+        "runner_vacant", "shared_11434_sha256", "prehash_sha256",
+        "prehash_logical_bytes"}),
+    "o_final": frozenset({"daemon_port", "runner_port"}),
+    "o_final_proof": frozenset({"port_sha256", "daemon_port",
+                                "daemon_vacant", "runner_port",
+                                "runner_vacant", "shared_11434_sha256"}),
+}
+_SEVEN_ORDINAL_EDGES = (
+    "w_request", "d_reserve", "d_grant", "w_grant", "w_issue",
+    "d_issue", "d_issue_proof", "w_issue_ack", "w_result",
+    "d_wire", "d_wire_proof", "w_result_ack",
+)
+_SEVEN_BASE_EDGES = (
+    "d_initial", "w_initial", "d_go", "d_zero", "w_go",
+    "d_finish", "d_final", "w_finish", "w_summary",
+)
+_SEVEN_RECEIPT_EDGES = (
+    "r_initial", "r_preflight", "r_preflight_ack", "r_write", "r_proof",
+)
+_SEVEN_PORT_EDGES = (
+    "o_initial", "o_pre", "o_pre_proof", "o_final", "o_final_proof",
+)
+_SEVEN_V5_EDGES = (
+    "o_ready_cmd", "o_ready_proof", "h_initial", "h_go", "h_ready",
+    "h_stop", "h_stopped", "s_h_initial", "s_h_term",
+    "s_h_term_result", "s_h_kill", "s_h_kill_result",
+)
+_SEVEN_V5_FIELDS = frozenset({
+    "synthetic_listener_gate_proven", "listener_observation_sha256",
+    "continuous_listener_proven", "daemon_stage_failure_code",
+    "h_reaped", "h_stop", "h_term", "h_kill", "s_h_reaped",
+    "s_h_normal_exit",
+})
+_SEVEN_V5_STAGE_CODES = frozenset({
+    "not_started", "none", "phase2_fd_unavailable",
+    "h_initial_unavailable", "s_h_initial_unavailable",
+    "h_go_unavailable", "h_ready_unavailable", "h_ready_mismatch",
+    "o_ready_unavailable", "o_ready_mismatch", "h_lost_after_ready",
+    "h_stop_unavailable", "h_cleanup_unproven",
+})
+_SEVEN_RECEIPT_FIELDS = frozenset({
+    "schema", "run_id", "snapshot_phase", "status", "failure_code",
+    "zero_ack_received", "receipt_preflight_accepted", "reserved",
+    "granted", "worker_issued", "on_wire_yes",
+    "completion_attempt_spent", "http_calls", "identity_checks",
+    "journal_sha256", "summary_sha256", "d_reaped", "w_reaped",
+    "d_stop", "w_stop", "physical_stop_unproven", "full_gate_pass",
+    "b_upper_bound_proven", "b_send_authorized",
+})
+_SEVEN_RECEIPT_PORT_FIELDS = frozenset({
+    "port_gate_proven", "port_pre_sha256", "port_post_sha256",
+    "daemon_port_vacant_after", "runner_port_vacant_after",
+    "shared_11434_unchanged", "o_reaped", "o_stop", "s_o_normal_exit",
+})
+_SEVEN_TRANSPORT_FIELDS = frozenset({
+    "transport_gate_proven", "transport_proof_sha256",
+    "transport_policy_calls",
+})
+_SEVEN_PREHASH_FIELDS = frozenset({
+    "prehash_gate_proven", "prehash_sha256", "prehash_logical_bytes",
+    "pre_stage_failure_code",
+})
+_SEVEN_PRE_STAGE_CODES = frozenset({
+    "none", "pre_stage_unavailable", "pre_stage_mismatch",
+    "port_pre_not_vacant", "port_helper_initial_unavailable",
+    "signal_helper_initial_unavailable",
+})
+_SEVEN_SUMMARY_FIELDS = frozenset({
+    "schema", "status", "request_sha256", "request_utf8_bytes",
+    "rendered_prompt_sha256", "rendered_prompt_utf8_bytes",
+    "identity_observation_sha256", "source_evidence",
+    "runner_token_count_parse_special_true",
+    "runner_token_count_parse_special_default", "provider_usage",
+    "signed_delta", "http_calls", "identity_checks",
+    "external_completion_attempts", "internal_runner_generations",
+    "elapsed_seconds", "b_upper_bound_proven", "b_send_authorized",
+})
+_SEVEN_SUMMARY_TRANSPORT_FIELDS = frozenset({
+    "transport_proof_sha256", "transport_policy_calls",
+})
+_SEVEN_TRANSPORT_POLICY = "fake_urllib_empty_proxy_no_redirect_v1"
+_SEVEN_SOURCE_EVIDENCE_FIELDS = frozenset({
+    "source_revision", "version", "branch", "bos_strip_applied",
+    "context_total", "parallel", "effective_num_ctx", "request_num_ctx",
+    "rendered_utf8_below_num_ctx", "daemon_argv_sha256",
+    "runner_argv_sha256",
+})
+_SEVEN_FAILURE_CODES = frozenset({
+    "none", "initial_unavailable", "receipt_helper_initial_unavailable",
+    "signal_helper_initial_unavailable", "zero_ack_unavailable",
+    "receipt_preflight_unavailable", "worker_go_unavailable",
+    "worker_request_unavailable", "worker_request_invalid",
+    "grant_proof_unavailable", "grant_delivery_unavailable",
+    "issue_entry_unavailable", "issue_proof_unavailable",
+    "issue_ack_unavailable", "fake_result_unavailable",
+    "wire_proof_unavailable", "result_ack_unavailable",
+    "d_final_unavailable", "w_summary_unavailable",
+    "normal_exit_unavailable", "cleanup_unavailable",
+    "signal_helper_exit_unavailable",
+    "receipt_unavailable_review_required", "ipc_or_spawn_unavailable",
+    "fake_seven_fd_reservation_unavailable",
+    "port_helper_initial_unavailable", "port_pre_unavailable",
+    "port_pre_not_vacant", "port_final_unavailable",
+    "port_final_occupied", "shared_11434_changed",
+    "runner_port_unavailable", "port_cleanup_unavailable",
+    "transport_gate_unproven",
+})
+_SEVEN_V4_FAILURE_CODES = frozenset({
+    "pre_stage_unavailable", "pre_stage_mismatch",
+    "cleanup_review_required",
+})
+
+# V5 reuses the canonical outer IPC envelope but does not widen any older
+# phase's fields. The two O final phases remain unchanged except for seq 3.
+_SEVEN_EXTRA.update({
+    "h_go": frozenset({"daemon_port", "nonce"}),
+    "h_ready": frozenset({"daemon_port", "nonce_sha256", "listener_state"}),
+    "o_ready_cmd": frozenset({"daemon_port", "h_witness", "nonce_sha256"}),
+    "o_ready_proof": frozenset({"daemon_port", "h_witness_sha256",
+                                "nonce_sha256", "listener_observation_sha256"}),
+    "h_stop": frozenset(),
+    "h_stopped": frozenset({"listener_closed"}),
+})
+
+
+def _seven_frame(run_id: str, phase: str, seq: int, witness: dict,
+                 **extra) -> dict:
+    return {"schema": _SEVEN_SCHEMA, "run_id": run_id, "phase": phase,
+            "seq": seq, "witness": witness, **extra}
+
+
+def _seven_summary_valid(value: Any) -> bool:
+    v3 = (type(value) is dict
+          and value.get("schema") == "fake_non_b_worker_v3")
+    allowed = (_SEVEN_SUMMARY_FIELDS | _SEVEN_SUMMARY_TRANSPORT_FIELDS
+               if v3 else _SEVEN_SUMMARY_FIELDS)
+    if (type(value) is not dict or set(value) != allowed
+            or value["schema"] != ("fake_non_b_worker_v3" if v3
+                                   else "fake_non_b_worker_v1")
+            or value["status"] not in (
+                "fake_non_b_parity_pass", "fake_non_b_parity_mismatch")
+            or value["http_calls"] != 7 or value["identity_checks"] != 6
+            or value["external_completion_attempts"] != 1
+            or value["internal_runner_generations"] != "unknown"
+            or value["b_upper_bound_proven"] is not False
+            or value["b_send_authorized"] is not False
+            or any(not _valid_sha(value[key]) for key in (
+                "request_sha256", "rendered_prompt_sha256",
+                "identity_observation_sha256"))):
+        return False
+    if v3 and (not _valid_sha(value["transport_proof_sha256"])
+               or type(value["transport_policy_calls"]) is not int
+               or value["transport_policy_calls"] != 7):
+        return False
+    source = value["source_evidence"]
+    if (type(source) is not dict or set(source) != _SEVEN_SOURCE_EVIDENCE_FIELDS
+            or source["source_revision"] != "v0.34.4"
+            or source["version"] != VERSION
+            or source["branch"] != "go_rendered_chat"
+            or source["bos_strip_applied"] is not False
+            or source["rendered_utf8_below_num_ctx"] is not True
+            or any(not _valid_sha(source[key]) for key in (
+                "daemon_argv_sha256", "runner_argv_sha256"))
+            or any(type(source[key]) is not int or source[key] <= 0
+                   for key in ("context_total", "parallel",
+                               "effective_num_ctx", "request_num_ctx"))
+            or source["effective_num_ctx"] != source["request_num_ctx"]):
+        return False
+    usage = value["provider_usage"]
+    if (type(usage) is not dict
+            or set(usage) != {"prompt_tokens", "completion_tokens", "total_tokens"}
+            or any(type(usage[key]) is not int or usage[key] < 0
+                   for key in usage)
+            or usage["total_tokens"] != (
+                usage["prompt_tokens"] + usage["completion_tokens"])):
+        return False
+    if (any(type(value[key]) is not int or value[key] <= 0
+            for key in ("request_utf8_bytes", "rendered_prompt_utf8_bytes",
+                        "runner_token_count_parse_special_true",
+                        "runner_token_count_parse_special_default"))
+            or value["request_utf8_bytes"] != 1833
+            or value["runner_token_count_parse_special_true"]
+               != value["runner_token_count_parse_special_default"]
+            or type(value["signed_delta"]) is not int
+            or value["signed_delta"] != (
+                usage["prompt_tokens"]
+                - value["runner_token_count_parse_special_true"])
+            or (value["status"] == "fake_non_b_parity_pass")
+               != (value["signed_delta"] == 0)
+            or not _finite_number(value["elapsed_seconds"])):
+        return False
+    return True
+
+
+def _seven_port_snapshot_valid(value: Any, *, phase: str,
+                               daemon_port: int,
+                               runner_port: int | None) -> bool:
+    """Strict fake OS-observer contract; it is not an actual lsof proof."""
+    if (type(value) is not dict
+            or set(value) != {"schema", "phase", "daemon_port",
+                              "daemon_vacant", "runner_port",
+                              "runner_vacant", "shared_11434"}
+            or value["schema"] != "fake_port_snapshot_v1"
+            or value["phase"] != phase
+            or not _port(daemon_port)
+            or value["daemon_port"] != daemon_port
+            or type(value["daemon_vacant"]) is not bool
+            or phase not in ("pre", "post")):
+        return False
+    if phase == "pre":
+        if (runner_port is not None or value["runner_port"] is not None
+                or value["runner_vacant"] is not None):
+            return False
+    elif (not _port(runner_port) or runner_port == daemon_port
+          or value["runner_port"] != runner_port
+          or type(value["runner_vacant"]) is not bool):
+        return False
+    shared = value["shared_11434"]
+    return (type(shared) is dict
+            and set(shared) == {"state", "listener_sha256"}
+            and ((shared["state"] == "vacant"
+                  and shared["listener_sha256"] is None)
+                 or (shared["state"] == "listener"
+                     and _valid_sha(shared["listener_sha256"]))))
+
+
+def _seven_port_proof(snapshot: dict) -> dict:
+    shared = snapshot["shared_11434"]
+    return {
+        "port_sha256": _sha(_canonical(snapshot, "fake_port_snapshot_invalid")),
+        "daemon_port": snapshot["daemon_port"],
+        "daemon_vacant": snapshot["daemon_vacant"],
+        "runner_port": snapshot["runner_port"],
+        "runner_vacant": snapshot["runner_vacant"],
+        "shared_11434_sha256": _sha(_canonical(
+            shared, "fake_port_snapshot_invalid")),
+    }
+
+
+def _seven_prehash_metadata(value: os.stat_result) -> tuple[int, ...]:
+    return (value.st_dev, value.st_ino, value.st_uid, value.st_mode,
+            value.st_nlink, value.st_size)
+
+
+def _seven_prehash_prepare(run_dir) -> dict:
+    """P creates only a fixed, tiny, private fixture before IPC reservation."""
+    required = ("O_NOFOLLOW", "O_DIRECTORY", "O_CLOEXEC", "O_NONBLOCK")
+    if any(not hasattr(os, name) for name in required):
+        _fail("fake_seven_prehash_fixture_unavailable")
+    directory = None
+    try:
+        base = Path(os.path.realpath(tempfile.gettempdir()))
+        repository = Path(__file__).resolve().parent
+        attempt = Path(os.path.realpath(os.path.abspath(os.fspath(run_dir))))
+        if (not base.is_absolute() or not base.is_dir()
+                or base == repository or repository in base.parents
+                or base == attempt or attempt in base.parents):
+            _fail("fake_seven_prehash_fixture_unavailable")
+        component = Path(base.anchor)
+        for part in base.parts[1:]:
+            component /= part
+            if stat.S_ISLNK(os.lstat(component).st_mode):
+                _fail("fake_seven_prehash_fixture_unavailable")
+        directory = Path(tempfile.mkdtemp(prefix="uruha-p4b-v4-", dir=base))
+        if (not directory.is_absolute()
+                or Path(os.path.realpath(directory)) != directory):
+            _fail("fake_seven_prehash_fixture_unavailable")
+        leaf = directory / _SEVEN_PREHASH_LEAF
+        fd = os.open(leaf, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                     | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
+        try:
+            os.fchmod(fd, 0o600)
+            if os.write(fd, _SEVEN_PREHASH_BYTES) != _SEVEN_PREHASH_LOGICAL_BYTES:
+                _fail("fake_seven_prehash_fixture_unavailable")
+            os.fsync(fd)
+        finally:
+            _fake_close(fd)
+        DurableJournal._sync_directory(directory)
+        directory_stat = os.lstat(directory)
+        leaf_stat = os.lstat(leaf)
+        if (not stat.S_ISDIR(directory_stat.st_mode)
+                or stat.S_IMODE(directory_stat.st_mode) != 0o700
+                or directory_stat.st_uid != os.geteuid()
+                or not stat.S_ISREG(leaf_stat.st_mode)
+                or stat.S_IMODE(leaf_stat.st_mode) != 0o600
+                or leaf_stat.st_uid != os.geteuid()
+                or leaf_stat.st_nlink != 1
+                or leaf_stat.st_size != _SEVEN_PREHASH_LOGICAL_BYTES):
+            _fail("fake_seven_prehash_fixture_unavailable")
+        return {"directory": directory,
+                "directory_identity": _seven_prehash_metadata(directory_stat),
+                "leaf_identity": _seven_prehash_metadata(leaf_stat),
+                "expected_sha256": _SEVEN_PREHASH_SHA256,
+                "expected_bytes": _SEVEN_PREHASH_LOGICAL_BYTES}
+    except BaseException:
+        if directory is not None:
+            try:
+                os.unlink(directory / _SEVEN_PREHASH_LEAF)
+            except OSError:
+                pass
+            try:
+                os.rmdir(directory)
+            except OSError:
+                pass
+        _fail("fake_seven_prehash_fixture_unavailable")
+
+
+def _seven_prehash_read(pinned: dict, hook) -> tuple[str, int]:
+    """O hashes bytes actually read; no path or content enters its proof."""
+    directory = pinned["directory"]
+    leaf = directory / _SEVEN_PREHASH_LEAF
+    directory_fd = leaf_fd = None
+    try:
+        if hook is not None:
+            hook("before_open", leaf)
+        directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY
+                               | os.O_NOFOLLOW | os.O_CLOEXEC)
+        directory_stat = os.fstat(directory_fd)
+        if (not stat.S_ISDIR(directory_stat.st_mode)
+                or _seven_prehash_metadata(directory_stat)
+                   != pinned["directory_identity"]
+                or _seven_prehash_metadata(os.lstat(directory))
+                   != pinned["directory_identity"]):
+            _fail("fake_seven_prehash_unavailable")
+        leaf_stat = os.stat(_SEVEN_PREHASH_LEAF, dir_fd=directory_fd,
+                            follow_symlinks=False)
+        if (not stat.S_ISREG(leaf_stat.st_mode)
+                or stat.S_IMODE(leaf_stat.st_mode) != 0o600
+                or leaf_stat.st_uid != os.geteuid()
+                or leaf_stat.st_nlink != 1
+                or leaf_stat.st_size > _SEVEN_PREHASH_LIMIT
+                or _seven_prehash_metadata(leaf_stat)
+                   != pinned["leaf_identity"]):
+            _fail("fake_seven_prehash_unavailable")
+        leaf_fd = os.open(_SEVEN_PREHASH_LEAF, os.O_RDONLY | os.O_NOFOLLOW
+                          | os.O_NONBLOCK | os.O_CLOEXEC,
+                          dir_fd=directory_fd)
+        if _seven_prehash_metadata(os.fstat(leaf_fd)) != pinned["leaf_identity"]:
+            _fail("fake_seven_prehash_unavailable")
+        if hook is not None:
+            hook("before_first_read", leaf)
+        digest = hashlib.sha256()
+        length = 0
+        while True:
+            block = os.read(leaf_fd, min(65536, _SEVEN_PREHASH_LIMIT + 1 - length))
+            if not block:
+                break
+            length += len(block)
+            if length > _SEVEN_PREHASH_LIMIT or length > pinned["expected_bytes"]:
+                _fail("fake_seven_prehash_unavailable")
+            digest.update(block)
+        if (length != pinned["expected_bytes"]
+                or _seven_prehash_metadata(os.fstat(directory_fd))
+                   != pinned["directory_identity"]
+                or _seven_prehash_metadata(os.lstat(directory))
+                   != pinned["directory_identity"]
+                or _seven_prehash_metadata(os.fstat(leaf_fd))
+                   != pinned["leaf_identity"]
+                or _seven_prehash_metadata(os.stat(
+                    _SEVEN_PREHASH_LEAF, dir_fd=directory_fd,
+                    follow_symlinks=False)) != pinned["leaf_identity"]):
+            _fail("fake_seven_prehash_unavailable")
+        return digest.hexdigest(), length
+    finally:
+        _fake_close(leaf_fd, directory_fd)
+
+
+def _seven_prehash_dispose(pinned: dict) -> None:
+    """Remove only our fixed leaf/direct-child directory after O/S_O stop."""
+    directory = pinned["directory"]
+    fd = None
+    try:
+        fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY
+                     | os.O_NOFOLLOW | os.O_CLOEXEC)
+        metadata = os.fstat(fd)
+        if (metadata.st_dev != pinned["directory_identity"][0]
+                or metadata.st_ino != pinned["directory_identity"][1]
+                or metadata.st_uid != os.geteuid()
+                or stat.S_IMODE(metadata.st_mode) != 0o700
+                or _seven_prehash_metadata(os.lstat(directory))
+                   != _seven_prehash_metadata(metadata)):
+            return
+        os.unlink(_SEVEN_PREHASH_LEAF, dir_fd=fd)
+        current = os.lstat(directory)
+        if (current.st_dev == metadata.st_dev
+                and current.st_ino == metadata.st_ino):
+            os.rmdir(directory)
+    except OSError:
+        pass
+    finally:
+        _fake_close(fd)
+
+
+class _SevenNoRedirect(urllib.request.HTTPRedirectHandler):
+    """W-local fake client policy; no default opener is ever installed."""
+
+    def redirect_request(self, request, fp, code, msg, headers, newurl):
+        return None
+
+
+_SEVEN_DENY_REDIRECT = _SevenNoRedirect.redirect_request
+_SEVEN_REDIRECT_ERROR = urllib.request.HTTPRedirectHandler.http_error_302
+_SEVEN_REDIRECT_CODES = frozenset({301, 302, 303, 307, 308})
+
+
+def _seven_v3_opener_valid(opener: Any, proxy_handler: Any,
+                           no_redirect_handler: Any) -> bool:
+    """Inspect installed handlers, not a fake callback's proxy claim."""
+    try:
+        handlers = opener.handlers
+        return (type(handlers) in (list, tuple)
+                and type(proxy_handler) is urllib.request.ProxyHandler
+                and proxy_handler.proxies == {}
+                and type(no_redirect_handler) is _SevenNoRedirect
+                and no_redirect_handler.redirect_request.__func__
+                    is _SEVEN_DENY_REDIRECT
+                and "redirect_request" not in vars(no_redirect_handler)
+                and all(getattr(no_redirect_handler,
+                                f"http_error_{code}").__func__
+                        is _SEVEN_REDIRECT_ERROR
+                        for code in _SEVEN_REDIRECT_CODES)
+                and not any(name.startswith("http_error_3")
+                            and name not in {
+                                f"http_error_{code}"
+                                for code in _SEVEN_REDIRECT_CODES}
+                            and callable(getattr(no_redirect_handler, name))
+                            for name in dir(no_redirect_handler))
+                and not any(name.startswith("http_error_3")
+                            for name in vars(no_redirect_handler))
+                and sum(handler is no_redirect_handler
+                        for handler in handlers) == 1
+                and all(
+                    handler is no_redirect_handler
+                    or (not isinstance(handler, urllib.request.ProxyHandler)
+                        and not isinstance(
+                            handler, urllib.request.HTTPRedirectHandler)
+                        and not callable(getattr(handler, "proxy_open", None))
+                        and not callable(getattr(
+                            handler, "redirect_request", None))
+                        and not any(callable(getattr(
+                            handler, f"http_error_{code}", None))
+                                    for code in range(300, 400)))
+                    for handler in handlers)
+                and callable(opener.open))
+    except BaseException:
+        return False
+
+
+def _seven_v3_exchange(factory, *, method: str, url: str,
+                       payload_raw: bytes | None, remaining: float,
+                       grant: dict, spec: dict,
+                       work_deadline: float) -> dict:
+    """Explicit fake-only W-owned Request and bounded response exchange."""
+    if (not callable(factory)
+            or (payload_raw is not None and (
+                type(payload_raw) is not bytes
+                or len(payload_raw) > REQUEST_LIMIT))
+            or not _split_grant_valid(grant, spec)
+            or method != spec["method"]
+            or url != f"http://127.0.0.1:{spec['port']}{spec['path']}"
+            or (None if payload_raw is None else _sha(payload_raw))
+               != grant["payload_sha256"]
+            or not _finite_number(remaining) or remaining <= 0):
+        _fail("fake_seven_transport_gate_invalid")
+    proxy_handler = urllib.request.ProxyHandler({})
+    no_redirect_handler = _SevenNoRedirect()
+    opener = factory(proxy_handler, no_redirect_handler)
+    if not _seven_v3_opener_valid(opener, proxy_handler,
+                                  no_redirect_handler):
+        _fail("fake_seven_transport_failed")
+    now = time.monotonic()
+    timeout = min(2.0, remaining, work_deadline - now,
+                  float(grant["expires_at"]) - now)
+    if timeout <= 0:
+        _fail("fake_seven_transport_gate_invalid")
+    request = urllib.request.Request(url, data=payload_raw, method=method)
+    with opener.open(request, timeout=timeout) as response:
+        if not _seven_v3_opener_valid(opener, proxy_handler,
+                                      no_redirect_handler):
+            _fail("fake_seven_transport_failed")
+        status = response.getcode()
+        effective_url = response.geturl()
+        if (type(status) is not int or status != 200
+                or type(effective_url) is not str
+                or effective_url.encode("utf-8") != url.encode("utf-8")):
+            _fail("fake_seven_transport_failed")
+        chunks: list[bytes] = []
+        size = 0
+        while True:
+            allowance = min(65536, RESPONSE_LIMIT + 1 - size)
+            chunk = response.read(allowance)
+            if type(chunk) is not bytes or len(chunk) > allowance:
+                _fail("fake_seven_transport_failed")
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > RESPONSE_LIMIT:
+                _fail("fake_seven_transport_failed")
+            chunks.append(chunk)
+    if not _seven_v3_opener_valid(opener, proxy_handler,
+                                  no_redirect_handler):
+        _fail("fake_seven_transport_failed")
+    return {"requested_url": url, "effective_url": effective_url,
+            "proxy_used": False, "redirected": False,
+            "status": status, "body": b"".join(chunks)}
+
+
+def _seven_transport_row(ordinal: int, request_sha: str, grant_sha: str,
+                         response_sha: str, response_bytes: int) -> dict:
+    """Raw-free ordered W/P contract for the seven fake exchanges."""
+    return {"ordinal": ordinal, "request_sha256": request_sha,
+            "grant_sha256": grant_sha,
+            "response_sha256": response_sha,
+            "response_bytes": response_bytes,
+            "policy": _SEVEN_TRANSPORT_POLICY}
+
+
+def _seven_receipt_valid(value: Any, run_id: str) -> bool:
+    v5 = (type(value) is dict
+          and value.get("schema") == "fake_seven_process_receipt_v5")
+    v4 = (type(value) is dict
+          and value.get("schema") in ("fake_seven_process_receipt_v4",
+                                      "fake_seven_process_receipt_v5"))
+    v3 = (type(value) is dict
+          and value.get("schema") in (
+              "fake_seven_process_receipt_v3",
+              "fake_seven_process_receipt_v4",
+              "fake_seven_process_receipt_v5"))
+    v2 = (type(value) is dict and value.get("schema") in (
+        "fake_seven_process_receipt_v2", "fake_seven_process_receipt_v3",
+        "fake_seven_process_receipt_v4", "fake_seven_process_receipt_v5"))
+    allowed = (_SEVEN_RECEIPT_FIELDS
+               | (_SEVEN_RECEIPT_PORT_FIELDS if v2 else frozenset())
+               | (_SEVEN_TRANSPORT_FIELDS if v3 else frozenset())
+               | (_SEVEN_PREHASH_FIELDS if v4 else frozenset())
+               | (_SEVEN_V5_FIELDS if v5 else frozenset()))
+    if (type(value) is not dict or set(value) != allowed
+            or value["schema"] != (
+                "fake_seven_process_receipt_v5" if v5 else
+                "fake_seven_process_receipt_v4" if v4 else
+                "fake_seven_process_receipt_v3" if v3 else
+                "fake_seven_process_receipt_v2" if v2 else
+                "fake_seven_process_receipt_v1")
+            or value["run_id"] != run_id
+            or value["snapshot_phase"] != (
+                "after_d_w_h_o_cleanup_attempt_before_r_final_reap"
+                if v5 else "after_dw_cleanup_before_r_final_reap")
+            or value["status"] not in (
+                "fake_seven_process_pending_receipt", "fake_seven_process_unproven")
+            or value["failure_code"] not in (
+                _SEVEN_FAILURE_CODES | _SEVEN_V4_FAILURE_CODES
+                | (_SEVEN_V5_STAGE_CODES if v5 else frozenset())
+                if v4 else _SEVEN_FAILURE_CODES)
+            or any(type(value[key]) is not bool for key in (
+                "zero_ack_received", "receipt_preflight_accepted",
+                "d_reaped", "w_reaped"))
+            or any(value[key] is not expected for key, expected in (
+                ("physical_stop_unproven", True), ("full_gate_pass", False),
+                ("b_upper_bound_proven", False),
+                ("b_send_authorized", False)))
+            or any(value[key] not in _SPLIT_STOP_CODES
+                   for key in ("d_stop", "w_stop"))
+            or any(value[key] is not None and not _valid_sha(value[key])
+                   for key in ("journal_sha256", "summary_sha256"))):
+        return False
+    if v2:
+        if (type(value["port_gate_proven"]) is not bool
+                or type(value["o_reaped"]) is not bool
+                or type(value["s_o_normal_exit"]) is not bool
+                or value["o_stop"] not in _SPLIT_STOP_CODES
+                or any(value[key] is not None and not _valid_sha(value[key])
+                       for key in ("port_pre_sha256", "port_post_sha256"))
+                or any(value[key] != "unknown"
+                       and type(value[key]) is not bool for key in (
+                           "daemon_port_vacant_after",
+                           "runner_port_vacant_after",
+                           "shared_11434_unchanged"))):
+            return False
+        if value["port_gate_proven"] != bool(
+                _valid_sha(value["port_pre_sha256"])
+                and _valid_sha(value["port_post_sha256"])
+                and all(value[key] is True for key in (
+                    "daemon_port_vacant_after",
+                    "runner_port_vacant_after", "shared_11434_unchanged"))
+                and value["d_reaped"] and value["w_reaped"]
+                and value["d_stop"] != "unproven"
+                and value["w_stop"] != "unproven"
+                and value["o_reaped"] and value["o_stop"] == "normal_exit"
+                and value["s_o_normal_exit"]):
+            return False
+    if v3:
+        if (type(value["transport_gate_proven"]) is not bool
+                or value["transport_proof_sha256"] is not None
+                   and not _valid_sha(value["transport_proof_sha256"])
+                or type(value["transport_policy_calls"]) is not int
+                or not 0 <= value["transport_policy_calls"] <= 7
+                or (value["transport_gate_proven"] and (
+                    not _valid_sha(value["transport_proof_sha256"])
+                    or value["transport_policy_calls"] != 7))):
+            return False
+    if v4:
+        if (type(value["prehash_gate_proven"]) is not bool
+                or type(value["pre_stage_failure_code"]) is not str
+                or value["pre_stage_failure_code"] not in _SEVEN_PRE_STAGE_CODES
+                or (value["prehash_gate_proven"] and (
+                    value["prehash_sha256"] != _SEVEN_PREHASH_SHA256
+                    or type(value["prehash_logical_bytes"]) is not int
+                    or value["prehash_logical_bytes"]
+                       != _SEVEN_PREHASH_LOGICAL_BYTES))
+                or (not value["prehash_gate_proven"] and (
+                    value["prehash_sha256"] is not None
+                    or value["prehash_logical_bytes"] is not None))):
+            return False
+    if v5:
+        if (any(type(value[key]) is not bool for key in (
+                "synthetic_listener_gate_proven", "continuous_listener_proven",
+                "h_reaped", "s_h_reaped", "s_h_normal_exit"))
+                or value["continuous_listener_proven"] is not False
+                or value["daemon_stage_failure_code"] not in _SEVEN_V5_STAGE_CODES
+                or value["h_stop"] not in _SPLIT_STOP_CODES
+                or value["h_term"] not in _SPLIT_CLEANUP_CODES
+                or value["h_kill"] not in _SPLIT_CLEANUP_CODES
+                or (value["synthetic_listener_gate_proven"]
+                    != _valid_sha(value["listener_observation_sha256"]))):
+            return False
+    for key in ("reserved", "granted", "worker_issued", "on_wire_yes",
+                "completion_attempt_spent", "http_calls", "identity_checks"):
+        item = value[key]
+        if item != "unknown" and (type(item) is not int or not 0 <= item <= 7):
+            return False
+    if value["status"] == "fake_seven_process_pending_receipt":
+        return (value["failure_code"] == "none"
+                and (not v2 or value["port_gate_proven"])
+                and (not v3 or value["transport_gate_proven"])
+                and (not v4 or (value["prehash_gate_proven"]
+                                and value["pre_stage_failure_code"] == "none"))
+                and (not v5 or (
+                    value["synthetic_listener_gate_proven"]
+                    and value["daemon_stage_failure_code"] == "none"
+                    and value["h_reaped"] and value["s_h_reaped"]
+                    and value["h_stop"] == "normal_exit"
+                    and value["s_h_normal_exit"]))
+                and all(value[key] == 7 for key in (
+                    "reserved", "granted", "worker_issued", "on_wire_yes",
+                    "http_calls")) and value["identity_checks"] == 6
+                and value["completion_attempt_spent"] == 1
+                and _valid_sha(value["journal_sha256"])
+                and _valid_sha(value["summary_sha256"])
+                and value["d_reaped"] and value["w_reaped"]
+                and value["d_stop"] == value["w_stop"] == "normal_exit")
+    return True
+
+
+def _seven_frame_valid(value: Any, *, run_id: str, phase: str, seq: int,
+                       witness: dict | None = None, pid: int | None = None,
+                       expected: dict | None = None,
+                       v5: bool = False) -> bool:
+    if (type(value) is not dict or phase not in _SEVEN_EXTRA
+            or (phase in ("h_go", "h_ready", "o_ready_cmd",
+                          "o_ready_proof", "h_stop", "h_stopped")
+                and not v5)
+            or set(value) != _SEVEN_BASE | _SEVEN_EXTRA[phase]
+            or value["schema"] != _SEVEN_SCHEMA or value["run_id"] != run_id
+            or value["phase"] != phase or type(value["seq"]) is not int
+            or value["seq"] != seq):
+        return False
+    got = value["witness"]
+    if (type(got) is not dict
+            or not _fake_witness_valid(got, got.get("pid", -1))):
+        return False
+    if witness is None:
+        if (phase != "initial" or pid is None
+                or not _fake_witness_valid(got, pid)
+                or got["ppid"] != os.getpid() or got["pgid"] != pid):
+            return False
+    elif not _split_same(got, witness):
+        return False
+    if expected is not None:
+        if any(key not in value or not _split_same(value[key], item)
+               for key, item in expected.items()):
+            return False
+    if phase == "initial":
+        return value["role"] in (("D", "W", "R", "O", "H") if v5
+                                 else ("D", "W", "R", "O"))
+    if phase in ("h_go", "h_ready", "o_ready_cmd", "o_ready_proof"):
+        if (not _port(value["daemon_port"])
+                or ("nonce" in value and (type(value["nonce"]) is not str
+                    or _NONCE.fullmatch(value["nonce"]) is None))
+                or any(not _valid_sha(value[key]) for key in (
+                    "nonce_sha256", "h_witness_sha256",
+                    "listener_observation_sha256") if key in value)):
+            return False
+        if "h_witness" in value:
+            h = value["h_witness"]
+            if (type(h) is not dict or not _fake_witness_valid(
+                    h, h.get("pid", -1))):
+                return False
+        return (phase != "h_ready" or value["listener_state"] == "listening")
+    if phase == "h_stopped":
+        return value["listener_closed"] is True
+    if phase in ("o_pre", "o_pre_hash_port", "o_final"):
+        return (_port(value["daemon_port"])
+                and (phase in ("o_pre", "o_pre_hash_port") or
+                     (_port(value["runner_port"])
+                      and value["runner_port"] != value["daemon_port"])))
+    if phase in ("o_pre_proof", "o_pre_hash_port_proof", "o_final_proof"):
+        pre = phase != "o_final_proof"
+        return ((phase != "o_pre_hash_port_proof" or (
+                    _valid_sha(value["prehash_sha256"])
+                    and type(value["prehash_logical_bytes"]) is int
+                    and 0 <= value["prehash_logical_bytes"]
+                        <= _SEVEN_PREHASH_LIMIT))
+                and all(_valid_sha(value[key]) for key in (
+                    "port_sha256", "shared_11434_sha256"))
+                and _port(value["daemon_port"])
+                and type(value["daemon_vacant"]) is bool
+                and ((value["runner_port"] is None
+                      and value["runner_vacant"] is None) if pre else
+                     (_port(value["runner_port"])
+                      and value["runner_port"] != value["daemon_port"]
+                      and type(value["runner_vacant"]) is bool)))
+    if "fields" in value and not _grant_valid(value["fields"], nonce_required=False):
+        return False
+    if "worker_witness" in value:
+        worker_witness = value["worker_witness"]
+        if (type(worker_witness) is not dict
+                or not _fake_witness_valid(worker_witness,
+                                           worker_witness.get("pid", -1))):
+            return False
+    if "grant" in value and not _grant_valid(value["grant"], nonce_required=True):
+        return False
+    if "nonce" in value and (type(value["nonce"]) is not str
+                             or _NONCE.fullmatch(value["nonce"]) is None):
+        return False
+    for key in ("journal_sha256", "grant_sha256", "response_sha256",
+                "receipt_sha256"):
+        if key in value and not _valid_sha(value[key]):
+            return False
+    for key in ("reserved", "worker_issued", "on_wire_yes",
+                "completion_attempt_spent", "response_bytes", "receipt_bytes"):
+        if key in value and (type(value[key]) is not int or value[key] < 0
+                             or value[key] > (RESPONSE_LIMIT if key == "response_bytes"
+                                               else FRAME_LIMIT if key == "receipt_bytes"
+                                               else 7)):
+            return False
+    if "summary" in value and not _seven_summary_valid(value["summary"]):
+        return False
+    if "receipt" in value and not _seven_receipt_valid(value["receipt"], run_id):
+        return False
+    return True
+
+
+def _seven_send(fd: int, value: dict, deadline: float, **validation) -> bool:
+    try:
+        if not _seven_frame_valid(value, **validation):
+            return False
+        frame = encode_frame(value)
+        if not _seven_frame_valid(decode_frame(
+                frame, keys=set(value)), **validation):
+            return False
+        os.set_blocking(fd, False)
+        offset = 0
+        while offset < len(frame) and time.monotonic() < deadline:
+            _, ready, _ = select.select([], [fd], [], min(
+                0.005, max(0, deadline - time.monotonic())))
+            if not ready:
+                continue
+            try:
+                size = os.write(fd, frame[offset:])
+            except BlockingIOError:
+                continue
+            if size <= 0:
+                return False
+            offset += size
+        return offset == len(frame)
+    except Exception:
+        return False
+
+
+def _seven_receive(fd: int, deadline: float, **validation) -> dict | None:
+    phase = validation["phase"]
+    value = _fake_read_bounded(
+        fd, deadline, framed=True,
+        keys=set(_SEVEN_BASE | _SEVEN_EXTRA[phase]))
+    return value if _seven_frame_valid(value, **validation) else None
+
+
+def _seven_edge(name: str, ordinal: int) -> str:
+    return f"{name}_{ordinal}"
+
+
+def _seven_child_send(pipes: dict[str, tuple[int, int]], name: str,
+                      run_id: str, phase: str, seq: int, own: dict,
+                      deadline: float, *, v5: bool = False, **extra) -> bool:
+    fd = pipes[name][1]
+    try:
+        value = _seven_frame(run_id, phase, seq, own, **extra)
+        return _seven_send(fd, value, deadline, run_id=run_id, phase=phase,
+                           seq=seq, witness=own, v5=v5)
+    finally:
+        _fake_close(fd)
+
+
+def _seven_child_receive(pipes: dict[str, tuple[int, int]], name: str,
+                         run_id: str, phase: str, seq: int, own: dict,
+                         deadline: float, expected: dict | None = None,
+                         v5: bool = False) -> dict | None:
+    fd = pipes[name][0]
+    try:
+        return _seven_receive(fd, deadline, run_id=run_id, phase=phase,
+                              seq=seq, witness=own, expected=expected,
+                              v5=v5)
+    finally:
+        _fake_close(fd)
+
+
+def _seven_d_child(pipes: dict[str, tuple[int, int]], *, run_dir: Path,
+                   run_id: str, hard_deadline: float,
+                   work_deadline: float, fault: str | None) -> int:
+    writes = {"d_initial", "d_zero", "d_final"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("d_grant", "d_issue_proof", "d_wire_proof")}
+    reads = {"d_go", "d_finish"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("d_reserve", "d_issue", "d_wire")}
+    owned = {pipes[name][1] for name in writes} | {
+        pipes[name][0] for name in reads}
+    _split_close_except(pipes, owned)
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "d_initial", run_id, "initial", 0,
+                                 own, work_deadline, role="D"):
+            return 125
+        go = _seven_child_receive(pipes, "d_go", run_id, "d_go", 0,
+                                  own, work_deadline)
+        if go is None:
+            return 125
+        worker_witness = go["worker_witness"]
+        journal = DurableJournal.create(run_dir, run_id)
+        zero = journal.snapshot()
+        if not _split_same(zero, _split_zero_state(run_id)):
+            return 125
+        zero_sha = _sha(_split_disk_readback(journal, zero))
+        if not _seven_child_send(pipes, "d_zero", run_id, "zero", 0,
+                                 own, work_deadline, journal_sha256=zero_sha):
+            return 125
+        for ordinal in range(1, 8):
+            state = journal.snapshot()
+            if (state["reserved"] != ordinal - 1
+                    or (ordinal > 1 and state["operations"][-1]["on_wire"] != "yes")):
+                return 125
+            reserve = _seven_child_receive(
+                pipes, _seven_edge("d_reserve", ordinal), run_id, "reserve",
+                ordinal, own, work_deadline)
+            if reserve is None:
+                return 125
+            fields = reserve["fields"]
+            if (fields["run_id"] != run_id or fields["ordinal"] != ordinal
+                    or not _split_same(fields["worker"],
+                                       _split_worker_from_witness(worker_witness))):
+                return 125
+            grant = journal.reserve(fields, ack=lambda _grant: None)
+            state = journal.snapshot()
+            disk_sha = _sha(_split_disk_readback(journal, state))
+            if (state["reserved"] != ordinal or state["granted"] != ordinal
+                    or state["worker_issued"] != ordinal - 1
+                    or state["operations"][-1]["on_wire"] != "unknown"
+                    or state["completion_attempt_spent"] != int(ordinal == 7)):
+                return 125
+            if fault == f"d_after_reserve_{ordinal}":
+                return 121
+            if not _seven_child_send(
+                    pipes, _seven_edge("d_grant", ordinal), run_id,
+                    "grant_proof", ordinal, own, work_deadline,
+                    grant=grant, journal_sha256=disk_sha,
+                    reserved=ordinal,
+                    completion_attempt_spent=int(ordinal == 7)):
+                return 125
+            issue = _seven_child_receive(
+                pipes, _seven_edge("d_issue", ordinal), run_id,
+                "mark_issue", ordinal, own, work_deadline,
+                expected={"nonce": grant["nonce"]})
+            if issue is None:
+                return 125
+            journal.mark_worker_issued(ordinal, grant["nonce"])
+            state = journal.snapshot()
+            disk_sha = _sha(_split_disk_readback(journal, state))
+            if state["worker_issued"] != ordinal:
+                return 125
+            if fault == f"d_after_issue_{ordinal}":
+                return 121
+            if not _seven_child_send(
+                    pipes, _seven_edge("d_issue_proof", ordinal), run_id,
+                    "issue_proof", ordinal, own, work_deadline,
+                    journal_sha256=disk_sha, worker_issued=ordinal):
+                return 125
+            wire = _seven_child_receive(
+                pipes, _seven_edge("d_wire", ordinal), run_id,
+                "mark_wire", ordinal, own, work_deadline,
+                expected={"nonce": grant["nonce"]})
+            if wire is None:
+                return 125
+            journal.mark_on_wire(ordinal, grant["nonce"])
+            state = journal.snapshot()
+            disk_sha = _sha(_split_disk_readback(journal, state))
+            if (sum(op["on_wire"] == "yes" for op in state["operations"])
+                    != ordinal):
+                return 125
+            if fault == f"d_after_wire_{ordinal}":
+                return 121
+            if not _seven_child_send(
+                    pipes, _seven_edge("d_wire_proof", ordinal), run_id,
+                    "wire_proof", ordinal, own, work_deadline,
+                    journal_sha256=disk_sha, on_wire_yes=ordinal):
+                return 125
+        if _seven_child_receive(pipes, "d_finish", run_id, "d_finish", 8,
+                                own, work_deadline) is None:
+            return 125
+        state = journal.snapshot()
+        disk_sha = _sha(_split_disk_readback(journal, state))
+        if (state["reserved"] != 7 or state["granted"] != 7
+                or state["worker_issued"] != 7
+                or state["completion_attempt_spent"] != 1
+                or any(op["on_wire"] != "yes" for op in state["operations"])):
+            return 125
+        return (0 if _seven_child_send(
+            pipes, "d_final", run_id, "d_final", 8, own, work_deadline,
+            journal_sha256=disk_sha, reserved=7, worker_issued=7,
+            on_wire_yes=7, completion_attempt_spent=1) else 125)
+    except BaseException:
+        return 125
+    # Its sole caller immediately os._exit()s. Remaining owned descriptors
+    # close at process exit; re-closing consumed numeric FDs could close a
+    # different callback FD that reused the number.
+
+
+def _seven_w_child(pipes: dict[str, tuple[int, int]], *, binding_template: dict,
+                   observe_identity, fake_http, fake_opener_factory,
+                   run_id: str,
+                   hard_deadline: float, work_deadline: float,
+                   fault: str | None) -> int:
+    writes = {"w_initial", "w_summary"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("w_request", "w_issue", "w_result")}
+    reads = {"w_go", "w_finish"} | {
+        _seven_edge(edge, n) for n in range(1, 8)
+        for edge in ("w_grant", "w_issue_ack", "w_result_ack")}
+    owned = {pipes[name][1] for name in writes} | {
+        pipes[name][0] for name in reads}
+    _split_close_except(pipes, owned)
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        v3 = fake_opener_factory is not None
+        if v3:
+            # W is a forked, one-use child. Contain output from every injected
+            # effect, including the opener factory, at the descriptor layer.
+            null_fd = os.open(os.devnull, os.O_WRONLY)
+            try:
+                os.dup2(null_fd, 1)
+                os.dup2(null_fd, 2)
+            finally:
+                if null_fd > 2:
+                    os.close(null_fd)
+            # pytest's capfd (and similar embedders) may replace the Python
+            # stream objects with wrappers around different descriptors.
+            sys.stdout = os.fdopen(os.dup(1), "w", buffering=1)
+            sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "w_initial", run_id, "initial", 0,
+                                 own, work_deadline, role="W"):
+            return 125
+        if _seven_child_receive(pipes, "w_go", run_id, "w_go", 0,
+                                own, work_deadline) is None:
+            return 125
+        binding = deepcopy(binding_template)
+        binding["worker"] = _split_worker_from_witness(own)
+        # worker_once's existing binding contract fixes work_stop_at=t0+80.
+        # For this shortened synthetic attempt, anchor that nominal T0 to
+        # the parent's *absolute* work stop instead of granting W a fresh
+        # 80 real seconds. This is not a real T0 timing claim.
+        binding["t0"] = work_deadline - 80.0
+        binding["work_stop_at"] = work_deadline
+        pending: dict[int, tuple[dict, dict]] = {}
+        used: set[str] = set()
+        callback_count = 0
+        transport_rows: list[dict] = []
+
+        def authorize_call(spec: dict) -> dict:
+            ordinal = spec["ordinal"]
+            if (ordinal != len(pending) + 1 or not _grant_valid(
+                    spec, nonce_required=False)
+                    or spec["run_id"] != run_id
+                    or not _split_same(spec["worker"], binding["worker"])):
+                _fail("fake_seven_request_invalid")
+            if not _seven_child_send(
+                    pipes, _seven_edge("w_request", ordinal), run_id,
+                    "request", ordinal, own, work_deadline, fields=spec):
+                _fail("fake_seven_request_unavailable")
+            delivery = _seven_child_receive(
+                pipes, _seven_edge("w_grant", ordinal), run_id,
+                "grant_delivery", ordinal, own, work_deadline)
+            if (delivery is None or not _split_grant_valid(
+                    delivery["grant"], spec)):
+                _fail("fake_seven_grant_unavailable")
+            grant = delivery["grant"]
+            if grant["nonce"] in used:
+                _fail("fake_seven_nonce_replay")
+            pending[ordinal] = (deepcopy(spec), deepcopy(grant))
+            return grant
+
+        def http_call(method, url, payload, remaining, grant):
+            nonlocal callback_count
+            ordinal = callback_count + 1
+            pair = pending.get(ordinal)
+            if pair is None:
+                _fail("fake_seven_no_pending")
+            spec, original = pair
+            payload_raw = None if payload is None else _canonical(
+                payload, "request_invalid")
+            expected_url = (f"http://127.0.0.1:{spec['port']}"
+                            f"{spec['path']}")
+            # This is the W-local, one-use *fake* transport entrance.  No
+            # parent or D receives a body, completion or rendered prompt.
+            if (not _split_same(grant, original)
+                    or not _split_grant_valid(grant, spec)
+                    or url != expected_url or method != spec["method"]
+                    or (None if payload_raw is None else _sha(payload_raw))
+                       != spec["payload_sha256"]
+                    or not _split_same(grant["worker"], binding["worker"])
+                    or grant["nonce"] in used
+                    or not _finite_number(remaining) or remaining <= 0
+                    or time.monotonic() >= grant["expires_at"]):
+                _fail("fake_seven_transport_gate_invalid")
+            used.add(grant["nonce"])
+            grant_sha = _sha(_canonical(grant, "grant_invalid"))
+            if not _seven_child_send(
+                    pipes, _seven_edge("w_issue", ordinal), run_id,
+                    "issue_entry", ordinal, own, work_deadline,
+                    grant_sha256=grant_sha):
+                _fail("fake_seven_issue_unavailable")
+            issue_ack = _seven_child_receive(
+                pipes, _seven_edge("w_issue_ack", ordinal), run_id,
+                "issue_ack", ordinal, own, work_deadline)
+            if issue_ack is None:
+                _fail("fake_seven_issue_ack_unavailable")
+            if fault == f"w_after_issue_{ordinal}":
+                return None  # worker_once rejects it; no fake send occurred.
+            if v3:
+                value = _seven_v3_exchange(
+                    fake_opener_factory, method=method, url=url,
+                    payload_raw=payload_raw, remaining=remaining,
+                    grant=deepcopy(grant), spec=deepcopy(spec),
+                    work_deadline=work_deadline)
+            else:
+                value = fake_http(method, url, payload, remaining,
+                                  deepcopy(grant))
+            callback_count += 1
+            if (type(value) is not dict or set(value) != _HTTP_FIELDS
+                    or value["requested_url"] != expected_url
+                    or value["effective_url"] != expected_url
+                    or value["proxy_used"] is not False
+                    or value["redirected"] is not False
+                    or type(value["status"]) is not int
+                    or value["status"] != 200 or type(value["body"]) is not bytes
+                    or len(value["body"]) > RESPONSE_LIMIT):
+                _fail("fake_seven_transport_failed")
+            response_sha = _sha(value["body"])
+            response_bytes = len(value["body"])
+            if not _seven_child_send(
+                    pipes, _seven_edge("w_result", ordinal), run_id,
+                    "result_entry", ordinal, own, work_deadline,
+                    grant_sha256=grant_sha,
+                    response_sha256=response_sha,
+                    response_bytes=response_bytes):
+                _fail("fake_seven_result_unavailable")
+            if v3:
+                transport_rows.append(_seven_transport_row(
+                    ordinal, _sha(_canonical(spec, "grant_invalid")),
+                    grant_sha, response_sha, response_bytes))
+            if _seven_child_receive(
+                    pipes, _seven_edge("w_result_ack", ordinal), run_id,
+                    "result_ack", ordinal, own, work_deadline) is None:
+                _fail("fake_seven_result_ack_unavailable")
+            return value
+
+        summary = worker_once(
+            binding=binding, clock=time.monotonic,
+            observe_identity=observe_identity,
+            authorize_call=authorize_call, http_call=http_call)
+        if v3:
+            summary = {**summary,
+                       "schema": "fake_non_b_worker_v3",
+                       "transport_proof_sha256": _sha(_canonical(
+                           transport_rows, "fake_seven_transport_invalid")),
+                       "transport_policy_calls": len(transport_rows)}
+        if (not _seven_summary_valid(summary) or callback_count != 7
+                or len(used) != 7):
+            return 125
+        if _seven_child_receive(pipes, "w_finish", run_id, "w_finish", 8,
+                                own, work_deadline) is None:
+            return 125
+        return (0 if _seven_child_send(
+            pipes, "w_summary", run_id, "w_summary", 8, own,
+            work_deadline, summary=summary) else 125)
+    except BaseException:
+        return 125
+    # The fork wrapper immediately os._exit()s; do not double-close used
+    # one-shot numeric FDs after injected callback code may have reused them.
+
+
+def _seven_write_receipt(run_dir: Path, receipt: dict,
+                         run_id: str) -> tuple[str, int]:
+    """R-only 0600 O_EXCL fake receipt, never a live wire/stop receipt."""
+    if not _seven_receipt_valid(receipt, run_id):
+        _fail("fake_seven_receipt_invalid")
+    directory = Path(run_dir)
+    metadata = os.lstat(directory)
+    if (not stat.S_ISDIR(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o700):
+        _fail("fake_seven_receipt_directory_invalid")
+    raw = _canonical(receipt, "fake_seven_receipt_invalid")
+    if len(raw) > FRAME_LIMIT:
+        _fail("fake_seven_receipt_oversize")
+    path = directory / RECEIPT_NAME
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                 | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        os.fchmod(fd, 0o600)
+        if os.write(fd, raw) != len(raw):
+            _fail("fake_seven_receipt_short_write")
+        os.fsync(fd)
+    finally:
+        _fake_close(fd)
+    DurableJournal._sync_directory(directory)
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+    try:
+        metadata = os.fstat(fd)
+        readback = os.read(fd, FRAME_LIMIT + 1)
+    finally:
+        _fake_close(fd)
+    if (not stat.S_ISREG(metadata.st_mode)
+            or stat.S_IMODE(metadata.st_mode) != 0o600
+            or readback != raw):
+        _fail("fake_seven_receipt_readback_invalid")
+    return _sha(raw), len(raw)
+
+
+def _seven_v5_psutil():
+    """Only the pinned project dependency may provide H-owned TCP rows."""
+    import psutil  # lazy: v1-v4 have no dependency on this package
+    if (getattr(psutil, "__version__", None) != "7.2.2"
+            or not callable(getattr(psutil, "Process", None))):
+        _fail("fake_seven_configuration_invalid")
+    return psutil
+
+
+def _seven_v5_fd_measure() -> tuple[int, int]:
+    """Measure actual descriptors, including the transient /dev/fd reader."""
+    try:
+        soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+        fds = [int(name) for name in os.listdir("/dev/fd") if name.isdecimal()]
+        if not fds or len(fds) >= soft or max(fds) >= soft:
+            _fail("phase2_fd_unavailable")
+        return len(fds), max(fds)
+    except BaseException:
+        _fail("phase2_fd_unavailable")
+
+
+def _seven_v5_pipe_layout() -> dict[str, tuple[int, int]]:
+    """Atomically reserve only the twelve late, one-shot V5 pipes."""
+    pipes: dict[str, tuple[int, int]] = {}
+    try:
+        for name in _SEVEN_V5_EDGES:
+            pipes[name] = os.pipe()
+        if len(pipes) != 12 or len({fd for pair in pipes.values()
+                                    for fd in pair}) != 24:
+            _fail("phase2_fd_unavailable")
+        _seven_v5_fd_measure()
+        return pipes
+    except BaseException:
+        for pair in pipes.values():
+            _fake_close(*pair)
+        _fail("phase2_fd_unavailable")
+
+
+def _seven_v5_observation(witness: dict, port: int) -> dict:
+    return {**witness, "family": "AF_INET", "type": "SOCK_STREAM",
+            "status": "LISTEN", "host": "127.0.0.1", "port": port}
+
+
+def _seven_v5_child_live(pid: int, statuses: dict[int, int]) -> bool:
+    """Only an exact nonblocking waitpid=0 proves still waitable/live now."""
+    if type(pid) is not int or pid <= 0 or pid in statuses:
+        return False
+    try:
+        seen_pid, wait_status = os.waitpid(pid, os.WNOHANG)
+    except (ChildProcessError, OSError):
+        return False
+    if seen_pid == pid:
+        statuses[pid] = wait_status
+    return seen_pid == 0
+
+
+def _seven_v5_observe_listener(h_witness: dict, port: int) -> str:
+    """O-only, bracketed per-process OS observation; no injected port rows."""
+    pid = h_witness["pid"]
+    first = _fake_os_witness(pid)
+    if not _split_same(first, h_witness):
+        _fail("o_ready_unavailable")
+    psutil = _seven_v5_psutil()
+    process = psutil.Process(pid)
+    if type(process.pid) is not int or process.pid != pid:
+        _fail("o_ready_unavailable")
+    rows = process.net_connections(kind="tcp4")
+    second = _fake_os_witness(pid)
+    if (not _split_same(second, h_witness)
+            or type(rows) not in (list, tuple)):
+        _fail("o_ready_unavailable")
+    matches = 0
+    for row in rows:
+        if (row.family == socket.AF_INET
+                and row.type == socket.SOCK_STREAM
+                and row.status == "LISTEN"):
+            address = row.laddr
+            if (len(address) != 2 or address[0] != "127.0.0.1"
+                    or type(address[1]) is not int
+                    or address[1] != port):
+                _fail("o_ready_unavailable")
+            matches += 1
+    if matches != 1:
+        _fail("o_ready_unavailable")
+    return _sha(_canonical(_seven_v5_observation(
+        h_witness, port), "o_ready_unavailable"))
+
+
+def _seven_v5_quiet_stdio() -> None:
+    sink = os.open(os.devnull, os.O_WRONLY)
+    try:
+        os.dup2(sink, 1)
+        os.dup2(sink, 2)
+    finally:
+        if sink not in (1, 2):
+            os.close(sink)
+    sys.stdout = os.fdopen(os.dup(1), "w", buffering=1)
+    sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
+
+
+def _seven_h_child(pipes: dict[str, tuple[int, int]], *,
+                   inherited_fds: set[int], run_id: str,
+                   work_deadline: float, stop_deadline: float,
+                   hard_deadline: float, hook=None) -> int:
+    owned = {pipes[name][1] for name in ("h_initial", "h_ready",
+                                          "h_stopped")} | {
+        pipes[name][0] for name in ("h_go", "h_stop")}
+    _fake_close(*inherited_fds)
+    _split_close_except(pipes, owned)
+    listener = None
+    try:
+        _seven_v5_quiet_stdio()
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "h_initial", run_id, "initial", 0,
+                                 own, work_deadline, v5=True, role="H"):
+            return 125
+        command = _seven_child_receive(pipes, "h_go", run_id, "h_go", 1,
+                                       own, work_deadline, v5=True)
+        if command is None:
+            return 0
+        port = command["daemon_port"]
+        nonce_sha = _sha(command["nonce"].encode("utf-8"))
+        if hook is not None:
+            hook("before_bind")
+        _seven_v5_fd_measure()
+        listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        _seven_v5_fd_measure()
+        listener.bind(("127.0.0.1", port))
+        listener.listen(1)
+        _seven_v5_fd_measure()
+        if hook is not None:
+            hook("after_listen")
+        if not _seven_child_send(pipes, "h_ready", run_id, "h_ready", 1,
+                                 own, work_deadline, v5=True,
+                                 daemon_port=port, nonce_sha256=nonce_sha,
+                                 listener_state="listening"):
+            return 125
+        if hook is not None:
+            hook("after_ready")
+        if _seven_child_receive(pipes, "h_stop", run_id, "h_stop", 2,
+                                own, stop_deadline, v5=True) is None:
+            return 0
+        listener.close()
+        listener = None
+        return (0 if _seven_child_send(
+            pipes, "h_stopped", run_id, "h_stopped", 2, own,
+            stop_deadline, v5=True, listener_closed=True) else 125)
+    except BaseException:
+        return 125
+    finally:
+        if listener is not None:
+            listener.close()
+
+
+def _seven_r_child(pipes: dict[str, tuple[int, int]], *,
+                   inherited_core_fds: set[int],
+                   inherited_signal_pipes: dict[str, tuple[int, int]],
+                   inherited_port_pipes: dict[str, tuple[int, int]],
+                   run_dir: Path, run_id: str,
+                   hard_deadline: float, prep_deadline: float,
+                   preflight_deadline: float, receipt_deadline: float,
+                   initial_reader=None) -> int:
+    owned = {pipes[name][1] for name in (
+        "r_initial", "r_preflight_ack", "r_proof")} | {
+        pipes[name][0] for name in ("r_preflight", "r_write")}
+    _fake_close(*inherited_core_fds)
+    _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(inherited_port_pipes, set())
+    _split_close_except(pipes, owned)
+    try:
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        actual = _fake_os_witness(os.getpid())
+        own = (initial_reader or _fake_os_witness)(os.getpid())
+        if not _split_same(actual, own):
+            return 126
+        if not _seven_child_send(pipes, "r_initial", run_id, "initial", 0,
+                                 own, prep_deadline, role="R"):
+            return 125
+        if _seven_child_receive(pipes, "r_preflight", run_id,
+                                "r_preflight", 1, own,
+                                preflight_deadline) is None:
+            return 0
+        if not _split_receipt_preflight(run_dir, run_id):
+            return 125
+        if not _seven_child_send(pipes, "r_preflight_ack", run_id,
+                                 "r_preflight_ack", 1, own,
+                                 preflight_deadline):
+            return 125
+        command = _seven_child_receive(pipes, "r_write", run_id, "r_write",
+                                       2, own, receipt_deadline)
+        if command is None:
+            return 0
+        receipt = command["receipt"]
+        sha, length = _seven_write_receipt(run_dir, receipt, run_id)
+        return (0 if _seven_child_send(pipes, "r_proof", run_id, "r_proof",
+                                       2, own, receipt_deadline,
+                                       receipt_sha256=sha,
+                                       receipt_bytes=length) else 125)
+    except BaseException:
+        return 125
+    # The fork wrapper immediately os._exit()s and owns any unused ends.
+
+
+def _seven_o_child(pipes: dict[str, tuple[int, int]], *,
+                   inherited_core_fds: set[int],
+                   inherited_receipt_fds: set[int],
+                   inherited_signal_pipes: dict[str, tuple[int, int]],
+                   run_id: str, observer, prep_deadline: float,
+                   work_deadline: float, final_deadline: float,
+                   hard_deadline: float,
+                   prehash_pinned: dict | None = None,
+                   hash_hook=None,
+                   listener_pipes: dict[str, tuple[int, int]] | None = None) -> int:
+    """Initially witnessed fake observer; v4 also hashes its tiny fixture."""
+    owned = {pipes[name][1] for name in (
+        "o_initial", "o_pre_proof", "o_final_proof")} | {
+        pipes[name][0] for name in ("o_pre", "o_final")}
+    _fake_close(*inherited_core_fds, *inherited_receipt_fds)
+    _split_close_except(inherited_signal_pipes, set())
+    _split_close_except(pipes, owned)
+    if listener_pipes is not None:
+        _split_close_except(listener_pipes, {
+            listener_pipes["o_ready_cmd"][0],
+            listener_pipes["o_ready_proof"][1]})
+    # An injected OS observer may print raw lsof text or a traceback. Keep
+    # this fake-only child's output off the parent's terminal and test logs;
+    # failure to isolate stdio must happen before any observer callback.
+    try:
+        sink = os.open(os.devnull, os.O_WRONLY)
+        try:
+            os.dup2(sink, 1)
+            os.dup2(sink, 2)
+        finally:
+            if sink not in (1, 2):
+                os.close(sink)
+    except BaseException:
+        return 125
+    try:
+        if prehash_pinned is not None:
+            # Inherited Python stream wrappers may target capture FDs other
+            # than numeric 1/2. V4 callbacks must be isolated at both layers.
+            sys.stdout = os.fdopen(os.dup(1), "w", buffering=1)
+            sys.stderr = os.fdopen(os.dup(2), "w", buffering=1)
+        os.setsid()
+        _fake_child_lifetime(hard_deadline)
+        if listener_pipes is not None:
+            _seven_v5_fd_measure()
+        own = _fake_os_witness(os.getpid())
+        if not _seven_child_send(pipes, "o_initial", run_id, "initial", 0,
+                                 own, prep_deadline, role="O"):
+            return 125
+        pre_phase = ("o_pre_hash_port" if prehash_pinned is not None
+                     else "o_pre")
+        pre = _seven_child_receive(pipes, "o_pre", run_id, pre_phase, 1,
+                                   own, work_deadline)
+        if pre is None:
+            return 0
+        daemon_port = pre["daemon_port"]
+        prehash = (_seven_prehash_read(prehash_pinned, hash_hook)
+                   if prehash_pinned is not None else None)
+        snapshot = observer("pre", daemon_port, None)
+        if not _seven_port_snapshot_valid(snapshot, phase="pre",
+                                          daemon_port=daemon_port,
+                                          runner_port=None):
+            return 125
+        proof = _seven_port_proof(snapshot)
+        if prehash is not None:
+            proof.update(prehash_sha256=prehash[0],
+                         prehash_logical_bytes=prehash[1])
+        proof_phase = ("o_pre_hash_port_proof" if prehash is not None
+                       else "o_pre_proof")
+        if not _seven_child_send(pipes, "o_pre_proof", run_id,
+                                 proof_phase, 1, own, work_deadline,
+                                 **proof):
+            return 125
+        if listener_pipes is not None:
+            ready = _seven_child_receive(
+                listener_pipes, "o_ready_cmd", run_id, "o_ready_cmd", 2,
+                own, work_deadline, v5=True)
+            if ready is None or ready["daemon_port"] != daemon_port:
+                return 0
+            h_witness = ready["h_witness"]
+            _seven_v5_fd_measure()
+            observation_sha = _seven_v5_observe_listener(
+                h_witness, daemon_port)
+            if not _seven_child_send(
+                    listener_pipes, "o_ready_proof", run_id,
+                    "o_ready_proof", 2, own, work_deadline, v5=True,
+                    daemon_port=daemon_port,
+                    h_witness_sha256=_sha(_canonical(
+                        h_witness, "o_ready_unavailable")),
+                    nonce_sha256=ready["nonce_sha256"],
+                    listener_observation_sha256=observation_sha):
+                return 125
+        final = _seven_child_receive(pipes, "o_final", run_id, "o_final",
+                                     3 if listener_pipes is not None else 2,
+                                     own, final_deadline)
+        if final is None or final["daemon_port"] != daemon_port:
+            return 0
+        runner_port = final["runner_port"]
+        snapshot = observer("post", daemon_port, runner_port)
+        if not _seven_port_snapshot_valid(snapshot, phase="post",
+                                          daemon_port=daemon_port,
+                                          runner_port=runner_port):
+            return 125
+        return (0 if _seven_child_send(pipes, "o_final_proof", run_id,
+                                      "o_final_proof",
+                                      3 if listener_pipes is not None else 2,
+                                      own, final_deadline,
+                                      **_seven_port_proof(snapshot)) else 125)
+    except BaseException:
+        return 125
+    # The fork wrapper exits immediately; numeric FDs may have been reused.
+
+
+def _seven_receipt_payload(result: dict, run_id: str) -> dict:
+    status = ("fake_seven_process_pending_receipt"
+              if result["status"] == "fake_seven_process_pending_receipt"
+              else "fake_seven_process_unproven")
+    v5 = result["schema"] == "fake_seven_process_result_v5"
+    v4 = result["schema"] in ("fake_seven_process_result_v4",
+                              "fake_seven_process_result_v5")
+    v3 = result["schema"] in ("fake_seven_process_result_v3",
+                              "fake_seven_process_result_v4",
+                              "fake_seven_process_result_v5")
+    v2 = result["schema"] in ("fake_seven_process_result_v2",
+                              "fake_seven_process_result_v3",
+                              "fake_seven_process_result_v4",
+                              "fake_seven_process_result_v5")
+    return {
+        "schema": ("fake_seven_process_receipt_v5" if v5 else
+                   "fake_seven_process_receipt_v4" if v4 else
+                   "fake_seven_process_receipt_v3" if v3 else
+                   "fake_seven_process_receipt_v2" if v2
+                   else "fake_seven_process_receipt_v1"), "run_id": run_id,
+        "snapshot_phase": (
+            "after_d_w_h_o_cleanup_attempt_before_r_final_reap"
+            if v5 else "after_dw_cleanup_before_r_final_reap"),
+        "status": status, "failure_code": result["failure_code"],
+        "zero_ack_received": result["zero_ack_received"],
+        "receipt_preflight_accepted": result["receipt_preflight_accepted"],
+        **{key: result[key] for key in (
+            "reserved", "granted", "worker_issued", "on_wire_yes",
+            "completion_attempt_spent", "http_calls", "identity_checks",
+            "d_reaped", "w_reaped", "d_stop", "w_stop")},
+        "journal_sha256": result.get("journal_sha256"),
+        "summary_sha256": result.get("summary_sha256"),
+        "physical_stop_unproven": True, "full_gate_pass": False,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+        **({key: result[key] for key in (
+            "port_gate_proven", "port_pre_sha256", "port_post_sha256",
+            "daemon_port_vacant_after", "runner_port_vacant_after",
+            "shared_11434_unchanged", "o_reaped", "o_stop",
+            "s_o_normal_exit")} if v2 else {}),
+        **({key: result[key] for key in _SEVEN_TRANSPORT_FIELDS}
+           if v3 else {}),
+        **({key: result[key] for key in _SEVEN_PREHASH_FIELDS}
+           if v4 else {}),
+        **({key: result[key] for key in _SEVEN_V5_FIELDS}
+           if v5 else {}),
+    }
+
+
+def _seven_pipe_layout(*, port_enabled: bool = False):
+    """Reserve every fake IPC edge before any D/W/R/S child is work-GOed."""
+    core: dict[str, tuple[int, int]] = {}
+    receipt: dict[str, tuple[int, int]] = {}
+    signals: dict[str, tuple[int, int]] = {}
+    ports: dict[str, tuple[int, int]] = {}
+    try:
+        for name in _SEVEN_BASE_EDGES:
+            core[name] = os.pipe()
+        for ordinal in range(1, 8):
+            for edge in _SEVEN_ORDINAL_EDGES:
+                core[_seven_edge(edge, ordinal)] = os.pipe()
+        for name in _SEVEN_RECEIPT_EDGES:
+            receipt[name] = os.pipe()
+        for role in (("D", "W", "R", "O") if port_enabled
+                     else ("D", "W", "R")):
+            prefix = f"s_{role.lower()}"
+            for edge in ("initial", "term", "term_result", "kill",
+                         "kill_result"):
+                signals[f"{prefix}_{edge}"] = os.pipe()
+        if port_enabled:
+            for name in _SEVEN_PORT_EDGES:
+                ports[name] = os.pipe()
+        all_fds = [fd for mapping in (core, receipt, signals, ports)
+                   for pair in mapping.values() for fd in pair]
+        soft_limit, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+        if (len(all_fds) != (246 if port_enabled else 226)
+                or len(set(all_fds)) != len(all_fds)
+                or max(all_fds) >= soft_limit):
+            _fail("fake_seven_fd_reservation_unavailable")
+        return ((core, receipt, signals, ports) if port_enabled
+                else (core, receipt, signals))
+    except BaseException:
+        for mapping in (core, receipt, signals, ports):
+            for pair in mapping.values():
+                _fake_close(*pair)
+        _fail("fake_seven_fd_reservation_unavailable")
+
+
+def _supervise_fake_seven_once(*, run_dir, binding_template: dict,
+                               observe_identity, fake_http,
+                               port_observe=None,
+                               fake_opener_factory=None,
+                               fake_prehash: bool = False,
+                               fake_hash_hook=None,
+                               fake_listener: bool = False,
+                               fake_listener_hook=None,
+                               work_seconds: float = 2.0,
+                               preparation_seconds: float = 0.5,
+                               cleanup_seconds: float = 0.5,
+                               term_grace_seconds: float = 0.05,
+                               fault: str | None = None,
+                               cleanup_observe=None,
+                               signal_initial_witness=None,
+                               receipt_initial_witness=None) -> dict:
+    """Synthetic P+D/W/R seven-operation proof; never a live provider path.
+
+    All seven W responses are injected locally. P handles bounded canonical
+    frames and waitpid only; D exclusively owns the journal, R the receipt.
+    The public ``supervise_once`` remains fail-closed.
+    """
+    v3 = fake_opener_factory is not None
+    v4 = fake_prehash is True
+    v5 = fake_listener is True
+    if (type(fake_prehash) is not bool
+            or type(fake_listener) is not bool
+            or (v5 and (not v4 or not v3 or fake_http is not None
+                        or not callable(port_observe)))
+            or (fake_listener_hook is not None
+                and (not v5 or not callable(fake_listener_hook)))
+            or (v4 and (not v3 or not callable(port_observe)))
+            or (fake_hash_hook is not None
+                and (not v4 or not callable(fake_hash_hook)))
+            or type(binding_template) is not dict
+            or not callable(observe_identity)
+            or (v3 and (fake_http is not None
+                        or not callable(fake_opener_factory)
+                        or not callable(port_observe)))
+            or (not v3 and not callable(fake_http))
+            or (port_observe is not None and not callable(port_observe))
+            or (cleanup_observe is not None and not callable(cleanup_observe))
+            or (signal_initial_witness is not None
+                and not callable(signal_initial_witness))
+            or (receipt_initial_witness is not None
+                and not callable(receipt_initial_witness))
+            or any(type(value) not in (int, float) or not math.isfinite(value)
+                   or not 0.05 <= value <= 5.0 for value in (
+                       work_seconds, preparation_seconds, cleanup_seconds,
+                       term_grace_seconds))
+            or (fault is not None and re.fullmatch(
+                r"(?:d_after_(?:reserve|issue|wire)|w_after_issue)_[1-7]",
+                fault) is None)):
+        _fail("fake_seven_configuration_invalid")
+    if v5:
+        try:
+            _seven_v5_psutil()
+        except BaseException:
+            _fail("fake_seven_configuration_invalid")
+    bound, _ = _validate_binding(binding_template)
+    v2 = port_observe is not None
+    prehash_pinned = _seven_prehash_prepare(run_dir) if v4 else None
+    run_id = bound["run_id"]
+    result = {
+        "schema": ("fake_seven_process_result_v5" if v5 else
+                   "fake_seven_process_result_v4" if v4 else
+                   "fake_seven_process_result_v3" if v3 else
+                   "fake_seven_process_result_v2" if v2
+                   else "fake_seven_process_result_v1"),
+        "status": "fake_seven_process_unproven",
+        "failure_code": "initial_unavailable",
+        "zero_ack_received": False,
+        "receipt_preflight_accepted": False,
+        "receipt_durable_proven": False,
+        "reserved": "unknown", "granted": "unknown",
+        "worker_issued": "unknown", "on_wire_yes": "unknown",
+        "completion_attempt_spent": "unknown",
+        "http_calls": "unknown", "identity_checks": "unknown",
+        "fd_endpoints_reserved": 0,
+        "d_reaped": False, "w_reaped": False, "r_reaped": False,
+        "s_d_reaped": False, "s_w_reaped": False, "s_r_reaped": False,
+        "s_d_normal_exit": False, "s_w_normal_exit": False,
+        "s_r_normal_exit": False,
+        "d_term": "not_attempted", "d_kill": "not_attempted",
+        "w_term": "not_attempted", "w_kill": "not_attempted",
+        "r_term": "not_attempted", "r_kill": "not_attempted",
+        "d_stop": "unproven", "w_stop": "unproven", "r_stop": "unproven",
+        "physical_stop_unproven": True, "full_gate_pass": False,
+        "b_upper_bound_proven": False, "b_send_authorized": False,
+    }
+    if v2:
+        result.update({
+            "port_gate_proven": False,
+            "port_pre_sha256": None, "port_post_sha256": None,
+            "daemon_port_vacant_after": "unknown",
+            "runner_port_vacant_after": "unknown",
+            "shared_11434_unchanged": "unknown",
+            "o_reaped": False, "o_stop": "unproven",
+            "o_term": "not_attempted", "o_kill": "not_attempted",
+            "s_o_reaped": False, "s_o_normal_exit": False,
+        })
+    if v3:
+        result.update({"transport_gate_proven": False,
+                       "transport_proof_sha256": None,
+                       "transport_policy_calls": 0})
+    if v4:
+        result.update({"prehash_gate_proven": False,
+                       "prehash_sha256": None,
+                       "prehash_logical_bytes": None,
+                       "pre_stage_failure_code": "none"})
+    if v5:
+        result.update({
+            "synthetic_listener_gate_proven": False,
+            "listener_observation_sha256": None,
+            "continuous_listener_proven": False,
+            "daemon_stage_failure_code": "not_started",
+            "h_reaped": False, "h_stop": "unproven",
+            "h_term": "not_attempted", "h_kill": "not_attempted",
+            "s_h_reaped": False, "s_h_normal_exit": False,
+        })
+    started = time.monotonic()
+    prep_deadline = started + preparation_seconds
+    work_deadline = prep_deadline + work_seconds
+    cleanup_deadline = work_deadline + cleanup_seconds
+    hard_deadline = cleanup_deadline + 0.10
+    # V2 may consume its entire bounded O/S_O cleanup window when the fresh
+    # OS witness stalls. R must retain a separate later window to persist the
+    # failure receipt rather than expiring behind that unrelated helper.
+    receipt_deadline = hard_deadline + (1.20 if v5 else
+                                        0.85 if v2 else 0.45)
+    receipt_cleanup_deadline = receipt_deadline + 0.15
+    receipt_hard_deadline = receipt_cleanup_deadline + 0.10
+    port_final_deadline = hard_deadline + (0.45 if v5 else 0.12)
+    port_cleanup_deadline = hard_deadline + (0.70 if v5 else 0.27)
+    port_hard_deadline = hard_deadline + (0.72 if v5 else 0.37)
+    h_stop_deadline = hard_deadline + 0.08
+    h_cleanup_deadline = hard_deadline + 0.25
+    h_hard_deadline = hard_deadline + 0.30
+    core: dict[str, tuple[int, int]] = {}
+    receipt_pipes: dict[str, tuple[int, int]] = {}
+    signal_pipes: dict[str, tuple[int, int]] = {}
+    port_pipes: dict[str, tuple[int, int]] = {}
+    listener_pipes: dict[str, tuple[int, int]] = {}
+    core_parent_fds: set[int] = set()
+    receipt_parent_fds: set[int] = set()
+    signal_parent_fds: set[int] = set()
+    port_parent_fds: set[int] = set()
+    listener_parent_fds: set[int] = set()
+    core_layout_ready = False
+    receipt_layout_ready = False
+    signal_layout_ready = False
+    port_layout_ready = False
+    listener_layout_ready = False
+    child_pids: dict[str, int | None] = {
+        "D": None, "W": None, "R": None, "O": None, "H": None}
+    child_witnesses: dict[str, dict] = {}
+    signal_pids: dict[str, int] = {}
+    signal_witnesses: dict[str, dict] = {}
+    statuses: dict[int, int] = {}
+    pre_shared_sha: str | None = None
+    runner_port_candidate: int | None = None
+    runner_port_verified = False
+    transport_rows: list[dict] = []
+    v4_command_started = False
+    v4_pre_stage_complete = False
+    v5_stage_started = False
+    v5_phase2_pending = False
+    v5_admission_complete = False
+    h_go_attempted = False
+
+    def require(value, code: str) -> None:
+        if not value:
+            _fail(code)
+
+    def parent_receive(mapping, owned: set[int], name: str,
+                       phase: str, seq: int, witness: dict | None,
+                       deadline: float, *, pid: int | None = None,
+                       expected: dict | None = None,
+                       v5_frame: bool = False):
+        fd = mapping[name][0]
+        try:
+            return _seven_receive(fd, deadline, run_id=run_id,
+                                  phase=phase, seq=seq, witness=witness,
+                                  pid=pid, expected=expected, v5=v5_frame)
+        finally:
+            _fake_close(fd)
+            owned.discard(fd)
+
+    def parent_send(mapping, owned: set[int], name: str, phase: str,
+                    seq: int, witness: dict, deadline: float,
+                    *, v5_frame: bool = False, **extra) -> bool:
+        fd = mapping[name][1]
+        try:
+            frame = _seven_frame(run_id, phase, seq, witness, **extra)
+            return _seven_send(fd, frame, deadline, run_id=run_id,
+                               phase=phase, seq=seq, witness=witness,
+                               v5=v5_frame)
+        finally:
+            _fake_close(fd)
+            owned.discard(fd)
+
+    try:
+        if v2:
+            core, receipt_pipes, signal_pipes, port_pipes = _seven_pipe_layout(
+                port_enabled=True)
+        else:
+            core, receipt_pipes, signal_pipes = _seven_pipe_layout()
+        result["fd_endpoints_reserved"] = 246 if v2 else 226
+        if v5:
+            try:
+                _seven_v5_fd_measure()
+            except LiveOperatorError:
+                _fail("fake_seven_fd_reservation_unavailable")
+        d_pid = os.fork()
+        if d_pid == 0:
+            try:
+                _split_close_except(receipt_pipes, set())
+                _split_close_except(signal_pipes, set())
+                _split_close_except(port_pipes, set())
+                child_code = _seven_d_child(
+                    core, run_dir=Path(run_dir), run_id=run_id,
+                    hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        child_pids["D"] = d_pid
+        w_pid = os.fork()
+        if w_pid == 0:
+            try:
+                _split_close_except(receipt_pipes, set())
+                _split_close_except(signal_pipes, set())
+                _split_close_except(port_pipes, set())
+                child_code = _seven_w_child(
+                    core, binding_template=bound,
+                    observe_identity=observe_identity, fake_http=fake_http,
+                    fake_opener_factory=fake_opener_factory,
+                    run_id=run_id, hard_deadline=hard_deadline,
+                    work_deadline=work_deadline, fault=fault)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        child_pids["W"] = w_pid
+        core_reads = {"d_initial", "w_initial", "d_zero", "d_final",
+                      "w_summary"} | {
+            _seven_edge(edge, n) for n in range(1, 8)
+            for edge in ("w_request", "d_grant", "w_issue",
+                         "d_issue_proof", "w_result", "d_wire_proof")}
+        core_parent_fds = {core[name][0] for name in core_reads} | {
+            core[name][1] for name in core if name not in core_reads}
+        _split_close_except(core, core_parent_fds)
+        core_layout_ready = True
+
+        d_initial = parent_receive(core, core_parent_fds, "d_initial",
+                                   "initial", 0, None, prep_deadline,
+                                   pid=d_pid, expected={"role": "D"})
+        w_initial = parent_receive(core, core_parent_fds, "w_initial",
+                                   "initial", 0, None, prep_deadline,
+                                   pid=w_pid, expected={"role": "W"})
+        require(d_initial is not None and w_initial is not None,
+                "initial_unavailable")
+        d_witness = d_initial["witness"]
+        w_witness = w_initial["witness"]
+        child_witnesses.update({"D": d_witness, "W": w_witness})
+
+        # R and all three exact-PID signal helpers are initially witnessed
+        # before either D or W receives work GO.
+        r_pid = os.fork()
+        if r_pid == 0:
+            try:
+                child_code = _seven_r_child(
+                    receipt_pipes, inherited_core_fds=core_parent_fds,
+                    inherited_signal_pipes=signal_pipes,
+                    inherited_port_pipes=port_pipes,
+                    run_dir=Path(run_dir), run_id=run_id,
+                    hard_deadline=receipt_hard_deadline,
+                    prep_deadline=prep_deadline,
+                    preflight_deadline=work_deadline,
+                    receipt_deadline=receipt_deadline,
+                    initial_reader=receipt_initial_witness)
+            except BaseException:
+                child_code = 125
+            os._exit(child_code)
+        child_pids["R"] = r_pid
+        receipt_reads = {"r_initial", "r_preflight_ack", "r_proof"}
+        receipt_parent_fds = {receipt_pipes[name][0] for name in receipt_reads} | {
+            receipt_pipes[name][1] for name in receipt_pipes
+            if name not in receipt_reads}
+        _split_close_except(receipt_pipes, receipt_parent_fds)
+        receipt_layout_ready = True
+        r_initial = parent_receive(receipt_pipes, receipt_parent_fds,
+                                   "r_initial", "initial", 0, None,
+                                   prep_deadline, pid=r_pid,
+                                   expected={"role": "R"})
+        require(r_initial is not None, "receipt_helper_initial_unavailable")
+        r_witness = r_initial["witness"]
+        child_witnesses["R"] = r_witness
+        for role, target in (("D", d_witness), ("W", w_witness),
+                             ("R", r_witness)):
+            pid = os.fork()
+            if pid == 0:
+                try:
+                    _split_close_except(port_pipes, set())
+                    child_code = _split_signal_child(
+                        signal_pipes,
+                        inherited_split_fds=core_parent_fds
+                        | receipt_parent_fds,
+                        run_id=run_id, target_role=role,
+                        target_witness=target,
+                        initial_reader=signal_initial_witness
+                        or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=prep_deadline,
+                        cleanup_deadline=(receipt_cleanup_deadline
+                                          if role == "R" else cleanup_deadline),
+                        hard_deadline=(receipt_hard_deadline
+                                       if role == "R" else hard_deadline))
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids[role] = pid
+        signal_parent_fds = {
+            signal_pipes[f"s_{role.lower()}_{edge}"][0]
+            for role in ("D", "W", "R")
+            for edge in ("initial", "term_result", "kill_result")
+        } | {
+            signal_pipes[f"s_{role.lower()}_{edge}"][1]
+            for role in ("D", "W", "R")
+            for edge in ("term", "kill")
+        }
+        if v2:
+            # S_O has not forked yet. Keep both ends until O is initially
+            # witnessed, then transfer only its parent-owned ends to P.
+            signal_parent_fds.update(
+                fd for name, pair in signal_pipes.items()
+                if name.startswith("s_o_") for fd in pair)
+        _split_close_except(signal_pipes, signal_parent_fds)
+        signal_layout_ready = True
+        for role in ("D", "W", "R"):
+            fd = signal_pipes[f"s_{role.lower()}_initial"][0]
+            try:
+                initial = _split_receive(
+                    fd, prep_deadline, phase="initial", run_id=run_id,
+                    seq=0, pid=signal_pids[role], role=f"S_{role}")
+            finally:
+                _fake_close(fd)
+                signal_parent_fds.discard(fd)
+            require(initial is not None, "signal_helper_initial_unavailable")
+            signal_witnesses[role] = initial["witness"]
+
+        require(parent_send(core, core_parent_fds, "d_go", "d_go", 0,
+                            d_witness, work_deadline,
+                            worker_witness=w_witness), "zero_ack_unavailable")
+        zero_sha = _sha(_canonical(_split_zero_state(run_id), "ipc_invalid"))
+        zero = parent_receive(core, core_parent_fds, "d_zero", "zero", 0,
+                              d_witness, work_deadline,
+                              expected={"journal_sha256": zero_sha})
+        require(zero is not None, "zero_ack_unavailable")
+        result.update({"zero_ack_received": True, "reserved": 0,
+                       "granted": 0, "worker_issued": 0,
+                       "on_wire_yes": 0, "completion_attempt_spent": 0,
+                       "journal_sha256": zero_sha})
+        require(parent_send(receipt_pipes, receipt_parent_fds,
+                            "r_preflight", "r_preflight", 1,
+                            r_witness, work_deadline),
+                "receipt_preflight_unavailable")
+        preflight = parent_receive(receipt_pipes, receipt_parent_fds,
+                                   "r_preflight_ack", "r_preflight_ack",
+                                   1, r_witness, work_deadline)
+        require(preflight is not None, "receipt_preflight_unavailable")
+        result["receipt_preflight_accepted"] = True
+        if v5:
+            v5_stage_started = True
+            v5_phase2_pending = True
+            listener_pipes = _seven_v5_pipe_layout()
+            v5_phase2_pending = False
+            listener_parent_fds = {
+                fd for pair in listener_pipes.values() for fd in pair}
+            listener_layout_ready = True
+            result["fd_endpoints_reserved"] = 270
+        if v2:
+            o_pid = os.fork()
+            if o_pid == 0:
+                try:
+                    child_code = _seven_o_child(
+                        port_pipes, inherited_core_fds=core_parent_fds,
+                        inherited_receipt_fds=receipt_parent_fds,
+                        inherited_signal_pipes=signal_pipes,
+                        run_id=run_id, observer=port_observe,
+                        prep_deadline=work_deadline,
+                        work_deadline=work_deadline,
+                        final_deadline=port_final_deadline,
+                        hard_deadline=port_hard_deadline,
+                        prehash_pinned=prehash_pinned,
+                        hash_hook=fake_hash_hook,
+                        listener_pipes=listener_pipes if v5 else None)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            child_pids["O"] = o_pid
+            if v5:
+                for name, parent_end in (
+                        ("o_ready_cmd", listener_pipes["o_ready_cmd"][1]),
+                        ("o_ready_proof", listener_pipes["o_ready_proof"][0])):
+                    for fd in listener_pipes[name]:
+                        if fd != parent_end:
+                            _fake_close(fd)
+                            listener_parent_fds.discard(fd)
+            port_reads = {"o_initial", "o_pre_proof", "o_final_proof"}
+            port_parent_fds = {
+                port_pipes[name][0] for name in port_reads
+            } | {
+                port_pipes[name][1] for name in port_pipes
+                if name not in port_reads
+            }
+            _split_close_except(port_pipes, port_parent_fds)
+            port_layout_ready = True
+            o_initial = parent_receive(
+                port_pipes, port_parent_fds, "o_initial", "initial", 0,
+                None, work_deadline, pid=o_pid, expected={"role": "O"})
+            require(o_initial is not None, "port_helper_initial_unavailable")
+            o_witness = o_initial["witness"]
+            child_witnesses["O"] = o_witness
+            s_o_pid = os.fork()
+            if s_o_pid == 0:
+                try:
+                    if v5:
+                        _split_close_except(listener_pipes, set())
+                    child_code = _split_signal_child(
+                        signal_pipes,
+                        inherited_split_fds=(core_parent_fds
+                                             | receipt_parent_fds
+                                             | port_parent_fds),
+                        run_id=run_id, target_role="O",
+                        target_witness=o_witness,
+                        initial_reader=signal_initial_witness
+                        or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=work_deadline,
+                        cleanup_deadline=port_cleanup_deadline,
+                        hard_deadline=port_hard_deadline)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids["O"] = s_o_pid
+            s_o_parent_fds = {
+                signal_pipes[f"s_o_{edge}"][0]
+                for edge in ("initial", "term_result", "kill_result")
+            } | {
+                signal_pipes[f"s_o_{edge}"][1]
+                for edge in ("term", "kill")
+            }
+            signal_parent_fds.difference_update(
+                fd for name, pair in signal_pipes.items()
+                if name.startswith("s_o_") for fd in pair)
+            signal_parent_fds.update(s_o_parent_fds)
+            _split_close_except(signal_pipes, signal_parent_fds)
+            s_o_initial_fd = signal_pipes["s_o_initial"][0]
+            try:
+                s_o_initial = _split_receive(
+                    s_o_initial_fd, work_deadline, phase="initial",
+                    run_id=run_id, seq=0, pid=s_o_pid, role="S_O")
+            finally:
+                _fake_close(s_o_initial_fd)
+                signal_parent_fds.discard(s_o_initial_fd)
+            require(s_o_initial is not None,
+                    "signal_helper_initial_unavailable")
+            signal_witnesses["O"] = s_o_initial["witness"]
+            daemon_port = bound["daemon"]["port"]
+            pre_phase = "o_pre_hash_port" if v4 else "o_pre"
+            proof_phase = ("o_pre_hash_port_proof" if v4
+                           else "o_pre_proof")
+            if v4:
+                v4_command_started = True
+            require(parent_send(port_pipes, port_parent_fds, "o_pre",
+                                pre_phase, 1, o_witness, work_deadline,
+                                daemon_port=daemon_port),
+                    "pre_stage_unavailable" if v4 else "port_pre_unavailable")
+            pre_proof = parent_receive(
+                port_pipes, port_parent_fds, "o_pre_proof",
+                proof_phase, 1, o_witness, work_deadline,
+                expected=({"runner_port": None, "runner_vacant": None}
+                          if v4 else
+                          {"daemon_port": daemon_port,
+                           "runner_port": None, "runner_vacant": None}))
+            require(pre_proof is not None,
+                    "pre_stage_unavailable" if v4 else "port_pre_unavailable")
+            if v4:
+                require(pre_proof["prehash_sha256"]
+                        == prehash_pinned["expected_sha256"]
+                        and pre_proof["prehash_logical_bytes"]
+                            == prehash_pinned["expected_bytes"],
+                        "pre_stage_mismatch")
+                result.update({"prehash_gate_proven": True,
+                               "prehash_sha256": _SEVEN_PREHASH_SHA256,
+                               "prehash_logical_bytes":
+                                   _SEVEN_PREHASH_LOGICAL_BYTES})
+                require(pre_proof["daemon_port"] == daemon_port,
+                        "pre_stage_mismatch")
+            pre_shared_sha = pre_proof["shared_11434_sha256"]
+            result["port_pre_sha256"] = pre_proof["port_sha256"]
+            require(pre_proof["daemon_vacant"] is True,
+                    "port_pre_not_vacant")
+            if v4:
+                v4_pre_stage_complete = True
+        if v5:
+            # H is not even forked until P has validated the complete V4
+            # hash-and-vacancy composite. R's durable zero preflight already
+            # holds a failure-receipt path open.
+            h_pid = os.fork()
+            if h_pid == 0:
+                try:
+                    child_code = _seven_h_child(
+                        listener_pipes,
+                        inherited_fds=(core_parent_fds | receipt_parent_fds
+                                       | signal_parent_fds | port_parent_fds),
+                        run_id=run_id, work_deadline=work_deadline,
+                        stop_deadline=h_stop_deadline,
+                        hard_deadline=h_hard_deadline,
+                        hook=fake_listener_hook)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            child_pids["H"] = h_pid
+            for name, parent_end in (
+                    ("h_initial", listener_pipes["h_initial"][0]),
+                    ("h_go", listener_pipes["h_go"][1]),
+                    ("h_ready", listener_pipes["h_ready"][0]),
+                    ("h_stop", listener_pipes["h_stop"][1]),
+                    ("h_stopped", listener_pipes["h_stopped"][0])):
+                for fd in listener_pipes[name]:
+                    if fd != parent_end:
+                        _fake_close(fd)
+                        listener_parent_fds.discard(fd)
+            h_initial = parent_receive(
+                listener_pipes, listener_parent_fds, "h_initial",
+                "initial", 0, None, work_deadline, pid=h_pid,
+                expected={"role": "H"}, v5_frame=True)
+            require(h_initial is not None, "h_initial_unavailable")
+            h_witness = h_initial["witness"]
+            child_witnesses["H"] = h_witness
+            s_h_pid = os.fork()
+            if s_h_pid == 0:
+                try:
+                    _split_close_except(signal_pipes, set())
+                    child_code = _split_signal_child(
+                        listener_pipes,
+                        inherited_split_fds=(core_parent_fds
+                                             | receipt_parent_fds
+                                             | port_parent_fds),
+                        run_id=run_id, target_role="H",
+                        target_witness=h_witness,
+                        initial_reader=signal_initial_witness
+                        or _fake_os_witness,
+                        observer=cleanup_observe or _fake_os_witness,
+                        prep_deadline=work_deadline,
+                        cleanup_deadline=h_cleanup_deadline,
+                        hard_deadline=h_hard_deadline,
+                        allow_h=True)
+                except BaseException:
+                    child_code = 125
+                os._exit(child_code)
+            signal_pids["H"] = s_h_pid
+            for name, parent_end in (
+                    ("s_h_initial", listener_pipes["s_h_initial"][0]),
+                    ("s_h_term", listener_pipes["s_h_term"][1]),
+                    ("s_h_term_result", listener_pipes["s_h_term_result"][0]),
+                    ("s_h_kill", listener_pipes["s_h_kill"][1]),
+                    ("s_h_kill_result", listener_pipes["s_h_kill_result"][0])):
+                for fd in listener_pipes[name]:
+                    if fd != parent_end:
+                        _fake_close(fd)
+                        listener_parent_fds.discard(fd)
+            s_h_initial_fd = listener_pipes["s_h_initial"][0]
+            try:
+                s_h_initial = _split_receive(
+                    s_h_initial_fd, work_deadline, phase="initial",
+                    run_id=run_id, seq=0, pid=s_h_pid, role="S_H",
+                    allow_h=True)
+            finally:
+                _fake_close(s_h_initial_fd)
+                listener_parent_fds.discard(s_h_initial_fd)
+            require(s_h_initial is not None, "s_h_initial_unavailable")
+            signal_witnesses["H"] = s_h_initial["witness"]
+            nonce = secrets.token_hex(16)
+            nonce_sha = _sha(nonce.encode("utf-8"))
+            daemon_port = bound["daemon"]["port"]
+            h_go_attempted = True
+            require(parent_send(
+                listener_pipes, listener_parent_fds, "h_go", "h_go", 1,
+                h_witness, work_deadline, v5_frame=True,
+                daemon_port=daemon_port, nonce=nonce), "h_go_unavailable")
+            h_ready = parent_receive(
+                listener_pipes, listener_parent_fds, "h_ready",
+                "h_ready", 1, h_witness, work_deadline, v5_frame=True)
+            require(h_ready is not None, "h_ready_unavailable")
+            require(h_ready["daemon_port"] == daemon_port
+                    and h_ready["nonce_sha256"] == nonce_sha,
+                    "h_ready_mismatch")
+            require(parent_send(
+                listener_pipes, listener_parent_fds,
+                "o_ready_cmd", "o_ready_cmd", 2, o_witness,
+                work_deadline, v5_frame=True,
+                daemon_port=daemon_port, h_witness=h_witness,
+                nonce_sha256=nonce_sha), "o_ready_unavailable")
+            o_ready = parent_receive(
+                listener_pipes, listener_parent_fds,
+                "o_ready_proof", "o_ready_proof", 2, o_witness,
+                work_deadline, v5_frame=True)
+            require(o_ready is not None, "o_ready_unavailable")
+            expected_observation_sha = _sha(_canonical(
+                _seven_v5_observation(h_witness, daemon_port),
+                "o_ready_unavailable"))
+            require(o_ready["daemon_port"] == daemon_port
+                    and o_ready["h_witness_sha256"] == _sha(_canonical(
+                        h_witness, "o_ready_unavailable"))
+                    and o_ready["nonce_sha256"] == nonce_sha
+                    and o_ready["listener_observation_sha256"]
+                        == expected_observation_sha,
+                    "o_ready_mismatch")
+            require(_seven_v5_child_live(h_pid, statuses),
+                    "h_ready_unavailable")
+            require(_seven_v5_child_live(r_pid, statuses),
+                    "o_ready_unavailable")
+            result["synthetic_listener_gate_proven"] = True
+            result["listener_observation_sha256"] = expected_observation_sha
+            v5_admission_complete = True
+        require(parent_send(core, core_parent_fds, "w_go", "w_go", 0,
+                            w_witness, work_deadline),
+                "worker_go_unavailable")
+
+        for ordinal in range(1, 8):
+            request = parent_receive(core, core_parent_fds,
+                                     _seven_edge("w_request", ordinal),
+                                     "request", ordinal, w_witness,
+                                     work_deadline)
+            require(request is not None, "worker_request_unavailable")
+            fields = request["fields"]
+            require(fields["ordinal"] == ordinal
+                    and fields["run_id"] == run_id
+                    and _split_same(fields["worker"],
+                                    _split_worker_from_witness(w_witness)),
+                    "worker_request_invalid")
+            if v2 and ordinal in (5, 6):
+                if ordinal == 5:
+                    runner_port_candidate = fields["port"]
+                    require(_port(runner_port_candidate)
+                            and runner_port_candidate
+                                != bound["daemon"]["port"],
+                            "runner_port_unavailable")
+                else:
+                    require(fields["port"] == runner_port_candidate,
+                            "runner_port_unavailable")
+                    runner_port_verified = True
+            if v5:
+                require(_seven_v5_child_live(
+                    child_pids["H"], statuses), "h_lost_after_ready")
+            # D itself also rejects moving on while the previous operation's
+            # on_wire state is unknown. P cannot mint a grant independently.
+            result["reserved"] = result["granted"] = "unknown"
+            if ordinal == 7:
+                result["completion_attempt_spent"] = "unknown"
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("d_reserve", ordinal),
+                                "reserve", ordinal, d_witness,
+                                work_deadline, fields=fields),
+                    "grant_proof_unavailable")
+            proof = parent_receive(core, core_parent_fds,
+                                   _seven_edge("d_grant", ordinal),
+                                   "grant_proof", ordinal, d_witness,
+                                   work_deadline,
+                                   expected={
+                                       "reserved": ordinal,
+                                       "completion_attempt_spent":
+                                       int(ordinal == 7)})
+            require(proof is not None and _split_grant_valid(
+                        proof["grant"], fields),
+                    "grant_proof_unavailable")
+            grant = proof["grant"]
+            grant_sha = _sha(_canonical(grant, "grant_invalid"))
+            result.update({"reserved": ordinal, "granted": ordinal,
+                           "completion_attempt_spent": int(ordinal == 7),
+                           "journal_sha256": proof["journal_sha256"]})
+            if v5:
+                require(_seven_v5_child_live(
+                    child_pids["H"], statuses), "h_lost_after_ready")
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("w_grant", ordinal),
+                                "grant_delivery", ordinal, w_witness,
+                                work_deadline, grant=grant,
+                                journal_sha256=proof["journal_sha256"]),
+                    "grant_delivery_unavailable")
+            issue = parent_receive(core, core_parent_fds,
+                                   _seven_edge("w_issue", ordinal),
+                                   "issue_entry", ordinal, w_witness,
+                                   work_deadline,
+                                   expected={"grant_sha256": grant_sha})
+            require(issue is not None, "issue_entry_unavailable")
+            result["worker_issued"] = "unknown"
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("d_issue", ordinal),
+                                "mark_issue", ordinal, d_witness,
+                                work_deadline, nonce=grant["nonce"]),
+                    "issue_proof_unavailable")
+            issue_proof = parent_receive(core, core_parent_fds,
+                                         _seven_edge("d_issue_proof", ordinal),
+                                         "issue_proof", ordinal, d_witness,
+                                         work_deadline,
+                                         expected={"worker_issued": ordinal})
+            require(issue_proof is not None, "issue_proof_unavailable")
+            result.update({"worker_issued": ordinal,
+                           "journal_sha256": issue_proof["journal_sha256"]})
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("w_issue_ack", ordinal),
+                                "issue_ack", ordinal, w_witness,
+                                work_deadline,
+                                journal_sha256=issue_proof["journal_sha256"]),
+                    "issue_ack_unavailable")
+            fake_result = parent_receive(
+                core, core_parent_fds, _seven_edge("w_result", ordinal),
+                "result_entry", ordinal, w_witness, work_deadline,
+                expected={"grant_sha256": grant_sha})
+            require(fake_result is not None, "fake_result_unavailable")
+            if v3:
+                transport_rows.append(_seven_transport_row(
+                    ordinal, _sha(_canonical(fields, "grant_invalid")),
+                    grant_sha, fake_result["response_sha256"],
+                    fake_result["response_bytes"]))
+                result["transport_policy_calls"] = len(transport_rows)
+            result["on_wire_yes"] = "unknown"
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("d_wire", ordinal),
+                                "mark_wire", ordinal, d_witness,
+                                work_deadline, nonce=grant["nonce"]),
+                    "wire_proof_unavailable")
+            wire_proof = parent_receive(core, core_parent_fds,
+                                        _seven_edge("d_wire_proof", ordinal),
+                                        "wire_proof", ordinal, d_witness,
+                                        work_deadline,
+                                        expected={"on_wire_yes": ordinal})
+            require(wire_proof is not None, "wire_proof_unavailable")
+            result.update({"on_wire_yes": ordinal,
+                           "journal_sha256": wire_proof["journal_sha256"]})
+            require(parent_send(core, core_parent_fds,
+                                _seven_edge("w_result_ack", ordinal),
+                                "result_ack", ordinal, w_witness,
+                                work_deadline,
+                                journal_sha256=wire_proof["journal_sha256"]),
+                    "result_ack_unavailable")
+
+        require(parent_send(core, core_parent_fds, "d_finish", "d_finish",
+                            8, d_witness, work_deadline),
+                "d_final_unavailable")
+        require(parent_send(core, core_parent_fds, "w_finish", "w_finish",
+                            8, w_witness, work_deadline),
+                "w_summary_unavailable")
+        final = parent_receive(core, core_parent_fds, "d_final", "d_final",
+                               8, d_witness, work_deadline,
+                               expected={
+                                   "journal_sha256": result["journal_sha256"],
+                                   "reserved": 7, "worker_issued": 7,
+                                   "on_wire_yes": 7,
+                                   "completion_attempt_spent": 1})
+        require(final is not None, "d_final_unavailable")
+        summary_frame = parent_receive(core, core_parent_fds, "w_summary",
+                                       "w_summary", 8, w_witness,
+                                       work_deadline)
+        require(summary_frame is not None, "w_summary_unavailable")
+        summary = summary_frame["summary"]
+        require(summary["schema"] == ("fake_non_b_worker_v3" if v3
+                                      else "fake_non_b_worker_v1"),
+                "w_summary_unavailable")
+        require(_fake_wait_reap(d_pid, work_deadline, statuses)
+                and _fake_wait_reap(w_pid, work_deadline, statuses)
+                and all(os.WIFEXITED(statuses[pid])
+                        and os.WEXITSTATUS(statuses[pid]) == 0
+                        for pid in (d_pid, w_pid)), "normal_exit_unavailable")
+        if v3:
+            require(len(transport_rows) == 7
+                    and summary["transport_policy_calls"] == 7
+                    and summary["transport_proof_sha256"] == _sha(_canonical(
+                        transport_rows, "fake_seven_transport_invalid")),
+                    "transport_gate_unproven")
+            result["transport_gate_proven"] = True
+            result["transport_proof_sha256"] = summary[
+                "transport_proof_sha256"]
+        result.update({"d_reaped": True, "w_reaped": True,
+                       "d_stop": "normal_exit", "w_stop": "normal_exit",
+                       "http_calls": summary["http_calls"],
+                       "identity_checks": summary["identity_checks"],
+                       "worker_status": summary["status"],
+                       "signed_delta": summary["signed_delta"],
+                       "summary_sha256": _sha(_canonical(
+                           summary, "fake_seven_summary_invalid")),
+                       "status": "fake_seven_process_pending_receipt",
+                       "failure_code": "none"})
+    except LiveOperatorError as exc:
+        # An injected helper may raise this same exception type with raw
+        # contents. Never let its message become a public result/receipt.
+        code = str(exc)
+        allowed_codes = (_SEVEN_FAILURE_CODES | _SEVEN_V4_FAILURE_CODES
+                         | (_SEVEN_V5_STAGE_CODES if v5 else frozenset())
+                         if v4 else _SEVEN_FAILURE_CODES)
+        result["failure_code"] = (code if code in allowed_codes
+                                  else "ipc_or_spawn_unavailable")
+        if (v5 and v5_stage_started
+                and code in _SEVEN_V5_STAGE_CODES
+                and code not in ("none", "not_started")
+                and result["daemon_stage_failure_code"] == "not_started"):
+            result["daemon_stage_failure_code"] = code
+        if v4 and result["receipt_preflight_accepted"]:
+            if (code in _SEVEN_PRE_STAGE_CODES and code != "none"
+                    and result["pre_stage_failure_code"] == "none"):
+                result["pre_stage_failure_code"] = code
+            elif (v4_command_started and not v4_pre_stage_complete
+                  and result["pre_stage_failure_code"] == "none"):
+                result["pre_stage_failure_code"] = "pre_stage_unavailable"
+    except Exception:
+        result["failure_code"] = "ipc_or_spawn_unavailable"
+        if (v5 and v5_phase2_pending
+                and result["daemon_stage_failure_code"] == "not_started"):
+            result["daemon_stage_failure_code"] = "phase2_fd_unavailable"
+        if (v4 and result["receipt_preflight_accepted"]
+                and v4_command_started and not v4_pre_stage_complete
+                and result["pre_stage_failure_code"] == "none"):
+            result["pre_stage_failure_code"] = "pre_stage_unavailable"
+    finally:
+        # V5 may abort after phase-2 reservation but before W_GO. Keep the
+        # remaining D/W command writers until their witnessed cleanup has a
+        # chance to signal them; closing first makes both exit 125 on EOF and
+        # destroys otherwise available stop evidence. V1–V4 keep their
+        # frozen ordering.
+        if not v5:
+            _fake_close(*core_parent_fds)
+        if not core_layout_ready:
+            # Before parent ownership is established all allocated ends are
+            # still owned here; afterward only core_parent_fds is authoritative.
+            for pair in core.values():
+                _fake_close(*pair)
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses, roles=("D", "W"),
+                child_pids={key: child_pids[key] for key in ("D", "W")},
+                child_witnesses=child_witnesses,
+                signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses,
+                signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds,
+                run_id=run_id, work_deadline=work_deadline,
+                cleanup_deadline=cleanup_deadline,
+                hard_deadline=hard_deadline,
+                term_grace_seconds=term_grace_seconds)
+        except Exception:
+            result["status"] = "fake_seven_process_unproven"
+            result["failure_code"] = "cleanup_unavailable"
+            result["d_stop"] = result["w_stop"] = "unproven"
+        finally:
+            if v5:
+                _fake_close(*core_parent_fds)
+                core_parent_fds.clear()
+        if (result["status"] == "fake_seven_process_pending_receipt"
+                and not all(result[key] for key in (
+                    "d_reaped", "w_reaped", "s_d_normal_exit",
+                    "s_w_normal_exit"))):
+            result["status"] = "fake_seven_process_unproven"
+            result["failure_code"] = "cleanup_unavailable"
+        if result["status"] == "fake_seven_process_pending_receipt":
+            if result["d_stop"] != "normal_exit" or result["w_stop"] != "normal_exit":
+                result["status"] = "fake_seven_process_unproven"
+                result["failure_code"] = "cleanup_unavailable"
+        if v5:
+            # An aborted admission must release H's GO reader and O's ready
+            # reader, without holding another child's one-shot writer open.
+            for name, fd in (
+                    ("h_go", listener_pipes.get("h_go", (None, None))[1]),
+                    ("h_ready", listener_pipes.get("h_ready", (None, None))[0]),
+                    ("o_ready_cmd", listener_pipes.get(
+                        "o_ready_cmd", (None, None))[1]),
+                    ("o_ready_proof", listener_pipes.get(
+                        "o_ready_proof", (None, None))[0])):
+                if fd in listener_parent_fds:
+                    _fake_close(fd)
+                    listener_parent_fds.discard(fd)
+            h_stopped_proven = False
+            if (h_go_attempted and "H" in child_witnesses
+                    and "H" in signal_witnesses
+                    and child_pids["H"] is not None
+                    and child_pids["H"] not in statuses):
+                h_witness = child_witnesses["H"]
+                try:
+                    sent = parent_send(
+                        listener_pipes, listener_parent_fds,
+                        "h_stop", "h_stop", 2, h_witness,
+                        h_stop_deadline, v5_frame=True)
+                    stopped = (parent_receive(
+                        listener_pipes, listener_parent_fds,
+                        "h_stopped", "h_stopped", 2, h_witness,
+                        h_stop_deadline, v5_frame=True)
+                        if sent else None)
+                    h_stopped_proven = stopped is not None
+                    if h_stopped_proven:
+                        _fake_wait_reap(child_pids["H"], min(
+                            h_stop_deadline,
+                            time.monotonic() + 0.05), statuses)
+                except Exception:
+                    h_stopped_proven = False
+                if (not h_stopped_proven
+                        and result["daemon_stage_failure_code"]
+                            == "not_started"):
+                    result["daemon_stage_failure_code"] = "h_stop_unavailable"
+            try:
+                _split_cleanup_children(
+                    result=result, statuses=statuses, roles=("H",),
+                    child_pids={"H": child_pids["H"]},
+                    child_witnesses=child_witnesses,
+                    signal_pids=signal_pids,
+                    signal_witnesses=signal_witnesses,
+                    signal_pipes=listener_pipes,
+                    signal_parent_fds=listener_parent_fds,
+                    run_id=run_id, work_deadline=h_stop_deadline,
+                    cleanup_deadline=h_cleanup_deadline,
+                    hard_deadline=h_hard_deadline,
+                    term_grace_seconds=term_grace_seconds,
+                    allow_h=True, strict_reap_deadline=True)
+            except Exception:
+                result["h_stop"] = "unproven"
+            finally:
+                _fake_close(*listener_parent_fds)
+                listener_parent_fds.clear()
+                if not listener_layout_ready:
+                    for pair in listener_pipes.values():
+                        _fake_close(*pair)
+            if result["daemon_stage_failure_code"] == "not_started":
+                if (v5_admission_complete and h_stopped_proven
+                        and result["h_reaped"]
+                        and result["h_stop"] == "normal_exit"
+                        and result["s_h_reaped"]
+                        and result["s_h_normal_exit"]):
+                    result["daemon_stage_failure_code"] = "none"
+                elif v5_stage_started and v4_pre_stage_complete:
+                    result["daemon_stage_failure_code"] = (
+                        "h_cleanup_unproven" if h_go_attempted else
+                        "h_initial_unavailable")
+        if v2:
+            try:
+                if (pre_shared_sha is not None
+                        and runner_port_candidate is not None
+                        and runner_port_verified
+                        and "O" in child_witnesses
+                        and child_pids["O"] is not None
+                        and (not v5 or (
+                            result["h_reaped"] and result["s_h_reaped"]))):
+                    o_witness = child_witnesses["O"]
+                    daemon_port = bound["daemon"]["port"]
+                    sent = parent_send(
+                        port_pipes, port_parent_fds, "o_final", "o_final",
+                        3 if v5 else 2, o_witness, port_final_deadline,
+                        daemon_port=daemon_port,
+                        runner_port=runner_port_candidate)
+                    proof = (parent_receive(
+                        port_pipes, port_parent_fds, "o_final_proof",
+                        "o_final_proof", 3 if v5 else 2,
+                        o_witness, port_final_deadline,
+                        expected={"daemon_port": daemon_port,
+                                  "runner_port": runner_port_candidate})
+                             if sent else None)
+                    if proof is None:
+                        if result["status"] == "fake_seven_process_pending_receipt":
+                            result["failure_code"] = "port_final_unavailable"
+                    else:
+                        result["port_post_sha256"] = proof["port_sha256"]
+                        result["daemon_port_vacant_after"] = proof[
+                            "daemon_vacant"]
+                        result["runner_port_vacant_after"] = proof[
+                            "runner_vacant"]
+                        result["shared_11434_unchanged"] = (
+                            proof["shared_11434_sha256"] == pre_shared_sha)
+                        if result["status"] == "fake_seven_process_pending_receipt":
+                            if (proof["daemon_vacant"] is not True
+                                    or proof["runner_vacant"] is not True):
+                                result["failure_code"] = "port_final_occupied"
+                            elif not result["shared_11434_unchanged"]:
+                                result["failure_code"] = "shared_11434_changed"
+                elif result["status"] == "fake_seven_process_pending_receipt":
+                    result["failure_code"] = "runner_port_unavailable"
+            except Exception:
+                if result["status"] == "fake_seven_process_pending_receipt":
+                    result["failure_code"] = "port_final_unavailable"
+            finally:
+                _fake_close(*port_parent_fds)
+                if not port_layout_ready:
+                    for pair in port_pipes.values():
+                        _fake_close(*pair)
+            if (result["port_post_sha256"] is not None
+                    and child_pids["O"] is not None):
+                # A proof precedes O's normal exit by a few instructions.
+                # Give that exit a tiny bounded reap window before any
+                # witness-gated TERM; a successful fake run should not race
+                # its own observer shutdown.
+                _fake_wait_reap(child_pids["O"], min(
+                    port_final_deadline, time.monotonic() + 0.05), statuses)
+            try:
+                _split_cleanup_children(
+                    result=result, statuses=statuses, roles=("O",),
+                    child_pids={"O": child_pids["O"]},
+                    child_witnesses=child_witnesses,
+                    signal_pids=signal_pids,
+                    signal_witnesses=signal_witnesses,
+                    signal_pipes=signal_pipes,
+                    signal_parent_fds=signal_parent_fds,
+                    run_id=run_id, work_deadline=port_final_deadline,
+                    cleanup_deadline=port_cleanup_deadline,
+                    hard_deadline=port_hard_deadline,
+                    term_grace_seconds=term_grace_seconds,
+                    strict_reap_deadline=v5)
+            except Exception:
+                result["o_stop"] = "unproven"
+                if result["status"] == "fake_seven_process_pending_receipt":
+                    result["failure_code"] = "port_cleanup_unavailable"
+            result["port_gate_proven"] = bool(
+                _valid_sha(result["port_pre_sha256"])
+                and _valid_sha(result["port_post_sha256"])
+                and all(result[key] is True for key in (
+                    "daemon_port_vacant_after", "runner_port_vacant_after",
+                    "shared_11434_unchanged"))
+                and result["d_reaped"] and result["w_reaped"]
+                and result["d_stop"] != "unproven"
+                and result["w_stop"] != "unproven"
+                and result["o_reaped"] and result["o_stop"] == "normal_exit"
+                and result["s_o_normal_exit"])
+            if (result["status"] == "fake_seven_process_pending_receipt"
+                    and not result["port_gate_proven"]):
+                result["status"] = "fake_seven_process_unproven"
+                if result["failure_code"] == "none":
+                    result["failure_code"] = "port_cleanup_unavailable"
+        if v4 and result["receipt_preflight_accepted"]:
+            initial_refusal = (not v4_command_started
+                               and result["pre_stage_failure_code"] in (
+                                   "port_helper_initial_unavailable",
+                                   "signal_helper_initial_unavailable"))
+            cleanup_unproven = (v4_command_started and (
+                any(not result[f"{role}_reaped"]
+                    or result[f"{role}_stop"] == "unproven"
+                    for role in ("d", "w", "o"))
+                or not result["s_o_reaped"]
+                or not result["s_o_normal_exit"]))
+            if initial_refusal:
+                result["failure_code"] = result["pre_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif cleanup_unproven:
+                result["failure_code"] = "cleanup_review_required"
+                result["status"] = "fake_seven_process_unproven"
+            elif result["pre_stage_failure_code"] != "none":
+                result["failure_code"] = result["pre_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif (not result["prehash_gate_proven"]
+                  and not (v5 and result["daemon_stage_failure_code"]
+                           != "not_started")):
+                result["pre_stage_failure_code"] = "pre_stage_unavailable"
+                result["failure_code"] = "pre_stage_unavailable"
+                result["status"] = "fake_seven_process_unproven"
+        if v5 and result["receipt_preflight_accepted"]:
+            v5_cleanup_unproven = (
+                any(child_pids[role.upper()] is not None
+                    and (not result[f"{role}_reaped"]
+                         or result[f"{role}_stop"] == "unproven")
+                    for role in ("d", "w", "h", "o"))
+                or any(signal_pids.get(role.upper()) is not None
+                       and (not result[f"s_{role}_reaped"]
+                            or not result[f"s_{role}_normal_exit"])
+                       for role in ("d", "w", "h", "o")))
+            if v5_cleanup_unproven and v5_stage_started:
+                result["failure_code"] = "cleanup_review_required"
+                result["status"] = "fake_seven_process_unproven"
+            elif result["pre_stage_failure_code"] != "none":
+                result["failure_code"] = result["pre_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif result["daemon_stage_failure_code"] not in (
+                    "none", "not_started"):
+                result["failure_code"] = result["daemon_stage_failure_code"]
+                result["status"] = "fake_seven_process_unproven"
+            elif (result["status"] == "fake_seven_process_pending_receipt"
+                  and (result["daemon_stage_failure_code"] != "none"
+                       or not result["synthetic_listener_gate_proven"])):
+                result["status"] = "fake_seven_process_unproven"
+                result["failure_code"] = "h_cleanup_unproven"
+        try:
+            if (result["receipt_preflight_accepted"]
+                    and child_pids["R"] is not None
+                    and "R" in child_witnesses
+                    and "R" in signal_witnesses):
+                r_witness = child_witnesses["R"]
+                receipt = _seven_receipt_payload(result, run_id)
+                if not _seven_receipt_valid(receipt, run_id):
+                    _fail("fake_seven_receipt_invalid")
+                sent = parent_send(receipt_pipes, receipt_parent_fds,
+                                   "r_write", "r_write", 2, r_witness,
+                                   receipt_deadline, receipt=receipt)
+                if sent:
+                    proof = parent_receive(
+                        receipt_pipes, receipt_parent_fds, "r_proof",
+                        "r_proof", 2, r_witness, receipt_deadline,
+                        expected={
+                            "receipt_sha256": _sha(_canonical(
+                                receipt, "fake_seven_receipt_invalid")),
+                            "receipt_bytes": len(_canonical(
+                                receipt, "fake_seven_receipt_invalid"))})
+                    if (proof is not None and _fake_wait_reap(
+                            child_pids["R"], receipt_deadline, statuses)):
+                        status = statuses[child_pids["R"]]
+                        if os.WIFEXITED(status) and os.WEXITSTATUS(status) == 0:
+                            result["receipt_durable_proven"] = True
+                            result["receipt_sha256"] = proof["receipt_sha256"]
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result.pop("receipt_sha256", None)
+        finally:
+            _fake_close(*receipt_parent_fds)
+            if not receipt_layout_ready:
+                for pair in receipt_pipes.values():
+                    _fake_close(*pair)
+        try:
+            _split_cleanup_children(
+                result=result, statuses=statuses, roles=("R",),
+                child_pids={"R": child_pids["R"]},
+                child_witnesses=child_witnesses,
+                signal_pids=signal_pids,
+                signal_witnesses=signal_witnesses,
+                signal_pipes=signal_pipes,
+                signal_parent_fds=signal_parent_fds,
+                run_id=run_id, work_deadline=receipt_deadline,
+                cleanup_deadline=receipt_cleanup_deadline,
+                hard_deadline=receipt_hard_deadline,
+                term_grace_seconds=term_grace_seconds,
+                strict_reap_deadline=v5)
+        except Exception:
+            result["receipt_durable_proven"] = False
+            result["r_stop"] = "unproven"
+        finally:
+            _fake_close(*signal_parent_fds)
+            if not signal_layout_ready:
+                for pair in signal_pipes.values():
+                    _fake_close(*pair)
+        if result["status"] == "fake_seven_process_pending_receipt":
+            if (result["receipt_durable_proven"]
+                    and result["r_stop"] == "normal_exit"
+                    and result["s_r_normal_exit"]):
+                result["status"] = (
+                    "fake_seven_process_pass"
+                    if result["worker_status"] == "fake_non_b_parity_pass"
+                    else "fake_seven_process_mismatch")
+            else:
+                result["status"] = "fake_seven_process_unproven"
+                result["failure_code"] = "receipt_unavailable_review_required"
+        if (v4 and result["receipt_preflight_accepted"]
+                and (not result["receipt_durable_proven"]
+                     or result["r_stop"] != "normal_exit"
+                     or not result["s_r_normal_exit"])):
+            result["status"] = "fake_seven_process_unproven"
+            result["failure_code"] = "receipt_unavailable_review_required"
+        if (prehash_pinned is not None
+                and (child_pids["O"] is None or result["o_reaped"])
+                and (signal_pids.get("O") is None or result["s_o_reaped"])):
+            try:
+                _seven_prehash_dispose(prehash_pinned)
+            except Exception:
+                pass
+    return result

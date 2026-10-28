@@ -1,0 +1,157 @@
+{
+  "schema": "uruha_human_response_equation_contract_m54",
+  "version": "1.0.0",
+  "status": "candidate_not_real_person_validated",
+  "equations": {
+    "prediction": "P(Y[t+1] | X[t+1], H[0:t], M[t], S[t], R[t], N[t], C[t], theta[p], U[t])",
+    "update": "State[t+1] = G(State[t], Prediction[t], ObservableOutcome[t+1], Error[t+1])"
+  },
+  "primary_output": "observable_behavior_distribution",
+  "variables": [
+    {
+      "id": "current_observable_input",
+      "symbol": "X[t+1]",
+      "epistemic_status": "observed",
+      "allowed_evidence": ["current_user_signal", "reliable_input_metadata", "verified_source_atoms"],
+      "runtime_paths": ["logic.source_semantic_atoms_m33", "logic.literal_topic_projection_m29", "logic.user_input"],
+      "measurement": "source digest, input mode, verified literal atoms, and availability; raw text is not copied into the M54 trace",
+      "uncertainty": "atom conflicts and unavailable acoustic evidence remain explicit",
+      "persistence": "digest_and_typed_atoms_only",
+      "interventions": ["replace_current_signal", "hold_current_signal_fixed"],
+      "forbidden_claims": ["complete communicative intent", "private mental state"]
+    },
+    {
+      "id": "observable_history",
+      "symbol": "H[0:t]",
+      "epistemic_status": "observed",
+      "allowed_evidence": ["timestamped_public_event", "timestamped_user_interaction", "source_provenance"],
+      "runtime_paths": ["runtime_state.recent_turn_traces", "runtime_trace.retrieval", "runtime_trace.memory_reads"],
+      "measurement": "count, cutoff, source IDs, timestamps, and digests available before prediction",
+      "uncertainty": "missing intervals and unverified sources remain unavailable",
+      "persistence": "source_metadata_without_new_raw_copy",
+      "interventions": ["remove_history_window", "replace_history_with_cutoff_matched_control"],
+      "forbidden_claims": ["complete life history", "future evidence availability"]
+    },
+    {
+      "id": "structured_memory",
+      "symbol": "M[t]",
+      "epistemic_status": "derived",
+      "allowed_evidence": ["source_linked_fact_memory", "verified_preference_event", "typed_relation_event"],
+      "runtime_paths": ["memory_data.longitudinal_user_model_v2_13", "memory_data.adaptive_person_model", "runtime_trace.memory_writes"],
+      "measurement": "selected memory IDs, source type, age, strength, conflict status, and retrieval score",
+      "uncertainty": "inferred memories cannot be promoted to factual memory",
+      "persistence": "typed_reversible_records_only",
+      "interventions": ["remove_selected_memory", "replace_with_irrelevant_memory", "reverse_verified_preference"],
+      "forbidden_claims": ["biological memory molecule", "complete autobiographical memory"]
+    },
+    {
+      "id": "transient_state",
+      "symbol": "S[t]",
+      "epistemic_status": "inferred_reversible",
+      "allowed_evidence": ["observable_text_signal", "reliable_acoustic_summary", "previous_prediction_error"],
+      "runtime_paths": ["logic.user_mental_state_hypothesis", "logic.personhood_self_state_v2_13", "logic.desired_response_state_m18"],
+      "measurement": "typed affect, arousal, stance, task load, alternatives, confidence, and evidence references",
+      "uncertainty": "text-only input marks acoustic evidence unavailable and alternatives remain visible",
+      "persistence": "never_factual_without_explicit_observation",
+      "interventions": ["remove_transient_state", "replace_state_dimension", "hold_state_fixed"],
+      "forbidden_claims": ["true private emotion", "clinical diagnosis", "biological neural state"]
+    },
+    {
+      "id": "relationship_state",
+      "symbol": "R[t]",
+      "epistemic_status": "derived_reversible",
+      "allowed_evidence": ["explicit_relationship_act", "verified_response_preference", "linked_support_or_contradiction"],
+      "runtime_paths": ["logic.personhood_relationship_state_v2_13", "logic.pragmatic_trigger_relation_m37", "logic.target_guarded_feedback_m38"],
+      "measurement": "typed relationship signal, scope, source, verification status, confidence, and contradiction history",
+      "uncertainty": "unlinked feedback and third-party reports cannot update the target relationship",
+      "persistence": "typed_scope_bound_relation_only",
+      "interventions": ["remove_relationship_state", "swap_verified_relation", "hold_relationship_fixed"],
+      "forbidden_claims": ["private relationship truth", "unobserved intimacy"]
+    },
+    {
+      "id": "goal_need_state",
+      "symbol": "N[t]",
+      "epistemic_status": "mixed_explicit_and_inferred_reversible",
+      "allowed_evidence": ["explicit_current_request", "verified_desired_response_preference", "bounded_implicit_hypothesis"],
+      "runtime_paths": ["logic.desired_response_mode_m23", "logic.implicit_desired_response_m26", "logic.counterfactual_pragmatic_branch_m34"],
+      "measurement": "candidate policies, probability or utility, explicit authority, alternatives, margin, and outcome status",
+      "uncertainty": "low-separation implicit distributions abstain or clarify",
+      "persistence": "explicit_or_verified_typed_policy_only",
+      "interventions": ["replace_desired_response_policy", "remove_implicit_need", "hold_literal_input_fixed"],
+      "forbidden_claims": ["true hidden desire", "mind reading"]
+    },
+    {
+      "id": "observable_context",
+      "symbol": "C[t]",
+      "epistemic_status": "observed_or_unavailable",
+      "allowed_evidence": ["input_mode", "timestamp", "task_shape", "reliable_acoustic_summary"],
+      "runtime_paths": ["logic.task_shape_m22", "logic.input_context", "runtime_trace.input_context"],
+      "measurement": "typed task, modality, time, and only available acoustic features",
+      "uncertainty": "unavailable context cannot be imputed as observed",
+      "persistence": "typed_metadata_only",
+      "interventions": ["replace_observable_context", "remove_context_feature"],
+      "forbidden_claims": ["unobserved environment", "invented tone or pause"]
+    },
+    {
+      "id": "person_parameter",
+      "symbol": "theta[p]",
+      "epistemic_status": "learned_or_declared_parameter",
+      "allowed_evidence": ["public_observable_person_evidence", "pre_cutoff_behavior_estimate", "declared_development_prior"],
+      "runtime_paths": ["contract.person_parameter", "logic.public_persona_appraisal", "logic.personhood_persona_appraisal_v2_13"],
+      "measurement": "parameter ID, evidence boundary, source references, fit cutoff, and uncertainty",
+      "uncertainty": "private and unpublished regions stay unknown",
+      "persistence": "versioned_parameter_with_provenance",
+      "interventions": ["remove_person_parameter", "swap_person_parameter", "shrink_to_population_prior"],
+      "forbidden_claims": ["the real person", "complete personality", "private life reconstruction"]
+    },
+    {
+      "id": "uncertainty_calibration",
+      "symbol": "U[t]",
+      "epistemic_status": "derived",
+      "allowed_evidence": ["candidate_distribution", "alternative_hypotheses", "typed_outcome_ledger", "effective_sample_count"],
+      "runtime_paths": ["logic.implicit_desired_response_m26", "logic.causal_outcome_calibration_m27", "logic.user_mental_state_hypothesis"],
+      "measurement": "normalized distribution, margin, confidence, support/contradiction/unknown counts, and calibration bin",
+      "uncertainty": "confidence is operational reliability, not certainty about private state",
+      "persistence": "typed_calibration_statistics_only",
+      "interventions": ["flatten_distribution", "lower_confidence", "remove_outcome_history"],
+      "forbidden_claims": ["probability of true private thought", "population calibration without holdout"]
+    }
+  ],
+  "outputs": [
+    {
+      "id": "observable_behavior_distribution",
+      "role": "primary",
+      "runtime_paths": ["logic.human_response_distribution_m54", "logic.behavior_prediction_m6"],
+      "requirements": ["generated_before_utterance", "normalized", "observable_labels", "cutoff_bound"]
+    },
+    {
+      "id": "desired_response_policy_distribution",
+      "role": "secondary_interactive",
+      "runtime_paths": ["logic.implicit_desired_response_m26.distribution"],
+      "requirements": ["normalized", "alternatives_retained", "not_private_intent_truth"]
+    },
+    {
+      "id": "visible_utterance",
+      "role": "downstream_realization",
+      "runtime_paths": ["reply"],
+      "requirements": ["natural_japanese", "source_bounded", "not_primary_equation_evidence"]
+    }
+  ],
+  "outcome_update": {
+    "allowed_statuses": ["supported", "contradicted", "unknown"],
+    "runtime_paths": ["logic.causal_outcome_calibration_m27", "logic.counterfactual_pragmatic_branch_m34"],
+    "requires_observable_evidence": true,
+    "unknown_counts_as_success": false,
+    "raw_inferred_state_factual_write": false
+  },
+  "person_parameter": {
+    "id": "ichinose_uruha_public_reference_person_v1",
+    "positioning": "replaceable public-observable parameterization; not the real person",
+    "private_space": "unknown",
+    "fit_status": "development_prior_not_real_temporal_fit"
+  },
+  "claim_boundary": {
+    "may_claim": ["machine-checkable candidate equation contract", "runtime variable availability and provenance coverage", "deterministic single-variable intervention interface"],
+    "may_not_claim": ["real-person predictive validity", "biological brain equation", "private mental truth", "general human understanding", "LLM superiority", "production readiness"]
+  }
+}

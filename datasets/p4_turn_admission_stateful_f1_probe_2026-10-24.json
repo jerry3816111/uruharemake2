@@ -1,0 +1,29 @@
+{
+  "schema": "uruha_p4_turn_admission_stateful_single_probe_v1",
+  "id": "f1",
+  "author_role": "developer_diagnostic_not_holdout",
+  "user_input": "庭の雑草を抜き終えた。今は一言だけ励まして。",
+  "expected_direct_reply_act": "brief_encouragement",
+  "expected_route": "full_planner",
+  "expected_scene": "support",
+  "expected_dialogue_act": "direct_chat_answer",
+  "expected_m33": "not_applicable",
+  "expected_m18_applied": false,
+  "visible_gold": {
+    "language": "natural_japanese_only",
+    "length": "one_short_line_or_two_short_sentences",
+    "must_acknowledge": "the observable completion of garden weeding, not an invented private state",
+    "must_deliver": "brief encouragement rather than advice or a follow-up question",
+    "forbidden_inventions": ["sleep", "exhaustion", "private feelings", "childhood", "unobserved past events"],
+    "persona_boundary": "public-evidence-grounded style, not claiming to be the real person",
+    "identity_scope": "no contradictory identity claim; this single turn cannot prove positive self-identity knowledge"
+  },
+  "mechanism_condition": "terminal punctuation join is scored only if actual selected core already ends with Japanese terminal punctuation",
+  "caps": {
+    "max_completed_model_generations": 3,
+    "max_provider_tokens": 2000,
+    "max_user_wait_seconds": 20,
+    "max_safari_sends": 1,
+    "retry_allowed": false
+  }
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>UruhaBrain M37 · Trigger–Relation Normalization</title>
+<style>
+:root{--bg:#07101d;--panel:#0d192a;--line:#263750;--cyan:#38bdf8;--green:#34d399;--pink:#f472b6;--amber:#fbbf24;--muted:#94a3b8;--text:#eef7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 8% 5%,#122b46 0,transparent 30%),radial-gradient(circle at 92% 15%,#261b49 0,transparent 32%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Noto Sans JP",sans-serif}
+main{max-width:1440px;margin:auto;padding:34px}.eyebrow{font:700 12px ui-monospace;letter-spacing:.18em;color:var(--cyan)}h1{font-size:38px;margin:9px 0 6px}.sub{color:#bed0e2;max-width:980px;line-height:1.7}.stamp{display:inline-flex;gap:9px;align-items:center;margin-top:14px;padding:9px 13px;border:1px solid #235e4f;border-radius:999px;background:#0a2d27;color:#8cf3ce;font:700 13px ui-monospace}.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 16px var(--green)}
+.grid{display:grid;gap:16px}.metrics{grid-template-columns:repeat(4,1fr);margin:24px 0}.card{background:linear-gradient(145deg,rgba(15,30,49,.96),rgba(10,19,34,.96));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 44px rgba(0,0,0,.2)}.metric b{display:block;font-size:31px;color:white}.metric span{color:var(--muted);font-size:13px}.accent{color:var(--green)!important}.section-title{font-size:20px;margin:0 0 14px}.flow{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:26px;align-items:stretch}.flow:before{content:"";position:absolute;left:6%;right:6%;top:62px;height:2px;background:linear-gradient(90deg,var(--cyan),var(--pink),var(--amber),var(--green))}.node{position:relative;min-height:150px;padding:16px 12px;border-radius:17px;border:1px solid #2c4664;background:#0b1728;text-align:center}.node i{display:grid;place-items:center;width:46px;height:46px;margin:0 auto 13px;border-radius:50%;background:#102d43;border:1px solid var(--cyan);font-style:normal;font-weight:800;color:var(--cyan);box-shadow:0 0 0 7px var(--bg)}.node b{font-size:14px}.node p{font-size:12px;color:var(--muted);line-height:1.5}.node.on{border-color:#237a61;background:#0b211e}.node.on i{border-color:var(--green);color:var(--green)}
+.compare{grid-template-columns:1fr 1fr}.barrow{display:grid;grid-template-columns:120px 1fr 72px;gap:12px;align-items:center;margin:15px 0}.track{height:18px;border-radius:99px;background:#18273b;overflow:hidden}.bar{height:100%;border-radius:99px;background:linear-gradient(90deg,#64748b,#94a3b8)}.bar.system{background:linear-gradient(90deg,var(--cyan),var(--green))}.pct{text-align:right;font:800 17px ui-monospace}.pair{grid-template-columns:1fr 1fr}.condition{padding:15px;border-radius:14px;border:1px solid #293b54;background:#0a1525}.condition h3{font-size:13px;color:var(--muted);margin:0 0 10px}.seed{font-size:14px;line-height:1.6}.arrow{text-align:center;color:var(--cyan);font-size:22px}.current{padding:12px;border-radius:12px;background:#101e31;color:#dbeafe}.output{margin-top:10px;padding:12px;border-left:3px solid var(--green);background:#0b231f}.pill{display:inline-block;border:1px solid #35506e;border-radius:999px;padding:4px 9px;margin:3px;font:700 11px ui-monospace;color:#b9d7f1}.warning{border-color:#6d4d22;background:#261b0d}.warning h2{color:#ffd27c}.issues{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.issue{padding:13px;border-radius:12px;background:#1b1510;border:1px solid #5a3e22;color:#f8d7a0;font-size:13px;line-height:1.55}.footer{color:#7890a8;font:12px ui-monospace;margin-top:20px;line-height:1.6}
+@media(max-width:1000px){.metrics,.compare,.pair,.issues{grid-template-columns:1fr 1fr}.flow{grid-template-columns:repeat(3,1fr)}.flow:before{display:none}}@media(max-width:650px){main{padding:18px}.metrics,.compare,.pair,.issues,.flow{grid-template-columns:1fr}h1{font-size:29px}}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">URUHA BRAIN · M37 · FORMAL FROZEN RESULT</div>
+<h1>一句話不夠，系統必須記得「什麼狀態該怎麼接住」</h1>
+<div class="sub">M37 把使用者的互動約定拆成可觀察的 trigger 與 response policy；只有下一輪支持後才保存。之後換語言、換形態或有限改寫，仍可重新命中同一關係。</div>
+<div class="stamp"><span class="dot"></span>PASS · 12 CASES · 6 COUNTERFACTUAL PAIRS · 2026-08-26</div>
+
+<section class="grid metrics">
+  <div class="card metric"><b>16.67%</b><span>baseline 策略正確率 · 2/12</span></div>
+  <div class="card metric"><b class="accent">100%</b><span>M37 策略正確率 · 12/12</span></div>
+  <div class="card metric"><b class="accent">+83.33pp</b><span>同模型、同當輪輸入</span></div>
+  <div class="card metric"><b>1.000×</b><span>scored prompt token ratio</span></div>
+</section>
+
+<section class="card">
+<h2 class="section-title">認知機制：不是背句子，是建立會驗證、會過期的關係</h2>
+<div class="flow">
+  <div class="node"><i>1</i><b>互動約定</b><p>「如果又卡住，就先聽我說」</p></div>
+  <div class="node"><i>2</i><b>拆成兩個變數</b><p>task_stall<br>→ listen_presence</p></div>
+  <div class="node on"><i>3</i><b>下一輪驗證</b><p>支持才保存<br>否定／未知不保存</p></div>
+  <div class="node on"><i>4</i><b>Typed relation</b><p>raw-free · confidence<br>history · TTL 48</p></div>
+  <div class="node on"><i>5</i><b>改寫後命中</b><p>形態變化／有限 paraphrase<br>多重 trigger 則拒絕猜</p></div>
+  <div class="node on"><i>6</i><b>選擇日文回覆</b><p>relation 取得 branch authority<br>仍受安全 guard 約束</p></div>
+</div>
+</section>
+
+<section class="grid compare" style="margin-top:16px">
+<div class="card"><h2 class="section-title">公平對照</h2>
+  <div class="barrow"><span>只看當輪</span><div class="track"><div class="bar" style="width:16.67%"></div></div><div class="pct">2/12</div></div>
+  <div class="barrow"><span>M37 relation</span><div class="track"><div class="bar system" style="width:100%"></div></div><div class="pct">12/12</div></div>
+  <p class="sub">兩組都是 qwen3.5:9b、temperature 0、相同 persona 與輸出規則；每對 current input 逐 byte 相同。唯一介入是 system 取得已驗證 relation 所選出的策略。</p>
+</div>
+<div class="card"><h2 class="section-title">成本與安全</h2>
+  <span class="pill">PROMPT 9,877 = 9,877</span><span class="pill">LATENCY +6.34%</span><span class="pill">OUTPUT TOKENS +10.75%</span>
+  <span class="pill">RAW WRITE 0</span><span class="pill">MENTAL FACT WRITE 0</span><span class="pill">JAPANESE FORMAT 100%</span>
+  <p class="sub">這是受控的機制優勢與成本，不把自動 proxy 說成人類主觀「被理解感」。</p>
+</div>
+</section>
+
+<section class="card" style="margin-top:16px">
+<h2 class="section-title">反事實示範：現在這句完全一樣，只有過去約定不同</h2>
+<div class="current">今夜も同じ考えが頭の中をぐるぐる回ってる。</div>
+<div class="grid pair" style="margin-top:14px">
+  <div class="condition"><h3>HISTORY A · 已驗證「先給我一步」</h3><div class="seed">trigger: cognitive_overactivity<br>policy: <b>solve_regulation</b></div><div class="arrow">↓</div><div class="output">M37：まずは深呼吸して、一瞬だけ目を閉じてみるかよ<br><small>策略正確；句尾自然度仍需修復</small></div></div>
+  <div class="condition"><h3>HISTORY B · 已驗證「短短吐槽」</h3><div class="seed">trigger: cognitive_overactivity<br>policy: <b>playful_tease</b></div><div class="arrow">↓</div><div class="output">M37：ぐるぐる回ってるかよ<br><small>同一句 current，因已驗證關係不同而分流</small></div></div>
+</div>
+<p class="sub">baseline 在 A、B 都回同一個 listen_presence：「ぐるぐるしてるんだね、そのまま話して」。這不是 baseline 很笨，而是它在實驗中被刻意拿掉過去關係，用來測量那條關係本身的因果價值。</p>
+</section>
+
+<section class="card warning" style="margin-top:16px">
+<h2 class="section-title">紅線：PASS 仍不代表自然度已完成</h2>
+<div class="issues">
+  <div class="issue">「頭が沸騰しててかよ」<br>策略標籤對，但日文不自然。</div>
+  <div class="issue">「…目を閉じてみるかよ」<br>建議句混入不合適的吐槽句尾。</div>
+  <div class="issue">報告案例推測「卡在別人手上」<br>形式像吐槽，但加入未提供原因。</div>
+</div>
+<p class="sub">因此 M37 只支持「typed relation 提升受控策略選擇」；自然日文、內容 groundedness、Uruha 人格與 felt understanding 必須由後續 M39 verifier 與獨立人評證明。</p>
+</section>
+
+<section class="card warning" style="margin-top:16px">
+<h2 class="section-title">Safari 真實多輪驗收 · 內部機制 PASS，產品表面 FAIL</h2>
+<div class="issues">
+  <div class="issue"><b>ENGLISH PARAPHRASE</b><br>task_stall → share_arousal 命中；authority true。</div>
+  <div class="issue"><b>中文跨語觸發</b><br>同一 typed relation 再次命中；沒有保存原始對話。</div>
+  <div class="issue"><b>VISIBLE REPLY</b><br>一輪捏造「等待結果」，一輪只重述「報告沒進度」；沒有穩定實現已選策略。</div>
+</div>
+<p class="sub">四輪輸出都是日文，節點圖也和候選 → 驗證保存 → 英文改寫命中 → 中文跨語命中一致；但真實回覆揭露自動 surface proxy 會高估品質。因此正式機制數字保留，產品表面明確標成 FAIL，進入 M39 修正。</p>
+</section>
+
+<div class="footer">RAW RESULT SHA-256 · 76f0a9864d666d97a7a62cd892f4d11f983e2ea63cd68f3f40402e795ebd4d09<br>CLAIM BOUNDARY · SOURCE-DISJOINT AUTHOR-CONSTRUCTED RESERVE · NOT OPEN-DOMAIN SEMANTICS · NOT MIND READING · NOT HUMAN PREFERENCE EVIDENCE</div>
+</main></body></html>

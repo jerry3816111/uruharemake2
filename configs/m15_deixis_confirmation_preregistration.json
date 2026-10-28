@@ -1,0 +1,81 @@
+{
+  "schema_version": "m15-deixis-confirmation-preregistration-v1",
+  "status": "preregistered_before_contract_probe_and_formal_generation",
+  "created_on": "2026-08-17",
+  "research_question": "On new PUB T13 cases and the same local base model, does the strict pragmatic decomposition improve deictic reference resolution over strict generic deliberation by a practically meaningful amount?",
+  "hypothesis_provenance": {
+    "development_result_lock_path": "configs/m14_pub_schema_replication_result_lock.json",
+    "development_result_lock_sha256": "72dc1251175777dc10812709b679f0990a46e31b6ab3565681e4446cc0d45afa",
+    "development_signal": "M14 T13 Ours 75.0% versus Generic 37.5%, with 8 candidate wins, 2 baseline wins, and 6 ties on 16 cases.",
+    "role": "M14 generated the focused hypothesis and supplies the discordance planning parameter. M15 uses no M13/M14 formal case IDs and is the prospective confirmation set, not another exploratory re-interpretation."
+  },
+  "source_protocol": {
+    "path": "configs/m13_pub_pragmatics_preregistration.json",
+    "sha256": "de9109eaa508535dc608b09bcb0680348d26b5c480dd4f41164d0599fabac5d0"
+  },
+  "sampling": {
+    "task_id": 13,
+    "phenomenon": "deixis",
+    "task_name": "deictic reference resolution",
+    "seed": "m13-pub-2026-08-17-v1",
+    "rank_offset": 32,
+    "case_count": 300,
+    "excluded_ids": ["0", "1"],
+    "required_overlap_with_m13_or_m14": 0,
+    "option_order": "unchanged deterministic M13 permutation function",
+    "stopping_rule": "exactly 300 cases; no optional stopping, post-result extension, case replacement, or exclusion"
+  },
+  "power_analysis": {
+    "test": "exact unconditional power for candidate-direction rejection by two-sided exact McNemar",
+    "alpha": 0.05,
+    "target_power": 0.9,
+    "smallest_effect_size_of_interest_accuracy_delta": 0.15,
+    "planning_discordance_rate": 0.625,
+    "candidate_win_probability_given_discordance": 0.62,
+    "minimum_sample_count": 300,
+    "calculated_power_at_minimum": 0.9007238501618088,
+    "SESOI_rationale": "A 15-point paired accuracy gain means at least one additional correct reference resolution per roughly seven cases; a smaller gain would not justify the extra specialized loop for this milestone claim."
+  },
+  "case_manifest": {
+    "path": "configs/m15_deixis_confirmation_case_manifest.json",
+    "sha256": "e8f6512be9b73507710936f3ee5720e98a99e35d73da266ebf849a813da138fc",
+    "contains_item_text_or_answer_keys": false
+  },
+  "contract_probe": {
+    "task_id": 13,
+    "item_id": "0",
+    "reason": "already viewed and excluded from every formal sample",
+    "conditions": ["B1_GENERIC_DELIBERATION", "OURS_PRAGMATIC_LOOP"],
+    "required_full_schema_rate": 1.0,
+    "formal_score_excluded": true
+  },
+  "conditions": ["B1_GENERIC_DELIBERATION", "OURS_PRAGMATIC_LOOP"],
+  "primary_comparison": "OURS_PRAGMATIC_LOOP versus B1_GENERIC_DELIBERATION",
+  "model": "qwen3.5:9b",
+  "generation": {
+    "endpoint": "http://127.0.0.1:11434/api/generate",
+    "think": false,
+    "stream": false,
+    "format": "condition-specific JSON Schema",
+    "options": {"temperature": 0, "seed": 20260817, "num_predict": 320},
+    "retries": 0
+  },
+  "metrics": {
+    "primary": "paired exact-answer accuracy Ours minus Generic",
+    "confirmatory_inference": "20,000 item-paired bootstrap 95% CI and exact two-sided McNemar",
+    "fidelity": "exact required keys, types, uncertainty enum, and no additional properties",
+    "cost": "prompt/completion tokens and wall latency",
+    "exploratory_only": ["accuracy by context-length quartile", "uncertainty labels", "individual error narratives"]
+  },
+  "success_gate": {
+    "both_conditions_answer_parse_rate": 1.0,
+    "both_conditions_full_schema_rate": 1.0,
+    "primary_accuracy_delta_minimum": 0.15,
+    "primary_bootstrap_ci_lower_strictly_greater_than": 0.0,
+    "primary_exact_mcnemar_p_maximum": 0.05,
+    "all_required": true
+  },
+  "claim_if_passed": "For qwen3.5:9b under this frozen strict-schema protocol, the explicit pragmatic decomposition improves exact deictic-reference resolution over equally strict generic deliberation by at least the preregistered 15-point SESOI on 300 new PUB T13 cases.",
+  "claim_if_failed": "This prospective confirmation does not establish a practically meaningful deictic-reference advantage; retain the result and do not extend the sample or change the gate.",
+  "evidence_boundary": "M15 is a focused post-development confirmation on disjoint public PUB T13 items. It compares one model and one deterministic option permutation, may be exposed through base-model pretraining, and tests exact multiple-choice deictic reference resolution rather than longitudinal human understanding, felt understanding, human preference, Uruha persona fidelity, or a human-brain equation."
+}

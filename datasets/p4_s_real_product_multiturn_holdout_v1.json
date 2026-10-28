@@ -1,0 +1,31 @@
+{
+  "schema": "uruha_p4_s_real_product_multiturn_holdout_v1",
+  "case_id": "p4_s_two_process_safari_interference_001",
+  "status": "prospectively_frozen_before_real_execution",
+  "turn_count": 12,
+  "restart_after_turn": 6,
+  "turns": [
+    {"turn": 1, "process": 1, "role": "target_write", "input": "今は松葉茶が好き。今の飲み物の好みとして覚えといて。", "expected_exact_surface": "ん、その好みは覚えとく。", "expected_act": "write", "expected_scope": "drink", "expected_value": "松葉茶"},
+    {"turn": 2, "process": 1, "role": "ordinary_distractor", "input": "今天只是在整理圖表，不是在說我的飲料偏好。", "expected_act": null},
+    {"turn": 3, "process": 1, "role": "third_person_distractor", "input": "友達はどくだみ茶が好きらしい。", "expected_act": null},
+    {"turn": 4, "process": 1, "role": "quoted_distractor", "input": "引用として「今は甜茶が好き」と書いた。", "expected_act": null},
+    {"turn": 5, "process": 1, "role": "other_scope_write", "input": "今はストラテジーゲームが好き。今のゲームの好みとして覚えといて。", "expected_exact_surface": "ん、その好みは覚えとく。", "expected_act": "write", "expected_scope": "ゲーム", "expected_value": "ストラテジーゲーム"},
+    {"turn": 6, "process": 1, "role": "pre_correction_recall", "input": "What is my current drink preference?", "expected_exact_surface": "今の飲み物の好みは松葉茶。前のじゃなくて、今の方ね。", "expected_value": "松葉茶"},
+    {"turn": 7, "process": 2, "role": "ordinary_distractor", "input": "重啟後我先確認一下圖還有沒有正常顯示。", "expected_act": null},
+    {"turn": 8, "process": 2, "role": "target_correction", "input": "もう松葉茶は好きじゃない。今はなた豆茶が好き。今の飲み物の好みとして覚えといて。", "expected_exact_surface": "ん、訂正の内容はそのまま覚えとく。", "expected_act": "correction", "expected_scope": "drink", "expected_previous_value": "松葉茶", "expected_value": "なた豆茶"},
+    {"turn": 9, "process": 2, "role": "third_person_old_value_distractor", "input": "先生は松葉茶が好きらしい。", "expected_act": null},
+    {"turn": 10, "process": 2, "role": "hypothetical_distractor", "input": "もし私が「今は甘茶が好き」と言ったら、その文は仮定として扱って。", "expected_act": null},
+    {"turn": 11, "process": 2, "role": "cross_language_third_person_distractor", "input": "My friend now prefers 甜茶.", "expected_act": null},
+    {"turn": 12, "process": 2, "role": "post_correction_recall", "input": "我現在的飲料偏好是什麼？", "expected_exact_surface": "今の飲み物の好みはなた豆茶。前のじゃなくて、今の方ね。", "expected_value": "なた豆茶"}
+  ],
+  "novelty": {
+    "repository_occurrences_before_dataset_creation": {
+      "松葉茶": 0,
+      "なた豆茶": 0,
+      "どくだみ茶": 0,
+      "甜茶": 0,
+      "甘茶": 0
+    }
+  },
+  "claim_boundary": "This transcript is one full-product Safari integration holdout for the already released typed-state mechanism. It is not a same-model LLM comparison, a 50-turn result, an open-domain memory benchmark, human preference evidence or a human equation."
+}

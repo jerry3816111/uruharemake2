@@ -1,0 +1,68 @@
+{
+  "schema": "uruha_m56_mac_full_sync_generation_contract_v1",
+  "version": "1.0.0",
+  "status": "prospective_frozen_before_any_real_m56_generation_call",
+  "single_changed_variable": "stable-storage commit boundary for formal-generation artifacts on the bound Mac",
+  "public_api": {
+    "function": "execute_full_sync_formal_generation",
+    "parameters": [
+      "run_id"
+    ],
+    "writer_injection_allowed": false,
+    "provider_injection_allowed": false,
+    "prediction_injection_allowed": false,
+    "outcome_injection_allowed": false,
+    "readiness_injection_allowed": false,
+    "retry_or_fallback_override_allowed": false
+  },
+  "frozen_dependencies": {
+    "configs/m56_6_single_writer_formal_generation_v1.json": "f8a4fea19af8079bfd343d128a4bfb55e3ac4f37863f89fd3e27ac087e0d24d1",
+    "m56_6_single_writer_formal_generation.py": "914b914889e58ceee93349f4ad8bc5bf3050b25af2a78efed11606d11108709c",
+    "research/m56_6_single_writer_formal_generation_implementation_freeze_2026-09-03.json": "0be9dc07378588cf65f89289eb2e1ef80a8870845e14f1e59de5b9b2a5122f2c",
+    "configs/m56_5_crash_safe_no_retry_continuation_v1.json": "11e0b6ec47dd49f1a40eabbe5abadefeb6d5b9b8abfebdd04fbbc28fa733634b",
+    "m56_5_crash_safe_no_retry_continuation.py": "70c0aab4089f131b0bda7000fa6260861b936bed76b2f547cf101a115f856fa6",
+    "research/m56_5_crash_safe_no_retry_continuation_implementation_freeze_2026-09-02.json": "c900aef07d3c3cdacfdaf5856211f93dc6dd08818c2f831f0143494698695fa9"
+  },
+  "durability_boundary": {
+    "platform": "Darwin",
+    "payload_write_complete_before_sync": true,
+    "file_fsync_required": true,
+    "file_f_fullfsync_required": true,
+    "parent_directory_fsync_required": true,
+    "parent_directory_f_fullfsync_required": true,
+    "checkpoint_barrier_before_intent_removal": true,
+    "mode_barrier_before_transport": true,
+    "release_barrier_after_final_validation": true,
+    "unsupported_barrier_fails_before_transport": true,
+    "actual_power_cut_test_claimed": false
+  },
+  "entrypoint_boundary": {
+    "m56_6_single_writer_lock_unchanged": true,
+    "context_local_writer_dispatch": true,
+    "older_entrypoints_gain_m56_7_authority": false,
+    "preexisting_m56_5_state_without_m56_7_mode_allowed": false,
+    "mode_and_release_immutable": true,
+    "scoring_contract_changed": false
+  },
+  "unchanged_scientific_semantics": {
+    "prediction_packet_and_schedule": true,
+    "prompts_and_condition_views": true,
+    "model_hardware_options_and_token_budgets": true,
+    "checkpoint_content_and_no_retry_policy": true,
+    "outcome_isolation": true,
+    "m56_3_submission_commitment_and_release": true,
+    "m56_4_prescore_validation": true,
+    "human_evidence_gates": true
+  },
+  "authorization": {
+    "formal_generation_now": false,
+    "formal_scoring": false,
+    "target_outcome_access": false,
+    "formal_result_claim": false,
+    "production_memory_write": false,
+    "external_deployment": false,
+    "fault_fixture_is_power_cut_evidence": false,
+    "synthetic_or_forged_fixture_is_human_evidence": false
+  },
+  "claim_boundary": "M56.7 may establish only ordered macOS file-and-directory full-sync barriers for cooperative formal generation through its new entry point. It cannot guarantee storage hardware behavior, establish malicious-host or distributed safety, add human evidence, prove actual model performance or Equation V1 validity, solve a human-response equation, or establish full-pipeline or production readiness."
+}

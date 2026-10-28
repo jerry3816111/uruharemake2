@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UruhaBrain M39 · Final Reply Integrity</title>
+  <style>
+    :root{--bg:#07101f;--panel:#101a31;--line:#334564;--text:#eef6ff;--muted:#9fb1c8;--cyan:#55d9f5;--violet:#ad8cff;--green:#50e3a4;--red:#ff6f91;--amber:#ffd166}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 15% 10%,#123150 0,transparent 30%),radial-gradient(circle at 85% 20%,#2a1c53 0,transparent 31%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1180px;margin:auto;padding:38px 28px 64px}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.18em}.title{font-size:40px;font-weight:900;margin:8px 0 10px}.lead{max-width:900px;color:var(--muted);font-size:18px;line-height:1.65}.badge{display:inline-block;margin-top:14px;padding:7px 13px;border:1px solid #2e9b73;border-radius:99px;background:#0c332b;color:#a9f5d5;font-weight:800}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}.metric,.panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(20,34,62,.94),rgba(10,19,38,.94));box-shadow:0 16px 44px #0005}.metric{padding:18px}.metric .n{font-size:34px;font-weight:900;color:var(--cyan)}.metric .l{color:var(--muted);font-size:13px;line-height:1.5}
+    .panel{padding:22px;margin:18px 0}.panel h2{margin:0 0 7px;font-size:21px}.panel p{color:var(--muted);line-height:1.6;margin:4px 0 15px}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.node{position:relative;min-height:128px;padding:15px;border:1px solid #3a5074;border-radius:15px;background:#0b162b}.node:not(:last-child):after{content:"→";position:absolute;right:-16px;top:49px;color:var(--cyan);font-size:22px;font-weight:900;z-index:2}.node .k{color:var(--cyan);font-size:11px;font-weight:900;letter-spacing:.1em}.node .v{margin-top:8px;font-weight:800;line-height:1.45}.node .s{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45}.bad{border-color:#87445c}.bad .k{color:var(--red)}.good{border-color:#2d7d66}.good .k{color:var(--green)}
+    .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}.lane{padding:18px;border:1px solid var(--line);border-radius:15px;background:#0a1427}.lane h3{margin:0 0 12px}.lane.bad h3{color:var(--red)}.lane.good h3{color:var(--green)}.quote{padding:13px;border-radius:11px;background:#070e1d;line-height:1.55;margin:9px 0}.arrow{color:var(--cyan);font-weight:900}.gate-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.gate{padding:12px;border:1px solid #2b6f5c;border-radius:12px;background:#0b2c26;color:#b6f6dd;font-size:13px}.warn{border-color:#765d2b;background:#2c2410;color:#ffe6a5}.foot{margin-top:24px;padding:17px;border-left:4px solid var(--amber);background:#2b2412;color:#ffe7a4;line-height:1.6}
+    @media(max-width:860px){.metrics,.flow,.compare,.gate-grid{grid-template-columns:1fr}.node:not(:last-child):after{content:"↓";right:auto;left:48%;top:auto;bottom:-20px}.title{font-size:30px}}
+  </style>
+</head>
+<body><main>
+  <div class="eyebrow">M39 · SEMANTIC + PERSONA SURFACE-ACT VERIFIER</div>
+  <div class="title">系統「想對」還不夠，最後一句也必須真的說對</div>
+  <div class="lead">M34–M38 已能選擇、驗證與修正回覆策略；M39 補上最後一道可見邊界：誰經歷了什麼不能翻反，來源沒說的事件不能補進去，而且 graph 選了陪伴／傾聽／方法，日文回覆就必須真的完成那個行為。</div>
+  <div class="badge">FROZEN FORMAL RESULT · PASS ALL GATES</div>
+
+  <section class="metrics">
+    <div class="metric"><div class="n">25%</div><div class="l">舊 metadata-only audit<br>只看 policy 名稱與非空回覆</div></div>
+    <div class="metric"><div class="n">100%</div><div class="l">M39 expected-action accuracy<br>24 個預先凍結案例</div></div>
+    <div class="metric"><div class="n">0</div><div class="l">修正後禁用概念殘留<br>raw／mental-fact write 也為 0</div></div>
+    <div class="metric"><div class="n">0.35ms</div><div class="l">p95 verifier latency<br>不呼叫生成模型</div></div>
+  </section>
+
+  <section class="panel">
+    <h2>真正執行的最後一道流程</h2>
+    <p>它不重猜使用者心理，也不改 M37/M38 的選擇；只稽核最後要交給人的那一句。</p>
+    <div class="flow">
+      <div class="node"><div class="k">01 SOURCE FRAME</div><div class="v">誰在說、誰經歷</div><div class="s">user／third party／observable concepts</div></div>
+      <div class="node"><div class="k">02 SELECTED POLICY</div><div class="v">既有認知已選策略</div><div class="s">陪伴、傾聽、方法、照顧、澄清、吐槽</div></div>
+      <div class="node bad"><div class="k">03 CANDIDATE SURFACE</div><div class="v">檢查最後日文</div><div class="s">人稱翻反？亂補事件？只重述沒行動？</div></div>
+      <div class="node"><div class="k">04 BOUNDED REPAIR</div><div class="v">只修可觀察錯誤</div><div class="s">不把私密意圖寫成事實</div></div>
+      <div class="node good"><div class="k">05 VERIFIED UTTERANCE</div><div class="v">日文真的完成策略</div><div class="s">修正後再 audit，保留完整 trace</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Safari 真實反例：同一輪，M38 只能判斷「不是更正」，M39 才修最後一句</h2>
+    <div class="compare">
+      <div class="lane bad"><h3>修正前</h3><div class="quote">Input: I didn't sleep last night...</div><div class="arrow">→</div><div class="quote">私は昨夜寝なかった...</div><p>把使用者的「我」變成 Uruha 自己。日文格式正確、policy metadata 也 matched，但內容角色錯了。</p></div>
+      <div class="lane good"><h3>M39 實際輸出</h3><div class="quote">Input: I didn't sleep last night...</div><div class="arrow">→</div><div class="quote">寝てないのか。そりゃしんどいだろ、無理すんな。</div><p>圖上留下 `agent_first_person_owns_user_state`，並驗證 care policy 從未實現變成已實現。</p></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>跨輪效果：記住約定後，最後一句不再只重述</h2>
+    <div class="compare">
+      <div class="lane"><h3>M37 保留的關係</h3><div class="quote">當 report task_stall 出現 → share_arousal</div><p>新句 “The report has stalled again.” 命中已驗證 relation，M34 選到 companionship。</p></div>
+      <div class="lane good"><h3>M39 可見交付</h3><div class="quote">進んでないのか。まあ、今はうちがここにいる。</div><p>原 candidate 只重述「沒進度」；M39 補上真正的陪伴行為，不補「等待結果」等來源沒有的情節。</p></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Frozen gates</h2>
+    <div class="gate-grid">
+      <div class="gate">角色反轉修正 100%</div><div class="gate">未提供事件修正 100%</div><div class="gate">policy act 修正 100%</div>
+      <div class="gate">正確回覆不干預 100%</div><div class="gate">protected route 不干預 100%</div><div class="gate">可見日文格式 100%</div>
+      <div class="gate">formal register 0%</div><div class="gate">raw dialogue write 0</div><div class="gate">model call 0</div>
+    </div>
+    <div class="foot"><strong>證據邊界：</strong>這是 24 個預先凍結、有限錯誤類型的 deterministic mechanism PASS，加上 5 輪隔離 Safari 內容檢查。它不是 open-domain 語意等價、人類主觀偏好、讀心、意識或完整人腦方程式的證明。Safari 支持輪還揭露一個上游 route false positive；下一階段必須獨立修正，不能算進 M39。</div>
+  </section>
+</main></body></html>

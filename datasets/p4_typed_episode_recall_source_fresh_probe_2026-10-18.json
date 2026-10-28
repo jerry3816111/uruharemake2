@@ -1,0 +1,20 @@
+{
+  "schema": "uruha_p4_typed_episode_recall_source_fresh_probe_v1",
+  "authorship": "developer_authored_unseen_product_probe_not_formal_holdout",
+  "status": "frozen_before_implementation_and_first_model_generation",
+  "sessions": 2,
+  "restart_after_turn": 5,
+  "same_isolated_db_after_restart": true,
+  "retry_count_per_turn": 0,
+  "turns": [
+    {"turn": 1, "role": "pre_restart_direct_location_source", "input": "文化祭の集合地点は白い階段の左側だよ。", "conditional_gold": "Preserve this as a direct User turn episode only; do not write a stable profile fact."},
+    {"turn": 2, "role": "pre_restart_conflict_source_a", "input": "搬入口の待ち合わせ時刻は八時だよ。", "conditional_gold": "Preserve direct User source A with its original time; no profile write."},
+    {"turn": 3, "role": "pre_restart_conflict_source_b", "input": "搬入口の待ち合わせ時刻は九時だよ。", "conditional_gold": "Preserve direct User source B, making the time uncertain rather than silently selecting A or B; no profile write."},
+    {"turn": 4, "role": "third_party_quote_distractor", "input": "友達が「文化祭の集合地点は赤い門の前だよ」と言ってた。", "conditional_gold": "This is a reported third-party line, not a direct User assertion of the red-gate location."},
+    {"turn": 5, "role": "pre_restart_unrelated_source", "input": "今日持っていく資料は薄い青のファイルだよ。", "conditional_gold": "Keep an unrelated source distinct; planned same-DB restart follows this turn."},
+    {"turn": 6, "role": "post_restart_typed_summary_and_direct_source", "input": "前に言った文化祭の集合地点、覚えてる？", "conditional_gold": "Only if both typed consolidation summary and T1 direct User episode are in retrieved pool, answer from T1 white-stair source with same trace through focus, handoff, selected plan and visible final; never use T4 red gate or infer from summary. Missing summary or direct source is coverage failure, not a pass."},
+    {"turn": 7, "role": "post_restart_conflicting_direct_sources", "input": "前に言った搬入口の待ち合わせ時刻、覚えてる？", "conditional_gold": "If T2 and T3 are both retrieved, abstain as conflicting_or_nonunique; do not choose eight or nine. Missing one source is coverage failure."},
+    {"turn": 8, "role": "post_restart_unknown_source", "input": "前に言った展示室の壁の色、覚えてる？", "conditional_gold": "No direct User source exists; give a short natural Japanese uncertainty response without inventing a color."},
+    {"turn": 9, "role": "post_restart_retraction", "input": "搬入口の待ち合わせ時刻はもう未定。八時も九時も取り消し。", "conditional_gold": "Do not affirm either old time or write an unverified profile fact; preserve the retraction as a new episode."}
+  ]
+}

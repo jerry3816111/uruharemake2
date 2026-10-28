@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_p3_direct_baseline_v2_design_review_v1",
+  "status": "design_reviewed_execution_not_authorized",
+  "purpose": "replace_nonfunctional_three_stage_developer_control_without_rewriting_v1",
+  "immutable_evidence": {
+    "comparison_v1": {
+      "path": "configs/p3_product_comparison_v1.json",
+      "sha256": "1e6d3b0600740b3dee7207ffc5c4f9cc9247a5feba2b967bdab4586522f7b836"
+    },
+    "b9_baseline_result": {
+      "path": "analysis/p3_b9_canary_baselines_result_2026-09-15.json",
+      "sha256": "f2976da09f24a718a1a20d680c586008ebcf1cc7266e6c681a7fe1e70defba71"
+    },
+    "b11_instruction_result": {
+      "path": "analysis/p3_b11_instruction_language_probe_result_2026-09-15.json",
+      "sha256": "baf6c4c1581dfc1fd2c26e36114791526ed117dd6e13bd4137feb2b84bf6957a"
+    },
+    "b13_carrier_result": {
+      "path": "analysis/p3_b13_private_scratch_carrier_result_2026-09-15.json",
+      "sha256": "1a754a028472c51a5c6f7426fb4cb69e7b17e702bdebe50b3028a8df078a61b1"
+    },
+    "b11_probe_config": {
+      "path": "configs/p3_baseline_instruction_language_probe_v1.json",
+      "sha256": "dc99af1c2bed92abc11258bd5c3a7949b6f97f7bb47247b1853c7e93c55f12c0"
+    },
+    "developer_source": {
+      "path": "datasets/p3_developer_smoke_source_v1.json",
+      "sha256": "3b6d4d77190e15485651af4c708416992214332d6a02288ce27db3f37457be8f"
+    }
+  },
+  "decision": {
+    "comparison_v1_immutable": true,
+    "retire_from_v2": [
+      "full_history_deliberate"
+    ],
+    "retirement_reason_codes": [
+      "assistant_carrier_critique_empty",
+      "user_carrier_critique_copies_draft",
+      "revision_does_not_improve_draft",
+      "two_attributable_repairs_failed"
+    ],
+    "candidate_control": "full_history_direct",
+    "candidate_status": "requires_fresh_surface_and_grounding_canary",
+    "not_weaker_rationale": "The retired condition was structurally nonfunctional and never produced a usable deliberate final in the locked evidence. The direct candidate receives the complete raw visible history, shared persona, the same model and decoding options, and the same aggregate completion ceiling. Removing a broken chain avoids an artificially weak comparator; it does not establish that the candidate is strong enough."
+  },
+  "v2_conditions": [
+    "full_history_direct",
+    "product_system"
+  ],
+  "direct_baseline": {
+    "instruction": "過去のセッションを含む、ユーザーに見えている会話履歴をすべて使う。相手のあり得る目的、明示された訂正、不確実性、関係性、関連する記憶を考慮し、共通人格契約に従った根拠のある最善の返答を作る。最終的な自然な日本語の返答だけを出力し、事実を作ったり評価に言及したりしない。",
+    "visible_history": "same_complete_raw_visible_history_as_product",
+    "private_product_state": false,
+    "output_postprocessing": "none",
+    "visible_surface_gate": "shared_visible_surface_contract",
+    "completion_tokens_max": 768,
+    "calls_max": 1
+  },
+  "generation": {
+    "model": "qwen2.5:7b",
+    "digest": "2bada8a7450677000f678be90653b85d364de7db25eb5ea54136ada5f3933730",
+    "temperature": 0,
+    "seed": 20260909,
+    "top_p": 1,
+    "num_ctx": 8192,
+    "think": false,
+    "aggregate_completion_tokens_max_per_condition": 768,
+    "aggregate_prompt_tokens_max_per_condition": 32768,
+    "wall_seconds_max_per_condition": 60
+  },
+  "fairness": {
+    "same_model_digest": true,
+    "same_raw_visible_history": true,
+    "same_shared_persona_contract": true,
+    "same_decoding_options": true,
+    "same_hardware_and_local_transport": true,
+    "same_aggregate_completion_ceiling": true,
+    "actual_prompt_completion_tokens_and_latency_reported_separately": true,
+    "product_internal_state_is_the_intervention": true,
+    "baseline_output_not_written_back": true,
+    "current_product_reply_hidden_from_baseline": true,
+    "shared_visible_surface_is_gate_not_quality_score": true
+  },
+  "next_canary": {
+    "selection_rule": "third_developer_case_first_turn_after_case_02_annotations_exposed",
+    "case_id": "p3-smoke-emotional-bid-ja",
+    "turn_id": "p3-smoke-03-u1",
+    "session_id": "p3-smoke-03-s1",
+    "content_sha256": "00000231b0c6bf86a385126dd4f5bba7d7b99418ee883c133fa018bd8a660e39",
+    "future_turn_access_during_canary": false,
+    "annotation_access_before_all_case_outputs_locked": false
+  },
+  "execution_boundary": {
+    "real_model_calls_authorized_by_this_review": false,
+    "network_calls": 0,
+    "annotation_access": false,
+    "confirmation_access": false,
+    "production_database_access": false,
+    "external_deployment": false
+  },
+  "claim_boundary": "This review selects a competent-control candidate for a new developer comparison. It does not prove baseline competence, product advantage, holdout validity, or human preference."
+}

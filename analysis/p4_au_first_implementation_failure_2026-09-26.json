@@ -1,0 +1,62 @@
+{
+  "schema": "uruha_p4_au_first_implementation_failure_v1",
+  "status": "fail",
+  "frozen_dataset_sha256": "3286e891a75dcd2b2f851e30707f4a1d09b7d277918270598bddb7920f84c4c5",
+  "correction_batch": 0,
+  "metrics": {
+    "case_count": 16,
+    "development_prior_source_linked_count": 1,
+    "fresh_positive_prior_source_linked_count": 4,
+    "fresh_positive_exact_source_identity_count": 4,
+    "fresh_positive_downstream_action_contract_count": 4,
+    "fresh_control_prior_source_added_count": 3,
+    "fresh_control_expected_block_reason_count": 6,
+    "current_task_replacement_block_count": 0,
+    "third_party_prior_block_count": 1,
+    "metalinguistic_or_unrelated_prior_block_count": 1,
+    "identity_or_window_block_count": 1,
+    "no_feedback_block_count": 1,
+    "wrong_current_policy_block_count": 1,
+    "prior_source_budget_block_count": 1,
+    "predecessor_source_mutation_count": 0,
+    "candidate_score_or_order_change_count": 0,
+    "new_model_call_count": 0,
+    "factual_memory_write_count": 0,
+    "assistant_source_count": 0,
+    "private_inference_source_count": 0,
+    "raw_dialogue_persisted_count": 0
+  },
+  "minimal_counterexamples": [
+    {
+      "case_id": "fresh-source-link-ja-1",
+      "expected": "prior_source_linked",
+      "actual": "blocked_prior_source_role",
+      "cause": "direct Japanese user turn omitted an explicit first-person pronoun"
+    },
+    {
+      "case_id": "fresh-source-link-ja-2",
+      "expected": "prior_source_linked",
+      "actual": "blocked_current_task_replacement",
+      "cause": "M47 exposed a short response-form prefix as a task prefix"
+    },
+    {
+      "case_id": "control-metalinguistic-prior-zh",
+      "expected": "blocked_prior_trigger",
+      "actual": "prior_source_linked",
+      "cause": "P4-AH trigger coverage did not include the predecessor P4-AT direct-source guard"
+    },
+    {
+      "case_id": "control-current-new-task-en",
+      "expected": "blocked_current_task_replacement",
+      "actual": "prior_source_linked",
+      "cause": "one M47 task span contained both feedback and a new task and was dropped as wholly feedback"
+    },
+    {
+      "case_id": "control-expired-window-en",
+      "expected": "blocked_exact_action_identity",
+      "actual": "prior_source_linked",
+      "cause": "fixture changed a derived valid-next field that M44 correctly recomputes from created_turn"
+    }
+  ],
+  "authorized_correction": "First informed correction may compose existing P4-AT direct-source evidence, split M47 refs before classifying feedback versus a new task, accept direct Japanese subject ellipsis only when third-party/meta evidence is absent, and make the expired fixture change the authoritative created_turn. Dataset, gates, prompts, M39/M45 and candidate ranking remain frozen."
+}

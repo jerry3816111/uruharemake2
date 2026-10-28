@@ -1,0 +1,35 @@
+{
+  "schema": "p4_local_time_place_answer_authority_fresh_probe_v1",
+  "created_before_implementation": true,
+  "evidence_level": "developer_authored_fresh_product_probe_not_formal_holdout",
+  "product_user_wait_limit_seconds": 20.0,
+  "no_retry": true,
+  "sessions": [
+    {
+      "session": "A",
+      "turns": [
+        {"id": "A1", "input": "舞台稽古は何時から始まる？", "gold": "local_start_time_unknown_no_invented_value"},
+        {"id": "A2", "input": "展示ガイドは14時から始まる。", "gold": "direct_user_time_assertion_preserved_not_inferred_from_assistant"},
+        {"id": "A3", "input": "展示ガイドは何時から始まる？", "gold": "answer_14ji_from_exact_direct_user_source"},
+        {"id": "A4", "input": "友達が『予備マイクは北の棚にあるかも』って言った。", "gold": "third_party_tentative_location_not_user_assertion"}
+      ]
+    },
+    {
+      "session": "B_same_db_after_planned_restart",
+      "turns": [
+        {"id": "B1", "input": "展示ガイドは何時からだった？", "gold": "answer_14ji_only_from_passed_direct_user_episode_after_restart"},
+        {"id": "B2", "input": "予備マイクの置き場、どこ？", "gold": "quoted_tentative_location_not_authoritative_no_invented_value"},
+        {"id": "B3", "input": "折りたたみ椅子は西の倉庫に置いた。", "gold": "direct_user_location_assertion_preserved"},
+        {"id": "B4", "input": "折りたたみ椅子はどこに置いた？", "gold": "answer_west_warehouse_from_exact_direct_user_source"},
+        {"id": "B5", "input": "予備マイクはどこに置くのがいい？", "gold": "advice_question_not_fact_answer_gate"},
+        {"id": "B6", "input": "その歌詞、何の曲？", "gold": "true_reference_question_route_unchanged_unknown_title_not_invented"},
+        {"id": "B7", "input": "Shut up, your answer is useless.", "gold": "protected_abuse_route_unchanged"}
+      ]
+    }
+  ],
+  "unknown_fact_turns": ["A1", "B2"],
+  "source_backed_fact_turns": ["A3", "B1", "B4"],
+  "source_scope_control_turns": ["A4", "B5"],
+  "protected_or_reference_control_turns": ["B6", "B7"],
+  "required_product_checks": ["unknown_no_invention_2_of_2", "direct_user_source_answer_3_of_3", "third_party_quote_not_promoted", "advice_reference_protected_unchanged_3_of_3", "exact_raw_graph_bubble_match_11_of_11", "natural_japanese_11_of_11", "distinct_turn_episodes_11_of_11", "empty_profile_digest_t0_to_t11", "each_user_wait_lte_20_seconds", "zero_retry"]
+}

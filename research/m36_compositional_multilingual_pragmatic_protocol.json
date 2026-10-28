@@ -1,0 +1,107 @@
+{
+  "schema": "uruha_compositional_multilingual_pragmatic_protocol_m36_v1",
+  "frozen_at": "2026-08-25",
+  "status": "sealed_after_annotation_validator_before_m36_runtime_implementation",
+  "research_question": "After blocking annotation inconsistencies, can compositional multilingual response-form and arousal cues make the M34 longitudinal system select, realize, verify, and revise the expected branch on new source-disjoint counterfactual pairs while preserving the M35 same-model baseline and cost controls?",
+  "single_core_variable": "M36 adds bounded compositional multilingual cue normalization and target-guarded correction linkage; it does not change the base model, longitudinal information intervention, persona contract, memory authority, or final visible Japanese guard.",
+  "conditions": {
+    "baseline": "qwen3.5:9b receives current-turn visible dialogue and the shared public-Uruha expression contract but no seed history, verified branch, prediction, verification, or revision",
+    "system": "the same qwen3.5:9b realizes the authoritative branch computed from the M36-remediated M34 typed longitudinal path"
+  },
+  "annotation_integrity_gate": {
+    "validator_path": "uruha_pragmatic_annotation_integrity_m36.py",
+    "validator_sha256": "ebb660bae74a53c361717e47257c42da2ecdc8c6661b9a9307f1a8e5d7e328e4",
+    "required_pass": true,
+    "contradiction_rule": "every contradicted row must contain exactly one independently classified explicit replacement policy, match expected_feedback_policy, differ from expected_current_policy, and be scored",
+    "support_uncertain_rule": "feedback policy is not comparatively scored and expected_feedback_policy must be not_scored or null"
+  },
+  "reserve": {
+    "path": "datasets/m36_compositional_multilingual_pragmatic_reserve_v1.json",
+    "sha256": "c9e0b2418a7ad616ee9ac62683d92332f7520d73c5e3c39b395fc6d4eeb0011f",
+    "case_count": 12,
+    "pair_count": 6,
+    "languages": ["zh", "en", "ja"],
+    "contradiction_case_count": 6,
+    "source_disjoint_from": [
+      "datasets/m34_counterfactual_pragmatic_branch_reserve_v1.json",
+      "datasets/m35_same_model_longitudinal_pragmatic_reserve_v1.json",
+      "V2.14 human pragmatic holdout"
+    ],
+    "post_seal_rule": "do not edit reserve wording, labels, or scoring after validator pass; exposed M35 rows are development regressions only"
+  },
+  "controlled_variables": [
+    "qwen3.5:9b model identity",
+    "temperature zero and fixed seed",
+    "byte-identical current utterance within each pair and across conditions",
+    "same public-Uruha expression and natural-Japanese-visible contract",
+    "same output token budget and local machine",
+    "paired real prompt-token difference at most two tokens",
+    "same typed longitudinal packet shape and policy guide as M35"
+  ],
+  "model_contract": {
+    "provider": "ollama_chat_api",
+    "base_url": "http://127.0.0.1:11434",
+    "model": "qwen3.5:9b",
+    "temperature": 0,
+    "seed": 20260825,
+    "num_ctx": 4096,
+    "num_predict": 112,
+    "input_token_budget": 1280,
+    "token_balance_preflight_rounds": 2,
+    "think": false,
+    "paired_prompt_eval_token_delta_gate": 2
+  },
+  "scored_outputs": {
+    "mechanism_current": "M34 selected policy before language realization",
+    "mechanism_feedback_outcome": "support, contradiction, or uncertainty linkage to the previous prediction",
+    "current_policy": "same-model selected_policy declaration",
+    "current_surface": "policy-specific observable Japanese surface act, reported separately from policy selection",
+    "feedback_policy": "only six validator-approved contradicted rows",
+    "feedback_surface": "only six validator-approved contradicted rows; visible correction/replacement act reported separately",
+    "pair_test": "baseline should remain invariant for byte-identical current input while system should diverge under verified response-form history",
+    "annotation_integrity": "validator pass rate and zero label-consistency errors"
+  },
+  "frozen_success_gates": {
+    "annotation_integrity_pass_rate_min": 1.0,
+    "annotation_integrity_error_count_max": 0,
+    "transport_error_count_max": 0,
+    "json_parse_error_count_max": 0,
+    "paired_prompt_token_gate_rate_min": 1.0,
+    "system_mechanism_current_policy_accuracy_min": 1.0,
+    "system_mechanism_feedback_outcome_accuracy_min": 1.0,
+    "system_current_policy_accuracy_min": 0.9166,
+    "system_minus_baseline_current_policy_accuracy_min": 0.30,
+    "system_pair_divergence_rate_min": 1.0,
+    "baseline_pair_policy_invariance_rate_min": 1.0,
+    "system_current_surface_proxy_match_rate_min": 0.8333,
+    "system_feedback_policy_accuracy_min": 0.9166,
+    "system_feedback_surface_proxy_match_rate_min": 0.8333,
+    "system_contradiction_revision_accuracy_min": 1.0,
+    "visible_japanese_rate_each_condition_min": 1.0,
+    "unverified_mental_fact_write_count_max": 0,
+    "raw_dialogue_persisted_count_max": 0,
+    "system_to_baseline_scored_prompt_token_ratio_max": 1.01,
+    "system_to_baseline_completion_token_ratio_max": 1.35,
+    "system_to_baseline_latency_ratio_max": 1.50
+  },
+  "required_development_regressions": [
+    "M35 English practical-help seed now creates verified solve reuse",
+    "M35 Japanese bounded-adverb arousal cue now activates the verified branch",
+    "sentence-initial English No and Japanese 違う do not contradict a pending branch without one valid explicit replacement policy",
+    "English give-me-one-modified-step and hear-me-out-no-advice corrections link and revise",
+    "M34 protected routes, raw-free persistence, persona, and natural-Japanese visible output do not regress"
+  ],
+  "future_human_gate": {
+    "required_for_felt_understanding_claim": true,
+    "minimum_independent_blind_raters": 3,
+    "dimensions": [
+      "implicit_need_caught_without_overclaiming",
+      "overinterpretation_or_fabrication",
+      "correction_quality",
+      "cross_turn_consistency",
+      "felt_understanding_preference"
+    ]
+  },
+  "claim_boundary": "a pass supports only source-disjoint controlled proxy evidence that the compositional longitudinal mechanism is more reliable than the current-turn-only condition on this reserve; it does not establish private-intent truth, human felt-understanding preference, general LLM superiority, or a human-brain equation",
+  "post_result_rule": "do not modify M36 runtime, evaluator, prompts, reserve, protocol, thresholds, or labels from M36 reserve outcomes; failures move to a new milestone"
+}

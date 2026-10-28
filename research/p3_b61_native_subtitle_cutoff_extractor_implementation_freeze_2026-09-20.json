@@ -1,0 +1,34 @@
+{
+  "schema": "uruha_p3_b61_native_subtitle_cutoff_extractor_implementation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_b61_native_caption_download",
+  "authorization_basis": "standing user authorization plus B60 review final caption-path correction",
+  "frozen_artifacts": {
+    "contract": {
+      "path": "configs/p3_b61_native_subtitle_cutoff_extractor_v1.json",
+      "sha256": "036b26b093c8403f0e1d2c96efaa83f272ad32ec4b481890c74c09240db90475"
+    },
+    "implementation": {
+      "path": "p3_b61_native_subtitle_cutoff_extractor.py",
+      "sha256": "0cc967fd7bc5ca50553c42d5c4c0b27a6b9c2ebae0c20069508f9c03568d57ec"
+    },
+    "tests": {
+      "path": "test_p3_b61_native_subtitle_cutoff_extractor.py",
+      "sha256": "73746d96453c79e2e1dfbcc133c476da03d0f18910d3d14397bbdd4e76223e5b"
+    }
+  },
+  "pre_freeze_evidence": {
+    "command": ".venv/product_checks/bin/python -m pytest -q test_p3_b61_native_subtitle_cutoff_extractor.py -k 'not implementation_freeze'",
+    "passed": 7,
+    "failed": 0,
+    "synthetic_future_sentinels_excluded": ["CROSS-FUTURE", "FUTURE-SENTINEL"]
+  },
+  "native_downloader_process_invocation_count_at_freeze": 0,
+  "prediction_side_future_access_count_at_freeze": 0,
+  "prediction_execution_count_at_freeze": 0,
+  "model_call_count_at_freeze": 0,
+  "single_changed_variable": "yt-dlp native private automatic-caption download instead of urllib caption GET",
+  "success_condition": "one native downloader process creates exactly one private Japanese json3 file; the unchanged B60 projector publishes nonempty cues wholly inside 3000..3180, deletes the private file and runtime, and passes the fresh no-text reader",
+  "failure_condition": "any downloader, private-file, cutoff, publication, reader, persistence, retry, future-access, or account-access violation produces a redacted terminal failure and closes the automatic caption path",
+  "claim_boundary": "This is the final prospective caption-path correction. It authorizes one native subtitle download only and does not authorize retry, cookies/login, human caption display, prediction, model calls, training, future-outcome publication, paid APIs, or deployment."
+}

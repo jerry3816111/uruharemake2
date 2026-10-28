@@ -95,6 +95,24 @@ def reply_anxiety_logic():
 
 
 class TestRightBrainModelCandidateGate(unittest.TestCase):
+    def test_f5_simplified_chinese_residue_rejected_from_model_candidate(self):
+        rightbrain = RightBrain(load_model=False)
+        reasons = rightbrain._model_candidate_rejection_reasons(
+            "頑張ったね。頑張り继续！",
+            {"scene": "support", "core_message_jp": "頑張ったね。頑張り继续！"},
+            80,
+            user_input="今は一言だけ励まして。",
+        )
+        self.assertIn("nonstandard_cjk_surface", reasons)
+
+        clean_reasons = rightbrain._model_candidate_rejection_reasons(
+            "頑張ったね。続けていこう。",
+            {"scene": "support", "core_message_jp": "頑張ったね。続けていこう。"},
+            80,
+            user_input="今は一言だけ励まして。",
+        )
+        self.assertNotIn("nonstandard_cjk_surface", clean_reasons)
+
     def test_default_adapter_prefers_validated_v10_with_legacy_fallback(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             legacy = os.path.join(tmpdir, "uruha_v10_all_linear_lora")

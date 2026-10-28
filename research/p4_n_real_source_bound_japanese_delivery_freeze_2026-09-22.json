@@ -1,0 +1,102 @@
+{
+  "schema": "uruha_p4_n_real_source_bound_japanese_delivery_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_any_real_p4_n_real_product_turn",
+  "implementation_checkpoint": {
+    "commit": "0461fa85a60b9cf9dbba34c1cbb5c0d8ad628916",
+    "offline_release": {
+      "path": "research/p4_n_source_bound_japanese_identity_localization_release_2026-09-22.json",
+      "sha256": "0bf7ed83e899f8091e3ec9ccfc3a1456ac96302e679520fe753ac2f1c0abe592"
+    },
+    "adapter": {
+      "path": "uruha_source_bound_japanese_value_surface_p4.py",
+      "sha256": "bd7389af47aa62b69571f1e9382c1d362c277a417bd2e5c265c4b302d6339ec8"
+    },
+    "product_entry": {
+      "path": "uruha_web_ui_product.py",
+      "sha256": "842169743c3c8d8cc0d0c9e6d0747690b08add7e7aa8709b287f00f909e9e694"
+    }
+  },
+  "acceptance_bindings": {
+    "contract": {
+      "path": "configs/p4_n_real_source_bound_japanese_delivery_acceptance_v1.json",
+      "sha256": "0746ace0d0afcb496f4b74ecf52ce6f7ce325447aa4e77f024789e85e341597b"
+    },
+    "gate": {
+      "path": "p4_n_real_source_bound_japanese_delivery_gate.py",
+      "sha256": "72bdda1d9017f82e8bab105b0dddfcfa52666690e87f14368814880dd106ef24"
+    },
+    "gate_test": {
+      "path": "test_p4_n_real_source_bound_japanese_delivery_gate.py",
+      "sha256": "4152b809e0460997f439aae55963d22666bc7b7af3216cf06acd8d5a43e35f5e"
+    },
+    "launcher": {
+      "path": "p4_b_safe_isolated_product_launcher_v2.py",
+      "sha256": "bb913333145bc275ff5020d7a550fc6e441bfade45b2ffb6ffc7a246002dca8b"
+    }
+  },
+  "case_novelty_and_boundary": {
+    "selected_value": "そば茶",
+    "repository_occurrences_before_acceptance_files": 0,
+    "offline_extraction_probe": {
+      "selected": true,
+      "act": "write",
+      "language": "ja",
+      "scope_before_canonicalization": "飲み物",
+      "scope_source_before_canonicalization": "explicit_utterance",
+      "current_value": "そば茶",
+      "bounded_identity_value": "そば茶"
+    },
+    "absent_from_p4_n_development_fixtures": true,
+    "absent_from_p4_j_finite_localization_map": true,
+    "absent_from_p4_m_case": true,
+    "answer_absent_from_recall_query": true,
+    "novel_open_domain_or_human_understanding_claim_allowed": false
+  },
+  "pre_execution_evidence": {
+    "gate_and_adjacent_tests_passed": 28,
+    "isolated_product_entry_server_started_for_this_case": false,
+    "real_p4_n_real_product_turn_count": 0,
+    "p4_n_real_product_process_start_count": 0,
+    "production_memory_access_count": 0,
+    "result_known_before_freeze": false
+  },
+  "execution_order": [
+    "commit and push this freeze before any real P4-N-REAL turn",
+    "create one new mode-0700 isolated runtime root and start process 1 on localhost port 7866",
+    "reuse the existing Uruha Safari tab without closing any user tab",
+    "submit the frozen Japanese typed current-drink write exactly once and wait for durable completion",
+    "capture P4-I P4-L active typed id source provenance episode graph and profile record content hash",
+    "stop process 1 and observe its listener exit",
+    "restart the same launcher-owned root and memory DB with a new pid and product session",
+    "before recall verify the fresh process observes the process-1 active typed id without injection",
+    "submit the answer-absent English current-drink question exactly once",
+    "capture the exact Japanese answer P4-J graph node bounded_japanese_identity strategy source id latency and zero profile writes",
+    "verify profile count id content and provenance hashes are unchanged while episode count increments once",
+    "run the frozen gate once and preserve pass or fail"
+  ],
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "same_case_rerun_allowed": false,
+    "input_value_scope_expected_surface_or_gate_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "implementation_change_after_result_allowed": false,
+    "failed_case_value_may_not_be_added_to_finite_map_for_rescue": true,
+    "terminal_result": "preserve_pass_or_fail_then_open_a_separately_reviewed_next_item"
+  },
+  "authorized_external_effects": {
+    "localhost_product_process_starts": 2,
+    "process_restart_count": 1,
+    "safari_product_turns": 2,
+    "read_only_isolated_database_inspections": 3,
+    "local_product_planner_model_calls_maximum": 0,
+    "external_network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0,
+    "function_tool_executions": 0,
+    "vrm_action_executions": 0,
+    "closed_user_tabs": 0
+  },
+  "claim_boundary": "This freeze authorizes one no-retry P4-N-REAL source-bound Japanese value delivery case. A pass remains a bounded product integration result, not arbitrary echoing, translation, open-domain memory, long-dialogue reliability, felt understanding, LLM superiority or a human equation."
+}

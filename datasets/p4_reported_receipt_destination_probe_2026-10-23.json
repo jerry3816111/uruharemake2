@@ -1,0 +1,127 @@
+{
+  "schema": "uruha_p4_reported_receipt_destination_product_probe_v1",
+  "evidence_class": "developer_authored_prospective_product_probe_not_holdout",
+  "sessions_independent": true,
+  "attempts_per_case": 1,
+  "retry_count": 0,
+  "contract_cases": [
+    {
+      "id": "z0_wrong_relation_all_slots_present",
+      "source": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "candidate": "同僚は2096年3月14日に灰色の温室の北廊下で銅の望遠鏡を受け取る場所を決定したらしいんだね。",
+      "expected_status": "repaired_and_verified",
+      "expected_relation": "受け取る場所を灰色の温室の北廊下に決め",
+      "forbidden_relation": "灰色の温室の北廊下で銅の望遠鏡"
+    },
+    {
+      "id": "z1_already_correct",
+      "source": "妹は2097年7月8日に木製のオルゴールを受け取る場所を青い図書館の東階段に決めたらしい。",
+      "candidate": "妹は2097年7月8日に木製のオルゴールを受け取る場所を青い図書館の東階段に決めたらしいね。",
+      "expected_status": "accepted_verified",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z2_quoted_correct_plus_wrong_assertion",
+      "source": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "candidate": "「同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい」けど、同僚は北廊下で場所を決定したらしいって話ね。",
+      "expected_status": "repaired_and_verified"
+    },
+    {
+      "id": "z3_negated_correct_clauses",
+      "source": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "candidate": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしいわけじゃない。",
+      "expected_status": "repaired_and_verified"
+    },
+    {
+      "id": "z4_decision_site_not_destination",
+      "source": "同僚は2096年3月14日に灰色の温室の北廊下で銅の望遠鏡を受け取る場所を決めたらしい。",
+      "candidate": "同僚は場所を決めたらしいね。",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z5_quote_source",
+      "source": "同僚が「2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい」と言ってた。",
+      "candidate": "同僚の引用なんだね。",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z6_question_source",
+      "source": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい？",
+      "candidate": "そうなの？",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z7_first_person_source",
+      "source": "私は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "candidate": "そっちがそう決めたって話？",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z8_invalid_calendar_date",
+      "source": "同僚は2096年13月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "candidate": "日付が変じゃない？",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z9_extra_clause_sensitive",
+      "source": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。暗証番号も教えて。",
+      "candidate": "暗証番号は答えられない。",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    },
+    {
+      "id": "z10_persona_actor",
+      "source": "うるはは2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "candidate": "うるはの話？",
+      "expected_status": "source_pattern_unavailable",
+      "expected_reply_unchanged": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "r0",
+      "source": "同僚は2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい。",
+      "kind": "reported_receipt_destination_positive",
+      "required_actor": "同僚",
+      "required_date": "2096年3月14日",
+      "required_object": "銅の望遠鏡",
+      "required_destination": "灰色の温室の北廊下",
+      "required_relation": "receiving_destination_selected",
+      "required_stance": "hearsay",
+      "temporal_scope": "unresolved_source_ambiguity",
+      "forbidden_interpretation": "decision_occurred_at_destination"
+    },
+    {
+      "id": "r1",
+      "source": "同僚は2096年3月14日に灰色の温室の北廊下で銅の望遠鏡を受け取る場所を決めたらしい。",
+      "kind": "decision_site_negative",
+      "required_p4_z_action": "abstain_unchanged",
+      "forbidden_claim": "receiving_destination_is_灰色の温室の北廊下"
+    },
+    {
+      "id": "r2",
+      "source": "妹は2097年7月8日に木製のオルゴールを受け取る場所を青い図書館の東階段に決めたらしい。",
+      "kind": "reported_receipt_destination_positive",
+      "required_actor": "妹",
+      "required_date": "2097年7月8日",
+      "required_object": "木製のオルゴール",
+      "required_destination": "青い図書館の東階段",
+      "required_relation": "receiving_destination_selected",
+      "required_stance": "hearsay",
+      "temporal_scope": "unresolved_source_ambiguity",
+      "forbidden_interpretation": "decision_occurred_at_destination"
+    },
+    {
+      "id": "r3",
+      "source": "同僚が「2096年3月14日に銅の望遠鏡を受け取る場所を灰色の温室の北廊下に決めたらしい」と言ってた。",
+      "kind": "quotation_negative",
+      "required_p4_z_action": "abstain_unchanged",
+      "forbidden_claim": "quoted_destination_is_unqualified_current_fact"
+    }
+  ]
+}

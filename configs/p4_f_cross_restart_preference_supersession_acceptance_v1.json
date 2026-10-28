@@ -1,0 +1,73 @@
+{
+  "schema": "uruha_p4_f_cross_restart_preference_supersession_acceptance_v1",
+  "version": "1.0.0",
+  "purpose": "Run one no-retry product case proving an explicit user preference correction becomes current after a real process restart while the old episode remains traceable history.",
+  "session_1": {
+    "old_preference_input": "I prefer herbal tea. Please remember that as my current tea preference.",
+    "correction_input": "Correction: I do not prefer herbal tea anymore. I prefer black tea now.",
+    "visible_output_language_required": "Japanese",
+    "durable_episode_writes_required": 2,
+    "maximum_product_planner_model_calls": 2
+  },
+  "restart": {
+    "old_process_must_exit": true,
+    "new_pid_required": true,
+    "new_product_session_id_required": true,
+    "same_runtime_root_required": true,
+    "same_memory_db_required": true,
+    "reuse_runtime_manifest_required": true,
+    "server_side_injection_or_seed_after_session_1_allowed": false,
+    "production_memory_access_allowed": false
+  },
+  "session_2": {
+    "recall_input": "What kind of tea did I say I prefer?",
+    "answer_values_absent_from_input": [
+      "herbal tea",
+      "black tea",
+      "ハーブティー",
+      "紅茶"
+    ],
+    "expected_visible_output": "今の好みは紅茶。前のハーブティーから更新してる。",
+    "visible_output_language_required": "Japanese",
+    "expected_contract_status": "resolved_explicit_preference_supersession",
+    "expected_selected_speaker": "user",
+    "expected_candidate_count": 1,
+    "expected_current_value_jp": "紅茶",
+    "expected_revoked_value_jp": "ハーブティー",
+    "expected_planner_path": "speaker_qualified_selected_fact_p3",
+    "graph_node_required": "speaker_qualified_fact_p3",
+    "maximum_product_planner_model_calls": 0,
+    "fact_memory_write_count": 0,
+    "database_rewrite_count": 0,
+    "raw_dialogue_persisted_in_trace": false
+  },
+  "history_integrity": {
+    "old_episode_present_after_restart": true,
+    "correction_episode_present_after_restart": true,
+    "historical_memory_id_must_equal_old_turn_episode_id": true,
+    "correction_memory_id_must_equal_correction_turn_episode_id": true,
+    "old_and_correction_episode_ids_must_differ": true,
+    "both_sources_must_predate_new_process": true
+  },
+  "execution_ceiling": {
+    "real_product_turns": 3,
+    "process_starts": 2,
+    "process_restart_count": 1,
+    "retry_count": 0,
+    "local_product_planner_model_calls_maximum": 2,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "production_memory_access_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "failure_policy": {
+    "real_turn_retry_allowed": false,
+    "input_or_value_change_allowed": false,
+    "manual_memory_seed_allowed": false,
+    "memory_ranking_or_prompt_change_allowed": false,
+    "same_case_rerun_allowed": false
+  },
+  "success_claim": "One explicit old-to-new user preference correction becomes the only current answer after a real product process restart while both source episodes remain traceable.",
+  "claim_boundary": "A pass is one developer-authored bounded product acceptance case. It is not general belief revision, long-conversation reliability, a research holdout, a strong-LLM advantage or human-equivalent memory."
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "uruha_p4_k_typed_recall_surface_propagation_freeze_v1",
+  "version": "1.0.0",
+  "status": "frozen_before_p4_k_implementation",
+  "base_commit": "6acc67e4c9b901071be98e5f4163d16590a620d2",
+  "contract": {
+    "path": "configs/p4_k_typed_recall_surface_propagation_contract_v1.json",
+    "sha256": "e5be58cc070b118dd475c8af898bb06983ab92a1306a96bb22eb5c37d5f1289c"
+  },
+  "regression_specification": {
+    "path": "test_p4_k_typed_recall_surface_propagation.py",
+    "sha256": "a4f226ac1ba1a0d45131f2467d2a705008e3c13781471b0598a5a3fda27c9d70",
+    "before_result": "2_failed_3_passed",
+    "expected_before_failures": [
+      "normalized logic does not recover selected contract from current turn memory_data",
+      "without recovered final logic contract the P4-J select node cannot materialize"
+    ]
+  },
+  "failure_evidence": {
+    "result": {
+      "path": "analysis/p4_j_cross_restart_typed_recall_result_2026-09-21.json",
+      "sha256": "5993af11d33480cf7f0dbe09acade7b75ee1d01fe610f7b4d517412eb2b1b2b2"
+    },
+    "release": {
+      "path": "research/p4_j_cross_restart_typed_recall_release_2026-09-21.json",
+      "sha256": "f1fc401196c612fc2b10b1b348a56eb98968d22b25d1d86d7f32f25ed64667f8"
+    }
+  },
+  "before_implementation": {
+    "path": "uruha_typed_current_preference_recall_p4.py",
+    "sha256": "5a1d8e7abcf31fe40edb95b152c6b00b6536eaf1aab0ec9b6d3e74af96d48660"
+  },
+  "required_change": [
+    "after the existing visible guard returns, prefer a valid selected P4-J contract already present in final logic",
+    "if normalized final logic omits it, recover the same current-turn contract from memory_data",
+    "never recover or apply P4-J surface authority on a safety-sensitive route",
+    "copy the recovered contract into final logic before updating visible-language trace fields",
+    "allow the existing materializer to emit the same contract as one select-stage node"
+  ],
+  "forbidden_change": [
+    "query patterns, supported scope, active resolver or value localization",
+    "P4-I storage, P4-F episode recall, profile shadow or database schema",
+    "general planner prompt, safety behavior or nonselected surface",
+    "P4-J frozen result, expected answer, gate or rooibos case",
+    "research data, baseline, metrics, holdout or claim boundary"
+  ],
+  "authorized_external_effects": {
+    "real_product_turns": 0,
+    "new_product_process_starts": 0,
+    "model_calls": 0,
+    "network_calls": 0,
+    "paid_api_calls": 0,
+    "external_deployments": 0,
+    "production_memory_accesses": 0,
+    "function_tool_executions": 0,
+    "vrm_action_executions": 0
+  },
+  "claim_boundary": "This freeze authorizes one offline propagation fix. Green tests cannot rewrite the preserved P4-J real-product failure or establish a real recall or research claim."
+}

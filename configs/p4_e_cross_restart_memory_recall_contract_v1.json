@@ -1,0 +1,79 @@
+{
+  "schema": "uruha_p4_e_cross_restart_memory_recall_contract_v1",
+  "version": "1.0.0",
+  "purpose": "Verify one explicit speaker-qualified preference is persisted and retrieved across an actual isolated product process restart.",
+  "single_changed_variable": "same_isolated_memory_root_reused_after_product_process_restart",
+  "evidence_kind": "product_integration_acceptance_on_a_developer_authored_case",
+  "session_1": {
+    "input_language": "English",
+    "input": "My colleague Rina likes black coffee, but I prefer herbal tea. Please remember who likes which drink.",
+    "observable_facts": [
+      {
+        "speaker_or_owner": "colleague_Rina",
+        "attribute": "drink_preference",
+        "value": "black coffee"
+      },
+      {
+        "speaker_or_owner": "user",
+        "attribute": "drink_preference",
+        "value": "herbal tea"
+      }
+    ],
+    "visible_output_language_required": "Japanese",
+    "maximum_product_planner_model_calls": 1,
+    "must_complete_before_restart": true
+  },
+  "restart": {
+    "old_process_must_exit": true,
+    "new_pid_required": true,
+    "new_product_session_id_required": true,
+    "same_runtime_root_required": true,
+    "same_memory_db_required": true,
+    "reuse_runtime_manifest_required": true,
+    "server_side_injection_or_seed_after_session_1_allowed": false,
+    "manual_memory_edit_allowed": false,
+    "production_memory_access_allowed": false
+  },
+  "session_2": {
+    "input_language": "English",
+    "input": "What kind of tea did I say I prefer?",
+    "answer_value_absent_from_input": "herbal",
+    "expected_visible_output": "あんたが好みって言ってたのはハーブティー。",
+    "visible_output_language_required": "Japanese",
+    "expected_selected_speaker": "user",
+    "expected_candidate_count": 1,
+    "expected_contract_status": "resolved_unique_user_preference",
+    "expected_planner_path": "speaker_qualified_selected_fact_p3",
+    "maximum_product_planner_model_calls": 0,
+    "retrieved_memory_id_required": true,
+    "retrieved_trace_id_prefix": "stored:episode:",
+    "retrieved_source_must_predate_new_session": true,
+    "graph_node_required": "speaker_qualified_fact_p3"
+  },
+  "ownership_negative_controls": {
+    "forbidden_visible_claims": [
+      "あんたが好みって言ってたのはブラックコーヒー。",
+      "リナが好みって言ってたのはハーブティー。"
+    ],
+    "colleague_preference_must_not_be_returned_as_user_preference": true,
+    "private_state_inference_allowed": false
+  },
+  "browser_only_vrm_restart_boundary": {
+    "server_must_not_persist_previous_local_vrm_file": true,
+    "expected_stage_after_new_page_load": "waiting_for_local_vrm",
+    "expected_visible_placeholder": "NEUTRAL STAGE · NOT URUHA"
+  },
+  "execution_ceiling": {
+    "real_product_turns": 2,
+    "process_starts": 2,
+    "process_restart_count": 1,
+    "retry_count": 0,
+    "paid_api_call_count": 0,
+    "external_deployment_count": 0,
+    "function_tool_execution_count": 0,
+    "vrm_action_execution_count": 0
+  },
+  "terminal_failure": "Preserve the first result and stop if either turn fails, the old process is not proven exited, the PID or session does not change, the runtime root changes, the answer or owner is wrong, the answer value appears in the recall prompt, or no persisted retrieval provenance is present. Do not change the fact, prompt, localization map, memory seed or retry the same acceptance.",
+  "success_claim": "One already-supported bounded preference-recall mechanism survives a real isolated product process restart and remains visible in the unified Safari entry.",
+  "claim_boundary": "A pass would not establish open-domain memory, long-conversation reliability, general ownership reasoning, human-like autobiographical memory, production readiness or superiority over a strong LLM."
+}

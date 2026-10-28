@@ -1,0 +1,41 @@
+{
+  "schema": "uruha_p4_f_preference_supersession_prechange_gap_v1",
+  "version": "1.0.0",
+  "status": "confirmed_current_adapter_cannot_apply_explicit_supersession",
+  "probe_kind": "offline_deterministic_function_fixture",
+  "query": "What kind of tea did I say I prefer?",
+  "selected_memory_fixtures": [
+    {
+      "memory_id": "old",
+      "user_evidence": "I said I prefer herbal tea.",
+      "retrieval_score": 0.82
+    },
+    {
+      "memory_id": "correction",
+      "user_evidence": "Correction: I do not prefer herbal tea anymore. I prefer black tea now.",
+      "retrieval_score": 0.96
+    }
+  ],
+  "observed": {
+    "status": "ambiguous_multiple_user_preferences",
+    "candidate_count": 2,
+    "candidate_memory_ids": [
+      "correction",
+      "old"
+    ],
+    "visible_surface": "候補が二つある。どっちの好みの話？",
+    "old_value_localized": "ハーブティー",
+    "new_value_localized": null,
+    "explicit_correction_applied": false,
+    "old_value_marked_historical_or_revoked": false
+  },
+  "accounting": {
+    "model_call_count": 0,
+    "network_call_count": 0,
+    "safari_turn_count": 0,
+    "production_memory_access_count": 0,
+    "database_write_count": 0
+  },
+  "diagnosis": "The current adapter extracts two preference values but has no bounded explicit old-to-new correction relation, so it treats the old and corrected values as equally current candidates.",
+  "claim_boundary": "This deterministic fixture localizes one product adapter gap. It is not a real restart result, an open-domain memory finding or evidence about research advantage."
+}

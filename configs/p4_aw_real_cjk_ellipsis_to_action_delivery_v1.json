@@ -1,0 +1,99 @@
+{
+  "schema": "uruha_p4_aw_real_cjk_ellipsis_to_action_delivery_contract_v1",
+  "version": "1.0.0",
+  "status": "prospectively_frozen_before_real_execution",
+  "dataset": {
+    "path": "datasets/p4_aw_real_cjk_ellipsis_to_action_delivery_v1.json",
+    "sha256": "6c1ef88c870cff9ec08ba345fa1c3135959d87ee51ff9f257466159fd5f3d2d3",
+    "turn_count": 2
+  },
+  "implementation": {
+    "commit": "8487644",
+    "module": [
+      "uruha_cjk_subject_ellipsis_action_authority_p4.py",
+      "63f372937348d51165da450252a9f088318a16b8a0b519c3e29f4b470b284a07"
+    ],
+    "product_entry": [
+      "uruha_web_ui_product_p4_aw.py",
+      "287429c8d705934df2e96d65383c76eca35432db6b087b666bac6f231b332043"
+    ],
+    "launcher": [
+      "p4_aw_safe_isolated_product_launcher.py",
+      "bb2e046a7db1ceae6854ef71fd76d393d966bade1f56895b73c4e85bae6f025b"
+    ],
+    "offline_evidence": [
+      "analysis/p4_aw_cjk_subject_ellipsis_action_authority_evidence_2026-09-26.json",
+      "207358523ca0da119e359f8672225805c1de8ef920468bce388ccd3e07ed7d18"
+    ],
+    "p4_av_module": [
+      "uruha_neutral_operational_role_authorization_p4.py",
+      "ec3a3e9c818ae8963aa284ea5b0e888ad31991ebd4c99d571c1699972331e89e"
+    ]
+  },
+  "execution": {
+    "port": 7887,
+    "private_runtime_required": true,
+    "safari_required": true,
+    "turns_must_run_in_one_session": true,
+    "rerun_or_retry_after_result_allowed": false,
+    "timeout_per_turn_seconds": 75,
+    "latency_target_seconds": 20,
+    "latency_must_be_recorded": true,
+    "model_calls_and_tokens_must_be_recorded": true
+  },
+  "formal_gates": {
+    "turn_count": 2,
+    "natural_japanese_visible_count": 2,
+    "durable_episode_count": 2,
+    "graph_visible_count": 2,
+    "turn_1_p4_aw_authorized_count": 1,
+    "turn_1_p4_aw_source_role_preserved_unspecified_count": 1,
+    "turn_1_p4_aw_private_truth_claim_count": 0,
+    "turn_1_p4_as_executed_count": 1,
+    "turn_1_exact_m44_receipt_count": 1,
+    "turn_1_p4_ar_authorized_count": 1,
+    "turn_1_exact_p4_ag_binding_count": 1,
+    "turn_1_future_locked_count": 1,
+    "turn_2_p4_at_closed_supported_count": 1,
+    "turn_2_exact_prediction_identity_count": 1,
+    "turn_2_current_solve_policy_count": 1,
+    "turn_2_p4_au_prior_source_linked_count": 1,
+    "turn_2_p4_au_exact_turn_1_source_count": 1,
+    "turn_2_p4_av_authorized_count": 1,
+    "turn_2_p4_av_operational_role_count_minimum": 1,
+    "turn_2_p4_av_remaining_unsupported_count": 0,
+    "turn_2_m53_authorized_count": 1,
+    "turn_2_m45_delivered_count": 1,
+    "turn_2_m46_verified_count": 1,
+    "turn_2_m46_content_passed_count": 1,
+    "turn_2_m46_surface_passed_count": 1,
+    "turn_2_m39_practical_act_count": 1,
+    "turn_2_generic_promise_or_clarification_count": 0,
+    "turn_2_temporal_supported_current_count": 1,
+    "turn_2_strictly_earlier_action_count": 1,
+    "turn_2_prior_future_consumed_count": 1,
+    "turn_2_same_turn_outcome_backdated_count": 0,
+    "p4_aw_node_before_p4_as_p4_ar_p4_ag_temporal_utterance_count": 1,
+    "p4_av_node_before_m53_m46_m45_utterance_count": 1,
+    "p4_aw_new_model_call_count": 0,
+    "p4_aw_factual_memory_write_count": 0,
+    "p4_aw_raw_dialogue_trace_count": 0,
+    "p4_aw_source_frame_mutation_count": 0,
+    "p4_aw_trigger_detector_mutation_count": 0,
+    "p4_aw_p1_or_p4_ar_guard_weakening_count": 0,
+    "assistant_or_private_inference_source_count": 0,
+    "exact_visible_string_gate_count": 0,
+    "latency_target_met_count": 2
+  },
+  "failure_policy": {
+    "same_input_rerun_allowed": false,
+    "post_result_gate_or_dataset_change_allowed": false,
+    "missing_p4_aw_or_p4_av_node_may_count_as_pass": false,
+    "timeout_may_count_as_delivery": false,
+    "generic_promise_may_count_as_delivery": false,
+    "clarification_may_count_as_delivery": false,
+    "internal_plan_without_visible_action_may_count_as_delivery": false,
+    "failed_result_may_be_hidden_by_offline_pass": false
+  },
+  "claim_boundary": "A pass is one fresh two-turn private-runtime/Safari path in which bounded subject-ellipsis authority, exact prior-source handoff, neutral-role authorization, independent plan review, and visible practical-action delivery all succeed. It does not establish advice usefulness, open-domain coreference, human preference, natural-distribution generalization, a human equation, or advantage over a matched strong LLM."
+}
