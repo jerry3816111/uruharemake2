@@ -21,11 +21,13 @@ def _probe_first_step(python: Path, env: dict[str, str], profile: Path) -> dict:
         "import json, gradio; import uruha_web_ui_product_p4_first_step_route as entry; "
         "import uruha_explicit_first_step_route_p4 as overlay; "
         "import uruha_source_bound_candidate_prompt_p4 as candidate; "
+        "import uruha_reviewer_japanese_counterfactual_p4 as reviewer; "
         "import uruha_crosslingual_help_routing_m47 as m47; "
         "print(json.dumps({'ok': True, 'entry': entry.__name__, "
         "'runtime_reused': entry.RUNTIME is entry._prior.RUNTIME, "
         "'overlay_installed': m47.classify_help_route_m47 is overlay.classify_first_step_route_p4, "
         "'candidate_prompt_installed': candidate.installed_source_bound_candidate_prompt_p4(), "
+        "'reviewer_prompt_installed': reviewer.installed_reviewer_japanese_counterfactual_p4(), "
         "'demo_builder': callable(entry._base.build_demo)}))"
     )
     completed = subprocess.run(
@@ -52,7 +54,8 @@ def _probe_first_step(python: Path, env: dict[str, str], profile: Path) -> dict:
             break
     if not payload or not all(
         payload.get(key) is True for key in (
-            "runtime_reused", "overlay_installed", "candidate_prompt_installed", "demo_builder"
+            "runtime_reused", "overlay_installed", "candidate_prompt_installed",
+            "reviewer_prompt_installed", "demo_builder"
         )
     ):
         raise prior.base_launcher.LauncherError("sandboxed_first_step_probe_invalid_output")

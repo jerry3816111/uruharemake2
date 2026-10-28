@@ -33,6 +33,10 @@ def test_current_entry_installs_source_bound_candidate_prompt_after_route():
     assert source.index("install_explicit_first_step_route_p4()") < source.index(
         "install_source_bound_candidate_prompt_p4()"
     )
+    assert "install_reviewer_japanese_counterfactual_p4()" in source
+    assert source.index("install_source_bound_candidate_prompt_p4()") < source.index(
+        "install_reviewer_japanese_counterfactual_p4()"
+    )
 
 
 def test_new_preflight_reuses_old_sandbox_and_adds_new_entry_probe(monkeypatch, tmp_path):
@@ -48,7 +52,8 @@ def test_new_preflight_reuses_old_sandbox_and_adds_new_entry_probe(monkeypatch, 
     def fake_probe(python, env, actual_profile):
         seen["probe"] = (python, env, actual_profile)
         return {"ok": True, "runtime_reused": True, "overlay_installed": True,
-                "candidate_prompt_installed": True, "demo_builder": True}
+                "candidate_prompt_installed": True,
+                "reviewer_prompt_installed": True, "demo_builder": True}
 
     monkeypatch.setattr(launcher.prior, "preflight_status_truth", fake_prior)
     monkeypatch.setattr(launcher, "_probe_first_step", fake_probe)
@@ -61,6 +66,7 @@ def test_new_preflight_reuses_old_sandbox_and_adds_new_entry_probe(monkeypatch, 
     assert summary["entrypoint"] == str(launcher.ENTRYPOINT)
     assert summary["sandboxed_first_step_probe"]["overlay_installed"] is True
     assert summary["sandboxed_first_step_probe"]["candidate_prompt_installed"] is True
+    assert summary["sandboxed_first_step_probe"]["reviewer_prompt_installed"] is True
     assert layout["runtime_root"] == runtime_root
     assert created is False
     assert actual_profile == profile
@@ -84,6 +90,22 @@ def test_sandbox_probe_fails_closed_when_candidate_prompt_not_installed(monkeypa
         stdout=json.dumps({
             "ok": True, "runtime_reused": True, "overlay_installed": True,
             "candidate_prompt_installed": False, "demo_builder": True,
+        }), stderr="",
+    )
+    monkeypatch.setattr(launcher.prior.sandbox, "sandbox_command", lambda *_: ["sandbox-exec"])
+    monkeypatch.setattr(launcher.subprocess, "run", lambda *_args, **_kwargs: completed)
+    with pytest.raises(launcher.prior.base_launcher.LauncherError) as caught:
+        launcher._probe_first_step(Path("/isolated/python"), {}, Path("/fake/profile"))
+    assert "sandboxed_first_step_probe_invalid_output" in str(caught.value)
+
+
+def test_sandbox_probe_fails_closed_when_reviewer_prompt_not_installed(monkeypatch):
+    completed = subprocess.CompletedProcess(
+        args=["sandbox-exec"], returncode=0,
+        stdout=json.dumps({
+            "ok": True, "runtime_reused": True, "overlay_installed": True,
+            "candidate_prompt_installed": True,
+            "reviewer_prompt_installed": False, "demo_builder": True,
         }), stderr="",
     )
     monkeypatch.setattr(launcher.prior.sandbox, "sandbox_command", lambda *_: ["sandbox-exec"])

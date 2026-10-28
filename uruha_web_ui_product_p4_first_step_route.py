@@ -4,10 +4,12 @@ import uruha_web_ui_product_p4_status_truth as _prior
 import uruha_web_ui as _base
 from uruha_explicit_first_step_route_p4 import install_explicit_first_step_route_p4
 from uruha_source_bound_candidate_prompt_p4 import install_source_bound_candidate_prompt_p4
+from uruha_reviewer_japanese_counterfactual_p4 import install_reviewer_japanese_counterfactual_p4
 
 
 install_explicit_first_step_route_p4()
 install_source_bound_candidate_prompt_p4()
+install_reviewer_japanese_counterfactual_p4()
 RUNTIME = _prior.RUNTIME
 
 
