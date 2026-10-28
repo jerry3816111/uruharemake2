@@ -58,8 +58,11 @@ The decoded private row and Safari graph agree on the chain:
    `invalid_counterfactual_before_jp` and `invalid_counterfactual_after_jp`:
    those fields contained Chinese text despite their Japanese contract.
    M45 status became `withheld_progress_review_failed`, and the UI delivered
-   the conservative fallback. Correcting only the field language is **not
-   yet proven sufficient** because the mechanism mismatch also remains.
+   the conservative fallback. Read-only M46 source and its existing test show
+   that disagreement between **two allowed** mechanism labels is recorded
+   but not fatal by itself. Japanese counterfactual fields might clear this
+   mechanical rejection; no such fresh generation or human-usefulness result
+   has been observed yet.
 5. After a native Safari reload, the graph still showed the exact USER
    SIGNAL, M51 **2 / 1 / selected 0**, M46 `rejected`, and the same UTTERANCE.
    The chat bubble itself was observed before reload; the graph is the
@@ -93,9 +96,9 @@ with no listener or PID left. The isolated root remains for audit.
 The source-bound instruction improved one internal candidate boundary while
 the actual product objective failed. Do not edit this released prompt and
 rerun the exposed handout case to chase a pass. The next single-variable
-diagnostic must inspect the M51→M46 candidate/reviewer contract and distinguish
-counterfactual field-language failure from the `group_by_rule` versus
-`structure_scaffold` mismatch, then prospectively freeze a remedy and use a
-new input. Neither the 87 tests nor this Safari observation establishes
-general pragmatic understanding, human preference, same-model advantage,
-production readiness, or a complete human-response equation.
+diagnostic should target the M46 reviewer counterfactual language contract,
+retaining the visible but nonfatal two-allowed-label mechanism ambiguity.
+Freeze any remedy and new input prospectively. Neither the 87 tests nor this
+Safari observation establishes general pragmatic understanding, human
+preference, same-model advantage, production readiness, or a complete
+human-response equation.
